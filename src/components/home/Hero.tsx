@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, ShieldCheck, Truck, MapPin, Zap } from 'lucide-react';
 import { MEDIA } from '../../data/media';
-import { GlassPanel } from '../ui/GlassPanel';
-import { MagneticButton } from '../ui/MagneticButton';
 
 interface HeroSlide {
   id: string;
   number: string;
   categoryTag: string;
+  tabTitle: string;
   headlineWords: [string, string, string];
   copy: string;
   primaryCta: { label: string; href: string };
@@ -23,9 +22,10 @@ const HERO_SLIDES: HeroSlide[] = [
     id: 'slide-01',
     number: '01',
     categoryTag: 'PUNE’S SPORTS HOUSE · EST. CAMP',
+    tabTitle: 'PRO EQUIPMENT & GEAR',
     headlineWords: ['GEAR.', 'COURTS.', 'PUNE.'],
-    copy: "Pune’s independent sports house. Gear for the game. Courts for the city. Based at Shop 247, MG Road, Camp.",
-    primaryCta: { label: 'SHOP SPORTS', href: '/shop' },
+    copy: "Pune’s independent sports house. Curated match equipment for serious athletes, clubs, and court builders across Maharashtra.",
+    primaryCta: { label: 'SHOP SPORTS GEAR', href: '/shop' },
     secondaryCta: { label: 'BUILD A COURT', href: '/courts' },
     image: MEDIA.heroSlide1,
     alt: 'Athletes with tournament equipment standing on illuminated court at dusk',
@@ -35,10 +35,11 @@ const HERO_SLIDES: HeroSlide[] = [
     id: 'slide-02',
     number: '02',
     categoryTag: 'TOURNAMENT EQUIPMENT & SERVICES',
+    tabTitle: 'TOURNAMENT PERFORMANCE',
     headlineWords: ['PLAY.', 'TRAIN.', 'PERFORM.'],
-    copy: 'Curated English willow, high-modulus graphite badminton frames, raw carbon pickleball paddles, and master stringing in Camp.',
-    primaryCta: { label: 'EXPLORE GEAR', href: '/shop' },
-    secondaryCta: { label: 'VISIT STORE', href: '/visit' },
+    copy: 'Curated English willow, high-modulus graphite badminton frames, raw carbon pickleball paddles, and master racket stringing in Camp.',
+    primaryCta: { label: 'EXPLORE RACQUETS & BATS', href: '/shop' },
+    secondaryCta: { label: 'VISIT CAMP STORE', href: '/visit' },
     image: MEDIA.heroSlide2,
     alt: 'Dynamic athlete executing powerful badminton smash under arena spotlights',
     accent: 'var(--color-plate-gold)',
@@ -47,17 +48,27 @@ const HERO_SLIDES: HeroSlide[] = [
     id: 'slide-03',
     number: '03',
     categoryTag: 'INFRASTRUCTURE DIVISION',
+    tabTitle: 'COURT BUILD & RESURFACING',
     headlineWords: ['WE BUILD.', 'YOU', 'PLAY.'],
-    copy: 'Turnkey sports surfaces, laser-guided sub-base grading, acrylic cushion courts, and sports floodlighting across Pune.',
-    primaryCta: { label: 'EXPLORE PROJECTS', href: '/courts/projects' },
-    secondaryCta: { label: 'COURT SETUP', href: '/courts' },
+    copy: 'Turnkey sports surfaces, laser-guided sub-base grading, acrylic cushion courts, and sports floodlighting across Pune & PCMC.',
+    primaryCta: { label: 'EXPLORE COURT PROJECTS', href: '/courts/projects' },
+    secondaryCta: { label: 'REQUEST COURT QUOTE', href: '/courts' },
     image: MEDIA.heroSlide3,
     alt: 'Turnkey championship acrylic court illuminated at twilight',
     accent: 'var(--color-safety-orange)',
   },
 ];
 
-const AUTOPLAY_MS = 5500;
+const AUTOPLAY_MS = 6000;
+
+const QUICK_CATEGORIES = [
+  { label: 'Badminton', href: '/shop/badminton' },
+  { label: 'Pickleball', href: '/shop/pickleball' },
+  { label: 'Cricket', href: '/shop/cricket' },
+  { label: 'Tennis', href: '/shop/tennis' },
+  { label: 'Table Tennis', href: '/shop/table-tennis' },
+  { label: 'Court Infrastructure', href: '/courts' },
+];
 
 export const Hero: React.FC = () => {
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -102,7 +113,7 @@ export const Hero: React.FC = () => {
     const rect = containerRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setMouseOffset({ x: x * 14, y: y * 14 });
+    setMouseOffset({ x: x * 12, y: y * 12 });
   };
 
   const handleMouseLeave = () => {
@@ -129,11 +140,11 @@ export const Hero: React.FC = () => {
         touchStartX.current = null;
       }}
       aria-roledescription="carousel"
-      aria-label="Oriental Sports Hero Showcase"
+      aria-label="Oriental Sports Store Showcase"
       style={{
         position: 'relative',
         backgroundColor: '#111111',
-        minHeight: 'clamp(540px, 86vh, 760px)',
+        minHeight: 'clamp(580px, 88vh, 800px)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -150,8 +161,8 @@ export const Hero: React.FC = () => {
             opacity: idx === currentIdx ? 1 : 0,
             transform:
               idx === currentIdx
-                ? `scale(1.05) translate3d(${mouseOffset.x}px, ${mouseOffset.y}px, 0)`
-                : 'scale(1.1) translate3d(0,0,0)',
+                ? `scale(1.04) translate3d(${mouseOffset.x}px, ${mouseOffset.y}px, 0)`
+                : 'scale(1.08) translate3d(0,0,0)',
             transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s ease-out',
             zIndex: 1,
             pointerEvents: 'none',
@@ -176,7 +187,7 @@ export const Hero: React.FC = () => {
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(180deg, rgba(17,17,17,0.35) 0%, rgba(17,17,17,0.2) 30%, rgba(17,17,17,0.85) 85%, rgba(17,17,17,0.96) 100%)',
+                'linear-gradient(180deg, rgba(14,16,20,0.42) 0%, rgba(14,16,20,0.2) 30%, rgba(14,16,20,0.85) 80%, rgba(14,16,20,0.98) 100%)',
             }}
           />
         </div>
@@ -210,25 +221,54 @@ export const Hero: React.FC = () => {
         </div>
       </div>
 
-      {/* Hero Colliding Typography & Editorial Content */}
+      {/* Desktop Discreet Side Edge Navigation Arrows */}
+      <button
+        type="button"
+        onClick={prevSlide}
+        aria-label="Previous banner"
+        className="hero-nav-arrow desktop-only"
+        style={{
+          position: 'absolute',
+          left: '24px',
+          top: '46%',
+          zIndex: 6,
+        }}
+      >
+        <ChevronLeft size={22} />
+      </button>
+
+      <button
+        type="button"
+        onClick={nextSlide}
+        aria-label="Next banner"
+        className="hero-nav-arrow desktop-only"
+        style={{
+          position: 'absolute',
+          right: '24px',
+          top: '46%',
+          zIndex: 6,
+        }}
+      >
+        <ChevronRight size={22} />
+      </button>
+
+      {/* Hero Colliding Typography & Commercial Actions */}
       <div
         className="container"
         style={{
           position: 'relative',
           zIndex: 4,
-          paddingBottom: 'clamp(32px, 6vw, 64px)',
-          display: 'grid',
-          gridTemplateColumns: '1fr auto',
-          alignItems: 'flex-end',
-          gap: '32px',
+          paddingTop: 'clamp(24px, 4vw, 48px)',
+          paddingBottom: 'clamp(32px, 5vw, 56px)',
+          maxWidth: '1200px',
         }}
       >
-        <div style={{ maxWidth: '820px' }}>
+        <div style={{ maxWidth: '840px' }}>
           {/* Giant Colliding Typography */}
           <h1
             className="font-display"
             style={{
-              fontSize: 'clamp(3.25rem, 8.5vw, 6.75rem)',
+              fontSize: 'clamp(3.25rem, 8vw, 6.5rem)',
               lineHeight: 0.92,
               letterSpacing: '-0.04em',
               color: '#FFFFFF',
@@ -244,19 +284,19 @@ export const Hero: React.FC = () => {
           {/* Editorial Copy */}
           <p
             style={{
-              fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+              fontSize: 'clamp(1rem, 1.8vw, 1.25rem)',
               lineHeight: 1.45,
               color: '#EDE8DE',
-              maxWidth: '560px',
-              margin: '0 0 32px 0',
+              maxWidth: '580px',
+              margin: '0 0 28px 0',
               textShadow: '0 2px 12px rgba(0,0,0,0.6)',
             }}
           >
             {activeSlide.copy}
           </p>
 
-          {/* Magnetic Action Buttons */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', alignItems: 'center' }}>
+          {/* Primary & Secondary Commercial CTAs */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', alignItems: 'center', marginBottom: '24px' }}>
             <Link
               to={activeSlide.primaryCta.href}
               className="btn btn-cobalt btn-lg"
@@ -289,85 +329,172 @@ export const Hero: React.FC = () => {
               </Link>
             )}
           </div>
-        </div>
 
-        {/* Floating Liquid Glass Control Rail */}
-        <div style={{ alignSelf: 'flex-end' }}>
-          <GlassPanel
-            variant="dark"
+          {/* Quick Direct-Shop Category Access Bar */}
+          <div
             style={{
-              padding: '12px 18px',
               display: 'flex',
               alignItems: 'center',
-              gap: '16px',
-              borderRadius: 'var(--radius-pill)',
+              flexWrap: 'wrap',
+              gap: '8px',
+              paddingTop: '8px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
             }}
           >
-            <div style={{ display: 'flex', gap: '6px' }}>
-              {HERO_SLIDES.map((s, idx) => (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: 'rgba(255, 255, 255, 0.75)',
+                fontFamily: 'var(--font-mono)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                marginRight: '6px',
+              }}
+            >
+              <Zap size={14} color="var(--color-plate-gold)" />
+              <span>Direct Shop:</span>
+            </div>
+
+            {QUICK_CATEGORIES.map((cat) => (
+              <Link
+                key={cat.label}
+                to={cat.href}
+                className="hero-quick-chip"
+                data-cursor="pointer"
+              >
+                {cat.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Trust Signals Strip */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '18px',
+              marginTop: '16px',
+              fontSize: '0.75rem',
+              color: 'rgba(255, 255, 255, 0.65)',
+              fontFamily: 'var(--font-mono)',
+            }}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Truck size={13} color="var(--color-electric-blue)" />
+              Same-Day Pune Dispatch
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <ShieldCheck size={13} color="var(--color-plate-gold)" />
+              100% Genuine Authorized Gear
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <MapPin size={13} color="var(--color-safety-orange)" />
+              MG Road, Camp · Since 1974
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Modern E-Commerce Progress Indicators & Slide Selector Rail */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 5,
+          borderTop: '1px solid rgba(255, 255, 255, 0.14)',
+          backgroundColor: 'rgba(10, 12, 16, 0.72)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+        }}
+      >
+        <div className="container" style={{ padding: '14px 20px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '16px',
+              alignItems: 'center',
+            }}
+          >
+            {HERO_SLIDES.map((slide, idx) => {
+              const isActive = idx === currentIdx;
+              return (
                 <button
-                  key={s.id}
+                  key={slide.id}
                   type="button"
                   onClick={() => setCurrentIdx(idx)}
                   style={{
-                    padding: '6px 12px',
-                    borderRadius: 'var(--radius-pill)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.6875rem',
-                    fontWeight: 800,
-                    backgroundColor: idx === currentIdx ? activeSlide.accent : 'rgba(255, 255, 255, 0.15)',
-                    color: idx === currentIdx ? '#FFFFFF' : 'rgba(255, 255, 255, 0.7)',
-                    transition: 'all var(--transition-fast)',
+                    background: 'none',
+                    border: 'none',
+                    padding: '6px 0',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    transition: 'opacity 0.25s ease',
+                    opacity: isActive ? 1 : 0.5,
                   }}
-                  data-cursor="pointer"
-                  aria-label={`Go to hero slide ${s.number}`}
+                  aria-label={`Switch to banner ${slide.tabTitle}`}
                 >
-                  {s.number}
+                  {/* Progress Line Track */}
+                  <div
+                    style={{
+                      width: '100%',
+                      height: '3px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      borderRadius: '2px',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div
+                      key={`progress-${idx}-${currentIdx}-${isPaused}`}
+                      style={{
+                        height: '100%',
+                        backgroundColor: isActive ? slide.accent : 'transparent',
+                        width: isActive ? '100%' : '0%',
+                        animation: isActive && !isPaused ? `heroProgress ${AUTOPLAY_MS}ms linear forwards` : 'none',
+                      }}
+                    />
+                  </div>
+
+                  {/* Segment Details */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span
+                      style={{
+                        fontSize: 'clamp(0.6875rem, 1.1vw, 0.8125rem)',
+                        fontFamily: 'var(--font-mono)',
+                        fontWeight: 700,
+                        letterSpacing: '0.08em',
+                        color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)',
+                        textTransform: 'uppercase',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {slide.tabTitle}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.6875rem',
+                        fontFamily: 'var(--font-mono)',
+                        color: isActive ? slide.accent : 'rgba(255, 255, 255, 0.4)',
+                        fontWeight: 800,
+                        marginLeft: '8px',
+                      }}
+                    >
+                      0{idx + 1}
+                    </span>
+                  </div>
                 </button>
-              ))}
-            </div>
-
-            <div style={{ width: '1px', height: '20px', backgroundColor: 'rgba(255,255,255,0.2)' }} />
-
-            <div style={{ display: 'flex', gap: '4px' }}>
-              <button
-                type="button"
-                onClick={prevSlide}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#FFFFFF',
-                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                }}
-                aria-label="Previous hero slide"
-                data-cursor="pointer"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={nextSlide}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#FFFFFF',
-                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                }}
-                aria-label="Next hero slide"
-                data-cursor="pointer"
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </GlassPanel>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

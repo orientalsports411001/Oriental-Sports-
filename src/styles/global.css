@@ -269,6 +269,64 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
+   Hero E-Commerce Components & Progress Animations
+   ========================================================================== */
+@keyframes heroProgress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.hero-quick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #EDE8DE;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.hero-quick-chip:hover {
+  background-color: rgba(255, 255, 255, 0.28);
+  border-color: #FFFFFF;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.hero-nav-arrow {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: rgba(17, 17, 17, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+.hero-nav-arrow:hover {
+  background-color: var(--color-electric-blue);
+  border-color: #FFFFFF;
+  color: #FFFFFF;
+  transform: translateY(-50%) scale(1.08) !important;
+  box-shadow: var(--shadow-blue-glow);
+}
+
+/* ==========================================================================
    Responsive Utilities
    ========================================================================== */
 @media (max-width: 1023px) {
