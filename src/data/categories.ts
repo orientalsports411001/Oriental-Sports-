@@ -92,4 +92,13 @@ export const CATEGORIES: CategoryInfo[] = [
     itemCount: 34,
     featuredEquipments: ['Duffels & Kit Bags', 'Athletic Grip Spray & Chalk', 'Agility Ladders & Cones', 'Insulated Stainless Steel Bottles'],
   },
+  {
+    id: 'volleyball',
+    name: 'Volleyball',
+    tagline: 'FIVB approved match balls, tournament nets, posts and knee protection',
+    description: 'Competition grade composite leather volleyballs, outdoor beach & indoor club net systems, and high-impact protective athlete gear.',
+    image: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=1000&q=80',
+    itemCount: 18,
+    featuredEquipments: ['FIVB Official Game Balls', 'Competition Net & Antennae Kits', 'High-Density Knee Guards', 'Outdoor Sand Volleyballs'],
+  },
 ];

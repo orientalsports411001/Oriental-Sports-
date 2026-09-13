@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 
 import { Header } from './components/navigation/Header';
 import { MobileBottomNav } from './components/navigation/MobileBottomNav';
 import { CartDrawer } from './components/navigation/CartDrawer';
+import { AuthModal } from './components/auth/AuthModal';
 import { Footer } from './components/footer/Footer';
 
 // Pages
@@ -36,41 +38,44 @@ const ScrollToTop: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <WishlistProvider>
-          <ScrollToTop />
-          <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <Header />
-            <CartDrawer />
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <ScrollToTop />
+            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+              <Header />
+              <CartDrawer />
+              <AuthModal />
 
-            <div style={{ flex: 1 }}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/shop" element={<ShopPage />} />
-                <Route path="/shop/:category" element={<CategoryPage />} />
-                <Route path="/product/:slug" element={<ProductDetailPage />} />
-                <Route path="/courts" element={<CourtsPage />} />
-                <Route path="/courts/projects" element={<CourtProjectsPage />} />
-                <Route path="/courts/:slug" element={<CourtProjectDetailPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/visit" element={<VisitPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/account" element={<AccountPage />} />
-                <Route path="/shipping" element={<ShippingPage />} />
-                <Route path="/returns" element={<ReturnsPage />} />
-                <Route path="/privacy" element={<PrivacyPage />} />
-                <Route path="/terms" element={<TermsPage />} />
-                <Route path="*" element={<HomePage />} />
-              </Routes>
+              <div style={{ flex: 1 }}>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/shop/:category" element={<CategoryPage />} />
+                  <Route path="/product/:slug" element={<ProductDetailPage />} />
+                  <Route path="/courts" element={<CourtsPage />} />
+                  <Route path="/courts/projects" element={<CourtProjectsPage />} />
+                  <Route path="/courts/:slug" element={<CourtProjectDetailPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/visit" element={<VisitPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/search" element={<SearchPage />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/account" element={<AccountPage />} />
+                  <Route path="/shipping" element={<ShippingPage />} />
+                  <Route path="/returns" element={<ReturnsPage />} />
+                  <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/terms" element={<TermsPage />} />
+                  <Route path="*" element={<HomePage />} />
+                </Routes>
+              </div>
+
+              <Footer />
+              <MobileBottomNav />
             </div>
-
-            <Footer />
-            <MobileBottomNav />
-          </div>
-        </WishlistProvider>
-      </CartProvider>
+          </WishlistProvider>
+        </CartProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 };

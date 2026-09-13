@@ -6,6 +6,7 @@ export type SportCategory =
   | 'table-tennis'
   | 'squash'
   | 'fitness'
+  | 'volleyball'
   | 'recreation'
   | 'accessories';
 

@@ -3,11 +3,13 @@ import { NavLink, Link } from 'react-router-dom';
 import { Search, ShoppingBag, User, Phone, MapPin } from 'lucide-react';
 import { Logo } from '../brand/Logo';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import { SearchModal } from './SearchModal';
 import { STORE_INFO } from '../../data/storeInfo';
 
 export const Header: React.FC = () => {
   const { itemCount, openCart } = useCart();
+  const { user, isAuthenticated, openAuthModal } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -191,35 +193,82 @@ export const Header: React.FC = () => {
                 <Search size={18} />
               </button>
 
-              <Link
-                to="/account"
-                className="desktop-only"
-                style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '50%',
-                  border: '1px solid rgba(23, 23, 23, 0.12)',
-                  backgroundColor: '#FFFFFF',
-                  color: 'var(--color-text-dark)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textDecoration: 'none',
-                  transition: 'all 0.2s ease',
-                }}
-                aria-label="Account"
-                title="Your athlete account"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--color-electric-blue)';
-                  e.currentTarget.style.color = 'var(--color-electric-blue)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(23, 23, 23, 0.12)';
-                  e.currentTarget.style.color = 'var(--color-text-dark)';
-                }}
-              >
-                <User size={18} />
-              </Link>
+              {isAuthenticated && user ? (
+                <Link
+                  to="/account"
+                  className="desktop-only"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '4px 14px 4px 6px',
+                    borderRadius: '9999px',
+                    border: '1px solid rgba(23, 23, 23, 0.15)',
+                    backgroundColor: '#FFFFFF',
+                    color: 'var(--color-text-dark)',
+                    textDecoration: 'none',
+                    fontSize: '0.8125rem',
+                    fontWeight: 700,
+                    transition: 'all 0.2s ease',
+                  }}
+                  title="Your athlete account & orders"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--color-electric-blue)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(23, 23, 23, 0.15)';
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--color-plate-gold)',
+                      color: 'var(--color-ink)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '0.75rem',
+                    }}
+                  >
+                    {user.firstName[0]}
+                  </div>
+                  <span>{user.firstName}</span>
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => openAuthModal('phone')}
+                  className="desktop-only"
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    border: '1px solid rgba(23, 23, 23, 0.12)',
+                    backgroundColor: '#FFFFFF',
+                    color: 'var(--color-text-dark)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  aria-label="Account"
+                  title="Sign In / Athlete Account"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--color-electric-blue)';
+                    e.currentTarget.style.color = 'var(--color-electric-blue)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(23, 23, 23, 0.12)';
+                    e.currentTarget.style.color = 'var(--color-text-dark)';
+                  }}
+                >
+                  <User size={18} />
+                </button>
+              )}
 
               <button
                 type="button"
