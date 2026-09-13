@@ -1,0 +1,71 @@
+:root {
+  /* Brand Color Palette */
+  --color-ink: #111111;
+  --color-ink-rgb: 17, 17, 17;
+  --color-ink-light: #181818;
+  --color-ink-card: #141414;
+  --color-ink-muted: #242424;
+  
+  --color-plate-gold: #C9A227;
+  --color-plate-gold-rgb: 201, 162, 39;
+  --color-highlight-gold: #E0C56A;
+  --color-gold-subtle: rgba(201, 162, 39, 0.10);
+  --color-gold-glow: rgba(201, 162, 39, 0.25);
+  --color-gold-border: rgba(201, 162, 39, 0.40);
+
+  --color-ivory: #F6F3EA;
+  --color-ivory-dark: #ECE7D9;
+  --color-ivory-border: #DFD8C8;
+
+  --color-pure-white: #FFFFFF;
+  --color-surface-soft: #FAF9F6;
+  --color-surface-subtle: #F2EFE7;
+
+  /* Typography Scale */
+  --font-display-xl: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+  --font-display-condensed: 'Barlow Condensed', sans-serif;
+  --font-ui: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+  --space-5xl: 128px;
+
+  /* Layout */
+  --max-width-content: 1400px;
+  --max-width-editorial: 1040px;
+  --header-height-mobile: 64px;
+  --header-height-desktop: 80px;
+  --bottom-nav-height: 64px;
+
+  /* Transitions & Springs */
+  --transition-fast: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-spring: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Shadows - Architectural, subtle, no cheesy SaaS shadows */
+  --shadow-subtle: 0 1px 3px rgba(17, 17, 17, 0.05);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --shadow-float: 0 20px 48px rgba(0, 0, 0, 0.22);
+  --shadow-gold-soft: 0 0 32px rgba(201, 162, 39, 0.18);
+
+  /* Borders */
+  --border-thin: 1px solid var(--color-ivory-border);
+  --border-dark: 1px solid rgba(255, 255, 255, 0.08);
+  --border-gold: 1px solid var(--color-gold-border);
+
+  /* Radii - Sharp, disciplined, architectural */
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-pill: 9999px;
+}
