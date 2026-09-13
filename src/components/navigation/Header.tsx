@@ -13,7 +13,7 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
+      setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -29,34 +29,35 @@ export const Header: React.FC = () => {
   return (
     <>
       <header
-        className={`header-wrapper ${isScrolled ? 'scrolled' : 'at-top'}`}
         style={{
           position: 'sticky',
           top: 0,
           left: 0,
           right: 0,
           zIndex: 60,
-          transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-          backgroundColor: isScrolled ? 'rgba(17, 17, 17, 0.95)' : 'rgba(17, 17, 17, 0.75)',
+          transition: 'all 0.25s ease',
+          backgroundColor: isScrolled ? 'rgba(255, 253, 247, 0.95)' : 'rgba(255, 247, 232, 0.92)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
           borderBottom: isScrolled
-            ? '1px solid rgba(201, 162, 39, 0.35)'
-            : '1px solid rgba(246, 243, 234, 0.08)',
+            ? '2px solid rgba(36, 87, 255, 0.15)'
+            : '1px solid rgba(23, 23, 23, 0.08)',
+          boxShadow: isScrolled ? '0 4px 20px rgba(0,0,0,0.04)' : 'none',
         }}
       >
-        {/* Micro Utility Bar: hides on scroll on desktop for sleekness */}
+        {/* Micro Utility Bar: High-Energy, Playful */}
         <div
           style={{
-            backgroundColor: '#0A0A0A',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-            fontSize: '0.6875rem',
+            backgroundColor: 'var(--color-electric-blue)',
+            color: '#FFFFFF',
+            fontSize: '0.75rem',
             fontFamily: 'var(--font-ui)',
-            color: '#8E8E8E',
+            fontWeight: 700,
+            letterSpacing: '0.04em',
             maxHeight: isScrolled ? '0px' : '32px',
             opacity: isScrolled ? 0 : 1,
             overflow: 'hidden',
-            transition: 'max-height 0.3s ease, opacity 0.25s ease',
+            transition: 'max-height 0.25s ease, opacity 0.2s ease',
           }}
           className="desktop-only"
         >
@@ -69,46 +70,37 @@ export const Header: React.FC = () => {
               height: '32px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  color: 'var(--color-plate-gold)',
-                  letterSpacing: '0.12em',
-                  fontWeight: 700,
+                  backgroundColor: 'var(--color-lime)',
+                  color: '#171717',
+                  padding: '2px 8px',
+                  borderRadius: '9999px',
+                  fontSize: '0.6875rem',
+                  fontWeight: 800,
                 }}
               >
-                <span
-                  style={{
-                    width: '5px',
-                    height: '5px',
-                    borderRadius: '50%',
-                    backgroundColor: 'var(--color-plate-gold)',
-                  }}
-                />
-                GEAR. COURTS. PUNE.
+                PUNE FLAGSHIP
               </span>
-              <span style={{ color: '#777' }}>•</span>
-              <span>Shop 247, MG Road, Camp — Flagship Store Open Today</span>
+              <span>Shop 247, MG Road, New Modikhana, Camp, Pune</span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
               <a
                 href={STORE_INFO.mapsUrl}
                 target="_blank"
                 rel="noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#BBB' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#FFFFFF' }}
               >
-                <MapPin size={12} color="var(--color-plate-gold)" />
-                <span>MG Road, Camp</span>
+                <MapPin size={12} color="var(--color-lime)" />
+                <span>Get Directions</span>
               </a>
               <a
                 href={`tel:${STORE_INFO.phone}`}
-                style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#FFF', fontWeight: 600 }}
+                style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#FFFFFF' }}
               >
-                <Phone size={12} color="var(--color-plate-gold)" />
+                <Phone size={12} color="var(--color-lime)" />
                 <span>{STORE_INFO.displayPhone}</span>
               </a>
             </div>
@@ -122,64 +114,162 @@ export const Header: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              height: isScrolled ? '64px' : '78px',
-              transition: 'height 0.3s ease',
+              height: isScrolled ? '64px' : '74px',
+              transition: 'height 0.25s ease',
             }}
           >
-            {/* Logo */}
+            {/* Logo in Official Colors as the Standalone Brand Mark */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Logo variant="dark" size={isScrolled ? 'sm' : 'md'} />
+              <Logo variant="light" size={isScrolled ? 'sm' : 'md'} />
             </div>
 
-            {/* Desktop Nav Items with Kinetic Sliding Indicator */}
-            <nav className="nav-links-desktop" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+            {/* Desktop Navigation Links */}
+            <nav className="nav-links-desktop" style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
               {navItems.map((item) => (
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  className={({ isActive }) => `nav-link-animated ${isActive ? 'active' : ''}`}
+                  style={({ isActive }) => ({
+                    fontFamily: 'var(--font-ui)',
+                    fontWeight: 700,
+                    fontSize: '0.9375rem',
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    color: isActive ? 'var(--color-electric-blue)' : 'var(--color-text-dark)',
+                    backgroundColor: isActive ? 'rgba(36, 87, 255, 0.08)' : 'transparent',
+                    padding: '8px 16px',
+                    borderRadius: '9999px',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                  })}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--color-electric-blue)';
+                    e.currentTarget.style.backgroundColor = 'rgba(36, 87, 255, 0.08)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const isActive = window.location.pathname === item.path;
+                    if (!isActive) {
+                      e.currentTarget.style.color = 'var(--color-text-dark)';
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }
+                  }}
                 >
-                  <span className="nav-link-text">{item.label}</span>
-                  <span className="nav-link-line" />
+                  {item.label}
                 </NavLink>
               ))}
             </nav>
 
-            {/* Right Quick Controls */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {/* Action Buttons: Search, Account, Bag */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <button
                 type="button"
-                className="header-action-btn"
                 onClick={() => setIsSearchOpen(true)}
-                aria-label="Search"
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '50%',
+                  border: '1px solid rgba(23, 23, 23, 0.12)',
+                  backgroundColor: '#FFFFFF',
+                  color: 'var(--color-text-dark)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                aria-label="Search equipment and courts"
                 title="Search equipment and courts"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-electric-blue)';
+                  e.currentTarget.style.color = 'var(--color-electric-blue)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(23, 23, 23, 0.12)';
+                  e.currentTarget.style.color = 'var(--color-text-dark)';
+                }}
               >
-                <Search size={19} />
+                <Search size={18} />
               </button>
 
               <Link
                 to="/account"
-                className="header-action-btn desktop-only"
+                className="desktop-only"
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '50%',
+                  border: '1px solid rgba(23, 23, 23, 0.12)',
+                  backgroundColor: '#FFFFFF',
+                  color: 'var(--color-text-dark)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                }}
                 aria-label="Account"
                 title="Your athlete account"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-electric-blue)';
+                  e.currentTarget.style.color = 'var(--color-electric-blue)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(23, 23, 23, 0.12)';
+                  e.currentTarget.style.color = 'var(--color-text-dark)';
+                }}
               >
-                <User size={19} />
+                <User size={18} />
               </Link>
 
               <button
                 type="button"
-                className="header-action-btn"
                 onClick={openCart}
-                aria-label={`Bag (${itemCount})`}
-                title="Shopping Bag"
                 style={{
-                  backgroundColor: itemCount > 0 ? 'rgba(201, 162, 39, 0.15)' : 'transparent',
-                  border: itemCount > 0 ? '1px solid var(--color-plate-gold)' : '1px solid transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  height: '42px',
+                  padding: '0 16px',
+                  borderRadius: '9999px',
+                  border: 'none',
+                  backgroundColor: 'var(--color-electric-blue)',
+                  color: '#FFFFFF',
+                  fontFamily: 'var(--font-ui)',
+                  fontWeight: 700,
+                  fontSize: '0.8125rem',
+                  letterSpacing: '0.04em',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(36, 87, 255, 0.25)',
+                  transition: 'transform 0.2s ease, background-color 0.2s ease',
+                }}
+                aria-label={`Shopping Bag (${itemCount})`}
+                title="Shopping Bag"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-electric-blue-dark)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-electric-blue)';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                <ShoppingBag size={19} color={itemCount > 0 ? 'var(--color-plate-gold)' : 'currentColor'} />
+                <ShoppingBag size={18} />
+                <span className="desktop-only">BAG</span>
                 {itemCount > 0 && (
-                  <span className="cart-count-badge" aria-hidden="true">
+                  <span
+                    style={{
+                      backgroundColor: 'var(--color-lime)',
+                      color: '#171717',
+                      fontSize: '0.6875rem',
+                      fontWeight: 800,
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
                     {itemCount}
                   </span>
                 )}
@@ -189,7 +279,7 @@ export const Header: React.FC = () => {
         </div>
       </header>
 
-      {/* Global Search Dialog */}
+      {/* Global Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   );

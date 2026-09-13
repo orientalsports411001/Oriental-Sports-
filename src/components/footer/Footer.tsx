@@ -8,9 +8,9 @@ export const Footer: React.FC = () => {
   return (
     <footer
       style={{
-        backgroundColor: '#0a0a0a',
-        color: 'var(--color-ivory)',
-        borderTop: '1px solid rgba(246, 243, 234, 0.08)',
+        backgroundColor: 'var(--color-dark-navy)',
+        color: 'var(--color-pure-white)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -34,13 +34,13 @@ export const Footer: React.FC = () => {
 
             <p
               style={{
-                fontSize: '0.875rem',
-                color: '#B5AFA4',
-                lineHeight: 1.5,
+                fontSize: '0.9375rem',
+                color: '#A0ADC9',
+                lineHeight: 1.6,
                 marginBottom: '20px',
               }}
             >
-              Pune’s sports house. Gear for the game. Courts for the city. Handcrafted equipment and turnkey athletic infrastructure.
+              Pune’s sports house since 1960. Authentic tournament-grade sports gear and turnkey athletic court construction.
             </p>
 
             <div
@@ -50,7 +50,10 @@ export const Footer: React.FC = () => {
                 fontWeight: 800,
                 fontSize: '0.8125rem',
                 letterSpacing: '0.12em',
-                color: 'var(--color-plate-gold)',
+                color: 'var(--color-ink)',
+                background: 'var(--color-lime)',
+                padding: '6px 14px',
+                borderRadius: 'var(--radius-pill)',
                 textTransform: 'uppercase',
               }}
             >
@@ -64,44 +67,44 @@ export const Footer: React.FC = () => {
               style={{
                 fontFamily: 'var(--font-heading)',
                 fontWeight: 800,
-                fontSize: '0.875rem',
-                letterSpacing: '0.1em',
+                fontSize: '0.9375rem',
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 color: 'var(--color-pure-white)',
-                marginBottom: '16px',
+                marginBottom: '18px',
               }}
             >
               SHOP GEAR
             </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.875rem' }}>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9375rem' }}>
               <li>
-                <Link to="/shop?category=pickleball" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
-                  Pickleball Paddles & Nets
+                <Link to="/shop?category=pickleball" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
+                  Pickleball Paddles & Balls
                 </Link>
               </li>
               <li>
-                <Link to="/shop?category=cricket" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
+                <Link to="/shop?category=cricket" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
                   English & Kashmir Willow Bats
                 </Link>
               </li>
               <li>
-                <Link to="/shop?category=tennis" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
+                <Link to="/shop?category=tennis" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
                   Tour Tennis Racquets & Balls
                 </Link>
               </li>
               <li>
-                <Link to="/shop?category=badminton" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
+                <Link to="/shop?category=badminton" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
                   Badminton Racquets & Shuttles
                 </Link>
               </li>
               <li>
-                <Link to="/shop?category=fitness" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
+                <Link to="/shop?category=fitness" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
                   Fitness & Strength Equipment
                 </Link>
               </li>
               <li>
-                <Link to="/shop?category=recreation" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
-                  Birch Carrom & Recreation
+                <Link to="/shop?category=recreation" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
+                  Carrom & Recreation
                 </Link>
               </li>
             </ul>
@@ -113,38 +116,38 @@ export const Footer: React.FC = () => {
               style={{
                 fontFamily: 'var(--font-heading)',
                 fontWeight: 800,
-                fontSize: '0.875rem',
-                letterSpacing: '0.1em',
+                fontSize: '0.9375rem',
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 color: 'var(--color-pure-white)',
-                marginBottom: '16px',
+                marginBottom: '18px',
               }}
             >
               COURTS & BUILD
             </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.875rem' }}>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9375rem' }}>
               <li>
-                <Link to="/courts" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
+                <Link to="/courts" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
                   Court Construction Services
                 </Link>
               </li>
               <li>
-                <Link to="/courts/pickleball-court-construction" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
+                <Link to="/courts/pickleball-court-construction" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
                   Pickleball Court Setup
                 </Link>
               </li>
               <li>
-                <Link to="/courts/tennis-court-construction" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
+                <Link to="/courts/tennis-court-construction" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
                   Tennis Court Resurfacing
                 </Link>
               </li>
               <li>
-                <Link to="/courts/football-cricket-multisport-turf" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
+                <Link to="/courts/football-cricket-multisport-turf" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
                   Multi-Sport Synthetic Turf
                 </Link>
               </li>
               <li>
-                <Link to="/courts/projects" style={{ color: '#AAAAAA', transition: 'color 0.2s' }}>
+                <Link to="/courts/projects" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
                   Pune Project Portfolio
                 </Link>
               </li>
@@ -157,31 +160,31 @@ export const Footer: React.FC = () => {
               style={{
                 fontFamily: 'var(--font-heading)',
                 fontWeight: 800,
-                fontSize: '0.875rem',
-                letterSpacing: '0.1em',
+                fontSize: '0.9375rem',
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 color: 'var(--color-pure-white)',
-                marginBottom: '16px',
+                marginBottom: '18px',
               }}
             >
               THE CAMP STORE
             </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.875rem' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', color: '#B5AFA4' }}>
-                <MapPin size={16} color="var(--color-plate-gold)" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.9375rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', color: '#BAC7E5' }}>
+                <MapPin size={18} color="var(--color-lime)" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <span>Shop 247, MG Road, New Modikhana, Camp, Pune 411001</span>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Phone size={16} color="var(--color-plate-gold)" />
-                <a href={`tel:${STORE_INFO.phone}`} style={{ color: '#FFFFFF', fontWeight: 600 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Phone size={18} color="var(--color-lime)" />
+                <a href={`tel:${STORE_INFO.phone}`} style={{ color: '#FFFFFF', fontWeight: 600, textDecoration: 'none' }}>
                   {STORE_INFO.displayPhone}
                 </a>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Mail size={16} color="var(--color-plate-gold)" />
-                <a href={`mailto:${STORE_INFO.email}`} style={{ color: '#AAAAAA' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Mail size={18} color="var(--color-lime)" />
+                <a href={`mailto:${STORE_INFO.email}`} style={{ color: '#BAC7E5', textDecoration: 'none' }}>
                   {STORE_INFO.email}
                 </a>
               </div>
@@ -194,16 +197,21 @@ export const Footer: React.FC = () => {
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    color: 'var(--color-plate-gold)',
+                    gap: '8px',
+                    color: 'var(--color-ink)',
+                    background: 'var(--color-lime)',
+                    padding: '8px 16px',
+                    borderRadius: 'var(--radius-pill)',
                     fontWeight: 700,
                     fontSize: '0.8125rem',
                     textTransform: 'uppercase',
+                    textDecoration: 'none',
+                    letterSpacing: '0.05em',
                   }}
                 >
-                  <MessageSquare size={14} />
+                  <MessageSquare size={15} />
                   <span>WhatsApp Inquiry</span>
-                  <ArrowUpRight size={14} />
+                  <ArrowUpRight size={15} />
                 </a>
               </div>
             </div>
@@ -213,11 +221,11 @@ export const Footer: React.FC = () => {
         {/* Large Subtle ORIENTAL SPORTS Typographic Element */}
         <div
           style={{
-            fontFamily: 'var(--font-display)',
+            fontFamily: 'var(--font-heading)',
             fontWeight: 900,
-            fontSize: 'clamp(2.5rem, 10vw, 8.5rem)',
+            fontSize: 'clamp(2.5rem, 11vw, 9rem)',
             lineHeight: 0.85,
-            color: 'rgba(255, 255, 255, 0.03)',
+            color: 'rgba(255, 255, 255, 0.04)',
             userSelect: 'none',
             pointerEvents: 'none',
             textAlign: 'center',
@@ -239,21 +247,21 @@ export const Footer: React.FC = () => {
             gap: '16px',
             paddingTop: 'var(--space-xl)',
             borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-            fontSize: '0.75rem',
-            color: '#777777',
+            fontSize: '0.8125rem',
+            color: '#8091B0',
           }}
         >
           <div>
-            © {new Date().getFullYear()} Oriental Sports, Pune. All rights reserved.
+            © {new Date().getFullYear()} Oriental Sports, Camp, Pune. All rights reserved.
           </div>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-            <Link to="/about" style={{ color: '#888888' }}>About the House</Link>
-            <Link to="/visit" style={{ color: '#888888' }}>Camp Store</Link>
-            <Link to="/shipping" style={{ color: '#888888' }}>Shipping Policy</Link>
-            <Link to="/returns" style={{ color: '#888888' }}>Returns Policy</Link>
-            <Link to="/privacy" style={{ color: '#888888' }}>Privacy</Link>
-            <Link to="/terms" style={{ color: '#888888' }}>Terms</Link>
+            <Link to="/about" style={{ color: '#8091B0', textDecoration: 'none' }}>About the House</Link>
+            <Link to="/visit" style={{ color: '#8091B0', textDecoration: 'none' }}>Camp Store</Link>
+            <Link to="/shipping" style={{ color: '#8091B0', textDecoration: 'none' }}>Shipping Policy</Link>
+            <Link to="/returns" style={{ color: '#8091B0', textDecoration: 'none' }}>Returns Policy</Link>
+            <Link to="/privacy" style={{ color: '#8091B0', textDecoration: 'none' }}>Privacy</Link>
+            <Link to="/terms" style={{ color: '#8091B0', textDecoration: 'none' }}>Terms</Link>
           </div>
         </div>
       </div>

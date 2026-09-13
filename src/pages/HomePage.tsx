@@ -1,59 +1,31 @@
 import React from 'react';
 import { Hero } from '../components/home/Hero';
-import { EditorialBreak } from '../components/home/EditorialBreak';
-import { ShopBuildSplit } from '../components/home/ShopBuildSplit';
-import { BentoBusiness } from '../components/home/BentoBusiness';
+import { MarqueeTicker } from '../components/home/MarqueeTicker';
 import { ShopBySport } from '../components/home/ShopBySport';
 import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { CourtsSection } from '../components/home/CourtsSection';
-import { ProjectGallery } from '../components/home/ProjectGallery';
-import { WhyOriental } from '../components/home/WhyOriental';
-import { PuneCampStory } from '../components/home/PuneCampStory';
-import { Testimonials } from '../components/home/Testimonials';
 import { VisitStore } from '../components/home/VisitStore';
-import { FinalCTA } from '../components/home/FinalCTA';
 
 export const HomePage: React.FC = () => {
   return (
     <main>
-      {/* 1. HERO with scroll media expansion & kinetic text */}
+      {/* 1. HERO: Warm Cream + Full-Bleed Action Photography Carousel */}
       <Hero />
 
-      {/* 2. EDITORIAL STATEMENT CREED BREAK */}
-      <EditorialBreak />
+      {/* High-Energy Sports Ticker */}
+      <MarqueeTicker variant="orange" />
 
-      {/* 3. SHOP / BUILD SPLIT PILLARS */}
-      <ShopBuildSplit />
-
-      {/* 4. BENTO BUSINESS ECOSYSTEM */}
-      <BentoBusiness />
-
-      {/* 5. SHOP BY SPORT (SIGNATURE INTERACTIVE LIST & TOUCH REEL) */}
+      {/* 2. SHOP BY SPORT: Electric Blue Section with 8 Sports */}
       <ShopBySport />
 
-      {/* 6. FEATURED PRODUCTS (MATCH-GRADE CAROUSEL & QUICK ADD) */}
+      {/* 3. FEATURED GEAR: Crisp White Section with Real Match-Grade Products */}
       <FeaturedProducts />
 
-      {/* 7. COURTS STICKY STORYTELLING (5-STAGE SEQUENCE) */}
+      {/* 4. BUILD A COURT: High-Energy Tangerine Section with Court Photography */}
       <CourtsSection />
 
-      {/* 8. ARCHITECTURAL PROJECT GALLERY */}
-      <ProjectGallery />
-
-      {/* 9. WHY ORIENTAL SPORTS */}
-      <WhyOriental />
-
-      {/* 10. PUNE / CAMP STORY */}
-      <PuneCampStory />
-
-      {/* 11. TESTIMONIALS */}
-      <Testimonials />
-
-      {/* 12. VISIT STORE (CAMP PHYSICAL FLAGSHIP) */}
+      {/* 5. VISIT THE STORE: Warm Cream & Lime Flagship with Real Interactive Google Map */}
       <VisitStore />
-
-      {/* 13. FINAL KINETIC CTA */}
-      <FinalCTA />
     </main>
   );
 };

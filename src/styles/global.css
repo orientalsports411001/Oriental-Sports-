@@ -145,117 +145,184 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-ivory);
 }
 
-.bg-dark h1, .bg-dark h2, .bg-dark h3, .bg-dark h4 {
-  color: var(--color-pure-white);
+.bg-cream {
+  background-color: var(--color-cream-bg);
+  color: var(--color-text-dark);
 }
 
-.bg-ivory {
-  background-color: var(--color-ivory);
-  color: var(--color-ink);
+.bg-blue {
+  background-color: var(--color-electric-blue);
+  color: #FFFFFF;
 }
 
-.bg-white {
-  background-color: var(--color-pure-white);
-  color: var(--color-ink);
+.bg-orange {
+  background-color: var(--color-tangerine);
+  color: #FFFFFF;
 }
 
-/* Buttons - Athletic, Restrained Luxury */
+.bg-lime {
+  background-color: var(--color-lime);
+  color: var(--color-text-dark);
+}
+
+.bg-navy {
+  background-color: var(--color-dark-navy);
+  color: #FFFFFF;
+}
+
+/* Playful Sports Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  padding: 14px 28px;
-  font-family: var(--font-heading);
+  padding: 13px 26px;
+  font-family: var(--font-ui);
   font-weight: 700;
   font-size: 0.9375rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-pill);
   transition: all var(--transition-normal);
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
 }
 
-.btn-primary {
-  background-color: var(--color-ink);
-  color: var(--color-pure-white);
-  border: 1px solid var(--color-ink);
+.btn-primary, .btn-blue {
+  background-color: var(--color-electric-blue);
+  color: #FFFFFF;
+  border: 1px solid var(--color-electric-blue);
+  box-shadow: 0 4px 14px rgba(36, 87, 255, 0.25);
 }
 
-.btn-primary:hover {
-  background-color: var(--color-plate-gold);
-  color: var(--color-ink);
-  border-color: var(--color-plate-gold);
+.btn-primary:hover, .btn-blue:hover {
+  background-color: var(--color-electric-blue-dark);
+  border-color: var(--color-electric-blue-dark);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.btn-orange {
+  background-color: var(--color-tangerine);
+  color: #FFFFFF;
+  border: 1px solid var(--color-tangerine);
+  box-shadow: 0 4px 14px rgba(255, 107, 53, 0.25);
+}
+
+.btn-orange:hover {
+  background-color: var(--color-tangerine-dark);
+  border-color: var(--color-tangerine-dark);
+  transform: translateY(-1px);
+}
+
+.btn-lime {
+  background-color: var(--color-lime);
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-lime);
+  box-shadow: 0 4px 14px rgba(199, 240, 0, 0.35);
+}
+
+.btn-lime:hover {
+  background-color: var(--color-lime-dark);
+  border-color: var(--color-lime-dark);
+  transform: translateY(-1px);
 }
 
 .btn-gold {
-  background-color: var(--color-plate-gold);
-  color: var(--color-ink);
-  border: 1px solid var(--color-plate-gold);
-}
-
-.btn-gold:hover {
-  background-color: var(--color-highlight-gold);
-  border-color: var(--color-highlight-gold);
-}
-
-.btn-outline-gold {
-  background-color: transparent;
-  color: var(--color-plate-gold);
-  border: 1px solid var(--color-plate-gold);
-}
-
-.btn-outline-gold:hover {
-  background-color: var(--color-plate-gold);
-  color: var(--color-ink);
+  background-color: var(--color-electric-blue);
+  color: #FFFFFF;
+  border: 1px solid var(--color-electric-blue);
 }
 
 .btn-outline-dark {
   background-color: transparent;
-  color: var(--color-ink);
-  border: 1px solid var(--color-ink);
+  color: var(--color-text-dark);
+  border: 2px solid var(--color-text-dark);
 }
 
 .btn-outline-dark:hover {
-  background-color: var(--color-ink);
-  color: var(--color-pure-white);
+  background-color: var(--color-text-dark);
+  color: #FFFFFF;
 }
 
 .btn-outline-white {
   background-color: transparent;
-  color: var(--color-pure-white);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #FFFFFF;
+  border: 2px solid rgba(255, 255, 255, 0.85);
 }
 
 .btn-outline-white:hover {
-  border-color: var(--color-plate-gold);
-  color: var(--color-plate-gold);
-  background-color: rgba(201, 162, 39, 0.08);
+  background-color: #FFFFFF;
+  color: var(--color-text-dark);
 }
 
 .btn-sm {
-  padding: 9px 18px;
+  padding: 8px 16px;
   font-size: 0.8125rem;
 }
 
 .btn-lg {
-  padding: 18px 36px;
+  padding: 16px 32px;
   font-size: 1rem;
 }
 
-/* Badges */
+/* Playful Badges */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  font-family: var(--font-heading);
+  padding: 4px 12px;
+  font-family: var(--font-ui);
   font-weight: 700;
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-pill);
+}
+
+.badge-blue {
+  background-color: var(--color-electric-blue);
+  color: #FFFFFF;
+}
+
+.badge-orange {
+  background-color: var(--color-tangerine);
+  color: #FFFFFF;
+}
+
+.badge-lime {
+  background-color: var(--color-lime);
+  color: var(--color-text-dark);
+}
+
+.badge-dark {
+  background-color: var(--color-text-dark);
+  color: #FFFFFF;
+}
+
+/* High-Energy Infinite Marquee Ticker */
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+  user-select: none;
+}
+
+.marquee-content {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 32px;
+  animation: marqueeScroll 24s linear infinite;
+}
+
+.marquee-container:hover .marquee-content {
+  animation-play-state: paused;
 }
 
 .badge-gold {

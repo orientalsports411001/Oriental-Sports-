@@ -1,40 +1,36 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ChevronRight, Layers, Tag } from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 import { CATEGORIES } from '../../data/categories';
-import { MagneticButton } from '../ui/MagneticButton';
 
-// The 7 primary disciplines explicitly specified for the interactive selector
-const PRIMARY_SPORTS_IDS = [
-  'cricket',
-  'tennis',
-  'pickleball',
-  'badminton',
-  'squash',
-  'fitness',
-  'recreation',
+const SPORTS_LIST = [
+  { id: 'cricket', name: 'CRICKET', count: '42 items', tag: 'Handcrafted Willow & Gear' },
+  { id: 'badminton', name: 'BADMINTON', count: '45 items', tag: 'Fast Frames & Feathers' },
+  { id: 'pickleball', name: 'PICKLEBALL', count: '24 items', tag: 'Raw Carbon Paddles' },
+  { id: 'tennis', name: 'TENNIS', count: '38 items', tag: 'Tour Frames & Stringing' },
+  { id: 'table-tennis', name: 'TABLE TENNIS', count: '28 items', tag: 'Competition Blades' },
+  { id: 'fitness', name: 'FITNESS', count: '52 items', tag: 'Conditioning & Weights' },
+  { id: 'squash', name: 'SQUASH', count: '19 items', tag: 'Teardrop Power Racquets' },
+  { id: 'recreation', name: 'RECREATION', count: '31 items', tag: 'Carrom, Foosball & Club' },
 ];
 
 export const ShopBySport: React.FC = () => {
-  // Filter and order the exact 7 sports requested
-  const sportsList = PRIMARY_SPORTS_IDS.map((id) =>
-    CATEGORIES.find((cat) => cat.id === id) || CATEGORIES[0]
-  );
-
-  const [activeSportIndex, setActiveSportIndex] = useState(0);
-  const activeSport = sportsList[activeSportIndex];
+  const [activeIdx, setActiveIdx] = useState(0);
+  const activeSport = SPORTS_LIST[activeIdx];
+  const activeCategoryData = CATEGORIES.find((c) => c.id === activeSport.id) || CATEGORIES[0];
 
   return (
     <section
-      className="section-padding bg-ivory"
       style={{
-        borderBottom: '1px solid var(--color-ivory-border)',
+        backgroundColor: 'var(--color-electric-blue)',
+        color: '#FFFFFF',
+        paddingTop: 'clamp(48px, 6vw, 80px)',
+        paddingBottom: 'clamp(48px, 6vw, 80px)',
         position: 'relative',
         overflow: 'hidden',
-        backgroundColor: '#F6F3EA',
       }}
-      aria-label="Shop by Sport Disciplines"
+      aria-label="Shop By Sport Disciplines"
     >
       <div className="container">
         {/* Section Header */}
@@ -45,7 +41,7 @@ export const ShopBySport: React.FC = () => {
             alignItems: 'flex-end',
             flexWrap: 'wrap',
             gap: '16px',
-            marginBottom: 'clamp(28px, 4vw, 48px)',
+            marginBottom: 'clamp(28px, 4vw, 44px)',
           }}
         >
           <div>
@@ -54,30 +50,30 @@ export const ShopBySport: React.FC = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
+                padding: '4px 12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.18)',
+                borderRadius: '9999px',
                 fontFamily: 'var(--font-ui)',
-                fontWeight: 700,
+                fontWeight: 800,
                 fontSize: '0.75rem',
-                letterSpacing: '0.14em',
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                color: 'var(--color-plate-gold)',
-                marginBottom: '8px',
+                marginBottom: '10px',
+                color: 'var(--color-lime)',
               }}
             >
-              <span
-                style={{ width: '6px', height: '6px', backgroundColor: 'var(--color-plate-gold)' }}
-              />
-              <span>DISCIPLINES & EQUIPMENT</span>
+              <span>✦ ALL DISCIPLINES</span>
             </div>
 
             <h2
               style={{
-                fontFamily: 'var(--font-display-xl)',
-                fontSize: 'clamp(2.75rem, 6.5vw, 4.75rem)',
-                lineHeight: 0.9,
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(2.5rem, 6vw, 4.25rem)',
+                lineHeight: 0.95,
                 letterSpacing: '-0.03em',
                 textTransform: 'uppercase',
-                color: 'var(--color-ink)',
                 margin: 0,
+                color: '#FFFFFF',
               }}
             >
               SHOP BY SPORT
@@ -91,300 +87,265 @@ export const ShopBySport: React.FC = () => {
               alignItems: 'center',
               gap: '6px',
               fontFamily: 'var(--font-ui)',
-              fontWeight: 700,
-              fontSize: '0.8125rem',
-              color: 'var(--color-ink)',
+              fontWeight: 800,
+              fontSize: '0.875rem',
+              color: 'var(--color-lime)',
               textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              minHeight: '44px',
+              letterSpacing: '0.05em',
+              textDecoration: 'none',
+              padding: '8px 16px',
+              borderRadius: '9999px',
+              backgroundColor: 'rgba(0, 0, 0, 0.2)',
             }}
           >
-            <span>VIEW ALL 9 DISCIPLINES</span>
-            <ArrowRight size={15} color="var(--color-plate-gold)" />
+            <span>VIEW ALL GEAR</span>
+            <ArrowRight size={16} />
           </Link>
         </div>
 
-        {/* MOBILE VIEW: Touch-Friendly Horizontal Swipe Carousel (No Hover Traps) */}
+        {/* MOBILE VIEW: Compact Horizontal Touch Swipe Reel */}
         <div className="mobile-only-block">
           <div
             className="scroll-reel"
             style={{
               paddingLeft: '2px',
               paddingRight: '16px',
-              gap: '16px',
+              gap: '14px',
               scrollSnapType: 'x mandatory',
             }}
           >
-            {sportsList.map((cat, idx) => (
-              <Link
-                key={cat.id}
-                to={`/shop?category=${cat.id}`}
-                style={{
-                  width: '280px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid var(--color-ivory-border)',
-                  borderRadius: '2px',
-                  overflow: 'hidden',
-                  flexShrink: 0,
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  scrollSnapAlign: 'start',
-                }}
-              >
-                {/* Visual Image */}
-                <div style={{ position: 'relative', width: '100%', height: '180px', overflow: 'hidden' }}>
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    loading="lazy"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '10px',
-                      left: '10px',
-                      backgroundColor: 'rgba(17,17,17,0.85)',
-                      color: 'var(--color-plate-gold)',
-                      padding: '4px 8px',
-                      borderRadius: '2px',
-                      fontFamily: 'var(--font-ui)',
-                      fontSize: '0.6875rem',
-                      fontWeight: 800,
-                    }}
-                  >
-                    0{idx + 1}
+            {SPORTS_LIST.map((sp, idx) => {
+              const catData = CATEGORIES.find((c) => c.id === sp.id) || CATEGORIES[0];
+              return (
+                <Link
+                  key={sp.id}
+                  to={`/shop?category=${sp.id}`}
+                  style={{
+                    width: '260px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: '#FFFFFF',
+                    color: 'var(--color-text-dark)',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                    textDecoration: 'none',
+                    scrollSnapAlign: 'start',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                  }}
+                >
+                  <div style={{ position: 'relative', width: '100%', height: '170px' }}>
+                    <img
+                      src={catData.image}
+                      alt={sp.name}
+                      loading="lazy"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '10px',
+                        backgroundColor: 'var(--color-electric-blue)',
+                        color: '#FFFFFF',
+                        padding: '3px 8px',
+                        borderRadius: '9999px',
+                        fontFamily: 'var(--font-ui)',
+                        fontSize: '0.6875rem',
+                        fontWeight: 800,
+                      }}
+                    >
+                      0{idx + 1}
+                    </span>
                   </div>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: '10px',
-                      right: '10px',
-                      backgroundColor: 'rgba(255,255,255,0.92)',
-                      padding: '3px 8px',
-                      borderRadius: '2px',
-                      fontSize: '0.6875rem',
-                      fontFamily: 'var(--font-ui)',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {cat.itemCount} ITEMS
-                  </div>
-                </div>
 
-                {/* Content */}
-                <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <h3
-                    style={{
-                      fontFamily: 'var(--font-display-xl)',
-                      fontSize: '1.75rem',
-                      lineHeight: 0.95,
-                      color: 'var(--color-ink)',
-                      margin: '0 0 6px 0',
-                    }}
-                  >
-                    {cat.name.toUpperCase()}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: '0.8125rem',
-                      color: '#666',
-                      lineHeight: 1.4,
-                      margin: '0 0 12px 0',
-                      fontFamily: 'var(--font-heading)',
-                      flex: 1,
-                    }}
-                  >
-                    {cat.tagline}
-                  </p>
-
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      fontFamily: 'var(--font-ui)',
-                      fontWeight: 800,
-                      fontSize: '0.75rem',
-                      color: 'var(--color-ink)',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    <span>EXPLORE GEAR</span>
-                    <ChevronRight size={14} color="var(--color-plate-gold)" />
+                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <div style={{ fontSize: '0.75rem', color: '#777', fontWeight: 600, fontFamily: 'var(--font-ui)' }}>
+                      {sp.count}
+                    </div>
+                    <h3
+                      style={{
+                        fontFamily: 'var(--font-display)',
+                        fontSize: '1.5rem',
+                        lineHeight: 1,
+                        margin: '4px 0 8px 0',
+                        color: 'var(--color-text-dark)',
+                      }}
+                    >
+                      {sp.name}
+                    </h3>
+                    <p style={{ fontSize: '0.8125rem', color: '#555', margin: '0 0 12px 0', lineHeight: 1.4 }}>
+                      {sp.tag}
+                    </p>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        color: 'var(--color-electric-blue)',
+                        fontFamily: 'var(--font-ui)',
+                        fontWeight: 800,
+                        fontSize: '0.75rem',
+                      }}
+                    >
+                      <span>EXPLORE</span>
+                      <ChevronRight size={14} />
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
 
-        {/* DESKTOP VIEW: Signature Interactive Editorial Split List */}
+        {/* DESKTOP VIEW: Interactive Split Layout */}
         <div className="desktop-only-grid">
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '1.15fr 1fr',
-              gap: 'clamp(32px, 5vw, 64px)',
+              gridTemplateColumns: '1.2fr 1fr',
+              gap: 'clamp(32px, 4vw, 56px)',
               alignItems: 'center',
             }}
           >
-            {/* LEFT: 7 Core Sports with Active Indicator and Title Shift */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {sportsList.map((cat, idx) => {
-                const isActive = idx === activeSportIndex;
+            {/* Left Column: Interactive 8-Sport List */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '12px',
+              }}
+            >
+              {SPORTS_LIST.map((sp, idx) => {
+                const isActive = idx === activeIdx;
                 return (
                   <div
-                    key={cat.id}
-                    onMouseEnter={() => setActiveSportIndex(idx)}
-                    onFocus={() => setActiveSportIndex(idx)}
+                    key={sp.id}
+                    onMouseEnter={() => setActiveIdx(idx)}
+                    onFocus={() => setActiveIdx(idx)}
                     tabIndex={0}
                     role="button"
                     aria-selected={isActive}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '14px 20px',
-                      borderRadius: '2px',
-                      backgroundColor: isActive ? 'var(--color-ink)' : 'transparent',
-                      color: isActive ? 'var(--color-pure-white)' : 'var(--color-ink)',
+                      padding: '16px 20px',
+                      borderRadius: '12px',
+                      backgroundColor: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.12)',
+                      color: isActive ? 'var(--color-electric-blue)' : '#FFFFFF',
                       cursor: 'pointer',
-                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                      borderBottom: isActive ? '1px solid transparent' : '1px solid var(--color-ivory-border)',
-                      position: 'relative',
-                      overflow: 'hidden',
+                      transition: 'all 0.2s ease',
+                      border: isActive ? '2px solid #FFFFFF' : '1px solid rgba(255, 255, 255, 0.15)',
+                      boxShadow: isActive ? '0 10px 24px rgba(0,0,0,0.18)' : 'none',
+                      transform: isActive ? 'translateY(-2px)' : 'none',
                     }}
                   >
-                    {/* Active Gold Indicator Bar */}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeSportBar"
-                        style={{
-                          position: 'absolute',
-                          left: 0,
-                          top: 0,
-                          bottom: 0,
-                          width: '4px',
-                          backgroundColor: 'var(--color-plate-gold)',
-                        }}
-                      />
-                    )}
-
                     <Link
-                      to={`/shop?category=${cat.id}`}
+                      to={`/shop?category=${sp.id}`}
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '20px',
-                        flex: 1,
                         textDecoration: 'none',
                         color: 'inherit',
+                        display: 'block',
                       }}
                     >
-                      <span
+                      <div
                         style={{
-                          fontFamily: 'var(--font-ui)',
-                          fontSize: '0.8125rem',
-                          fontWeight: 700,
-                          color: isActive ? 'var(--color-plate-gold)' : '#999',
-                          width: '28px',
-                          fontVariantNumeric: 'tabular-nums',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: '4px',
                         }}
                       >
-                        0{idx + 1}
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-display-xl)',
-                          fontSize: '2.5rem',
-                          letterSpacing: '-0.02em',
-                          lineHeight: 0.9,
-                          transform: isActive ? 'translateX(8px)' : 'translateX(0)',
-                          transition: 'transform 0.25s ease',
-                          display: 'inline-block',
-                        }}
-                      >
-                        {cat.name.toUpperCase()}
-                      </span>
-                    </Link>
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-ui)',
+                            fontSize: '0.6875rem',
+                            fontWeight: 800,
+                            letterSpacing: '0.08em',
+                            color: isActive ? 'var(--color-tangerine)' : 'rgba(255,255,255,0.7)',
+                          }}
+                        >
+                          0{idx + 1}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '0.6875rem',
+                            fontFamily: 'var(--font-ui)',
+                            fontWeight: 700,
+                            color: isActive ? '#666' : 'rgba(255,255,255,0.7)',
+                          }}
+                        >
+                          {sp.count}
+                        </span>
+                      </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <span
+                      <div
                         style={{
-                          fontFamily: 'var(--font-ui)',
-                          fontSize: '0.75rem',
-                          color: isActive ? 'rgba(255,255,255,0.7)' : '#888',
-                          fontWeight: 600,
+                          fontFamily: 'var(--font-display)',
+                          fontSize: '1.375rem',
+                          fontWeight: 700,
+                          letterSpacing: '-0.02em',
+                          lineHeight: 1.1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
                         }}
                       >
-                        {cat.itemCount} PRO PRODUCTS
-                      </span>
-                      <ArrowRight
-                        size={16}
-                        color={isActive ? 'var(--color-plate-gold)' : '#CCC'}
-                        style={{
-                          transform: isActive ? 'translateX(4px)' : 'translateX(0)',
-                          transition: 'transform 0.25s ease',
-                        }}
-                      />
-                    </div>
+                        <span>{sp.name}</span>
+                        {isActive && <ArrowRight size={16} color="var(--color-electric-blue)" />}
+                      </div>
+                    </Link>
                   </div>
                 );
               })}
             </div>
 
-            {/* RIGHT: Synchronized Large Visual with Crossfade, Scale & Equipment Tags */}
+            {/* Right Column: Synchronized Large Vibrant Visual Card */}
             <div
               style={{
                 position: 'relative',
-                height: '520px',
-                borderRadius: '2px',
+                height: '460px',
+                borderRadius: '20px',
                 overflow: 'hidden',
-                backgroundColor: 'var(--color-ink)',
-                border: '1px solid var(--color-ivory-border)',
-                boxShadow: '0 16px 40px rgba(0,0,0,0.1)',
+                backgroundColor: '#0F1E5C',
+                boxShadow: '0 20px 48px rgba(0,0,0,0.25)',
+                border: '3px solid rgba(255, 255, 255, 0.25)',
               }}
             >
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={activeSport.id}
-                  initial={{ opacity: 0, scale: 1.05 }}
+                  key={activeCategoryData.id}
+                  initial={{ opacity: 0, scale: 1.04 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.02 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                   style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
                 >
                   <img
-                    src={activeSport.image}
+                    src={activeCategoryData.image}
                     alt={activeSport.name}
                     style={{
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
-                      filter: 'contrast(1.08) brightness(0.9)',
+                      filter: 'contrast(1.08) brightness(0.95)',
                     }}
                   />
-                  {/* Cinematic Dark Overlay */}
                   <div
                     style={{
                       position: 'absolute',
                       inset: 0,
                       background:
-                        'linear-gradient(180deg, rgba(17,17,17,0.15) 0%, rgba(17,17,17,0.88) 100%)',
+                        'linear-gradient(180deg, rgba(15, 30, 92, 0.2) 0%, rgba(15, 30, 92, 0.88) 100%)',
                     }}
                   />
                 </motion.div>
               </AnimatePresence>
 
-              {/* Foreground Content for the Selected Sport */}
+              {/* Card Overlay Content */}
               <div
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  padding: '36px',
+                  padding: '32px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -392,93 +353,70 @@ export const ShopBySport: React.FC = () => {
                   color: '#FFFFFF',
                 }}
               >
-                {/* Top Badge */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span
                     style={{
-                      backgroundColor: 'rgba(17,17,17,0.85)',
-                      border: '1px solid var(--color-plate-gold)',
-                      padding: '6px 12px',
-                      borderRadius: '2px',
+                      backgroundColor: 'var(--color-lime)',
+                      color: '#171717',
+                      padding: '4px 12px',
+                      borderRadius: '9999px',
                       fontFamily: 'var(--font-ui)',
                       fontSize: '0.6875rem',
                       fontWeight: 800,
-                      color: 'var(--color-plate-gold)',
-                      letterSpacing: '0.12em',
-                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
                     }}
                   >
-                    DISCIPLINE 0{activeSportIndex + 1}
+                    FEATURED DISCIPLINE
                   </span>
                   <span
                     style={{
-                      backgroundColor: 'rgba(255,255,255,0.15)',
+                      backgroundColor: 'rgba(255,255,255,0.2)',
                       backdropFilter: 'blur(8px)',
-                      padding: '6px 12px',
-                      borderRadius: '2px',
+                      padding: '4px 12px',
+                      borderRadius: '9999px',
                       fontSize: '0.75rem',
                       fontFamily: 'var(--font-ui)',
+                      fontWeight: 700,
                     }}
                   >
-                    {activeSport.itemCount} PRODUCTS
+                    {activeSport.count}
                   </span>
                 </div>
 
-                {/* Bottom Details & CTA */}
                 <div>
                   <h3
                     style={{
-                      fontFamily: 'var(--font-display-xl)',
-                      fontSize: '3.25rem',
-                      lineHeight: 0.9,
-                      letterSpacing: '-0.02em',
-                      margin: '0 0 10px 0',
-                      color: '#FFFFFF',
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '2.5rem',
+                      lineHeight: 1,
+                      margin: '0 0 8px 0',
                     }}
                   >
-                    {activeSport.name.toUpperCase()}
+                    {activeSport.name}
                   </h3>
                   <p
                     style={{
-                      fontSize: '1rem',
-                      lineHeight: 1.5,
-                      color: '#D4CEBF',
-                      maxWidth: '440px',
-                      marginBottom: '16px',
-                      fontFamily: 'var(--font-heading)',
+                      fontSize: '0.9375rem',
+                      lineHeight: 1.45,
+                      color: '#E0E7FF',
+                      maxWidth: '420px',
+                      marginBottom: '20px',
                     }}
                   >
-                    {activeSport.tagline}
+                    {activeCategoryData.tagline}
                   </p>
 
-                  {/* Featured Equipment Tags */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
-                    {activeSport.featuredEquipments.slice(0, 3).map((item) => (
-                      <span
-                        key={item}
-                        style={{
-                          fontSize: '0.6875rem',
-                          padding: '4px 10px',
-                          backgroundColor: 'rgba(255,255,255,0.12)',
-                          backdropFilter: 'blur(4px)',
-                          borderRadius: '2px',
-                          fontFamily: 'var(--font-ui)',
-                          color: '#E0C56A',
-                        }}
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-
-                  <MagneticButton
-                    variant="gold"
-                    size="md"
-                    onClick={() => (window.location.href = `/shop?category=${activeSport.id}`)}
+                  <Link
+                    to={`/shop?category=${activeSport.id}`}
+                    className="btn btn-lime"
+                    style={{
+                      padding: '12px 24px',
+                      fontSize: '0.875rem',
+                      textDecoration: 'none',
+                    }}
                   >
-                    <span>EXPLORE {activeSport.name.toUpperCase()} GEAR</span>
-                    <ArrowRight size={16} />
-                  </MagneticButton>
+                    <span>SHOP {activeSport.name} GEAR →</span>
+                  </Link>
                 </div>
               </div>
             </div>
