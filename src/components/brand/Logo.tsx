@@ -24,9 +24,9 @@ export const Logo: React.FC<LogoProps> = ({
   };
 
   const h = heights[size];
-  // Calculate proportional width based on whether text is shown
-  const viewBoxWidth = showText ? 270 : 64;
-  const aspectWidth = showText ? h * (270 / 64) : h;
+  // Calculate proportional width based on whether text is shown (320px allows generous room for SPORTS without clipping)
+  const viewBoxWidth = showText ? 320 : 64;
+  const aspectWidth = showText ? Math.round(h * (320 / 64)) : h;
 
   const isDarkBg = variant === 'dark';
 
@@ -86,7 +86,7 @@ export const Logo: React.FC<LogoProps> = ({
           y="10"
           textAnchor="middle"
           fill={sColor}
-          fontFamily="'Outfit', sans-serif"
+          fontFamily="'Outfit', -apple-system, sans-serif"
           fontWeight="900"
           fontSize="28"
           fontStyle="italic"
@@ -98,39 +98,24 @@ export const Logo: React.FC<LogoProps> = ({
 
       {/* --- LOGOTYPE (Right) --- */}
       {showText && (
-        <g id="oriental-logotype" transform="translate(76, 0)">
-          {/* Black "Oriental" */}
+        <g id="oriental-logotype" transform="translate(74, 0)">
+          {/* Automatic Typographic Flow */}
           <text
             x="0"
             y="35"
-            fill={orientalColor}
-            fontFamily="'Outfit', sans-serif"
-            fontWeight="800"
-            fontSize="27"
-            letterSpacing="-0.01em"
-          >
-            ORIENTAL
-          </text>
-
-          {/* Gold Italic "Sports" */}
-          <text
-            x="128"
-            y="35"
-            fill={sportsColor}
-            fontFamily="'Outfit', sans-serif"
-            fontWeight="700"
+            fontFamily="'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
             fontSize="26"
-            fontStyle="italic"
             letterSpacing="-0.01em"
           >
-            SPORTS
+            <tspan fill={orientalColor} fontWeight="900">ORIENTAL </tspan>
+            <tspan fill={sportsColor} fontWeight="800" fontStyle="italic">SPORTS</tspan>
           </text>
 
           {/* Gold Underline */}
           <rect
             x="0"
             y="43"
-            width="186"
+            width="220"
             height="3"
             rx="1.5"
             fill={underlineColor}

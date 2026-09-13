@@ -27,7 +27,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [copiedTracking, setCopiedTracking] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-  const { addItem, openCart } = useCart();
+  const { addToCart, openCart } = useCart();
 
   const handleCopyTracking = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -43,7 +43,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
     order.items.forEach((item) => {
       const prod = PRODUCTS.find((p) => p.id === item.productId || p.slug === item.productSlug);
       if (prod) {
-        addItem(prod, item.quantity, item.selectedVariant);
+        addToCart(prod, item.quantity, item.selectedVariant);
       }
     });
     openCart();
@@ -60,7 +60,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
 
   const currentStatusStyle = statusColorMap[order.status] || statusColorMap.delivered;
 
-  const whatsappInquiryUrl = `https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(
+  const whatsappInquiryUrl = `https://wa.me/${STORE_INFO.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
     `Hello Oriental Sports Camp Pune team! I'm inquiring about my order ${order.orderNumber} (₹${order.totalAmount.toLocaleString('en-IN')}). Could you assist with status updates?`
   )}`;
 

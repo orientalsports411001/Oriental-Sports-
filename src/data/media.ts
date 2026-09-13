@@ -12,11 +12,11 @@ export const MEDIA = {
   heroSportsMobile: '/images/hero/hero_gear_pune.jpg',
   
   // Pillars
-  shopPillar: 'https://images.unsplash.com/photo-1531415074868-036b1c57e329?auto=format&fit=crop&w=1800&q=85',
+  shopPillar: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1800&q=85',
   buildPillar: 'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=1800&q=85',
 
   // Disciplines
-  cricketHero: 'https://images.unsplash.com/photo-1531415074868-036b1c57e329?auto=format&fit=crop&w=1600&q=85',
+  cricketHero: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1600&q=85',
   tennisHero: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1600&q=85',
   pickleballHero: 'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=1600&q=85',
   badmintonHero: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1600&q=85',

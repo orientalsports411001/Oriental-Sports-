@@ -1,85 +1,89 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, ShoppingBag, LayoutGrid, User, ShoppingCart } from 'lucide-react';
-import { useCart } from '../../context/CartContext';
+import { Home, Compass, Grid, Heart, User } from 'lucide-react';
+import { useWishlist } from '../../context/WishlistContext';
+import { useAuth } from '../../context/AuthContext';
 
 export const MobileBottomNav: React.FC = () => {
-  const { itemCount, openCart } = useCart();
+  const { wishlist } = useWishlist();
+  const { isAuthenticated, openAuthModal } = useAuth();
 
   return (
-    <nav className="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <nav className="mobile-bottom-nav mobile-only" aria-label="Mobile Navigation Bar">
       <NavLink
         to="/"
+        className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}
         end
-        className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
       >
-        <Home size={20} strokeWidth={2} />
-        <span>HOME</span>
+        <Home size={20} />
+        <span>Home</span>
       </NavLink>
 
       <NavLink
         to="/shop"
-        className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
+        className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}
       >
-        <ShoppingBag size={20} strokeWidth={2} />
-        <span>SHOP</span>
+        <Grid size={20} />
+        <span>Shop</span>
       </NavLink>
 
       <NavLink
         to="/courts"
-        className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
+        className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}
       >
-        <LayoutGrid size={20} strokeWidth={2} />
-        <span>COURTS</span>
+        <Compass size={20} />
+        <span>Courts</span>
       </NavLink>
 
       <NavLink
-        to="/account"
-        className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
+        to="/wishlist"
+        className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}
       >
-        <User size={20} strokeWidth={2} />
-        <span>ACCOUNT</span>
-      </NavLink>
-
-      <button
-        type="button"
-        onClick={openCart}
-        className="bottom-nav-item"
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          position: 'relative',
-        }}
-        aria-label={`Shopping Cart with ${itemCount} items`}
-      >
-        <div style={{ position: 'relative', display: 'inline-flex' }}>
-          <ShoppingCart size={20} strokeWidth={2} />
-          {itemCount > 0 && (
+        <div style={{ position: 'relative' }}>
+          <Heart size={20} />
+          {wishlist.length > 0 && (
             <span
               style={{
                 position: 'absolute',
-                top: '-6px',
+                top: '-4px',
                 right: '-8px',
-                backgroundColor: 'var(--color-electric-blue)',
+                minWidth: '15px',
+                height: '15px',
+                borderRadius: '9999px',
+                backgroundColor: 'var(--color-ink)',
                 color: '#FFFFFF',
                 fontSize: '0.625rem',
-                fontWeight: 800,
-                width: '16px',
-                height: '16px',
-                borderRadius: '50%',
+                fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontFamily: 'var(--font-ui)',
               }}
             >
-              {itemCount}
+              {wishlist.length}
             </span>
           )}
         </div>
-        <span>CART</span>
-      </button>
+        <span>Wishlist</span>
+      </NavLink>
+
+      {isAuthenticated ? (
+        <NavLink
+          to="/account"
+          className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}
+        >
+          <User size={20} />
+          <span>Account</span>
+        </NavLink>
+      ) : (
+        <button
+          type="button"
+          onClick={() => openAuthModal('phone')}
+          className="mobile-nav-item"
+        >
+          <User size={20} />
+          <span>Sign In</span>
+        </button>
+      )}
     </nav>
   );
 };

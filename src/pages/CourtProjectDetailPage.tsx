@@ -134,33 +134,38 @@ export const CourtProjectDetailPage: React.FC = () => {
             <div
               style={{
                 backgroundColor: 'var(--color-pure-white)',
-                border: '1px solid var(--color-ivory-border)',
-                borderRadius: '2px',
+                border: '2px solid #111111',
+                boxShadow: '6px 6px 0px #111111',
                 padding: '28px',
-                marginBottom: '24px',
+                marginBottom: '28px',
               }}
             >
-              <h3 style={{ fontSize: '1.125rem', fontFamily: 'var(--font-heading)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '16px' }}>
-                TECHNICAL DATA
-              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '10px', borderBottom: '2px solid #111111' }}>
+                <h3 style={{ fontSize: '1.125rem', fontFamily: 'var(--font-heading)', fontWeight: 800, textTransform: 'uppercase', margin: 0 }}>
+                  TECHNICAL SPECIFICATIONS
+                </h3>
+                <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--color-plate-gold)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  PUNE AUDIT
+                </span>
+              </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.875rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #EDE8DC', paddingBottom: '8px' }}>
-                  <span style={{ color: '#666' }}>Sport</span>
+                  <span style={{ color: '#666' }}>Sport Discipline</span>
                   <strong style={{ color: '#111' }}>{project.sport}</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #EDE8DC', paddingBottom: '8px' }}>
-                  <span style={{ color: '#666' }}>Surface</span>
+                  <span style={{ color: '#666' }}>Engineered Surface</span>
                   <strong style={{ color: '#111' }}>{project.surface}</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #EDE8DC', paddingBottom: '8px' }}>
-                  <span style={{ color: '#666' }}>Client Category</span>
+                  <span style={{ color: '#666' }}>Facility Category</span>
                   <strong style={{ color: '#111' }}>{project.clientType}</strong>
                 </div>
                 {Object.entries(project.specs).map(([k, v], i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #EDE8DC', paddingBottom: '8px' }}>
                     <span style={{ color: '#666' }}>{k}</span>
-                    <strong style={{ color: '#111' }}>{v}</strong>
+                    <strong style={{ color: '#111', fontFamily: 'monospace' }}>{v}</strong>
                   </div>
                 ))}
               </div>
@@ -171,27 +176,33 @@ export const CourtProjectDetailPage: React.FC = () => {
               style={{
                 backgroundColor: 'var(--color-ink)',
                 color: 'var(--color-ivory)',
-                border: '1px solid var(--color-plate-gold)',
-                borderRadius: '2px',
+                border: '2px solid #C9A227',
+                boxShadow: '6px 6px 0px #111111',
                 padding: '28px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '14px',
+                gap: '16px',
               }}
             >
-              <h3 className="font-display" style={{ fontSize: '1.375rem', color: '#FFFFFF' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ShieldCheck size={18} color="var(--color-plate-gold)" />
+                <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--color-plate-gold)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  INFRASTRUCTURE INTAKE
+                </span>
+              </div>
+              <h3 className="font-display" style={{ fontSize: '1.5rem', color: '#FFFFFF', lineHeight: 1.05, margin: 0 }}>
                 BUILD A COURT LIKE THIS
               </h3>
-              <p style={{ color: '#D1CBBF', fontSize: '0.875rem', lineHeight: 1.45 }}>
+              <p style={{ color: '#D1CBBF', fontSize: '0.875rem', lineHeight: 1.5, margin: 0 }}>
                 Connect with Oriental Sports engineers for an on-site soil and laser gradient assessment in Pune.
               </p>
 
               <Link
                 to="/courts#court-estimator"
-                className="btn btn-gold"
-                style={{ width: '100%' }}
+                className="btn btn-gold btn-lg"
+                style={{ width: '100%', boxShadow: '3px 3px 0px #111111' }}
               >
-                <span>REQUEST A COURT CONSULTATION</span>
+                <span>REQUEST COURT ESTIMATE</span>
                 <ArrowRight size={16} />
               </Link>
 
@@ -200,10 +211,10 @@ export const CourtProjectDetailPage: React.FC = () => {
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-outline-white"
-                style={{ width: '100%' }}
+                style={{ width: '100%', fontSize: '0.8125rem' }}
               >
                 <MessageSquare size={16} />
-                <span>WHATSAPP US</span>
+                <span>WHATSAPP CIVIL DESK</span>
               </a>
 
               <a
@@ -216,11 +227,12 @@ export const CourtProjectDetailPage: React.FC = () => {
                   color: 'var(--color-plate-gold)',
                   fontSize: '0.8125rem',
                   fontWeight: 700,
-                  marginTop: '8px',
+                  marginTop: '4px',
+                  textDecoration: 'none',
                 }}
               >
                 <Phone size={14} />
-                <span>Direct Line: {STORE_INFO.displayPhone}</span>
+                <span>Direct Civil Line: {STORE_INFO.displayPhone}</span>
               </a>
             </div>
           </div>

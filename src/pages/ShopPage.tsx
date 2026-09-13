@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Filter, SlidersHorizontal, X, ArrowUpDown } from 'lucide-react';
+import { SlidersHorizontal, X, ArrowUpDown, Sparkles } from 'lucide-react';
 import { PRODUCTS } from '../data/products';
 import { CATEGORIES } from '../data/categories';
 import { ProductCard } from '../components/products/ProductCard';
@@ -46,49 +46,52 @@ export const ShopPage: React.FC = () => {
   }, [selectedCategory, inStockOnly, sortBy]);
 
   return (
-    <div className="bg-ivory" style={{ minHeight: '80vh', paddingBottom: 'var(--space-4xl)' }}>
-      {/* Category Hero / Header */}
+    <div style={{ backgroundColor: '#F7F5EE', minHeight: '85vh', paddingBottom: '80px' }}>
+      {/* Editorial Catalog Banner */}
       <div
         style={{
-          backgroundColor: 'var(--color-ink)',
-          color: 'var(--color-ivory)',
-          padding: 'var(--space-3xl) 0',
-          borderBottom: '1px solid rgba(246, 243, 234, 0.08)',
+          backgroundColor: '#0A0A0A',
+          color: '#FFFFFF',
+          padding: 'clamp(56px, 7vw, 90px) 0',
+          borderBottom: '2px solid #222222',
         }}
       >
         <div className="container">
-          <span
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: 'var(--color-plate-gold)',
-              display: 'block',
-              marginBottom: '8px',
-            }}
-          >
-            THE ATHLETIC CATALOG
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            <span style={{ width: '8px', height: '8px', backgroundColor: '#2457FF' }} />
+            <span
+              className="font-mono"
+              style={{
+                fontWeight: 800,
+                fontSize: '0.75rem',
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: '#888888',
+              }}
+            >
+              EQUIPMENT CATALOG // PUNE SPORTS HOUSE
+            </span>
+          </div>
+
           <h1
             className="font-display"
             style={{
-              fontSize: 'clamp(2.25rem, 5vw, 3.5rem)',
-              color: 'var(--color-pure-white)',
-              lineHeight: 1.05,
-              marginBottom: '12px',
+              fontSize: 'clamp(2.75rem, 6.5vw, 4.75rem)',
+              color: '#FFFFFF',
+              lineHeight: 0.95,
+              marginBottom: '14px',
+              letterSpacing: '-0.03em',
             }}
           >
             SPORTS GEAR & EQUIPMENT
           </h1>
-          <p style={{ color: '#C5BFB3', maxWidth: '600px', fontSize: '1rem' }}>
-            Tournament racquets, handcrafted cricket willow, pickleball carbon paddles, and institutional fitness gear in Pune.
+          <p style={{ color: '#AAAAAA', maxWidth: '640px', fontSize: '1.0625rem', lineHeight: 1.5, margin: 0 }}>
+            Tournament racquets, raw carbon pickleball paddles, handcrafted English willow cricket bats, and institutional equipment in Camp, Pune.
           </p>
         </div>
       </div>
 
-      <div className="container" style={{ paddingTop: 'var(--space-xl)' }}>
+      <div className="container" style={{ paddingTop: '32px' }}>
         {/* Filter Controls Bar */}
         <div
           style={{
@@ -96,41 +99,54 @@ export const ShopPage: React.FC = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: '12px',
-            paddingBottom: '16px',
-            marginBottom: '24px',
-            borderBottom: '1px solid var(--color-ivory-border)',
+            gap: '16px',
+            paddingBottom: '20px',
+            marginBottom: '32px',
+            borderBottom: '2px solid #111111',
           }}
         >
           {/* Mobile Filter Drawer Trigger */}
           <button
             type="button"
-            className="btn btn-outline-dark btn-sm mobile-only-block"
+            className="mobile-only"
             onClick={() => setIsMobileFilterOpen(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 16px',
+              backgroundColor: '#111111',
+              color: '#FFFFFF',
+              fontSize: '0.8125rem',
+              fontWeight: 800,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              border: 'none',
+            }}
           >
-            <SlidersHorizontal size={14} />
+            <SlidersHorizontal size={15} />
             <span>FILTER & SORT</span>
           </button>
 
           {/* Desktop Categories Pills */}
-          <div className="desktop-only" style={{ flexWrap: 'wrap', gap: '6px' }}>
+          <div className="desktop-only" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             <button
               type="button"
               onClick={() => handleCategoryChange('all')}
               style={{
-                padding: '6px 12px',
+                padding: '8px 16px',
                 fontSize: '0.75rem',
-                fontFamily: 'var(--font-heading)',
-                fontWeight: 700,
-                borderRadius: '2px',
-                backgroundColor: selectedCategory === 'all' ? 'var(--color-ink)' : 'var(--color-pure-white)',
-                color: selectedCategory === 'all' ? 'var(--color-pure-white)' : 'var(--color-ink)',
-                border: '1px solid var(--color-ivory-border)',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                backgroundColor: selectedCategory === 'all' ? '#111111' : '#FFFFFF',
+                color: selectedCategory === 'all' ? '#FFFFFF' : '#111111',
+                border: selectedCategory === 'all' ? '2px solid #111111' : '1px solid #D8D4C8',
                 cursor: 'pointer',
+                transition: 'all 0.18s ease',
               }}
             >
-              ALL ({PRODUCTS.length})
+              ALL GEAR ({PRODUCTS.length})
             </button>
             {CATEGORIES.map((cat) => (
               <button
@@ -138,48 +154,50 @@ export const ShopPage: React.FC = () => {
                 type="button"
                 onClick={() => handleCategoryChange(cat.id)}
                 style={{
-                  padding: '6px 12px',
+                  padding: '8px 16px',
                   fontSize: '0.75rem',
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 700,
-                  borderRadius: '2px',
-                  backgroundColor: selectedCategory === cat.id ? 'var(--color-plate-gold)' : 'var(--color-pure-white)',
-                  color: 'var(--color-ink)',
-                  border: '1px solid var(--color-ivory-border)',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  backgroundColor: selectedCategory === cat.id ? '#111111' : '#FFFFFF',
+                  color: selectedCategory === cat.id ? '#FFFFFF' : '#111111',
+                  border: selectedCategory === cat.id ? '2px solid #111111' : '1px solid #D8D4C8',
                   cursor: 'pointer',
+                  transition: 'all 0.18s ease',
                 }}
               >
-                {cat.name.toUpperCase()}
+                {cat.name}
               </button>
             ))}
           </div>
 
           {/* Sort Dropdown & Product Count */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '0.8125rem', color: '#666666' }}>
-              Showing {filteredProducts.length} items
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span className="font-mono" style={{ fontSize: '0.75rem', color: '#666666' }}>
+              SHOWING {filteredProducts.length} ITEMS
             </span>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <ArrowUpDown size={14} color="#C9A227" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ArrowUpDown size={14} color="#111111" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
+                className="font-mono"
                 style={{
-                  padding: '6px 10px',
-                  fontSize: '0.8125rem',
-                  backgroundColor: 'var(--color-pure-white)',
-                  border: '1px solid var(--color-ivory-border)',
-                  borderRadius: '2px',
-                  color: 'var(--color-ink)',
+                  padding: '8px 12px',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #D8D4C8',
+                  color: '#111111',
                   cursor: 'pointer',
                   outline: 'none',
                 }}
               >
-                <option value="featured">Sort: Featured</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
+                <option value="featured">SORT: FEATURED</option>
+                <option value="price-asc">PRICE: LOW TO HIGH</option>
+                <option value="price-desc">PRICE: HIGH TO LOW</option>
+                <option value="rating">HIGHEST RATED</option>
               </select>
             </div>
           </div>
@@ -190,8 +208,8 @@ export const ShopPage: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-              gap: 'var(--space-md)',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))',
+              gap: '24px',
             }}
           >
             {filteredProducts.map((prod) => (
@@ -199,67 +217,79 @@ export const ShopPage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '64px 16px', backgroundColor: '#FFFFFF', borderRadius: '2px' }}>
-            <p style={{ color: '#666666', marginBottom: '16px' }}>
-              No products found for the selected filter.
+          <div style={{ textAlign: 'center', padding: '80px 20px', backgroundColor: '#FFFFFF', border: '1px solid #E5E0D5' }}>
+            <p style={{ color: '#666666', fontSize: '1rem', marginBottom: '20px' }}>
+              No sports equipment found matching the selected filter criteria.
             </p>
             <button
               type="button"
-              className="btn btn-primary btn-sm"
               onClick={() => {
                 setSelectedCategory('all');
                 setInStockOnly(false);
               }}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: '#111111',
+                color: '#FFFFFF',
+                fontSize: '0.8125rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                border: 'none',
+                cursor: 'pointer',
+              }}
             >
-              RESET FILTERS
+              RESET ALL FILTERS
             </button>
           </div>
         )}
       </div>
 
-      {/* Mobile Filter Bottom Sheet */}
+      {/* Mobile Filter Sheet */}
       {isMobileFilterOpen && (
         <div
-          className="search-modal-backdrop open"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            backgroundColor: 'rgba(0,0,0,0.7)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'flex-end',
+          }}
           onClick={() => setIsMobileFilterOpen(false)}
           role="dialog"
           aria-modal="true"
         >
           <div
             style={{
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
+              width: '100%',
               backgroundColor: '#FFFFFF',
-              borderTopLeftRadius: '12px',
-              borderTopRightRadius: '12px',
+              borderTop: '2px solid #111111',
               padding: '24px',
               maxHeight: '80vh',
               overflowY: 'auto',
-              boxShadow: '0 -8px 32px rgba(0,0,0,0.3)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '1.125rem', fontFamily: 'var(--font-heading)' }}>
+              <h3 className="font-display" style={{ fontSize: '1.25rem', margin: 0 }}>
                 FILTER & SORT
               </h3>
               <button
                 type="button"
                 onClick={() => setIsMobileFilterOpen(false)}
-                style={{ padding: '4px' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
                 aria-label="Close filters"
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Sport Categories in mobile sheet */}
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#C9A227', textTransform: 'uppercase', marginBottom: '10px' }}>
-                Select Sport
-              </label>
+              <span className="font-mono" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#2457FF', textTransform: 'uppercase', marginBottom: '12px' }}>
+                SELECT SPORT DISCIPLINE:
+              </span>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 <button
                   type="button"
@@ -269,15 +299,14 @@ export const ShopPage: React.FC = () => {
                   }}
                   style={{
                     padding: '8px 14px',
-                    borderRadius: '2px',
-                    fontSize: '0.8125rem',
-                    fontWeight: 700,
-                    backgroundColor: selectedCategory === 'all' ? '#111111' : '#F6F3EA',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    backgroundColor: selectedCategory === 'all' ? '#111111' : '#F7F5EE',
                     color: selectedCategory === 'all' ? '#FFFFFF' : '#111111',
-                    border: '1px solid #E2DCCF',
+                    border: '1px solid #D8D4C8',
                   }}
                 >
-                  ALL SPORTS
+                  ALL GEAR
                 </button>
                 {CATEGORIES.map((c) => (
                   <button
@@ -289,12 +318,11 @@ export const ShopPage: React.FC = () => {
                     }}
                     style={{
                       padding: '8px 14px',
-                      borderRadius: '2px',
-                      fontSize: '0.8125rem',
-                      fontWeight: 700,
-                      backgroundColor: selectedCategory === c.id ? '#C9A227' : '#F6F3EA',
-                      color: '#111111',
-                      border: '1px solid #E2DCCF',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      backgroundColor: selectedCategory === c.id ? '#2457FF' : '#F7F5EE',
+                      color: selectedCategory === c.id ? '#FFFFFF' : '#111111',
+                      border: '1px solid #D8D4C8',
                     }}
                   >
                     {c.name}
@@ -305,11 +333,20 @@ export const ShopPage: React.FC = () => {
 
             <button
               type="button"
-              className="btn btn-primary"
-              style={{ width: '100%' }}
               onClick={() => setIsMobileFilterOpen(false)}
+              style={{
+                width: '100%',
+                padding: '14px',
+                backgroundColor: '#111111',
+                color: '#FFFFFF',
+                fontSize: '0.8125rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                border: 'none',
+              }}
             >
-              APPLY & VIEW ({filteredProducts.length} PRODUCTS)
+              VIEW ({filteredProducts.length} PRODUCTS)
             </button>
           </div>
         </div>

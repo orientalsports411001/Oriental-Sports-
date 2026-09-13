@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, MessageSquare, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, Navigation, Phone, Mail, MapPin } from 'lucide-react';
 import { Logo } from '../brand/Logo';
 import { STORE_INFO } from '../../data/storeInfo';
 
@@ -8,260 +8,248 @@ export const Footer: React.FC = () => {
   return (
     <footer
       style={{
-        backgroundColor: 'var(--color-dark-navy)',
-        color: 'var(--color-pure-white)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        backgroundColor: '#0A0A0A',
+        color: '#FFFFFF',
+        borderTop: '2px solid #222222',
+        paddingTop: 'clamp(64px, 8vw, 100px)',
+        paddingBottom: 'clamp(36px, 5vw, 48px)',
         position: 'relative',
         overflow: 'hidden',
       }}
-      aria-label="Footer"
+      aria-label="Oriental Sports Footer"
     >
-      <div className="container" style={{ paddingTop: 'var(--space-4xl)', paddingBottom: 'var(--space-2xl)' }}>
-        {/* Main 4-Column Footer Grid */}
+      <div className="container">
+        {/* Large Brutalist Interactive Header Banner */}
+        <div
+          style={{
+            borderBottom: '2px solid #222222',
+            paddingBottom: 'clamp(36px, 5vw, 64px)',
+            marginBottom: 'clamp(36px, 5vw, 64px)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '24px',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
+            <h2
+              className="font-display"
+              style={{
+                fontSize: 'clamp(3rem, 11vw, 9.5rem)',
+                lineHeight: 0.85,
+                fontWeight: 900,
+                color: '#FFFFFF',
+                margin: 0,
+                letterSpacing: '-0.04em',
+                textTransform: 'uppercase',
+              }}
+            >
+              ORIENTAL
+              <br />
+              SPORTS.
+            </h2>
+
+            <div style={{ maxWidth: '360px' }}>
+              <span
+                className="font-mono"
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.14em',
+                  color: '#C9A227',
+                  textTransform: 'uppercase',
+                  display: 'block',
+                  marginBottom: '8px',
+                }}
+              >
+                PUNE, MAHARASHTRA // ESTABLISHED HEADQUARTERS
+              </span>
+              <p style={{ fontSize: '0.9375rem', color: '#AAAAAA', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+                Pune’s dedicated sports house. Supplying tournament-grade gear to athletes and engineering championship court infrastructure across Maharashtra.
+              </p>
+              <a
+                href={STORE_INFO.mapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                data-cursor="view"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 20px',
+                  backgroundColor: '#161616',
+                  border: '1px solid #333333',
+                  color: '#FFFFFF',
+                  fontSize: '0.8125rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#C9A227';
+                  e.currentTarget.style.backgroundColor = '#C9A227';
+                  e.currentTarget.style.color = '#0A0A0A';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#333333';
+                  e.currentTarget.style.backgroundColor = '#161616';
+                  e.currentTarget.style.color = '#FFFFFF';
+                }}
+              >
+                <Navigation size={15} />
+                <span>GET DIRECTIONS TO CAMP STORE →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Directory Grid */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: 'var(--space-3xl)',
-            marginBottom: 'var(--space-3xl)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: 'clamp(32px, 4vw, 48px)',
+            marginBottom: '64px',
           }}
         >
-          {/* Column 1: Brand & Positioning */}
-          <div style={{ maxWidth: '340px' }}>
-            <div style={{ marginBottom: '20px' }}>
-              <Logo variant="dark" size="md" />
-            </div>
-
-            <p
+          {/* Column 1: Store & Workshop Details */}
+          <div>
+            <span
+              className="font-mono"
               style={{
-                fontSize: '0.9375rem',
-                color: '#A0ADC9',
-                lineHeight: 1.6,
-                marginBottom: '20px',
-              }}
-            >
-              Pune’s sports house since 1960. Authentic tournament-grade sports gear and turnkey athletic court construction.
-            </p>
-
-            <div
-              style={{
-                display: 'inline-block',
-                fontFamily: 'var(--font-heading)',
+                fontSize: '0.75rem',
                 fontWeight: 800,
-                fontSize: '0.8125rem',
-                letterSpacing: '0.12em',
-                color: 'var(--color-ink)',
-                background: 'var(--color-lime)',
-                padding: '6px 14px',
-                borderRadius: 'var(--radius-pill)',
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase',
+                color: '#C9A227',
+                display: 'block',
+                marginBottom: '16px',
               }}
             >
-              GEAR. COURTS. PUNE.
+              CAMP WORKSHOP
+            </span>
+            <div style={{ fontSize: '0.875rem', color: '#CCCCCC', lineHeight: 1.6 }}>
+              <div>Shop 247, MG Road</div>
+              <div>New Modikhana, Camp</div>
+              <div>Pune 411001, Maharashtra</div>
+              <div style={{ marginTop: '12px' }}>
+                <a
+                  href={`tel:${STORE_INFO.phone}`}
+                  className="font-mono"
+                  style={{ color: '#FFFFFF', fontWeight: 700, textDecoration: 'none', display: 'block' }}
+                >
+                  {STORE_INFO.displayPhone}
+                </a>
+                <a
+                  href={`mailto:${STORE_INFO.email}`}
+                  style={{ color: '#888888', textDecoration: 'none', display: 'block', marginTop: '4px' }}
+                >
+                  {STORE_INFO.email}
+                </a>
+              </div>
             </div>
           </div>
 
-          {/* Column 2: Shop Links */}
+          {/* Column 2: Equipment Disciplines */}
           <div>
-            <h4
+            <span
+              className="font-mono"
               style={{
-                fontFamily: 'var(--font-heading)',
+                fontSize: '0.75rem',
                 fontWeight: 800,
-                fontSize: '0.9375rem',
-                letterSpacing: '0.08em',
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: 'var(--color-pure-white)',
-                marginBottom: '18px',
+                color: '#FFFFFF',
+                display: 'block',
+                marginBottom: '16px',
               }}
             >
-              SHOP GEAR
-            </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9375rem' }}>
-              <li>
-                <Link to="/shop?category=pickleball" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Pickleball Paddles & Balls
-                </Link>
-              </li>
-              <li>
-                <Link to="/shop?category=cricket" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  English & Kashmir Willow Bats
-                </Link>
-              </li>
-              <li>
-                <Link to="/shop?category=tennis" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Tour Tennis Racquets & Balls
-                </Link>
-              </li>
-              <li>
-                <Link to="/shop?category=badminton" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Badminton Racquets & Shuttles
-                </Link>
-              </li>
-              <li>
-                <Link to="/shop?category=fitness" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Fitness & Strength Equipment
-                </Link>
-              </li>
-              <li>
-                <Link to="/shop?category=recreation" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Carrom & Recreation
-                </Link>
-              </li>
+              EQUIPMENT
+            </span>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.8125rem' }}>
+              <li><Link to="/shop/pickleball" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Pickleball</Link></li>
+              <li><Link to="/shop/cricket" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Cricket</Link></li>
+              <li><Link to="/shop/badminton" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Badminton</Link></li>
+              <li><Link to="/shop/volleyball" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Volleyball</Link></li>
+              <li><Link to="/shop/tennis" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Tennis</Link></li>
+              <li><Link to="/shop/squash" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Squash</Link></li>
+              <li><Link to="/shop/fitness" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Fitness & Conditioning</Link></li>
             </ul>
           </div>
 
           {/* Column 3: Courts & Projects */}
           <div>
-            <h4
+            <span
+              className="font-mono"
               style={{
-                fontFamily: 'var(--font-heading)',
+                fontSize: '0.75rem',
                 fontWeight: 800,
-                fontSize: '0.9375rem',
-                letterSpacing: '0.08em',
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: 'var(--color-pure-white)',
-                marginBottom: '18px',
+                color: '#FFFFFF',
+                display: 'block',
+                marginBottom: '16px',
               }}
             >
-              COURTS & BUILD
-            </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9375rem' }}>
-              <li>
-                <Link to="/courts" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Court Construction Services
-                </Link>
-              </li>
-              <li>
-                <Link to="/courts/pickleball-court-construction" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Pickleball Court Setup
-                </Link>
-              </li>
-              <li>
-                <Link to="/courts/tennis-court-construction" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Tennis Court Resurfacing
-                </Link>
-              </li>
-              <li>
-                <Link to="/courts/football-cricket-multisport-turf" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Multi-Sport Synthetic Turf
-                </Link>
-              </li>
-              <li>
-                <Link to="/courts/projects" style={{ color: '#BAC7E5', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Pune Project Portfolio
-                </Link>
-              </li>
+              INFRASTRUCTURE
+            </span>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.8125rem' }}>
+              <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Court Construction</Link></li>
+              <li><Link to="/courts/projects" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Completed Pune Projects</Link></li>
+              <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Acrylic Cushion Surfacing</Link></li>
+              <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Multi-Sport Turf & Arenas</Link></li>
+              <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Sports LED Floodlighting</Link></li>
             </ul>
           </div>
 
-          {/* Column 4: Camp Store Contact */}
+          {/* Column 4: House & Client Care */}
           <div>
-            <h4
+            <span
+              className="font-mono"
               style={{
-                fontFamily: 'var(--font-heading)',
+                fontSize: '0.75rem',
                 fontWeight: 800,
-                fontSize: '0.9375rem',
-                letterSpacing: '0.08em',
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: 'var(--color-pure-white)',
-                marginBottom: '18px',
+                color: '#FFFFFF',
+                display: 'block',
+                marginBottom: '16px',
               }}
             >
-              THE CAMP STORE
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.9375rem' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', color: '#BAC7E5' }}>
-                <MapPin size={18} color="var(--color-lime)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>Shop 247, MG Road, New Modikhana, Camp, Pune 411001</span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Phone size={18} color="var(--color-lime)" />
-                <a href={`tel:${STORE_INFO.phone}`} style={{ color: '#FFFFFF', fontWeight: 600, textDecoration: 'none' }}>
-                  {STORE_INFO.displayPhone}
-                </a>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Mail size={18} color="var(--color-lime)" />
-                <a href={`mailto:${STORE_INFO.email}`} style={{ color: '#BAC7E5', textDecoration: 'none' }}>
-                  {STORE_INFO.email}
-                </a>
-              </div>
-
-              <div style={{ paddingTop: '8px' }}>
-                <a
-                  href={STORE_INFO.whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: 'var(--color-ink)',
-                    background: 'var(--color-lime)',
-                    padding: '8px 16px',
-                    borderRadius: 'var(--radius-pill)',
-                    fontWeight: 700,
-                    fontSize: '0.8125rem',
-                    textTransform: 'uppercase',
-                    textDecoration: 'none',
-                    letterSpacing: '0.05em',
-                  }}
-                >
-                  <MessageSquare size={15} />
-                  <span>WhatsApp Inquiry</span>
-                  <ArrowUpRight size={15} />
-                </a>
-              </div>
-            </div>
+              THE HOUSE
+            </span>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.8125rem' }}>
+              <li><Link to="/about" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Our Heritage</Link></li>
+              <li><Link to="/visit" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Visit Camp Store</Link></li>
+              <li><Link to="/contact" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Contact Team</Link></li>
+              <li><Link to="/account" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Player Account</Link></li>
+              <li><Link to="/wishlist" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Saved Gear</Link></li>
+            </ul>
           </div>
         </div>
 
-        {/* Large Subtle ORIENTAL SPORTS Typographic Element */}
+        {/* Sub-Footer Row */}
         <div
           style={{
-            fontFamily: 'var(--font-heading)',
-            fontWeight: 900,
-            fontSize: 'clamp(2.5rem, 11vw, 9rem)',
-            lineHeight: 0.85,
-            color: 'rgba(255, 255, 255, 0.04)',
-            userSelect: 'none',
-            pointerEvents: 'none',
-            textAlign: 'center',
-            letterSpacing: '-0.03em',
-            margin: 'var(--space-2xl) 0',
-          }}
-          aria-hidden="true"
-        >
-          ORIENTAL SPORTS
-        </div>
-
-        {/* Bottom Legal, Policies & Copyright */}
-        <div
-          style={{
+            borderTop: '1px solid #1F1F1F',
+            paddingTop: '24px',
             display: 'flex',
-            flexWrap: 'wrap',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: 'wrap',
             gap: '16px',
-            paddingTop: 'var(--space-xl)',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-            fontSize: '0.8125rem',
-            color: '#8091B0',
+            fontSize: '0.75rem',
+            color: '#666666',
           }}
         >
-          <div>
-            © {new Date().getFullYear()} Oriental Sports, Camp, Pune. All rights reserved.
+          <div className="font-mono">
+            © {new Date().getFullYear()} ORIENTAL SPORTS, PUNE. ALL RIGHTS RESERVED.
           </div>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-            <Link to="/about" style={{ color: '#8091B0', textDecoration: 'none' }}>About the House</Link>
-            <Link to="/visit" style={{ color: '#8091B0', textDecoration: 'none' }}>Camp Store</Link>
-            <Link to="/shipping" style={{ color: '#8091B0', textDecoration: 'none' }}>Shipping Policy</Link>
-            <Link to="/returns" style={{ color: '#8091B0', textDecoration: 'none' }}>Returns Policy</Link>
-            <Link to="/privacy" style={{ color: '#8091B0', textDecoration: 'none' }}>Privacy</Link>
-            <Link to="/terms" style={{ color: '#8091B0', textDecoration: 'none' }}>Terms</Link>
+          <div className="font-mono" style={{ display: 'flex', gap: '20px' }}>
+            <span>GEAR. COURTS. PUNE.</span>
+            <span>18.5204° N, 73.8567° E</span>
           </div>
         </div>
       </div>

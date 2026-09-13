@@ -1,177 +1,191 @@
-# Oriental Sports — Master Design System (Colorful Sports Editorial + Glass Interface)
+# Oriental Sports — Master Design System (Clean Sports Lifestyle & Editorial Commerce)
 
-> **Identity**: A vibrant, modern sports culture brand from MG Road, Camp, Pune.  
-> **Mood**: Fun. Sporty. Colorful. Youthful. Confident. Indian. Editorial. Energetic.  
-> **Dual Essence**: 
-> - **Side A — SHOP**: High-performance gear, sports goods, recreation equipment, apparel.
-> - **Side B — BUILD**: Professional sports courts, sub-base engineering, acrylic surfaces, floodlights.  
-> **Core Aesthetic**: Colorful Sports Editorial + Glass Interface + Playful Modern Typography.
-
----
-
-## 1. Palette Architecture (Color by Section)
-
-The official logo remains untouched in its original mark colors, but the website UI is **NOT** black and gold. Instead, each section has a clear, vibrant color identity with disciplined glass layers.
-
-| Token | Hex / Value | Section / Role |
-|---|---|---|
-| `--color-cream-bg` | `#FFF7E8` | **Hero Canvas & Base** (Warm, energetic, welcoming) |
-| `--color-cream-alt` | `#FFFDF7` | Elevated card surfaces on cream |
-| `--color-electric-blue` | `#2457FF` | **Shop by Sport & Mega Menu** (Dynamic athletic energy) |
-| `--color-electric-blue-dark`| `#173ECB` | Blue container hover and text on light blue |
-| `--color-tangerine` | `#FF6B35` | **Build a Court & Marquee Ribbon** (Warm clay / court surface) |
-| `--color-tangerine-dark` | `#E04E18` | Tangerine active states |
-| `--color-lime` | `#C7F000` | **Visit Store & Micro-accents** (Electric neon pop, badges, indicators) |
-| `--color-magenta` | `#F04BFF` | Expressive secondary accent, sport tags |
-| `--color-soft-lavender` | `#EDE7FF` | Cool neutral tint, soft cards, contrast pills |
-| `--color-dark-navy` | `#0E1326` | **Footer & Glass Dark Layers** (Deep midnight grounding) |
-| `--color-text-dark` | `#171717` | Primary high-contrast body typography |
-| `--color-text-muted` | `#636059` | Secondary copy, specs, timestamps |
-| `--color-pure-white` | `#FFFFFF` | **Featured Products** & Clean ecommerce cards |
-| `--color-border-subtle` | `rgba(23, 23, 23, 0.10)` | Crisp structure dividers |
-
-### Visual Section Rhythm:
-1. **Hero**: Warm Cream (`#FFF7E8`) + Large Realistic Commercial Photography + Autoplay Carousel (5.5s)
-2. **Moving Marquee**: Tangerine (`#FF6B35`) continuous athletic ticker ribbon
-3. **Shop by Sport**: Electric Blue (`#2457FF`) interactive sport selector with photo crossfade
-4. **Featured Gear**: Crisp White (`#FFFFFF`) with tournament-grade quick-add cards
-5. **Build a Court**: Tangerine (`#FF6B35`) architectural court showcase with floating glass spec sheet
-6. **Visit Store**: Warm Cream + Lime (`#C7F000`) flagship store card with real interactive Google Maps
-7. **Footer**: Deep Navy (`#0E1326`) with crisp white links, lime status dots, and watermark
+> **Brand Identity**: Oriental Sports, Shop 247, MG Road, New Modikhana, Camp, Pune 411001.  
+> **Positioning**: Pune’s sports house. Gear for the game. Courts for the city.  
+> **Campaign Line**: `GEAR. COURTS. PUNE.`  
+> **Supporting Line**: "Everything you need to play, train and build."  
+> **Aesthetic Philosophy**: Clean Sports Lifestyle + Editorial Commerce + Premium Retail + Modern Product UX.  
+> **Reference Benchmarks**: Playo (clarity, restraint, photography-led), Mobbin (real e-commerce UX), Cosmos (editorial curation), Luma (simplicity & visual confidence), 21st.dev (purposeful component mechanics).  
+> **Ratio**: 85% Neutral Interface, 10% Authentic Sports Photography, 5% Restrained Accent.
 
 ---
 
-## 2. Glass Interface Tokens (10–30% Surface Budget)
+## 1. Official Locked Brand Identity
 
-Glassmorphism is used intentionally for layering and depth — never as a gimmick covering plain solid cards. Glass layers must sit over photography, court imagery, or vibrant gradients.
-
-```css
-/* Glass Surface Tokens */
---glass-light: rgba(255, 255, 255, 0.72);
---glass-light-hover: rgba(255, 255, 255, 0.86);
---glass-dark: rgba(14, 19, 38, 0.72);
---glass-dark-hover: rgba(14, 19, 38, 0.86);
-
---glass-blue: rgba(36, 87, 255, 0.68);
---glass-orange: rgba(255, 107, 53, 0.68);
---glass-lime: rgba(199, 240, 0, 0.72);
-
---glass-border: rgba(255, 255, 255, 0.28);
---glass-border-dark: rgba(255, 255, 255, 0.12);
---glass-border-subtle: rgba(23, 23, 23, 0.08);
-
---glass-blur-sm: blur(8px);
---glass-blur-md: blur(16px);
---glass-blur-lg: blur(24px);
-
---glass-shadow: 0 16px 36px -12px rgba(14, 19, 38, 0.18);
---glass-shadow-lg: 0 24px 48px -16px rgba(14, 19, 38, 0.28);
-```
-
-### Approved Glass Placements:
-- Floating Sticky Navigation Bar (`GlassNav`)
-- Mega Menu Dropdown (`MegaMenu`)
-- Hero Carousel Controls & Slide Indicator Pills
-- Court Spec Overlay on Court Photography
-- Quick-Add Overlay on Product Cards
-- Cart Drawer Surface (`CartDrawer`)
-- Search Modal Overlay (`SearchOverlay`)
-- Sticky Buy Bar on Mobile Product Detail Pages
+The official Oriental Sports mark is **LOCKED**:
+- Black concentric O / interlocking monogram
+- Brushed gold italic `S`
+- Black `ORIENTAL` logotype
+- Brushed gold italic `SPORTS` logotype
+- Thin gold underline
+- Heritage line: `PUNE • EST. CAMP`
+- **Rule**: Never recolor, distort, or introduce unauthorized secondary colors (cyan/neon/pink/purple) into the official mark.
 
 ---
 
-## 3. Typography System
+## 2. Color System & Ratio Architecture
 
-| Level | Family | Weight | Scale / Line Height | Tracking | Purpose |
-|---|---|---|---|---|---|
-| **Display 1** | `Space Grotesk` | 800 | `clamp(3rem, 7vw, 5.5rem)` / `1.0` | `-0.035em` | Hero headlines (`GEAR. COURTS. PUNE.`) |
-| **Display 2** | `Space Grotesk` | 700 | `clamp(2rem, 5vw, 3.75rem)` / `1.05` | `-0.025em` | Section headers (`SHOP BY SPORT`, `COME PLAY IRL.`) |
-| **Heading 3** | `Space Grotesk` | 700 | `clamp(1.5rem, 3vw, 2.25rem)` / `1.15` | `-0.015em` | Card titles, project titles, modal headers |
-| **Body Large** | `Plus Jakarta Sans` | 500 | `1.125rem` / `1.55` | `normal` | Hero subtitles, editorial introductions |
-| **Body Regular** | `Plus Jakarta Sans` | 400 | `1rem` / `1.6` | `normal` | Descriptions, specifications, reviews |
-| **Body Small** | `Plus Jakarta Sans` | 400 / 500 | `0.875rem` / `1.5` | `normal` | UI labels, address details, policy text |
-| **Eyebrow / Badge** | `Space Grotesk` | 700 | `0.75rem` / `1.2` | `+0.08em` | Uppercase category tags, badges, pill buttons |
-| **Monospace / Num** | `Space Grotesk` | 800 | Tabular nums | `-0.02em` | Product pricing (`₹18,499`), phone numbers, orders |
+The website UI is **NOT a black-and-gold website**, and is **NOT a neon/rainbow website**.  
+It is built upon a warm, light, neutral canvas where photography provides energy and visual vibrancy.
+
+### Palette Tokens:
+
+| Token Name | Value | Role / Usage | Ratio |
+|---|---|---|---|
+| `--color-canvas-base` | `#F6F3EA` | Warm Ivory page background (welcoming, tactile, athletic court heritage) | 45% |
+| `--color-canvas-surface` | `#FAF8F5` | Off-white subtle card and section containers | 25% |
+| `--color-canvas-pure` | `#FFFFFF` | Crisp white product cards, modals, and input fields | 15% |
+| `--color-ink` | `#111111` | Primary typography, authoritative headings, high-contrast CTAs | Text & Key CTAs |
+| `--color-ink-muted` | `#616161` | Secondary body text, specifications, metadata, breadcrumbs | Supporting |
+| `--color-ink-subtle` | `#8C8C8C` | Captions, timestamps, disabled states, borders | Accents |
+| `--color-border-subtle` | `rgba(17, 17, 17, 0.08)` | Refined 1px card and section borders | Structural |
+| `--color-border-medium` | `rgba(17, 17, 17, 0.16)` | Active input borders, hovered elements | Focus/Hover |
+| `--color-plate-gold` | `#C9A227` | Official brand gold — used with strict restraint for subtle badges, key highlights | 3% |
+| `--color-highlight-gold` | `#E0C56A` | Light gold highlight for badges, active states | 2% |
+| `--color-court-clay` | `#C85A32` | Warm terracotta court clay — used sparingly for court construction tags | <1% |
+| `--color-success` | `#1B7A43` | Inventory in-stock indicator, successful cart add | Feedback |
+| `--color-error` | `#C53030` | Form validation errors, out-of-stock badge | Feedback |
+
+### Color Rules:
+- ❌ **NO rainbow UI**: Avoid lime, hot pink, neon blue, and orange scattered across sections.
+- ❌ **NO all-black sections**: The interface breathes with generous whitespace and warm light surfaces.
+- ❌ **NO luxury-watch gold borders**: Gold is a restrained heritage accent, not an ornament on every border.
+- 📷 **Photography is the hero**: Action shots, court textures, and equipment materials provide 90% of the visual color.
 
 ---
 
-## 4. Spacing, Radii & Shadows
+## 3. Typography Hierarchy
 
-### Spacing Scale:
-- `4px` (`--space-1`), `8px` (`--space-2`), `12px` (`--space-3`), `16px` (`--space-4`), `24px` (`--space-6`), `32px` (`--space-8`), `48px` (`--space-12`), `64px` (`--space-16`), `96px` (`--space-24`).
-- Section padding: `clamp(4rem, 8vw, 7rem) 0`.
-- Container max width: `1320px` with `clamp(1rem, 4vw, 2.5rem)` lateral gutters.
+A dual-font typographic system providing expressive athletic editorial presence with high e-commerce readability.
 
-### Corner Radii:
-- Micro (`--radius-sm`): `6px` (badges, small tags).
-- Medium (`--radius-md`): `12px` (input fields, buttons, dropdowns).
-- Card (`--radius-lg`): `20px` (product cards, court cards, visit cards).
-- Container (`--radius-xl`): `28px` (sections, large dialogs, drawers).
-- Full Pill (`--radius-full`): `9999px` (pills, filter tags, CTA buttons).
+- **Display & Headings**: `Space Grotesk`, sans-serif (clean, geometric, architectural, athletic authority)
+- **Body & Commerce UI**: `Plus Jakarta Sans`, sans-serif (humanist, highly legible at small sizes, excellent tabular numerals)
+
+| Style | Family | Weight | Size (Desktop / Mobile) | Line Height | Tracking | Application |
+|---|---|---|---|---|---|---|
+| **Display 1** | Space Grotesk | 700 | `clamp(2.75rem, 6vw, 4.75rem)` | 1.02 | `-0.03em` | Hero headlines (`GEAR. COURTS. PUNE.`) |
+| **Display 2** | Space Grotesk | 700 | `clamp(2rem, 4.5vw, 3.25rem)` | 1.08 | `-0.025em` | Section titles (`SHOP BY SPORT`, `WE BUILD COURTS.`) |
+| **Heading 3** | Space Grotesk | 600 | `clamp(1.35rem, 2.5vw, 1.85rem)` | 1.2 | `-0.015em` | Card headlines, project titles, modal headers |
+| **Heading 4** | Space Grotesk | 600 | `1.125rem` / `18px` | 1.3 | `-0.01em` | Product card titles, drawer subheadings |
+| **Eyebrow** | Space Grotesk | 700 | `0.75rem` / `12px` | 1.2 | `+0.08em` | Uppercase category identifiers, kicker labels |
+| **Body Large** | Plus Jakarta Sans | 400/500 | `1.125rem` / `18px` | 1.55 | `normal` | Hero subtitles, editorial narratives |
+| **Body Regular** | Plus Jakarta Sans | 400 | `1.0rem` / `16px` | 1.5 | `normal` | Product descriptions, court specs, reviews |
+| **Body Small** | Plus Jakarta Sans | 400/500 | `0.875rem` / `14px` | 1.45 | `normal` | Meta specs, filter labels, form helpers |
+| **Micro / UI** | Plus Jakarta Sans | 600 | `0.75rem` / `12px` | 1.3 | `+0.02em` | Breadcrumbs, inventory pills, tags |
+| **Numeric / Price** | Space Grotesk | 700 | `1.125rem` / `18px` | 1.0 | `-0.01em` | Tabular numbers for prices (`₹18,499`) |
+
+---
+
+## 4. Spacing, Grid & Layout Metrics
+
+Strict 8pt spatial grid for rhythmic consistency across all screen sizes.
+
+- **Base Unit**: `8px`
+- **Scale**: `4px` (xxs), `8px` (xs), `12px` (sm), `16px` (md), `24px` (lg), `32px` (xl), `48px` (2xl), `64px` (3xl), `96px` (4xl)
+- **Container Max Width**: `1320px` with fluid gutters:
+  - Mobile (`<640px`): `16px`
+  - Tablet (`640px–1024px`): `24px`
+  - Desktop (`>1024px`): `32px`
+- **Homepage Structure**: Strictly 5–6 concise sections:
+  1. Hero
+  2. Shop by Sport
+  3. Featured Gear
+  4. Build a Court
+  5. Visit Oriental
+  6. Footer
+
+---
+
+## 5. Border Radius & Shadows
+
+Restrained, modern curvature that feels tactile without becoming cartoonish.
+
+- **Radius Micro**: `4px` (tags, badge pills)
+- **Radius Input / Button**: `8px` (compact, confident buttons and input fields)
+- **Radius Card**: `12px` (product cards, project cards)
+- **Radius Container / Modal**: `16px` (drawers, dialogs, large containers)
+- **Radius Pill**: `9999px` (status badges, count pills)
 
 ### Shadows:
-- Clean Card: `0 4px 16px rgba(14, 19, 38, 0.06), 0 1px 3px rgba(14, 19, 38, 0.04)`
-- Elevated Hover: `0 16px 36px rgba(14, 19, 38, 0.12), 0 4px 8px rgba(14, 19, 38, 0.06)`
-- Electric Blue Glow: `0 12px 28px rgba(36, 87, 255, 0.28)`
-- Tangerine Glow: `0 12px 28px rgba(255, 107, 53, 0.28)`
+- **Card Rest**: `0 1px 3px rgba(17, 17, 17, 0.04), 0 4px 12px rgba(17, 17, 17, 0.03)`
+- **Card Hover**: `0 8px 24px rgba(17, 17, 17, 0.08), 0 2px 6px rgba(17, 17, 17, 0.04)`
+- **Drawer / Modal**: `0 16px 48px -8px rgba(17, 17, 17, 0.18)`
+- **No colorful glow shadows** (no neon blue or neon orange glows).
 
 ---
 
-## 5. Buttons & Interactive Controls
+## 6. Component Guidelines
 
-1. **Primary Pill (`.btn-primary`)**:
-   - Electric Blue background, crisp white text.
-   - Pill radius (`9999px`), bold `Space Grotesk`, uppercase tracking.
-   - Hover: Expands 2px, slides trailing arrow (`→`) right by 4px, electric glow shadow.
-2. **Secondary Court Pill (`.btn-court`)**:
-   - Tangerine Orange background, crisp white text.
-   - Active hover glow with directional arrow animation.
-3. **Electric Lime Badge (`.btn-lime`)**:
-   - Electric Lime background, ink black text. Used for high-priority actions ("ADD TO BAG", "GET DIRECTIONS").
-4. **Glass Pill (`.btn-glass`)**:
-   - Translucent backdrop blur with white border and subtle shadow.
-   - Inverted fill on hover.
-5. **Magnetic Button Effect**:
-   - Subtle spring physics cursor tracking on desktop hero and major CTAs.
+### Buttons (`.btn`):
+1. **Primary Button (`.btn-primary`)**:
+   - Background: `--color-ink` (`#111111`)
+   - Text: `#FFFFFF`
+   - Height: `44px` (desktop), `48px` (mobile touch target)
+   - Radius: `8px` or `9999px`
+   - Hover: Background `#262626`, subtle scale `1.01`
+2. **Secondary / Outline Button (`.btn-outline`)**:
+   - Background: `transparent`
+   - Border: `1.5px solid #111111`
+   - Text: `#111111`
+   - Hover: Background `#111111`, Text `#FFFFFF`
+3. **Ghost Button (`.btn-ghost`)**:
+   - Background: `transparent`
+   - Text: `#111111`
+   - Hover: Background `rgba(17, 17, 17, 0.05)`
+4. **Accent Gold CTA (`.btn-gold`)**:
+   - Background: `--color-plate-gold` (`#C9A227`)
+   - Text: `#FFFFFF` (or `#111111` with bold weight)
+   - Used sparingly for special action buttons.
 
----
+### Product Card (`ProductCard`):
+- Clean, commerce-first card:
+  - 1:1 crisp product imagery on neutral `#F7F5F0` backdrop
+  - Subtle wishlist toggle (top-right, restrained heart outline)
+  - Category identifier in uppercase micro typography
+  - Product title in confident Space Grotesk
+  - Short 1-line description
+  - Price in tabular bold figures (with sale price if discounted)
+  - Quick Add button sliding up on hover (or persistently tap-friendly on touch devices)
+  - Stock badge (e.g. "Low Stock" or "Ready in Camp Store")
+- **No glass background, no heavy borders, no rainbow badges.**
 
-## 6. Motion, Animation & 21st.dev Patterns
-
-- **Smooth Easing Curve**: `cubic-bezier(0.16, 1, 0.3, 1)` (snappy entry, fluid settlement).
-- **Hero Autoplay Carousel**: 5.5s autoplay interval with visual progress bar, pauses on hover, touch swipe gestures.
-- **Sport Selector**: Hover trigger swaps photo in `300ms ease-out` with subtle scale pulse (`scale(1.02)`).
-- **Product Card**: Hover triggers zoom on thumbnail (`scale(1.04)`), crossfades secondary angle, and raises Quick-Add button.
-- **Micro-Feedback**:
-  - Adding to cart: Button text transforms into `✓ ADDED TO BAG` with green flash for 1.8s.
-  - Wishlist heart: Scale bounce animation `1 -> 1.25 -> 1`.
-  - Phone OTP digits: Auto-focus progression, paste listener, 30s countdown.
-
----
-
-## 7. Responsive Rules
-
-- **Mobile First (`375px–430px`)**:
-  - Header docks to compact glass bar with search, cart, and hamburger.
-  - Bottom navigation bar provides thumb access to Home, Shop, Courts, Account, and Bag.
-  - Hero carousel uses `80svh` to avoid browser navigation bar clipping.
-  - Sport selector switches to horizontal swipeable cards.
-  - Sticky Buy Bar docks to bottom of screen on `/product/:slug`.
-- **Tablet (`768px–1024px`)**:
-  - 2-column product grids.
-  - Staggered court showcase.
-- **Desktop (`1200px+`)**:
-  - Floating pill navigation with Mega Menu.
-  - 4-column product grids.
-  - Side-by-side interactive sport selector with large photography frame.
+### Glassmorphism Budget (<10%):
+- Permitted ONLY for functional overlays:
+  - Sticky header blur when scrolled (`rgba(246, 243, 234, 0.92)` + `backdrop-filter: blur(12px)`)
+  - Cart drawer backdrop
+  - Search overlay backdrop
+  - Mobile menu bottom sheet
+- Strictly forbidden for cards, content sections, and body text containers.
 
 ---
 
-## 8. Anti-Patterns (Strictly Prohibited)
+## 7. Photography & Visual Curation
 
-- ❌ **NO all-black sections.**
-- ❌ **NO gold gradients or luxury-watch gold borders.**
-- ❌ **NO bloated 15-section scroll-traps.** (Keep homepage strictly to 5-6 punchy sections).
-- ❌ **NO placeholder or AI-generated maps.** Use real interactive Google Maps iframe with verified Camp Pune coordinates.
-- ❌ **NO fake reviews, fake badges, or unverified claims.**
-- ❌ **NO dead links.** Every route and internal link must resolve cleanly.
+- **Authentic Sports Imagery**: Real athletes in motion, real Deccan clay and tournament acrylic courts, real cricket willows and carbon pickleball paddles.
+- **Editorial Tone**: Inspired by Cosmos curation — high natural contrast, clean framing, dynamic physical motion, authentic sports equipment.
+- **Zero AI Artifacts**: Prohibit distorted hands, fake equipment logos, impossible court lines, or stock smiles.
+- **Verified Facilities**: Court project images must reflect actual sports court engineering (sub-base, acrylic coatings, tournament nets, floodlights).
+
+---
+
+## 8. Accessibility & Performance (WCAG 2.1 AA)
+
+- **Contrast Ratios**:
+  - Ink text (`#111111`) on Ivory canvas (`#F6F3EA`): **16.8:1** (Exceeds AAA).
+  - Ink text (`#111111`) on Pure White (`#FFFFFF`): **19.5:1** (Exceeds AAA).
+  - Gold button (`#C9A227`) on Ink text (`#111111`): **5.4:1** (Passes AA).
+- **Keyboard Navigation**: Clear, visible focus ring (`2px solid #C9A227`, `outline-offset: 2px`).
+- **Screen Reader Support**: Semantic HTML (`<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<footer>`), descriptive ARIA labels for icon-only buttons (`aria-label="Add to Wishlist"`, `aria-label="Open Cart"`).
+- **Motion Accessibility**: Full support for `@media (prefers-reduced-motion: reduce)`. Carousel autoplay stops, parallax disabled, transitions simplified to instant opacity cuts.
+
+---
+
+## 9. Responsive Breakpoints
+
+- Mobile Small: `375px` (iPhone SE)
+- Mobile Regular: `390px` (iPhone 14/15)
+- Mobile Large: `430px` (iPhone Pro Max)
+- Tablet: `768px` (iPad Mini / Portrait)
+- Laptop: `1024px` (iPad Pro / Small Laptop)
+- Desktop: `1280px` / `1440px` (MacBook / Standard Desktop)
+- Widescreen: `1920px` (Full HD Monitor)

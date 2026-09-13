@@ -63,17 +63,39 @@ export const CartPage: React.FC = () => {
 
   if (cart.length === 0 && !orderComplete) {
     return (
-      <div className="bg-ivory" style={{ minHeight: '80vh', padding: '80px 16px', textAlign: 'center' }}>
-        <div className="container" style={{ maxWidth: '480px', margin: '0 auto' }}>
-          <h1 className="font-display" style={{ fontSize: '2rem', marginBottom: '12px' }}>
+      <div className="bg-ivory" style={{ minHeight: '80vh', padding: 'clamp(64px, 10vw, 120px) 16px', display: 'flex', alignItems: 'center' }}>
+        <div className="container" style={{ maxWidth: '580px', margin: '0 auto', textAlign: 'center' }}>
+          <div
+            style={{
+              width: '64px',
+              height: '64px',
+              border: '2px solid var(--color-ink)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 24px auto',
+              backgroundColor: '#FFFFFF',
+              boxShadow: '4px 4px 0px #111111',
+            }}
+          >
+            <CreditCard size={28} color="#111111" />
+          </div>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-plate-gold)', display: 'block', marginBottom: '8px' }}>
+            PUNE CAMP SPORTS HOUSE
+          </span>
+          <h1 className="font-display" style={{ fontSize: 'clamp(2.25rem, 5vw, 3.25rem)', lineHeight: 1.0, marginBottom: '16px', color: 'var(--color-ink)' }}>
             YOUR SPORTS BAG IS EMPTY
           </h1>
-          <p style={{ color: '#666', marginBottom: '24px' }}>
-            Browse our match-tested racquets, willow bats, and court equipment.
+          <p style={{ color: '#555555', fontSize: '1rem', lineHeight: 1.5, marginBottom: '32px' }}>
+            Your gear roster is currently blank. Explore tournament-grade pickleball paddles, English willow bats, and precision-strung racquets.
           </p>
-          <Link to="/shop" className="btn btn-primary">
-            <span>EXPLORE SHOP</span>
-            <ArrowRight size={16} />
+          <Link
+            to="/shop"
+            className="btn btn-primary btn-lg"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', boxShadow: '4px 4px 0px #C9A227' }}
+          >
+            <span>EXPLORE CATALOG</span>
+            <ArrowRight size={18} />
           </Link>
         </div>
       </div>
@@ -82,32 +104,59 @@ export const CartPage: React.FC = () => {
 
   if (orderComplete) {
     return (
-      <div className="bg-ivory" style={{ minHeight: '80vh', padding: '80px 16px', textAlign: 'center' }}>
-        <div className="container" style={{ maxWidth: '520px', margin: '0 auto', backgroundColor: '#FFFFFF', padding: '40px', borderRadius: '2px', border: '1px solid #E2DCCF' }}>
-          <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#C9A227', color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' }}>
-            <Check size={32} strokeWidth={3} />
+      <div className="bg-ivory" style={{ minHeight: '80vh', padding: 'clamp(64px, 10vw, 120px) 16px', display: 'flex', alignItems: 'center' }}>
+        <div
+          className="container"
+          style={{
+            maxWidth: '580px',
+            margin: '0 auto',
+            backgroundColor: '#FFFFFF',
+            padding: '48px 36px',
+            border: '2px solid var(--color-ink)',
+            boxShadow: '8px 8px 0px #111111',
+            textAlign: 'center',
+          }}
+        >
+          <div
+            style={{
+              width: '64px',
+              height: '64px',
+              backgroundColor: 'var(--color-plate-gold)',
+              color: '#111111',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 20px auto',
+              border: '2px solid #111111',
+            }}
+          >
+            <Check size={36} strokeWidth={3} />
           </div>
-          <h1 className="font-display" style={{ fontSize: '2rem', marginBottom: '8px' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-plate-gold)', display: 'block', marginBottom: '8px' }}>
             ORDER CONFIRMED
+          </span>
+          <h1 className="font-display" style={{ fontSize: '2.5rem', lineHeight: 1.05, marginBottom: '8px' }}>
+            ORDER DISPATCH QUEUED
           </h1>
-          <p style={{ color: '#C9A227', fontWeight: 700, fontSize: '0.875rem', marginBottom: '16px' }}>
+          <p style={{ color: 'var(--color-ink)', fontWeight: 800, fontSize: '0.9375rem', marginBottom: '16px', fontFamily: 'monospace' }}>
             ORDER #OS-PUNE-{Math.floor(100000 + Math.random() * 900000)}
           </p>
-          <p style={{ color: '#555555', fontSize: '0.9375rem', lineHeight: 1.5, marginBottom: '28px' }}>
-            Thank you, <strong>{checkoutForm.fullName || 'Valued Athlete'}</strong>. We have received your order. Our Camp store dispatch team will prepare your equipment and update you at <strong>{checkoutForm.phone}</strong>.
+          <p style={{ color: '#555555', fontSize: '1rem', lineHeight: 1.5, marginBottom: '32px' }}>
+            Thank you, <strong>{checkoutForm.fullName || 'Athlete'}</strong>. Our Camp store dispatch desk has received your request. Equipment inspection and preparation is in progress for <strong>{checkoutForm.phone}</strong>.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <a
-              href={`https://wa.me/919890990022?text=Hello%20Oriental%20Sports,%20I%20just%20placed%20order%20for%20pickup/delivery%20under%20${encodeURIComponent(checkoutForm.fullName || 'Customer')}`}
+              href={`https://wa.me/919890990022?text=Hello%20Oriental%20Sports,%20I%20just%20placed%20an%20order%20for%20pickup/delivery%20under%20${encodeURIComponent(checkoutForm.fullName || 'Customer')}`}
               target="_blank"
               rel="noreferrer"
-              className="btn btn-gold"
+              className="btn btn-gold btn-lg"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '4px 4px 0px #111111' }}
             >
-              <MessageSquare size={16} />
-              <span>TRACK VIA WHATSAPP (+91 98909 90022)</span>
+              <MessageSquare size={18} />
+              <span>WHATSAPP DISPATCH DESK (+91 98909 90022)</span>
             </a>
-            <Link to="/shop" className="btn btn-outline-dark">
-              <span>CONTINUE SHOPPING</span>
+            <Link to="/shop" className="btn btn-outline-dark btn-lg">
+              <span>CONTINUE EXPLORING</span>
             </Link>
           </div>
         </div>
@@ -116,25 +165,48 @@ export const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-ivory" style={{ minHeight: '80vh', paddingBottom: 'var(--space-4xl)' }}>
-      {/* Header */}
-      <div style={{ backgroundColor: 'var(--color-ink)', color: '#FFFFFF', padding: 'var(--space-2xl) 0' }}>
+    <div className="bg-ivory" style={{ minHeight: '85vh', paddingBottom: 'var(--space-4xl)' }}>
+      {/* Brutalist Hero Banner */}
+      <div
+        style={{
+          backgroundColor: 'var(--color-ink)',
+          color: '#FFFFFF',
+          padding: 'clamp(48px, 6vw, 72px) 0 40px',
+          borderBottom: '2px solid #C9A227',
+        }}
+      >
         <div className="container">
-          <h1 className="font-display" style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', color: '#FFFFFF' }}>
-            YOUR SPORTS BAG
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-plate-gold)' }}>
+              ROSTER & CHECKOUT
+            </span>
+            <span style={{ color: 'rgba(255,255,255,0.3)' }}>/</span>
+            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', fontFamily: 'monospace' }}>
+              CAMP DESK PUNE
+            </span>
+          </div>
+          <h1 className="font-display" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', lineHeight: 0.95, color: '#FFFFFF', margin: 0 }}>
+            YOUR SPORTS BAG.
           </h1>
-          <span style={{ fontSize: '0.875rem', color: '#B5AFA4' }}>
-            {cart.reduce((s, i) => s + i.quantity, 0)} Items Selected
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '14px' }}>
+            <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-plate-gold)' }}>
+              {cart.reduce((s, i) => s + i.quantity, 0)} UNITS SELECTED
+            </span>
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+            <span style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)' }}>
+              Complimentary Pune Delivery over ₹2,000
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="container" style={{ paddingTop: 'var(--space-2xl)' }}>
+      <div className="container" style={{ paddingTop: 'clamp(32px, 5vw, 48px)' }}>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 'var(--space-2xl)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+            gap: 'clamp(24px, 4vw, 48px)',
+            alignItems: 'start',
           }}
         >
           {/* Left: Cart Items List */}
@@ -144,68 +216,91 @@ export const CartPage: React.FC = () => {
                 key={`${item.product.id}-${item.selectedVariant}-${item.selectedSize}-${idx}`}
                 style={{
                   backgroundColor: '#FFFFFF',
-                  padding: '16px',
-                  borderRadius: '2px',
-                  border: '1px solid var(--color-ivory-border)',
+                  padding: '20px',
+                  border: '1px solid #111111',
+                  boxShadow: '4px 4px 0px #111111',
                   display: 'flex',
-                  gap: '16px',
+                  gap: '20px',
                 }}
               >
-                <img
-                  src={item.product.images[0]}
-                  alt={item.product.name}
-                  style={{ width: '88px', height: '88px', objectFit: 'cover', borderRadius: '2px', backgroundColor: '#EDE8DC' }}
-                />
+                <div style={{ width: '100px', height: '100px', flexShrink: 0, backgroundColor: '#F6F3EA', border: '1px solid rgba(17,17,17,0.1)', overflow: 'hidden' }}>
+                  <img
+                    src={item.product.images[0]}
+                    alt={item.product.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
 
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--color-plate-gold)', textTransform: 'uppercase' }}>
-                        {item.product.brand}
-                      </span>
-                      <Link to={`/product/${item.product.slug}`} style={{ display: 'block', fontWeight: 700, fontSize: '1rem', color: '#111111' }}>
-                        {item.product.name}
-                      </Link>
-                      {(item.selectedVariant || item.selectedSize) && (
-                        <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '2px' }}>
-                          {item.selectedVariant && <span>{item.selectedVariant}</span>}
-                          {item.selectedVariant && item.selectedSize && <span> • </span>}
-                          {item.selectedSize && <span>Size: {item.selectedSize}</span>}
-                        </div>
-                      )}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                      <div>
+                        <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--color-plate-gold)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '2px' }}>
+                          {item.product.brand} • {item.product.categoryName}
+                        </span>
+                        <Link
+                          to={`/product/${item.product.slug}`}
+                          style={{ fontWeight: 800, fontSize: '1.0625rem', color: '#111111', lineHeight: 1.25, textDecoration: 'none' }}
+                        >
+                          {item.product.name}
+                        </Link>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => removeFromCart(item.product.id, item.selectedVariant, item.selectedSize)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#888888',
+                          cursor: 'pointer',
+                          padding: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                        aria-label="Remove item"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => removeFromCart(item.product.id, item.selectedVariant, item.selectedSize)}
-                      style={{ color: '#888', padding: '4px' }}
-                      aria-label="Remove item"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {(item.selectedVariant || item.selectedSize) && (
+                      <div style={{ fontSize: '0.75rem', color: '#666666', marginTop: '4px', display: 'flex', gap: '8px' }}>
+                        {item.selectedVariant && <span style={{ backgroundColor: '#F6F3EA', padding: '2px 6px', border: '1px solid #E2DCCF' }}>Spec: {item.selectedVariant}</span>}
+                        {item.selectedSize && <span style={{ backgroundColor: '#F6F3EA', padding: '2px 6px', border: '1px solid #E2DCCF' }}>Size: {item.selectedSize}</span>}
+                      </div>
+                    )}
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid #C9A227', borderRadius: '2px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #F0ECE1' }}>
+                    {/* Stepper with tactile click */}
+                    <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid #111111', backgroundColor: '#FFFFFF' }}>
                       <button
                         type="button"
                         onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.selectedVariant, item.selectedSize)}
-                        style={{ padding: '4px 8px' }}
+                        style={{ padding: '6px 10px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                        aria-label="Decrease quantity"
                       >
-                        <Minus size={14} />
+                        <Minus size={13} />
                       </button>
-                      <span style={{ padding: '0 8px', fontWeight: 700, fontSize: '0.875rem' }}>{item.quantity}</span>
+                      <span style={{ padding: '0 12px', fontWeight: 800, fontSize: '0.875rem', fontFamily: 'monospace' }}>
+                        {item.quantity}
+                      </span>
                       <button
                         type="button"
                         onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.selectedVariant, item.selectedSize)}
-                        style={{ padding: '4px 8px' }}
+                        style={{ padding: '6px 10px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                        aria-label="Increase quantity"
                       >
-                        <Plus size={14} />
+                        <Plus size={13} />
                       </button>
                     </div>
 
-                    <div style={{ fontWeight: 800, fontSize: '1.0625rem', color: '#111111' }}>
-                      ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '0.6875rem', color: '#888888', display: 'block' }}>Line Total</span>
+                      <span style={{ fontWeight: 900, fontSize: '1.1875rem', color: '#111111', fontFamily: 'var(--font-heading)' }}>
+                        ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -213,31 +308,45 @@ export const CartPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Right: Order Summary & Checkout */}
+          {/* Right: Liquid Glass Order Summary & Checkout Card */}
           <div>
-            <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '2px', border: '1px solid var(--color-ivory-border)' }}>
-              <h3 className="font-display" style={{ fontSize: '1.25rem', marginBottom: '16px' }}>
-                ORDER SUMMARY
-              </h3>
+            <div
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                padding: '28px',
+                border: '2px solid #111111',
+                boxShadow: '6px 6px 0px #111111',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '12px', borderBottom: '2px solid #111111' }}>
+                <h2 className="font-display" style={{ fontSize: '1.375rem', margin: 0 }}>
+                  ORDER SUMMARY
+                </h2>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-plate-gold)', textTransform: 'uppercase' }}>
+                  SECURE CHECKOUT
+                </span>
+              </div>
 
               {/* Delivery Option Selector */}
-              <div style={{ marginBottom: '20px' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#666', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
-                  Choose Fulfillment:
+              <div style={{ marginBottom: '24px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#555555', textTransform: 'uppercase', display: 'block', marginBottom: '8px', letterSpacing: '0.06em' }}>
+                  Fulfillment Method:
                 </span>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <button
                     type="button"
                     onClick={() => setDeliveryMethod('pune-shipping')}
                     style={{
-                      padding: '10px 8px',
-                      borderRadius: '2px',
+                      padding: '12px 10px',
                       fontSize: '0.75rem',
-                      fontWeight: 700,
-                      backgroundColor: deliveryMethod === 'pune-shipping' ? 'var(--color-ink)' : '#F6F3EA',
+                      fontWeight: 800,
+                      backgroundColor: deliveryMethod === 'pune-shipping' ? 'var(--color-ink)' : '#FFFFFF',
                       color: deliveryMethod === 'pune-shipping' ? '#FFFFFF' : '#111111',
-                      border: '1px solid var(--color-ivory-border)',
+                      border: '1px solid #111111',
                       cursor: 'pointer',
+                      textAlign: 'center',
                     }}
                   >
                     PUNE DELIVERY
@@ -246,14 +355,14 @@ export const CartPage: React.FC = () => {
                     type="button"
                     onClick={() => setDeliveryMethod('camp-pickup')}
                     style={{
-                      padding: '10px 8px',
-                      borderRadius: '2px',
+                      padding: '12px 10px',
                       fontSize: '0.75rem',
-                      fontWeight: 700,
-                      backgroundColor: deliveryMethod === 'camp-pickup' ? 'var(--color-ink)' : '#F6F3EA',
+                      fontWeight: 800,
+                      backgroundColor: deliveryMethod === 'camp-pickup' ? 'var(--color-ink)' : '#FFFFFF',
                       color: deliveryMethod === 'camp-pickup' ? '#FFFFFF' : '#111111',
-                      border: '1px solid var(--color-ivory-border)',
+                      border: '1px solid #111111',
                       cursor: 'pointer',
+                      textAlign: 'center',
                     }}
                   >
                     CAMP STORE PICKUP (FREE)

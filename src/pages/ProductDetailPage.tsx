@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Star, ShieldCheck, Truck, RotateCcw, MessageSquare, Plus, Minus, Check, ArrowRight } from 'lucide-react';
+import { Star, ShieldCheck, Truck, RotateCcw, MessageSquare, Plus, Minus, Check, ArrowRight, Layers, Sparkles } from 'lucide-react';
 import { PRODUCTS } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { StickyBuyBar } from '../components/products/StickyBuyBar';
 import { ProductCard } from '../components/products/ProductCard';
+import { GlassPanel } from '../components/ui/GlassPanel';
 import { STORE_INFO } from '../data/storeInfo';
 
 export const ProductDetailPage: React.FC = () => {
@@ -24,12 +25,26 @@ export const ProductDetailPage: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [addedAnimation, setAddedAnimation] = useState(false);
 
+  const fallbackImage = 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=1200&q=80';
+
   if (!product) {
     return (
-      <div className="container" style={{ padding: '80px 16px', textAlign: 'center' }}>
-        <h1 style={{ marginBottom: '16px' }}>Equipment Not Found</h1>
+      <div style={{ backgroundColor: '#F7F5EE', padding: '100px 16px', textAlign: 'center', minHeight: '60vh' }}>
+        <h1 className="font-display" style={{ fontSize: '2.5rem', marginBottom: '16px' }}>EQUIPMENT NOT FOUND</h1>
         <p style={{ color: '#666', marginBottom: '24px' }}>The product you are looking for does not exist or has been relocated.</p>
-        <Link to="/shop" className="btn btn-primary">
+        <Link
+          to="/shop"
+          style={{
+            display: 'inline-flex',
+            padding: '12px 24px',
+            backgroundColor: '#111111',
+            color: '#FFFFFF',
+            textDecoration: 'none',
+            fontSize: '0.8125rem',
+            fontWeight: 800,
+            letterSpacing: '0.08em',
+          }}
+        >
           RETURN TO SHOP
         </Link>
       </div>
@@ -43,7 +58,7 @@ export const ProductDetailPage: React.FC = () => {
   const handleAddToCart = () => {
     addToCart(product, quantity, selectedVariant, selectedSize);
     setAddedAnimation(true);
-    setTimeout(() => setAddedAnimation(false), 1500);
+    setTimeout(() => setAddedAnimation(false), 1600);
   };
 
   const handleBuyNow = () => {
@@ -57,341 +72,486 @@ export const ProductDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-ivory" style={{ minHeight: '90vh', paddingBottom: 'var(--space-4xl)' }}>
-      {/* Breadcrumb */}
-      <div style={{ backgroundColor: '#EDE8DC', padding: '12px 0', borderBottom: '1px solid #E2DCCF' }}>
+    <div style={{ backgroundColor: '#F7F5EE', minHeight: '90vh', paddingBottom: '90px' }}>
+      {/* Brutalist Breadcrumb */}
+      <div style={{ backgroundColor: '#EFECE2', padding: '14px 0', borderBottom: '1px solid #DFD9CB' }}>
         <div className="container">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: '#666666' }}>
-            <Link to="/" style={{ color: '#111111' }}>Home</Link>
+          <div className="font-mono" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', color: '#666666', textTransform: 'uppercase' }}>
+            <Link to="/" style={{ color: '#111111', textDecoration: 'none' }}>HOME</Link>
             <span>/</span>
-            <Link to="/shop" style={{ color: '#111111' }}>Shop</Link>
+            <Link to="/shop" style={{ color: '#111111', textDecoration: 'none' }}>SHOP</Link>
             <span>/</span>
-            <Link to={`/shop?category=${product.category}`} style={{ color: '#111111' }}>
-              {product.categoryName}
+            <Link to={`/shop?category=${product.category}`} style={{ color: '#2457FF', textDecoration: 'none' }}>
+              {product.categoryName || product.category}
             </Link>
             <span>/</span>
-            <span style={{ color: '#888888', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <span style={{ color: '#999999', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {product.name}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="container" style={{ paddingTop: 'var(--space-2xl)' }}>
+      <div className="container" style={{ paddingTop: 'clamp(32px, 5vw, 48px)' }}>
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 'clamp(24px, 5vw, 48px)',
+            gap: 'clamp(28px, 5vw, 56px)',
           }}
         >
-          {/* Left: Product Images Gallery */}
+          {/* Left: Gallery & Angles */}
           <div>
             <div
               style={{
                 position: 'relative',
                 width: '100%',
                 aspectRatio: '1 / 1',
-                backgroundColor: '#EDE8DC',
-                borderRadius: '2px',
+                backgroundColor: '#FFFFFF',
+                border: '2px solid #111111',
                 overflow: 'hidden',
-                border: '1px solid var(--color-ivory-border)',
-                marginBottom: '12px',
+                marginBottom: '14px',
+                boxShadow: '0 12px 32px rgba(0,0,0,0.06)',
               }}
             >
               <img
                 src={product.images[activeImageIndex] || product.images[0]}
                 alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  e.currentTarget.src = fallbackImage;
+                }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  transition: 'transform 0.4s ease',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.06)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               />
+
               {product.badge && (
-                <div style={{ position: 'absolute', top: '16px', left: '16px' }}>
-                  <span className="badge badge-gold">{product.badge}</span>
+                <div style={{ position: 'absolute', top: '14px', left: '14px' }}>
+                  <GlassPanel
+                    variant="dark"
+                    blur="12px"
+                    style={{
+                      padding: '5px 12px',
+                      fontSize: '0.6875rem',
+                      fontWeight: 800,
+                      letterSpacing: '0.12em',
+                      color: '#D7FF00',
+                      border: '1px solid rgba(215, 255, 0, 0.4)',
+                    }}
+                  >
+                    {product.badge.toUpperCase()}
+                  </GlassPanel>
                 </div>
               )}
             </div>
 
-            {/* Thumbnail selector if multiple images */}
+            {/* Thumbnail selector */}
             {product.images.length > 1 && (
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '10px' }}>
                 {product.images.map((img, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => setActiveImageIndex(idx)}
                     style={{
-                      width: '72px',
-                      height: '72px',
-                      border: idx === activeImageIndex ? '2px solid #C9A227' : '1px solid #E2DCCF',
-                      borderRadius: '2px',
-                      overflow: 'hidden',
+                      width: '76px',
+                      height: '76px',
+                      border: idx === activeImageIndex ? '2px solid #2457FF' : '1px solid #D8D4C8',
+                      backgroundColor: '#FFFFFF',
                       padding: 0,
                       cursor: 'pointer',
+                      overflow: 'hidden',
+                      transition: 'all 0.18s ease',
                     }}
                   >
-                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img
+                      src={img}
+                      alt=""
+                      onError={(e) => {
+                        e.currentTarget.src = fallbackImage;
+                      }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Right: Product Details & Purchase Controls */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Right: Technical Specs & Commerce Panel */}
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
-              <div
-                style={{
-                  fontSize: '0.8125rem',
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 700,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  color: 'var(--color-plate-gold)',
-                  marginBottom: '4px',
-                }}
-              >
-                {product.brand} • {product.categoryName}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <span style={{ width: '6px', height: '6px', backgroundColor: '#2457FF' }} />
+                <span
+                  className="font-mono"
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    color: '#2457FF',
+                  }}
+                >
+                  {product.brand} // {product.categoryName || product.category}
+                </span>
               </div>
 
               <h1
+                className="font-display"
                 style={{
-                  fontFamily: 'var(--font-heading)',
-                  fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
-                  fontWeight: 800,
-                  lineHeight: 1.15,
-                  color: 'var(--color-ink)',
-                  marginBottom: '12px',
+                  fontSize: 'clamp(2rem, 4.5vw, 3rem)',
+                  fontWeight: 900,
+                  lineHeight: 1.05,
+                  color: '#111111',
+                  margin: '0 0 14px 0',
+                  letterSpacing: '-0.02em',
                 }}
               >
                 {product.name}
               </h1>
 
-              {/* Rating */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', color: '#C9A227' }}>
+              {/* Rating & In-Stock Pill */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', color: '#111111' }}>
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       size={16}
-                      fill={i < Math.floor(product.rating) ? '#C9A227' : 'none'}
-                      stroke="#C9A227"
+                      fill={i < Math.floor(product.rating) ? '#111111' : 'none'}
+                      stroke="#111111"
                     />
                   ))}
                 </div>
-                <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#111111' }}>
+                <span className="font-mono" style={{ fontSize: '0.8125rem', fontWeight: 800, color: '#111111' }}>
                   {product.rating.toFixed(1)}
                 </span>
                 <span style={{ fontSize: '0.8125rem', color: '#666666' }}>
-                  ({product.reviewsCount} customer reviews)
+                  ({product.reviewsCount} reviews)
+                </span>
+                <span
+                  className="font-mono"
+                  style={{
+                    padding: '3px 8px',
+                    backgroundColor: '#E7F9EE',
+                    color: '#0D6832',
+                    fontSize: '0.6875rem',
+                    fontWeight: 800,
+                    borderRadius: '2px',
+                  }}
+                >
+                  IN STOCK CAMP STORE
                 </span>
               </div>
 
               {/* Price Block */}
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '20px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: '14px',
+                  paddingBottom: '20px',
+                  borderBottom: '2px solid #111111',
+                  marginBottom: '20px',
+                }}
+              >
                 <span
+                  className="font-mono"
                   style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: '2rem',
-                    fontWeight: 800,
-                    color: 'var(--color-ink)',
+                    fontSize: '2.25rem',
+                    fontWeight: 900,
+                    color: '#111111',
+                    letterSpacing: '-0.02em',
                   }}
                 >
                   ₹{product.price.toLocaleString('en-IN')}
                 </span>
                 {product.originalPrice && product.originalPrice > product.price && (
-                  <span style={{ fontSize: '1.125rem', color: '#888888', textDecoration: 'line-through' }}>
+                  <span
+                    className="font-mono"
+                    style={{
+                      fontSize: '1.125rem',
+                      color: '#888888',
+                      textDecoration: 'line-through',
+                    }}
+                  >
                     ₹{product.originalPrice.toLocaleString('en-IN')}
                   </span>
                 )}
-                <span style={{ fontSize: '0.75rem', color: '#2e7d32', fontWeight: 700, textTransform: 'uppercase' }}>
-                  Inclusive of all taxes
+                <span className="font-mono" style={{ fontSize: '0.75rem', color: '#555555', textTransform: 'uppercase' }}>
+                  (INCL. ALL TAXES)
                 </span>
               </div>
 
-              <p style={{ color: '#444444', lineHeight: 1.5, fontSize: '0.9375rem', marginBottom: '20px' }}>
+              <p style={{ color: '#444444', lineHeight: 1.6, fontSize: '0.9375rem', margin: '0 0 24px 0' }}>
                 {product.description}
               </p>
-            </div>
 
-            {/* Variants Selector */}
-            {product.variants && product.variants.length > 0 && (
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#111111', marginBottom: '8px' }}>
-                  Select Specification:
-                </label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {product.variants.map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => setSelectedVariant(v.name)}
-                      style={{
-                        padding: '8px 16px',
-                        fontSize: '0.8125rem',
-                        fontWeight: 700,
-                        borderRadius: '2px',
-                        backgroundColor: selectedVariant === v.name ? 'var(--color-ink)' : 'var(--color-pure-white)',
-                        color: selectedVariant === v.name ? 'var(--color-pure-white)' : 'var(--color-ink)',
-                        border: selectedVariant === v.name ? '1px solid var(--color-ink)' : '1px solid var(--color-ivory-border)',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {v.name}
-                    </button>
-                  ))}
+              {/* Variants Selector */}
+              {product.variants && product.variants.length > 0 && (
+                <div style={{ marginBottom: '20px' }}>
+                  <label className="font-mono" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#111111', marginBottom: '8px' }}>
+                    SPECIFICATION / MODEL:
+                  </label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {product.variants.map((v) => (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => setSelectedVariant(v.name)}
+                        style={{
+                          padding: '9px 16px',
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          backgroundColor: selectedVariant === v.name ? '#111111' : '#FFFFFF',
+                          color: selectedVariant === v.name ? '#FFFFFF' : '#111111',
+                          border: selectedVariant === v.name ? '2px solid #111111' : '1px solid #D8D4C8',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {v.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Size Selector */}
-            {product.sizes && product.sizes.length > 0 && (
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#111111', marginBottom: '8px' }}>
-                  Select Size / Grip:
-                </label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {product.sizes.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => setSelectedSize(s)}
-                      style={{
-                        padding: '8px 16px',
-                        fontSize: '0.8125rem',
-                        fontWeight: 700,
-                        borderRadius: '2px',
-                        backgroundColor: selectedSize === s ? 'var(--color-ink)' : 'var(--color-pure-white)',
-                        color: selectedSize === s ? 'var(--color-pure-white)' : 'var(--color-ink)',
-                        border: selectedSize === s ? '1px solid var(--color-ink)' : '1px solid var(--color-ivory-border)',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {s}
-                    </button>
-                  ))}
+              {/* Size Selector */}
+              {product.sizes && product.sizes.length > 0 && (
+                <div style={{ marginBottom: '24px' }}>
+                  <label className="font-mono" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#111111', marginBottom: '8px' }}>
+                    SIZE / GRIP CIRCUMFERENCE:
+                  </label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {product.sizes.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setSelectedSize(s)}
+                        style={{
+                          padding: '9px 16px',
+                          fontSize: '0.75rem',
+                          fontWeight: 800,
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          backgroundColor: selectedSize === s ? '#111111' : '#FFFFFF',
+                          color: selectedSize === s ? '#FFFFFF' : '#111111',
+                          border: selectedSize === s ? '2px solid #111111' : '1px solid #D8D4C8',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Quantity Controls & Desktop CTAs */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '16px', borderTop: '1px solid #E2DCCF' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <span style={{ fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase' }}>Quantity</span>
-                <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid #C9A227', borderRadius: '2px', backgroundColor: '#FFFFFF' }}>
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    style={{ padding: '6px 12px', color: '#111111' }}
-                    aria-label="Decrease quantity"
-                  >
-                    <Minus size={14} />
-                  </button>
-                  <span style={{ padding: '0 12px', fontWeight: 800, fontSize: '0.9375rem' }}>
-                    {quantity}
+              {/* Quantity Controls & Direct CTAs */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '28px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <span className="font-mono" style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>
+                    QUANTITY:
                   </span>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid #111111', backgroundColor: '#FFFFFF' }}>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      style={{ padding: '8px 14px', color: '#111111', background: 'none', border: 'none', cursor: 'pointer' }}
+                      aria-label="Decrease quantity"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className="font-mono" style={{ padding: '0 14px', fontWeight: 900, fontSize: '1rem' }}>
+                      {quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity(quantity + 1)}
+                      style={{ padding: '8px 14px', color: '#111111', background: 'none', border: 'none', cursor: 'pointer' }}
+                      aria-label="Increase quantity"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px' }}>
                   <button
                     type="button"
-                    onClick={() => setQuantity(quantity + 1)}
-                    style={{ padding: '6px 12px', color: '#111111' }}
-                    aria-label="Increase quantity"
+                    onClick={handleAddToCart}
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      backgroundColor: addedAnimation ? '#111111' : '#111111',
+                      color: addedAnimation ? '#D7FF00' : '#FFFFFF',
+                      border: '2px solid #111111',
+                      fontSize: '0.8125rem',
+                      fontWeight: 900,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!addedAnimation) e.currentTarget.style.backgroundColor = '#2457FF';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!addedAnimation) e.currentTarget.style.backgroundColor = '#111111';
+                    }}
                   >
-                    <Plus size={14} />
+                    {addedAnimation ? (
+                      <>
+                        <Check size={16} color="#D7FF00" />
+                        <span>ADDED TO BAG</span>
+                      </>
+                    ) : (
+                      <span>ADD TO BAG</span>
+                    )}
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={handleBuyNow}
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      backgroundColor: '#2457FF',
+                      color: '#FFFFFF',
+                      border: '2px solid #2457FF',
+                      fontSize: '0.8125rem',
+                      fontWeight: 900,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      transition: 'background-color 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1A42C8')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2457FF')}
+                  >
+                    <span>BUY NOW</span>
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+
+                <a
+                  href={getWhatsAppProductInquiry()}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    backgroundColor: '#FFFFFF',
+                    border: '1.5px solid #111111',
+                    color: '#111111',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <MessageSquare size={16} color="#25D366" />
+                  <span>INQUIRE VIA WHATSAPP (CAMP WORKSHOP)</span>
+                </a>
+              </div>
+
+              {/* Guarantees Box */}
+              <div
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #DFD9CB',
+                  padding: '18px 20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  fontSize: '0.8125rem',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Truck size={17} color="#2457FF" />
+                  <span><strong>Free Pune Delivery</strong> on orders above ₹2,000. Same-day Camp dispatch.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <RotateCcw size={17} color="#2457FF" />
+                  <span><strong>7-Day Replacement</strong> on manufacturing defects.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <ShieldCheck size={17} color="#2457FF" />
+                  <span><strong>100% Genuine Gear</strong> verified by Oriental Sports Camp store.</span>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  className={`btn btn-lg ${addedAnimation ? 'btn-gold' : 'btn-primary'}`}
-                  style={{ flex: 1 }}
-                >
-                  {addedAnimation ? (
-                    <>
-                      <Check size={18} />
-                      <span>ADDED TO BAG</span>
-                    </>
-                  ) : (
-                    <span>ADD TO BAG</span>
-                  )}
-                </button>
+              {/* Technical Specifications Table */}
+              <div style={{ marginTop: '28px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
+                  <Layers size={16} color="#111111" />
+                  <h3 className="font-mono" style={{ fontSize: '0.8125rem', fontWeight: 800, letterSpacing: '0.1em', margin: 0, textTransform: 'uppercase' }}>
+                    TECHNICAL SPECIFICATIONS AUDIT
+                  </h3>
+                </div>
 
-                <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  className="btn btn-lg btn-gold"
-                  style={{ flex: 1 }}
-                >
-                  <span>BUY NOW</span>
-                </button>
-              </div>
-
-              <a
-                href={getWhatsAppProductInquiry()}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-outline-dark"
-                style={{ width: '100%', fontSize: '0.8125rem' }}
-              >
-                <MessageSquare size={16} />
-                <span>INQUIRE VIA WHATSAPP (CAMP STORE)</span>
-              </a>
-            </div>
-
-            {/* Delivery & Assurance Guarantees */}
-            <div
-              style={{
-                backgroundColor: 'var(--color-pure-white)',
-                border: '1px solid var(--color-ivory-border)',
-                borderRadius: '2px',
-                padding: '20px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                fontSize: '0.8125rem',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Truck size={18} color="#C9A227" />
-                <span><strong>Free delivery in Pune</strong> on orders above ₹2,000. Same-day Camp dispatch.</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <RotateCcw size={18} color="#C9A227" />
-                <span><strong>7-day replacement guarantee</strong> on manufacturing defects.</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <ShieldCheck size={18} color="#C9A227" />
-                <span><strong>100% Genuine gear</strong> backed by Oriental Sports Camp store warranty.</span>
-              </div>
-            </div>
-
-            {/* Technical Specifications Table */}
-            <div style={{ marginTop: '16px' }}>
-              <h3 style={{ fontSize: '1.0625rem', fontFamily: 'var(--font-heading)', marginBottom: '12px' }}>
-                TECHNICAL SPECIFICATIONS
-              </h3>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem' }}>
-                <tbody>
-                  {Object.entries(product.specs).map(([k, v], idx) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid #E2DCCF' }}>
-                      <td style={{ padding: '8px 4px', color: '#666666', fontWeight: 600, width: '40%' }}>{k}</td>
-                      <td style={{ padding: '8px 4px', color: '#111111', fontWeight: 700 }}>{v}</td>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem', backgroundColor: '#FFFFFF', border: '1px solid #DFD9CB' }}>
+                  <tbody>
+                    {Object.entries(product.specs).map(([k, v], idx) => (
+                      <tr key={idx} style={{ borderBottom: '1px solid #EFECE2' }}>
+                        <td className="font-mono" style={{ padding: '10px 14px', color: '#666666', fontWeight: 700, width: '40%', textTransform: 'uppercase', fontSize: '0.75rem' }}>
+                          {k}
+                        </td>
+                        <td style={{ padding: '10px 14px', color: '#111111', fontWeight: 700 }}>
+                          {v}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr style={{ borderBottom: 'none' }}>
+                      <td className="font-mono" style={{ padding: '10px 14px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem' }}>
+                        WORKSHOP
+                      </td>
+                      <td style={{ padding: '10px 14px', color: '#111111', fontWeight: 700 }}>
+                        Shop 247, MG Road, Camp, Pune
+                      </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Related Equipment */}
+        {/* Related Equipment Section */}
         {relatedProducts.length > 0 && (
-          <div style={{ marginTop: 'var(--space-4xl)', paddingTop: 'var(--space-2xl)', borderTop: '1px solid #E2DCCF' }}>
-            <h2 className="font-display" style={{ fontSize: '1.75rem', marginBottom: '24px' }}>
-              YOU MAY ALSO NEED
-            </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
+          <div style={{ marginTop: '72px', paddingTop: '40px', borderTop: '2px solid #111111' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '28px' }}>
+              <div>
+                <span className="font-mono" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2457FF', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                  CURATED GEAR
+                </span>
+                <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', color: '#111111', margin: '4px 0 0 0' }}>
+                  COMPATIBLE ATHLETIC EQUIPMENT
+                </h2>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
               {relatedProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
@@ -400,7 +560,7 @@ export const ProductDetailPage: React.FC = () => {
         )}
       </div>
 
-      {/* Mobile Sticky Bottom Purchase Bar */}
+      {/* Mobile Sticky Buy Bar */}
       <StickyBuyBar
         product={product}
         onAddToCart={handleAddToCart}

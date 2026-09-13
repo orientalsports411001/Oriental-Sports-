@@ -105,46 +105,45 @@ export const CourtsPage: React.FC = () => {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-xl)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'clamp(20px, 3vw, 32px)' }}>
           {COURT_SERVICES.map((serv) => (
             <div
               key={serv.id}
               style={{
                 backgroundColor: 'var(--color-pure-white)',
-                border: '1px solid var(--color-ivory-border)',
-                borderRadius: '2px',
-                overflow: 'hidden',
+                border: '2px solid #111111',
+                boxShadow: '6px 6px 0px #111111',
                 display: 'flex',
                 flexDirection: 'column',
               }}
             >
-              <div style={{ position: 'relative', height: '220px' }}>
+              <div style={{ position: 'relative', height: '220px', borderBottom: '2px solid #111111', overflow: 'hidden' }}>
                 <img
                   src={serv.heroImage}
                   alt={serv.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
                 <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
-                  <span className="badge badge-gold">{serv.sport}</span>
+                  <span className="badge badge-gold" style={{ boxShadow: '2px 2px 0px #111111' }}>{serv.sport}</span>
                 </div>
               </div>
 
               <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-heading)', fontWeight: 800, marginBottom: '8px' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-heading)', fontWeight: 800, marginBottom: '8px', color: '#111111' }}>
                     {serv.name}
                   </h3>
-                  <p style={{ color: '#555555', fontSize: '0.875rem', lineHeight: 1.45, marginBottom: '16px' }}>
+                  <p style={{ color: '#444444', fontSize: '0.9375rem', lineHeight: 1.5, marginBottom: '16px' }}>
                     {serv.description}
                   </p>
 
                   <div style={{ marginBottom: '16px' }}>
-                    <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#888888', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
-                      Available Surfaces:
+                    <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--color-plate-gold)', textTransform: 'uppercase', display: 'block', marginBottom: '8px', letterSpacing: '0.08em' }}>
+                      ENGINEERED SURFACES:
                     </span>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                       {serv.surfaceTypes.map((st, i) => (
-                        <span key={i} style={{ fontSize: '0.75rem', padding: '2px 8px', backgroundColor: '#F6F3EA', borderRadius: '2px', border: '1px solid #E2DCCF' }}>
+                        <span key={i} style={{ fontSize: '0.75rem', fontWeight: 700, padding: '3px 8px', backgroundColor: '#F6F3EA', border: '1px solid #111111' }}>
                           {st}
                         </span>
                       ))}
@@ -152,14 +151,15 @@ export const CourtsPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div style={{ paddingTop: '16px', borderTop: '1px solid #E2DCCF', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ paddingTop: '16px', borderTop: '2px solid #111111', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <span style={{ fontSize: '0.6875rem', color: '#888888', display: 'block' }}>Typical Timeline</span>
-                    <strong style={{ fontSize: '0.8125rem', color: '#111111' }}>{serv.leadTime}</strong>
+                    <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#888888', display: 'block', textTransform: 'uppercase' }}>Timeline</span>
+                    <strong style={{ fontSize: '0.875rem', color: '#111111', fontFamily: 'monospace' }}>{serv.leadTime}</strong>
                   </div>
                   <a
                     href="#court-estimator"
                     className="btn btn-sm btn-primary"
+                    style={{ boxShadow: '2px 2px 0px #C9A227' }}
                   >
                     <span>ESTIMATE</span>
                     <ArrowRight size={14} />

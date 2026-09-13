@@ -16,7 +16,7 @@ export const CATEGORIES: CategoryInfo[] = [
     name: 'Cricket',
     tagline: 'Match-grade English & Kashmir willow, protective gear and accessories',
     description: 'From handcrafted English willow bats to club-standard batting pads, helmets and training balls calibrated for Indian wickets.',
-    image: 'https://images.unsplash.com/photo-1531415074868-036b1c57e329?auto=format&fit=crop&w=1000&q=80',
+    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1000&q=80',
     itemCount: 42,
     featuredEquipments: ['Grade 1 English Willow', 'Moulded Batting Pads', 'Test Match Helmets', 'Leather Match Balls'],
   },

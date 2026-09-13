@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Heart, Plus, Check } from 'lucide-react';
+import { Heart, Plus, Check, ArrowRight } from 'lucide-react';
 import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { GlassPanel } from '../ui/GlassPanel';
 
 interface ProductCardProps {
   product: Product;
   className?: string;
+  variant?: 'standard' | 'editorial';
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, className = '' }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  className = '',
+  variant = 'standard',
+}) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [justAdded, setJustAdded] = useState(false);
@@ -25,7 +31,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className = '
     const defaultSize = product.sizes?.[0];
     addToCart(product, 1, defaultVariant, defaultSize);
     setJustAdded(true);
-    setTimeout(() => setJustAdded(false), 1500);
+    setTimeout(() => setJustAdded(false), 1600);
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -34,31 +40,36 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className = '
     toggleWishlist(product.id);
   };
 
+  const primaryImage = product.images[0] || 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80';
+  const secondaryImage = product.images[1] || primaryImage;
   const hasSecondaryImage = product.images.length > 1;
+
+  const fallbackImage = 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80';
+
+  const discountPercent =
+    product.originalPrice && product.originalPrice > product.price
+      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      : null;
 
   return (
     <div
-      className={`product-card ${className}`}
+      className={`brutalist-product-card ${className}`}
+      data-cursor="add"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#FFFFFF',
-        border: isHovered
-          ? '2px solid var(--color-electric-blue)'
-          : '1px solid rgba(23, 23, 23, 0.1)',
-        borderRadius: '16px',
+        border: isHovered ? '1.5px solid #111111' : '1px solid #E5E0D5',
+        borderRadius: '2px', // Brutalist micro-corner
         overflow: 'hidden',
         position: 'relative',
-        transition: 'all 0.25s ease',
-        boxShadow: isHovered
-          ? '0 12px 32px rgba(36, 87, 255, 0.12)'
-          : '0 2px 10px rgba(0, 0, 0, 0.04)',
-        transform: isHovered ? 'translateY(-3px)' : 'none',
+        transition: 'all 0.25s cubic-bezier(0.2, 0, 0, 1)',
+        boxShadow: isHovered ? '0 12px 30px rgba(0,0,0,0.08)' : '0 2px 8px rgba(0,0,0,0.02)',
       }}
     >
-      {/* Product Image Area */}
+      {/* Product Image Canvas with Hover Swap */}
       <Link
         to={`/product/${product.slug}`}
         style={{
@@ -67,64 +78,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className = '
           width: '100%',
           aspectRatio: '1 / 1',
           overflow: 'hidden',
-          backgroundColor: '#F5F3EF',
+          backgroundColor: '#F7F5EE',
           textDecoration: 'none',
         }}
       >
-        <img
-          src={product.images[0]}
-          alt={product.name}
-          loading="lazy"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-            opacity: isHovered && hasSecondaryImage ? 0 : 1,
-            transition: 'transform 0.4s ease, opacity 0.3s ease',
-          }}
-        />
-
-        {hasSecondaryImage && (
-          <img
-            src={product.images[1]}
-            alt=""
-            loading="lazy"
+        {/* Discount Glass Badge */}
+        {discountPercent && (
+          <GlassPanel
+            variant="light"
+            blur="10px"
             style={{
               position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-              opacity: isHovered ? 1 : 0,
-              transition: 'transform 0.4s ease, opacity 0.3s ease',
+              top: '12px',
+              left: '12px',
+              zIndex: 3,
+              padding: '4px 8px',
+              fontSize: '0.6875rem',
+              fontWeight: 800,
+              color: '#FF5A1F',
+              border: '1px solid rgba(255, 90, 31, 0.3)',
             }}
-          />
+          >
+            -{discountPercent}%
+          </GlassPanel>
         )}
 
-        {/* Badge */}
-        {product.badge && (
-          <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 3 }}>
-            <span
-              style={{
-                backgroundColor: 'var(--color-lime)',
-                color: '#171717',
-                padding: '4px 10px',
-                borderRadius: '9999px',
-                fontSize: '0.6875rem',
-                fontFamily: 'var(--font-ui)',
-                fontWeight: 800,
-                letterSpacing: '0.04em',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              }}
-            >
-              {product.badge}
-            </span>
-          </div>
-        )}
-
-        {/* Favorite Wishlist Button */}
+        {/* Wishlist Button with Tactile Bounce */}
         <button
           type="button"
           onClick={handleFavoriteClick}
@@ -135,23 +114,70 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className = '
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            backgroundColor: 'rgba(255, 255, 255, 0.92)',
+            backgroundColor: isFavorited ? '#111111' : 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: isFavorited ? 'var(--color-tangerine)' : '#555555',
-            zIndex: 3,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-            transition: 'transform 0.2s ease',
-            transform: isFavorited ? 'scale(1.1)' : 'scale(1)',
-            border: 'none',
+            color: isFavorited ? '#C9A227' : '#111111',
+            zIndex: 4,
+            border: '1px solid rgba(0,0,0,0.06)',
+            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease',
+            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
           }}
           aria-label={isFavorited ? 'Remove from wishlist' : 'Add to wishlist'}
         >
-          <Heart size={16} fill={isFavorited ? 'var(--color-tangerine)' : 'none'} />
+          <Heart
+            size={16}
+            fill={isFavorited ? '#C9A227' : 'none'}
+            style={{
+              transform: isFavorited ? 'scale(1.1)' : 'scale(1)',
+              transition: 'transform 0.2s ease',
+            }}
+          />
         </button>
 
-        {/* Desktop Quick-Add Hover Overlay */}
+        {/* Primary Product Image */}
+        <img
+          src={primaryImage}
+          alt={product.name}
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.src = fallbackImage;
+          }}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transform: isHovered ? 'scale(1.06)' : 'scale(1)',
+            opacity: isHovered && hasSecondaryImage ? 0 : 1,
+            transition: 'transform 0.5s cubic-bezier(0.2, 0, 0, 1), opacity 0.35s ease',
+          }}
+        />
+
+        {/* Secondary Angle Image */}
+        {hasSecondaryImage && (
+          <img
+            src={secondaryImage}
+            alt=""
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.src = fallbackImage;
+            }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              transform: isHovered ? 'scale(1.06)' : 'scale(1)',
+              opacity: isHovered ? 1 : 0,
+              transition: 'transform 0.5s cubic-bezier(0.2, 0, 0, 1), opacity 0.35s ease',
+            }}
+          />
+        )}
+
+        {/* Quick Add Tactile Slide-Up Overlay */}
         <div
           className="desktop-only"
           style={{
@@ -162,31 +188,58 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className = '
             zIndex: 3,
             transform: isHovered ? 'translateY(0)' : 'translateY(48px)',
             opacity: isHovered ? 1 : 0,
-            transition: 'transform 0.25s ease, opacity 0.2s ease',
+            transition: 'transform 0.25s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s ease',
           }}
         >
           <button
             type="button"
             onClick={handleQuickAdd}
-            className={`btn ${justAdded ? 'btn-lime' : 'btn-blue'}`}
-            style={{ width: '100%', padding: '10px', fontSize: '0.8125rem' }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              backgroundColor: justAdded ? '#111111' : '#111111',
+              color: justAdded ? '#D7FF00' : '#FFFFFF',
+              border: justAdded ? '1px solid #D7FF00' : '1px solid #111111',
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              if (!justAdded) {
+                e.currentTarget.style.backgroundColor = '#2457FF';
+                e.currentTarget.style.borderColor = '#2457FF';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!justAdded) {
+                e.currentTarget.style.backgroundColor = '#111111';
+                e.currentTarget.style.borderColor = '#111111';
+              }
+            }}
           >
             {justAdded ? (
               <>
-                <Check size={14} />
+                <Check size={15} color="#D7FF00" />
                 <span>ADDED TO BAG</span>
               </>
             ) : (
               <>
-                <Plus size={14} />
-                <span>QUICK ADD</span>
+                <Plus size={15} />
+                <span>QUICK ADD TO BAG</span>
               </>
             )}
           </button>
         </div>
       </Link>
 
-      {/* Card Content */}
+      {/* Product Information Panel */}
       <div
         style={{
           padding: '16px',
@@ -194,112 +247,148 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className = '
           flexDirection: 'column',
           flex: 1,
           justifyContent: 'space-between',
+          borderTop: '1px solid #F0EEE6',
         }}
       >
         <div>
-          {/* Category Tag */}
+          {/* Category kicker & Meta */}
           <div
             style={{
-              fontSize: '0.6875rem',
-              color: 'var(--color-electric-blue)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              fontWeight: 800,
-              fontFamily: 'var(--font-ui)',
-              marginBottom: '4px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '6px',
             }}
           >
-            {product.category}
+            <span
+              className="font-mono"
+              style={{
+                fontSize: '0.6875rem',
+                color: '#888888',
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+                fontWeight: 700,
+              }}
+            >
+              {product.categoryName || product.category}
+            </span>
+
+            {product.rating && (
+              <span
+                className="font-mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  color: '#111111',
+                }}
+              >
+                ★ {product.rating.toFixed(1)}
+              </span>
+            )}
           </div>
 
-          {/* Title */}
+          {/* Product Title */}
           <Link
             to={`/product/${product.slug}`}
             style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '1.0625rem',
+              fontFamily: 'var(--font-heading)',
+              fontSize: '0.9375rem',
               fontWeight: 700,
-              color: 'var(--color-text-dark)',
-              textDecoration: 'none',
               lineHeight: 1.3,
+              color: '#111111',
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              marginBottom: '8px',
+              textDecoration: 'none',
+              marginBottom: '6px',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#2457FF';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#111111';
             }}
           >
             {product.name}
           </Link>
 
-          {/* Rating */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-            <div style={{ display: 'flex', color: 'var(--color-tangerine)' }}>
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={12}
-                  fill={i < Math.floor(product.rating) ? 'var(--color-tangerine)' : 'none'}
-                  stroke="var(--color-tangerine)"
-                />
-              ))}
-            </div>
-            <span style={{ fontSize: '0.75rem', color: '#666', fontFamily: 'var(--font-ui)', fontWeight: 600 }}>
-              {product.rating.toFixed(1)}
-            </span>
-          </div>
+          {/* Short Specs preview if available */}
+          {product.description && (
+            <p
+              style={{
+                fontSize: '0.78125rem',
+                color: '#666666',
+                lineHeight: 1.4,
+                display: '-webkit-box',
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                margin: '0 0 12px 0',
+              }}
+            >
+              {product.description}
+            </p>
+          )}
         </div>
 
-        {/* Pricing & Mobile Quick Add */}
+        {/* Price & Mobile Add Button */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingTop: '12px',
-            borderTop: '1px solid rgba(23, 23, 23, 0.08)',
+            paddingTop: '10px',
+            borderTop: '1px solid #F5F3EC',
           }}
         >
-          <div>
-            <div
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+            <span
+              className="tabular-nums font-mono"
               style={{
-                fontFamily: 'var(--font-ui)',
+                fontSize: '1.125rem',
                 fontWeight: 800,
-                fontSize: '1.1875rem',
-                color: 'var(--color-text-dark)',
+                color: '#111111',
                 letterSpacing: '-0.02em',
-                fontVariantNumeric: 'tabular-nums',
               }}
             >
               ₹{product.price.toLocaleString('en-IN')}
-            </div>
+            </span>
             {product.originalPrice && product.originalPrice > product.price && (
-              <div
+              <span
+                className="tabular-nums font-mono"
                 style={{
-                  fontSize: '0.75rem',
-                  color: '#888',
+                  fontSize: '0.78125rem',
+                  color: '#999999',
                   textDecoration: 'line-through',
-                  fontFamily: 'var(--font-ui)',
                 }}
               >
                 ₹{product.originalPrice.toLocaleString('en-IN')}
-              </div>
+              </span>
             )}
           </div>
 
-          {/* Mobile visible Quick Add Button */}
-          <div className="mobile-only-block">
-            <button
-              type="button"
-              onClick={handleQuickAdd}
-              className={`btn btn-sm ${justAdded ? 'btn-lime' : 'btn-blue'}`}
-              style={{ padding: '7px 14px', borderRadius: '9999px' }}
-              aria-label={`Add ${product.name} to bag`}
-            >
-              {justAdded ? <Check size={14} /> : <Plus size={14} />}
-              <span>{justAdded ? 'ADDED' : 'ADD'}</span>
-            </button>
-          </div>
+          {/* Mobile Direct Quick Add Button */}
+          <button
+            type="button"
+            onClick={handleQuickAdd}
+            className="mobile-only"
+            style={{
+              padding: '8px 12px',
+              backgroundColor: justAdded ? '#111111' : '#111111',
+              color: justAdded ? '#D7FF00' : '#FFFFFF',
+              border: 'none',
+              borderRadius: '2px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            aria-label={`Add ${product.name} to bag`}
+          >
+            {justAdded ? <Check size={15} color="#D7FF00" /> : <Plus size={15} />}
+          </button>
         </div>
       </div>
     </div>

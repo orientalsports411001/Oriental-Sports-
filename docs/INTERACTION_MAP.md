@@ -1,164 +1,219 @@
 # Oriental Sports — Interaction Map
-**Document Version**: 2.0  
-**Design Reference Stack**: 21st.dev (Interactions) + Mobbin (UX Flows) + Cosmos (Visual Curation) + Luma (Simplicity & Emotion) + UI/UX Pro Max (Design Tokens)
+
+**Version**: 3.0  
+**Design Reference Stack**: Playo (Sports-UX clarity & restraint) + Mobbin (Real e-commerce patterns) + Cosmos (Editorial visual curation) + Luma (Simplicity & visual confidence) + 21st.dev (Component mechanics) + UI/UX Pro Max (Design system governance).  
+**Primary Canvas**: Warm Ivory (`#F6F3EA`) / Crisp White (`#FFFFFF`) / Ink (`#111111`) / Restrained Plate Gold (`#C9A227`).
 
 ---
 
-## Component Interaction Matrix
+## 1. Global Navigation & Header Interaction
 
-### 1. Animated Glass Navbar (`GlassNav`)
-- **Purpose**: Primary site-wide navigation with sticky floating glassmorphism, category mega menu, and quick action icons.
-- **21st.dev Reference**: [Navbar Animations / Floating Header](https://21st.dev/community/components/explore/navbar-animations)
-- **Desktop Behaviour**:
-  - Starts as a floating translucent glass pill (`var(--glass-light)`, `backdrop-filter: blur(16px)`) over hero photography.
-  - On scroll (>50px), smoothly morphs into a compact docked translucent navigation bar with subtle border.
-  - Hovering "SHOP" reveals an animated glass mega menu displaying 8 sports with category images and dynamic preview crossfade.
-  - Hovering account avatar (if logged in) drops down an account card with "Hi, [Name]", quick links (Orders, Wishlist, Profile, Addresses), and Logout.
-  - If logged out, clicking Account opens the fast mobile-friendly `AuthSheet`.
-- **Mobile Behaviour**:
-  - Compact glass header (Logo + Search + Account + Bag).
-  - Tapping hamburger triggers a full-height animated glass drawer with accordion sport categories.
-- **Animation & Transitions**:
-  - Navbar dock transition: `cubic-bezier(0.16, 1, 0.3, 1) 350ms`.
-  - Mega menu entry: Scale `0.98 -> 1`, opacity `0 -> 1`, `250ms`.
-- **Accessibility**: ARIA expanded attributes for menus; keyboard Tab navigation; Esc key closes dropdowns/drawers.
+### Desktop Header:
+- **Default State**:
+  - Sits at top of viewport over Ivory canvas with high legibility.
+  - Height: `74px`.
+  - Left: Locked Oriental Sports mark (link to `/`).
+  - Center Nav Links: `SHOP`, `COURTS`, `ABOUT`, `VISIT`.
+  - Right Utility Icons:
+    - Search (`Search` icon + shortcut pill `⌘K` / `Ctrl+K`)
+    - Account (User profile popover or direct login modal trigger)
+    - Wishlist (Heart icon with dynamic badge count from `WishlistContext`)
+    - Bag (Shopping bag icon with dynamic badge count and subtotal preview)
+- **Scrolled State (`scrollY > 20px`)**:
+  - Smoothly transitions height to `64px`.
+  - Background blurs to `rgba(246, 243, 234, 0.94)` with subtle 1px border `rgba(17, 17, 17, 0.06)` and fine shadow.
+- **Hover Interactions**:
+  - Nav links: Subtle sliding underline indicator (`2px solid #111111`) with `200ms ease`.
+  - Shop link: Hover reveals refined 21st.dev style mega dropdown previewing primary sports (Pickleball, Cricket, Badminton, Volleyball) with thumbnail images.
+  - Action buttons: Scale `1.05` on hover with tooltip hints.
+- **Keyboard & Accessibility**:
+  - `Tab` navigates through all interactive items in DOM order.
+  - `Escape` closes any open dropdown, modal, or drawer.
+  - Skip link (`Skip to main content`) available for keyboard and screen reader users.
 
----
-
-### 2. Kinetic Hero Carousel (`HeroCarousel`)
-- **Purpose**: High-energy editorial centerpiece with commercial sports photography, kinetic headlines, and autoplay choreography.
-- **21st.dev Reference**: [Image Gallery / Carousel Component](https://21st.dev/community/components/explore/carousel-component-react)
-- **Content Slides**:
-  - Slide 01: "GEAR. COURTS. PUNE." (Athlete + match equipment)
-  - Slide 02: "PLAY. TRAIN. PERFORM." (High-motion court action)
-  - Slide 03: "WE BUILD. YOU PLAY." (Turnkey sports court architecture)
-- **Desktop Behaviour**:
-  - Automatic transition every 5.5 seconds.
-  - Interactive progress indicator bar fills over 5.5s.
-  - Previous / Next glass chevron controls with magnetic hover feedback.
-  - Slide index jump buttons (`01 / 02 / 03`).
-  - Pauses autoplay while hovered.
-- **Mobile Behaviour**:
-  - Full touch swipe support (`touchstart` / `touchmove` / `touchend` with momentum threshold).
-  - Viewport height tuned to `80svh` preventing overflow.
-  - Simplified touch-friendly slide progress dots and direct CTA pill.
-- **Animation & Transitions**:
-  - Image clip reveal + scale (`scale 1.05 -> 1.0`, `850ms`).
-  - Text staggered entry: Eyebrow (0ms), Headline (120ms), Description (240ms), CTA (360ms).
-- **Accessibility**: Screen reader live region announcing current slide; `prefers-reduced-motion` halts continuous progress animation.
+### Mobile Header (`<1024px`):
+- **Layout**: `[ Hamburger Menu ]` `[ Centered Oriental Sports Logo ]` `[ Wishlist (Badge) ]` `[ Bag (Badge) ]`.
+- **Tap Hamburger**:
+  - Slides open full-height Mobbin-style drawer with sports categories, court consultation link, store contact, and account shortcut.
+  - Smooth backdrop dim (`rgba(17, 17, 17, 0.5)`).
+  - Body scroll lock (`overflow: hidden`).
+- **Mobile Bottom Navigation Bar (`MobileBottomNav`)**:
+  - Fixed 5-point thumb bar docked to bottom of mobile screen (`60px` height):
+    - `HOME` (`/`)
+    - `SHOP` (`/shop`)
+    - `COURTS` (`/courts`)
+    - `WISHLIST` (`/wishlist` with count badge)
+    - `ACCOUNT` (`/account` / `/account/login`)
+  - Active tab highlighted with bold label and top ink dot indicator.
 
 ---
 
-### 3. Sports Ticker Ribbon (`MarqueeTicker`)
-- **Purpose**: Continuous visual momentum between sections.
-- **Desktop & Mobile Behaviour**:
-  - Infinite seamless CSS marquee moving right-to-left: `CRICKET ✦ BADMINTON ✦ PICKLEBALL ✦ TENNIS ✦ FITNESS ✦ TABLE TENNIS ✦ SQUASH ✦ RECREATION ✦`.
-  - Pauses slightly on hover/touch for clarity.
-  - Styled with Tangerine background and high-contrast bold typography.
+## 2. 5-Section Homepage Interaction Architecture
 
----
+### Section 1: Editorial Hero Carousel (`Hero`)
+- **UX Intent**: Immediate brand authority, clear purpose above the fold, photorealistic sports lifestyle visual.
+- **21st.dev Component Mechanics**: Synchronized image crossfade + progress bar indicator + keyboard navigation.
+- **Content Slides (3-Slide Story)**:
+  - Slide 01: `GEAR. COURTS. PUNE.` | "Everything you need to play, train and build." | CTAs: `SHOP SPORTS` (`/shop`), `BUILD A COURT` (`/courts`)
+  - Slide 02: `PLAY. TRAIN. PERFORM.` | "Curated cricket willow, tournament paddles, and pro racquet stringing in Camp." | CTAs: `EXPLORE GEAR` (`/shop`), `VISIT STORE` (`/visit`)
+  - Slide 03: `WE BUILD. YOU PLAY.` | "Turnkey sports surfaces, sub-base engineering, and floodlighting across Pune." | CTAs: `EXPLORE COURTS` (`/courts`), `VIEW PROJECTS` (`/courts/projects`)
+- **Autoplay & Timing**:
+  - Duration: `5500ms` per slide.
+  - Linear SVG progress ring/bar showing countdown.
+  - Pauses immediately on mouse hover, touch press, or element focus.
+  - Resets countdown when user manually interacts.
+- **Controls**:
+  - Previous / Next subtle chevron buttons on desktop.
+  - Numbered slide selector (`01 / 02 / 03`).
+  - Mobile touch swipe support (`touchstart`, `touchmove`, `touchend` with 50px delta threshold).
+  - Keyboard `ArrowLeft` / `ArrowRight` listener.
+- **Reduced Motion**: Under `prefers-reduced-motion: reduce`, animations are replaced with instant slide jumps and autoplay is disabled.
 
-### 4. Interactive Sport Selector (`SportSelector`)
-- **Purpose**: Signature visual discovery section for 8 core sports categories on Electric Blue (`#2457FF`).
-- **21st.dev Reference**: [Hover Image Gallery / Interactive Selector](https://21st.dev/community/components/explore/image-gallery-component)
-- **Desktop Behaviour**:
-  - Two-column layout:
-    - Left: Vertical list of 8 sports in bold `Space Grotesk`.
-    - Right: Large framed dynamic sport photograph (`aspect-ratio: 4/3`, glass frame with subtle glow).
-  - Hovering a sport immediately updates the right-side photograph with a smooth crossfade and highlights the active sport pill with an arrow reveal.
-  - Clicking any sport navigates to `/shop/:category`.
-- **Mobile Behaviour**:
-  - Horizontal swipeable reel of sport cards with vivid photos and pill badges. Tap navigates to `/shop/:category`.
-- **Animation**:
-  - Image crossfade: `300ms ease-out`.
-  - Pill expansion: `200ms ease`.
+### Section 2: Shop by Sport (`ShopBySport`)
+- **UX Intent**: Fast sports discovery via editorial photography cards.
+- **Sports Categorization**:
+  - Primary (High visual presence): `Pickleball`, `Cricket`, `Badminton`, `Volleyball`
+  - Secondary (Clean list/tags): `Squash`, `Table Tennis`, `Fitness`, `Recreation`, `Accessories`
+- **Interactions**:
+  - Staggered editorial grid: Primary sports featured in asymmetric photo cards (e.g. 2 large feature cards, 2 medium cards, and pill ribbon for secondary sports).
+  - Card Hover:
+    - Image scales smoothly (`scale(1.03)` over `350ms ease-out`).
+    - Subtle arrow indicator slides right `4px`.
+    - CTA tag expands slightly.
+  - Card Click: Direct navigation to `/shop/:category`.
 
----
+### Section 3: Featured Gear (`FeaturedProducts`)
+- **UX Intent**: Frictionless commerce discovery of tournament-grade equipment.
+- **Product Card (`ProductCard`) Interactions**:
+  - **Image Hover**:
+    - Smooth crossfade to secondary product view if available (`300ms ease`).
+    - Quick Add pill button slides up from bottom edge (`translateY(0)`).
+  - **Wishlist Heart**:
+    - Clicking toggles item in `WishlistContext`.
+    - Heart scales with spring bounce `1.0 -> 1.25 -> 1.0`.
+    - Updates wishlist counter in header.
+  - **Quick Add**:
+    - Clicking selects default tournament variant and adds to `CartContext`.
+    - Button changes state to `✓ ADDED` for 1500ms with green micro-flash.
+    - Automatically opens the sliding `CartDrawer`.
+  - **Out of Stock**:
+    - Disables Quick Add; displays clean "Notify in Camp Store" state.
 
-### 5. Featured Gear Grid (`ProductCard` & `QuickAdd`)
-- **Purpose**: Showcase 4–6 authentic tournament-grade products with instant interactions on crisp white.
-- **21st.dev Reference**: [Hover Dev Cards](https://21st.dev/community/components/explore/hover-dev)
-- **Desktop Behaviour**:
-  - Crisp card with 16px radius, subtle border, and soft shadow.
-  - Hover triggers:
-    - Primary image zooms slightly (`scale(1.04)`).
-    - Secondary image crossfades in if available.
-    - Quick-Add pill button slides up from bottom.
-    - Wishlist heart icon reveals on top-right.
-  - Clicking Wishlist toggles item in `WishlistContext` with scale bounce feedback.
-  - Clicking Quick-Add adds the default variant to Cart and triggers "✓ ADDED TO BAG" toast + opens cart drawer.
-- **Mobile Behaviour**:
-  - Quick-add and Wishlist buttons are always accessible (no hover dependency).
-  - Touch-friendly swipe reel on small screens (`375px–430px`).
-
----
-
-### 6. Build a Court Showcase (`CourtsSection`)
-- **Purpose**: High-impact presentation of Oriental Sports' court construction infrastructure on Tangerine Orange (`#FF6B35`).
-- **21st.dev Reference**: [Project Showcase / Glass Panel](https://21st.dev/community/components/explore/project-showcase)
-- **Desktop Behaviour**:
-  - Headline: "WE BUILD THE PLACE YOU PLAY."
-  - Large architectural sports court photo with a floating glass spec sheet (`var(--glass-dark)`):
-    - Sub-base engineering, acrylic/turf surface types, floodlighting, turnkey handover.
-  - Direct CTAs:
-    - "COURT CONSULTATION →" (opens consultation inquiry on `/contact?type=court`)
-    - "VIEW PUNE PROJECTS →" (navigates to `/courts/projects`)
-- **Mobile Behaviour**:
-  - Stacked layout: Headline → Image with glass overlay badge → Direct touch buttons.
-
----
-
-### 7. Flagship Camp Store Visit (`VisitStore`)
-- **Purpose**: Drive physical footfall to Shop 247, MG Road, Camp, Pune on Warm Cream + Lime (`#C7F000`).
-- **Desktop & Mobile Behaviour**:
-  - Headline: "COME PLAY IRL."
-  - Verified details: Shop 247, MG Road, New Modikhana, Camp, Pune 411001.
-  - Operating hours: Mon–Sat 10:30 AM – 8:30 PM | Sun 11:00 AM – 6:00 PM.
-  - Interactive Google Maps embed (zoomable, pannable, real iframe).
-  - 3 action pills:
-    - `GET DIRECTIONS →` (opens Google Maps Navigation)
-    - `CALL STORE` (`tel:+919890990022`)
-    - `WHATSAPP` (direct WhatsApp link)
-
----
-
-### 8. Authentication Panel & Sheets (`AuthSheet` / `LoginPage`)
-- **Purpose**: Myntra-inspired fast, mobile-friendly customer auth flow.
-- **Mobbin Reference**: [Login / Phone Verification Flow](https://mobbin.com/?redirect_to=/discover)
-- **Flow**:
-  1. Entry: Welcome screen with "Continue with Google", divider, and "+91 [Mobile number]".
-  2. Phone OTP Screen: 6 discrete inputs with auto-focus, paste listener, 30s countdown timer, resend button, and dev helper code banner.
-  3. First-Time User Screen: 4 fields (First name, Last name, Email, Mobile) -> "ACCOUNT CREATED ✓".
-  4. Return-To Redirection: Automatically redirects customer back to originating page (`returnTo`).
-  5. Pluggable `AuthProvider`: Dev runs mock provider; switches to Shopify Customer Account OAuth in production.
-
----
-
-### 9. Animated Cart Drawer (`CartDrawer`) & Page (`CartPage`)
-- **Purpose**: Frictionless cart management and Shopify checkout handoff.
-- **Desktop Behaviour**:
-  - Right-side sliding glass drawer (`var(--glass-light)`, `backdrop-filter: blur(20px)`).
-  - Displays product thumbnail, title, selected variant, price, item quantity stepper, and remove icon.
-  - Subtotal calculation, tax/delivery notice, and primary "PROCEED TO CHECKOUT →" button.
-  - Empty state with playful "YOUR BAG IS EMPTY" message and "SHOP SPORTS" CTA.
-- **Mobile Behaviour**:
-  - Bottom sheet on mobile devices with thumb-friendly touch targets.
-
----
-
-### 10. Live Search Overlay (`SearchOverlay`)
-- **Purpose**: Instant keyword and sport discovery.
-- **Desktop & Mobile Behaviour**:
-  - Fullscreen/modal glass backdrop with centered search input.
-  - Live query debounced filtering across products, sports, and court services.
-  - Quick pills for trending searches: "Pickleball", "English Willow", "Tennis Strings", "Court Construction".
-  - Empty state: "No sports equipment found for '{query}'" with direct category links.
-
----
-
-### 11. Branded 404 Experience (`NotFoundPage`)
-- **Purpose**: Memorable, playful recovery from broken URLs.
+### Section 4: Build a Court Showcase (`CourtsSection`)
+- **UX Intent**: Showcase Pune sports infrastructure capabilities without SaaS clutter.
 - **Content**:
-  - "404: MISSED THE BALL."
-  - "The court line you are looking for is out of bounds."
-  - Action buttons: "BACK HOME" and "SHOP SPORTS".
+  - Heading: `WE BUILD COURTS.`
+  - Copy: "From sports surfaces and court construction to the finishing details, explore Oriental Sports infrastructure work."
+  - Project Categories: `Tennis`, `Pickleball`, `Basketball`, `Multi-Sport`, `Volleyball`.
+- **Interactions**:
+  - Split layout: Verified Pune court photography on one side; technical scope, certified surface options, and interactive project cards on the other.
+  - Hovering a project reveals real specifications (e.g., 8-layer cushion acrylic, 350-lux lighting).
+  - Direct CTAs:
+    - Primary: `VIEW PUNE PROJECTS` (`/courts/projects`)
+    - Secondary: `COURT CONSULTATION` (`/contact?type=court`)
+
+### Section 5: Visit Oriental Flagship (`VisitStore`)
+- **UX Intent**: Drive physical footfall to the Camp retail store with zero fictitious data.
+- **Content**:
+  - Heading: `COME VISIT.`
+  - Address: Oriental Sports, 247 MG Road, New Modikhana, Camp, Pune 411001.
+  - Phone: `+91 98909 90022`
+  - Email: `oriental_sports@outlook.com`
+- **CTAs**:
+  - Primary CTA: `GET DIRECTIONS` (direct link to Google Maps navigation coordinates).
+  - Secondary CTA: `CALL STORE` (`tel:+919890990022`).
+- **Visuals**:
+  - Clean photographic frame of the Camp store / workshop.
+  - No fake AI maps, no invented opening hours, no fictitious store features.
+
+### Section 6: Structured Footer (`Footer`)
+- **Layout**: 4 clean editorial columns:
+  - Column 1: Brand mark, Pune Camp positioning, verified contact.
+  - Column 2: `SHOP` (Pickleball, Cricket, Badminton, Volleyball, Squash, Fitness, Recreation, Accessories).
+  - Column 3: `COURTS` (Projects, Court Setup) & `HOUSE` (About, Visit, Contact).
+  - Column 4: `CUSTOMER` (Account, Orders, Wishlist, Shipping, Returns, Privacy, Terms).
+- **Zero dead links**: Every single link resolves to a valid route.
+
+---
+
+## 3. Commerce & Cart Drawer Interaction (`CartDrawer`)
+
+- **Trigger**: Click Bag icon in header, Quick Add from card, or "Add to Bag" on PDP.
+- **Drawer Behavior**:
+  - Slides in from right on desktop (`420px` width) or up from bottom on mobile.
+  - Translucent neutral backdrop (`rgba(17, 17, 17, 0.4)`); click outside or `Escape` closes drawer.
+- **Line Item Controls**:
+  - Quantity Stepper (`-` / count / `+`) with instantaneous subtotal recalculation.
+  - Decreasing quantity to `0` prompts item removal.
+  - Delete trash icon removes item immediately.
+- **Free Delivery Progress**:
+  - Visual meter tracking Pune delivery threshold (₹2,000).
+- **Checkout Action**:
+  - `PROCEED TO CHECKOUT` CTA buttons hand off to Shopify checkout architecture or direct WhatsApp fulfillment.
+
+---
+
+## 4. Search Overlay Interaction (`SearchModal` & `/search`)
+
+- **Trigger**: Click Search in header or keyboard shortcut (`⌘K` / `Ctrl+K`).
+- **Desktop Search Modal**:
+  - Opens centered modal overlay with auto-focused search input.
+  - Live debounced filtering (150ms) across Products, Categories, and Court Projects.
+  - Quick trending search tags: "Pickleball", "English Willow", "Tennis Strings", "Court Construction".
+  - Pressing `Enter` navigates to full `/search?q={query}` page.
+  - Empty state provides recommendations: "No equipment found — browse all disciplines".
+
+---
+
+## 5. Account & Authentication Flow (`/account/*`)
+
+- **Shopify Customer Account Architecture**:
+  - Pluggable `AuthProvider` supporting phone OTP, Google OAuth, and Email login.
+- **Routes**:
+  - `/account`: User dashboard (overview, recent orders, saved addresses, court consultations).
+  - `/account/login`: Clean phone/email login interface with `returnTo` preservation.
+  - `/account/signup`: Fast 3-field customer registration.
+  - `/account/verify`: 6-digit discrete OTP verification with auto-advance, paste listener, and 30s resend timer.
+  - `/account/orders`: Full list of past & active orders with status badges.
+  - `/account/orders/:orderId`: Visual DTDC tracking timeline and delivery address.
+  - `/account/profile`: Edit first name, last name, phone, email, sports interests.
+  - `/account/addresses`: Add, edit, delete, and set default delivery addresses in Pune/India.
+  - `/account/wishlist` & `/wishlist`: Grid of favorited products with one-click Add to Bag.
+- **Originating Page Preservation**:
+  - When an unauthenticated user clicks Wishlist or Order Tracking, `returnTo` URL parameter is saved.
+  - Upon successful verification, user is returned immediately to the originating product or page.
+
+---
+
+## 6. Product Detail Page (`/product/:slug`)
+
+- **Layout**:
+  - Left: High-res product gallery with main viewer and thumbnail list (keyboard navigable).
+  - Right: Sticky product information column:
+    - Category kicker, title, price (tabular numerals), variant picker (e.g. Weight/Grip), size selector, quantity stepper.
+    - CTAs: `ADD TO BAG` (primary) and `BUY NOW` (direct to checkout).
+    - Authentic Pune Camp store availability badge: "Ready for same-day stringing & pickup at Camp store".
+    - Product specs table, delivery details, return policy.
+- **Mobile Sticky Buy Bar (`StickyBuyBar`)**:
+  - Appears when user scrolls past primary Add to Bag button.
+  - Docks thumbnail, title, price, and compact Add to Bag button to screen bottom.
+
+---
+
+## 7. Court Services & Projects (`/courts/*`)
+
+- **Routes**:
+  - `/courts`: Overview of court capabilities, certified surface types, interactive cost estimator.
+  - `/courts/projects`: Gallery of verified Pune projects (Koregaon Park Pickleball, Deccan Gymkhana Tennis, Baner Arena, Camp Officers Club).
+  - `/courts/:slug`: Deep project case study with technical sub-base details, surface layers, and inquiry form.
+- **No Fictitious Claims**: Strict adherence to verified specifications and real project scopes.
+
+---
+
+## 8. Error & 404 Recovery (`/404` & `*`)
+
+- **NotFoundPage**:
+  - Heading: `LOST THE BALL?`
+  - Body: "The court line you are looking for is out of bounds or the page has been moved."
+  - Primary CTA: `BACK TO SHOP` (`/shop`)
+  - Secondary CTA: `HOME` (`/`)

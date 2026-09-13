@@ -86,7 +86,7 @@ export const CourtProjectsPage: React.FC = () => {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap: 'var(--space-xl)',
+            gap: 'clamp(24px, 3vw, 36px)',
           }}
         >
           {filtered.map((proj) => (
@@ -94,59 +94,58 @@ export const CourtProjectsPage: React.FC = () => {
               key={proj.id}
               style={{
                 backgroundColor: 'var(--color-pure-white)',
-                border: '1px solid var(--color-ivory-border)',
-                borderRadius: '2px',
-                overflow: 'hidden',
+                border: '2px solid #111111',
+                boxShadow: '6px 6px 0px #111111',
                 display: 'flex',
                 flexDirection: 'column',
               }}
             >
-              <div style={{ position: 'relative', width: '100%', height: '240px' }}>
+              <div style={{ position: 'relative', width: '100%', height: '240px', borderBottom: '2px solid #111111', overflow: 'hidden' }}>
                 <img
                   src={proj.heroImage}
                   alt={proj.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
                 <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
-                  <span className="badge badge-dark">{proj.sport}</span>
+                  <span className="badge badge-dark" style={{ border: '1px solid rgba(255,255,255,0.3)', boxShadow: '2px 2px 0px #111111' }}>{proj.sport}</span>
                 </div>
                 <div style={{ position: 'absolute', top: '12px', right: '12px' }}>
-                  <span className="badge badge-gold">{proj.clientType}</span>
+                  <span className="badge badge-gold" style={{ boxShadow: '2px 2px 0px #111111' }}>{proj.clientType}</span>
                 </div>
               </div>
 
               <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-plate-gold)', fontSize: '0.8125rem', fontWeight: 700, marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-plate-gold)', fontSize: '0.8125rem', fontWeight: 800, marginBottom: '6px' }}>
                     <MapPin size={14} />
                     <span>{proj.location}</span>
                   </div>
 
-                  <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.25rem', lineHeight: 1.25, marginBottom: '8px' }}>
+                  <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.25rem', lineHeight: 1.2, marginBottom: '8px', color: '#111111' }}>
                     {proj.title}
                   </h3>
 
-                  <p style={{ color: '#555555', fontSize: '0.875rem', lineHeight: 1.45, marginBottom: '16px' }}>
+                  <p style={{ color: '#444444', fontSize: '0.9375rem', lineHeight: 1.45, marginBottom: '16px' }}>
                     {proj.description}
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.8125rem', color: '#666', marginBottom: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8125rem', color: '#555555', marginBottom: '20px', padding: '10px 12px', backgroundColor: '#F6F3EA', border: '1px solid #111111' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Layers size={14} color="#C9A227" />
-                      <span>{proj.surface}</span>
+                      <span style={{ fontWeight: 700 }}>{proj.surface}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Calendar size={14} color="#C9A227" />
-                      <span>Commissioned: {proj.year}</span>
+                      <span>Commissioned: <strong>{proj.year}</strong></span>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ paddingTop: '16px', borderTop: '1px solid #E2DCCF' }}>
+                <div style={{ paddingTop: '16px', borderTop: '2px solid #111111' }}>
                   <Link
                     to={`/courts/${proj.slug}`}
                     className="btn btn-primary"
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', boxShadow: '3px 3px 0px #C9A227' }}
                   >
                     <span>VIEW CASE STUDY</span>
                     <ArrowRight size={16} />

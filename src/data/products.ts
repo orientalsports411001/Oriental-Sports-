@@ -55,7 +55,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1531415074868-036b1c57e329?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80',
     ],
     description: 'Handcrafted exclusively for Oriental Sports from hand-selected clefts of unbleached Grade 1 English Willow. Pressed to perfection with a mid-to-low sweet spot tuned for Maharashtra turf wickets.',

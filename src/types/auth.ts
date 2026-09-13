@@ -8,7 +8,7 @@ export interface Address {
   state: string;
   pincode: string;
   isDefault: boolean;
-  type: 'home' | 'work' | 'other';
+  type: 'home' | 'work' | 'other' | 'academy';
 }
 
 export interface OrderItem {
@@ -80,10 +80,13 @@ export interface UserProfile {
   email: string;
   phone: string;
   sportPreferences: string[];
+  sportsInterests?: string[];
   membershipTier: 'Club Athlete' | 'Pro Member' | 'Elite Partner';
   addresses: Address[];
   orders: Order[];
   courtInquiries: CourtInquiry[];
+  stringingLoyaltyPoints?: number;
+  courtProjects?: any[];
   createdAt: string;
 }
 

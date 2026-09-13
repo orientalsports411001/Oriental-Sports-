@@ -33,9 +33,13 @@ import { OrderTracker } from '../components/account/OrderTracker';
 import { AddressModal } from '../components/account/AddressModal';
 import { Address } from '../types/auth';
 
-type AccountTab = 'overview' | 'orders' | 'addresses' | 'courts' | 'wishlist' | 'profile';
+export type AccountTab = 'overview' | 'orders' | 'addresses' | 'courts' | 'wishlist' | 'profile';
 
-export const AccountPage: React.FC = () => {
+interface AccountPageProps {
+  tab?: AccountTab | 'login' | 'signup' | 'verify';
+}
+
+export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
   const {
     user,
     isAuthenticated,
@@ -49,9 +53,23 @@ export const AccountPage: React.FC = () => {
   } = useAuth();
 
   const { wishlist } = useWishlist();
-  const { addItem, openCart } = useCart();
+  const { addToCart, openCart } = useCart();
 
-  const [activeTab, setActiveTab] = useState<AccountTab>('overview');
+  const [activeTab, setActiveTab] = useState<AccountTab>(
+    (tab && ['overview', 'orders', 'addresses', 'courts', 'wishlist', 'profile'].includes(tab))
+      ? (tab as AccountTab)
+      : 'overview'
+  );
+
+  React.useEffect(() => {
+    if (tab && ['overview', 'orders', 'addresses', 'courts', 'wishlist', 'profile'].includes(tab)) {
+      setActiveTab(tab as AccountTab);
+    } else if (tab === 'login' || tab === 'signup' || tab === 'verify') {
+      if (!isAuthenticated) {
+        openAuthModal('phone');
+      }
+    }
+  }, [tab, isAuthenticated, openAuthModal]);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [orderFilter, setOrderFilter] = useState<'all' | 'active' | 'delivered'>('all');
@@ -113,9 +131,9 @@ export const AccountPage: React.FC = () => {
   // If user is not authenticated, show modern high-conversion login/welcome page
   if (!isAuthenticated || !user) {
     return (
-      <div className="bg-ivory" style={{ minHeight: '85vh', paddingBottom: 'var(--space-4xl)' }}>
+      <div style={{ minHeight: '85vh', paddingBottom: 'var(--space-4xl)', backgroundColor: 'var(--color-canvas-base)' }}>
         {/* Hero Banner */}
-        <div style={{ backgroundColor: 'var(--color-ink)', color: '#FFFFFF', padding: '64px 0 48px' }}>
+        <div style={{ backgroundColor: 'var(--color-ink)', color: '#FFFFFF', padding: '56px 0 44px' }}>
           <div className="container">
             <div style={{ maxWidth: '680px' }}>
               <div
@@ -125,40 +143,40 @@ export const AccountPage: React.FC = () => {
                   gap: '8px',
                   backgroundColor: 'rgba(201, 162, 39, 0.15)',
                   border: '1px solid var(--color-plate-gold)',
-                  borderRadius: '9999px',
+                  borderRadius: 'var(--radius-pill)',
                   padding: '4px 14px',
                   marginBottom: '16px',
                 }}
               >
                 <Award size={14} color="var(--color-plate-gold)" />
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-plate-gold)', textTransform: 'uppercase' }}>
-                  PUNE'S HERITAGE SPORTS HUB SINCE 1974
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-plate-gold)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  PUNE CAMP SPORTS HOUSE
                 </span>
               </div>
               <h1 className="font-display" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', color: '#FFFFFF', lineHeight: 1.1, margin: '0 0 16px' }}>
-                ATHLETE ACCOUNT & CLUB HUB
+                ATHLETE ACCOUNT & SERVICES
               </h1>
               <p style={{ fontSize: '1rem', color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.6, margin: 0 }}>
-                Track equipment orders with live restringing records, manage delivery addresses across Pune, access turnkey court construction BOQ proposals, and earn loyalty perks.
+                Track sports equipment orders, check electronic restringing records, manage delivery addresses across Pune, and access court construction proposals.
               </p>
               <div style={{ display: 'flex', gap: '12px', marginTop: '28px', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => openAuthModal('phone')}
-                  className="btn btn-primary btn-lg"
+                  className="btn btn-primary btn-pill btn-lg"
                   style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
                   <Phone size={18} />
-                  <span>SIGN IN WITH MOBILE OTP</span>
+                  <span>SIGN IN WITH PHONE OTP</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => openAuthModal('phone')}
-                  className="btn btn-outline-light btn-lg"
+                  className="btn btn-outline-white btn-pill btn-lg"
                   style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
                   <Sparkles size={18} />
-                  <span>TEST WITH DEMO ATHLETE</span>
+                  <span>DEMO SIGN IN</span>
                 </button>
               </div>
             </div>
@@ -177,31 +195,32 @@ export const AccountPage: React.FC = () => {
           >
             <div
               style={{
-                backgroundColor: '#FFFFFF',
+                backgroundColor: 'var(--color-canvas-pure)',
                 padding: '24px',
-                borderRadius: '6px',
-                border: '1px solid var(--color-ivory-border)',
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)',
+                borderRadius: 'var(--radius-lg)',
+                border: '1px solid var(--color-border-subtle)',
+                boxShadow: 'var(--shadow-card)',
               }}
             >
               <div
                 style={{
                   width: '44px',
                   height: '44px',
-                  borderRadius: '8px',
-                  backgroundColor: 'rgba(36, 87, 255, 0.1)',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'var(--color-canvas-surface)',
+                  border: '1px solid var(--color-border-subtle)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: '16px',
                 }}
               >
-                <Package size={22} color="var(--color-electric-blue)" />
+                <Package size={22} color="var(--color-ink)" />
               </div>
-              <h3 style={{ fontSize: '1.0625rem', fontWeight: 800, marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, marginBottom: '8px', color: 'var(--color-ink)' }}>
                 Real-Time Order & Stringing Tracking
               </h3>
-              <p style={{ fontSize: '0.875rem', color: '#666', lineHeight: 1.5, margin: 0 }}>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-ink-muted)', lineHeight: 1.5, margin: 0 }}>
                 Live dispatch timeline from our Camp flagship store with electronic stringing tension inspection records and AWB courier tracking.
               </p>
             </div>
@@ -511,7 +530,7 @@ export const AccountPage: React.FC = () => {
               }}
             >
               <Layers size={16} />
-              <span>Court Projects ({user.courtProjects.length})</span>
+              <span>Court Projects ({user.courtProjects?.length || 0})</span>
             </button>
 
             <button
@@ -610,7 +629,7 @@ export const AccountPage: React.FC = () => {
                   <Layers size={18} color="var(--color-plate-gold)" />
                 </div>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--color-ink)' }}>
-                  {user.courtProjects.length}
+                  {user.courtProjects?.length || 0}
                 </div>
                 <div style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '4px' }}>
                   Deccan Gymkhana & Kalyani Nagar
@@ -1088,7 +1107,7 @@ export const AccountPage: React.FC = () => {
             >
               <div>
                 <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0 }}>
-                  TURNKEY COURT CONSTRUCTION PROJECTS ({user.courtProjects.length})
+                  TURNKEY COURT CONSTRUCTION PROJECTS ({user.courtProjects?.length || 0})
                 </h2>
                 <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>
                   Track your institutional, school, and club court civil engineering proposals & BOQ documents.
@@ -1106,7 +1125,7 @@ export const AccountPage: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {user.courtProjects.map((project) => (
+              {(user.courtProjects || []).map((project: any) => (
                 <div
                   key={project.id}
                   style={{
@@ -1224,7 +1243,7 @@ export const AccountPage: React.FC = () => {
 
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <a
-                        href={`https://wa.me/${STORE_INFO.whatsapp}?text=${encodeURIComponent(
+                        href={`https://wa.me/${STORE_INFO.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
                           `Hello Oriental Sports Court Construction Cell, I am following up on Turnkey Proposal ${project.id} (${project.title}). Can we schedule a site alignment meeting?`
                         )}`}
                         target="_blank"

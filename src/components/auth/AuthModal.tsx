@@ -205,12 +205,12 @@ export const AuthModal: React.FC = () => {
                 fontSize: '0.625rem',
                 fontWeight: 800,
                 letterSpacing: '0.08em',
-                padding: '2px 6px',
-                borderRadius: '2px',
+                padding: '2px 8px',
+                borderRadius: 'var(--radius-pill)',
                 textTransform: 'uppercase',
               }}
             >
-              EST. 1974 • PUNE
+              CAMP • PUNE
             </span>
             <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)' }}>
               ORIENTAL ATHLETE ID

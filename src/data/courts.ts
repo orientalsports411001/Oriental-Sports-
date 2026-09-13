@@ -73,7 +73,7 @@ export const COURT_SERVICES: CourtService[] = [
     slug: 'football-cricket-multisport-turf',
     name: 'Multi-Sport Synthetic Turf & Arenas',
     sport: 'Turf & Multi-sport',
-    heroImage: 'https://images.unsplash.com/photo-1529900245534-47fbf4cb3836?auto=format&fit=crop&w=1200&q=80',
+    heroImage: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80',
     surfaceTypes: ['50mm Monofilament Football Turf', '15mm Cricket Box Pitch Turf', 'Multi-Use Multi-Turf'],
     description: 'Commercial sports turf setups for rooftop arenas, box cricket leagues, and 5-a-side football facilities with high-tensile containment netting.',
     features: [
@@ -86,7 +86,7 @@ export const COURT_SERVICES: CourtService[] = [
     leadTime: '25 to 40 Days',
     estimatedPriceRange: '₹8 Lakh – ₹28 Lakh depending on arena footprint',
     gallery: [
-      'https://images.unsplash.com/photo-1529900245534-47fbf4cb3836?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1000&q=80',
     ],
   },
@@ -181,9 +181,9 @@ export const COURT_PROJECTS: CourtProject[] = [
     surface: '50mm Monofilament Synthetic Turf',
     clientType: 'Commercial',
     year: '2024',
-    heroImage: 'https://images.unsplash.com/photo-1529900245534-47fbf4cb3836?auto=format&fit=crop&w=1200&q=80',
+    heroImage: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80',
     images: [
-      'https://images.unsplash.com/photo-1529900245534-47fbf4cb3836?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80',
     ],
     description: 'Rooftop sports arena engineering with dynamic structural load assessment, anti-vibration rubber isolation mounts, and 30-foot high-density nylon ball containment cage.',

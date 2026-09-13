@@ -1,6 +1,5 @@
 import React from 'react';
 import { Hero } from '../components/home/Hero';
-import { MarqueeTicker } from '../components/home/MarqueeTicker';
 import { ShopBySport } from '../components/home/ShopBySport';
 import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { CourtsSection } from '../components/home/CourtsSection';
@@ -9,23 +8,22 @@ import { VisitStore } from '../components/home/VisitStore';
 export const HomePage: React.FC = () => {
   return (
     <main>
-      {/* 1. HERO: Warm Cream + Full-Bleed Action Photography Carousel */}
+      {/* 1. HERO: GEAR. COURTS. PUNE. Photorealistic Editorial Carousel */}
       <Hero />
 
-      {/* High-Energy Sports Ticker */}
-      <MarqueeTicker variant="orange" />
-
-      {/* 2. SHOP BY SPORT: Electric Blue Section with 8 Sports */}
+      {/* 2. SHOP BY SPORT: Primary Sports Editorial Cards + Secondary Tags */}
       <ShopBySport />
 
-      {/* 3. FEATURED GEAR: Crisp White Section with Real Match-Grade Products */}
+      {/* 3. FEATURED GEAR: Clean Commerce Grid */}
       <FeaturedProducts />
 
-      {/* 4. BUILD A COURT: High-Energy Tangerine Section with Court Photography */}
+      {/* 4. BUILD A COURT: Infrastructure & Construction Showcase */}
       <CourtsSection />
 
-      {/* 5. VISIT THE STORE: Warm Cream & Lime Flagship with Real Interactive Google Map */}
+      {/* 5. VISIT ORIENTAL: Physical Camp Store Details & Direct Actions */}
       <VisitStore />
     </main>
   );
 };
+
+export default HomePage;
