@@ -101,7 +101,7 @@ export const CourtsPage: React.FC = () => {
             OUR COURT DISCIPLINES
           </h2>
           <p style={{ color: '#666', fontSize: '1rem' }}>
-            From high-speed pickleball acrylic surfaces to FIFA certified turf setups.
+            From high-speed pickleball acrylic surfaces to all-weather synthetic turf setups.
           </p>
         </div>
 

@@ -4,12 +4,12 @@
  */
 
 export const MEDIA = {
-  // Hero: 3 Cinematic Editorial Slides
-  heroSlide1: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=2400&q=90', // Tennis Court Action & Lighting
-  heroSlide2: 'https://images.unsplash.com/photo-1531415074868-036b1c57e329?auto=format&fit=crop&w=2400&q=90', // Cricket / Athletic Training High Drama
-  heroSlide3: 'https://images.unsplash.com/photo-1529900245534-47fbf4cb3836?auto=format&fit=crop&w=2400&q=90', // Architectural Floodlit Court Arena
-  heroSports: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=2400&q=90',
-  heroSportsMobile: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1200&q=85',
+  // Hero: 3 Cinematic Editorial Slides (Local High-Resolution Assets)
+  heroSlide1: '/images/hero/hero_gear_pune.jpg', // Athlete with racket & bat on illuminated championship court
+  heroSlide2: '/images/hero/hero_train_perform.jpg', // Dynamic badminton smash in mid-air with arena lights
+  heroSlide3: '/images/hero/hero_court_build.jpg', // Architectural sports court at twilight with floodlights
+  heroSports: '/images/hero/hero_gear_pune.jpg',
+  heroSportsMobile: '/images/hero/hero_gear_pune.jpg',
   
   // Pillars
   shopPillar: 'https://images.unsplash.com/photo-1531415074868-036b1c57e329?auto=format&fit=crop&w=1800&q=85',

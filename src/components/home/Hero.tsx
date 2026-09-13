@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { ArrowRight, ChevronLeft, ChevronRight, Compass, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, MapPin, Wrench, Shield, Pause, Play } from 'lucide-react';
 import { MagneticButton } from '../ui/MagneticButton';
 import { BrandRings } from '../brand/BrandRings';
 import { MEDIA } from '../../data/media';
@@ -16,6 +16,8 @@ interface HeroSlide {
   secondaryCta: { label: string; href: string };
   image: string;
   alt: string;
+  desktopPosition: string;
+  mobilePosition: string;
 }
 
 const HERO_SLIDES: HeroSlide[] = [
@@ -25,11 +27,13 @@ const HERO_SLIDES: HeroSlide[] = [
     eyebrow: "PUNE'S SPORTS HOUSE · EST. CAMP",
     headlineWords: ['GEAR.', 'COURTS.', 'PUNE.'],
     highlightIndex: 1, // COURTS.
-    copy: 'Premium athletic equipment, match racquet stringing, and professional court infrastructure engineered for schools, clubs, and athletes across Maharashtra.',
+    copy: "Pune's destination for sports equipment, racquet restringing, and sports court construction. Based at Shop 247, MG Road, Camp.",
     primaryCta: { label: 'SHOP GEAR', href: '/shop' },
     secondaryCta: { label: 'BUILD A COURT', href: '/courts' },
-    image: MEDIA.heroSlide1,
-    alt: 'High performance tennis court action and competition lighting',
+    image: MEDIA.heroSlide1, // Local photorealistic asset: Athlete with racket & bat on illuminated court
+    alt: 'Athlete with racquet and bat standing on illuminated sports court during golden hour',
+    desktopPosition: 'center 35%',
+    mobilePosition: '68% 28%',
   },
   {
     id: 'slide-02',
@@ -37,11 +41,13 @@ const HERO_SLIDES: HeroSlide[] = [
     eyebrow: 'PRO-GRADE EQUIPMENT · CRICKET TO PICKLEBALL',
     headlineWords: ['PLAY.', 'TRAIN.', 'PERFORM.'],
     highlightIndex: 1, // TRAIN.
-    copy: 'Curated match-grade English willow, tour tennis racquets, tournament pickleball paddles, and commercial conditioning equipment ready at our Camp store.',
+    copy: 'Match-grade cricket willow, tour-level tennis racquets, tournament pickleball paddles, and athlete conditioning equipment ready at our Camp store.',
     primaryCta: { label: 'EXPLORE SPORTS', href: '/shop' },
     secondaryCta: { label: 'VISIT STORE', href: '/visit' },
-    image: MEDIA.heroSlide2,
-    alt: 'Athletic training, cricket willow craft, and match gear',
+    image: MEDIA.heroSlide2, // Local photorealistic asset: Mid-air badminton smash in arena spotlight
+    alt: 'Dynamic athlete mid-air smash action under stadium spotlights',
+    desktopPosition: 'center 25%',
+    mobilePosition: '72% 20%',
   },
   {
     id: 'slide-03',
@@ -49,11 +55,13 @@ const HERO_SLIDES: HeroSlide[] = [
     eyebrow: 'SPORTS INFRASTRUCTURE & CONSTRUCTION',
     headlineWords: ['WE BUILD.', 'YOU PLAY.'],
     highlightIndex: 1, // YOU PLAY.
-    copy: 'Turnkey ITF acrylic tennis courts, FIFA-quality synthetic turfs, Olympic shock absorption pads, and sports floodlighting executed across Pune and Western India.',
+    copy: 'Turnkey court construction, professional acrylic surfaces, and sports floodlighting for schools, clubs, and sports facilities in Pune.',
     primaryCta: { label: 'COURT CONSULTATION', href: '/courts' },
     secondaryCta: { label: 'VIEW PROJECTS', href: '/courts/projects' },
-    image: MEDIA.heroSlide3,
-    alt: 'Championship sports court architecture illuminated under floodlights',
+    image: MEDIA.heroSlide3, // Local photorealistic asset: Architectural championship court under dusk floodlights
+    alt: 'Pristine newly constructed championship sports court illuminated at dusk with floodlights',
+    desktopPosition: 'center 45%',
+    mobilePosition: '62% 45%',
   },
 ];
 
@@ -68,6 +76,7 @@ export const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
+  const touchStartTimeRef = useRef<number>(0);
 
   // Parallax scroll effects across hero section
   const { scrollYProgress } = useScroll({
@@ -75,11 +84,11 @@ export const Hero: React.FC = () => {
     offset: ['start start', 'end start'],
   });
 
-  const scrollScale = useTransform(scrollYProgress, [0, 1], [1, 1.14]);
-  const scrollTranslateY = useTransform(scrollYProgress, [0, 1], [0, 90]);
-  const textTranslateY = useTransform(scrollYProgress, [0, 1], [0, 50]);
-  const ringsRotate = useTransform(scrollYProgress, [0, 1], [0, 18]);
-  const ringsTranslateY = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const scrollScale = useTransform(scrollYProgress, [0, 1], [1, 1.12]);
+  const scrollTranslateY = useTransform(scrollYProgress, [0, 1], [0, 80]);
+  const textTranslateY = useTransform(scrollYProgress, [0, 1], [0, 45]);
+  const ringsRotate = useTransform(scrollYProgress, [0, 1], [0, 16]);
+  const ringsTranslateY = useTransform(scrollYProgress, [0, 1], [0, 35]);
 
   const slide = HERO_SLIDES[currentSlide];
 
@@ -99,7 +108,7 @@ export const Hero: React.FC = () => {
     setCurrentSlide(idx);
   };
 
-  // Autoplay loop with pause on hover/interaction
+  // Autoplay loop with pause on hover/touch
   useEffect(() => {
     if (isPaused || prefersReducedMotion) return;
     const timer = setInterval(() => {
@@ -108,10 +117,26 @@ export const Hero: React.FC = () => {
     return () => clearInterval(timer);
   }, [isPaused, handleNext, prefersReducedMotion, currentSlide]);
 
-  // Touch Swipe Handlers for Mobile (72-82vh)
+  // Keyboard navigation support (ArrowLeft / ArrowRight)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only react if not in an input/textarea
+      if (['input', 'textarea'].includes((e.target as HTMLElement)?.tagName?.toLowerCase())) return;
+      if (e.key === 'ArrowRight') {
+        handleNext();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrev();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleNext, handlePrev]);
+
+  // Touch & Pointer Swipe Gesture Handling for Mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
     touchStartYRef.current = e.touches[0].clientY;
+    touchStartTimeRef.current = Date.now();
     setIsPaused(true);
   };
 
@@ -119,13 +144,14 @@ export const Hero: React.FC = () => {
     if (touchStartXRef.current === null || touchStartYRef.current === null) return;
     const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
     const deltaY = e.changedTouches[0].clientY - touchStartYRef.current;
+    const duration = Date.now() - touchStartTimeRef.current;
 
-    // Detect predominantly horizontal swipe
-    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+    // Minimum swipe distance threshold (40px) and ensure horizontal movement dominates
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && duration < 800) {
       if (deltaX < 0) {
-        handleNext();
+        handleNext(); // Swipe Left -> Next
       } else {
-        handlePrev();
+        handlePrev(); // Swipe Right -> Previous
       }
     }
     touchStartXRef.current = null;
@@ -145,33 +171,34 @@ export const Hero: React.FC = () => {
         position: 'relative',
         backgroundColor: 'var(--color-ink)',
         color: 'var(--color-ivory)',
-        minHeight: 'clamp(560px, 80vh, 920px)',
+        minHeight: 'clamp(580px, 82svh, 940px)',
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
-        paddingTop: 'clamp(28px, 5vw, 60px)',
-        paddingBottom: 'clamp(44px, 7vw, 84px)',
+        paddingTop: 'clamp(32px, 5vw, 68px)',
+        paddingBottom: 'clamp(48px, 7vw, 92px)',
+        userSelect: 'none',
       }}
-      aria-label="Oriental Sports Hero Editorial Showcase"
+      aria-label="Oriental Sports Hero Editorial Carousel"
     >
-      {/* BACKGROUND EDITORIAL VISUAL WITH SLIDE TRANSITION + SCROLL PARALLAX */}
+      {/* BACKGROUND EDITORIAL VISUAL (Visible Photography + Controlled Gradients) */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           zIndex: 1,
           overflow: 'hidden',
-          backgroundColor: '#0c0c0c',
+          backgroundColor: '#111111',
         }}
       >
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.div
             key={slide.id}
-            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.08 }}
+            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.06 }}
             animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0.15, scale: 1.05 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.04 }}
             transition={{
-              duration: prefersReducedMotion ? 0.3 : 0.85,
+              duration: prefersReducedMotion ? 0.35 : 0.85,
               ease: [0.16, 1, 0.3, 1],
             }}
             style={{
@@ -198,34 +225,49 @@ export const Hero: React.FC = () => {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'center 38%',
-                  filter: 'contrast(1.12) brightness(0.9)',
+                  objectPosition: slide.desktopPosition,
+                  filter: 'contrast(1.08) brightness(0.96)',
                 }}
               />
             </motion.div>
           </motion.div>
         </AnimatePresence>
 
-        {/* Cinematic Vignette & Radial Dark Gradient for Razor-Sharp Typography Contrast */}
+        {/* Controlled Dual-Layer Gradient: 65–75% of Photography Remains Vividly Visible */}
+        {/* Layer 1: Left-to-right gradient giving solid reading contrast behind text on left 35%, fading to sheer over the athlete/court */}
         <div
+          className="desktop-only"
           style={{
             position: 'absolute',
             inset: 0,
             zIndex: 2,
             background:
-              'radial-gradient(ellipse at 25% 45%, rgba(17,17,17,0.48) 0%, rgba(17,17,17,0.85) 65%, #111111 100%)',
+              'linear-gradient(to right, rgba(14, 14, 14, 0.88) 0%, rgba(14, 14, 14, 0.62) 36%, rgba(14, 14, 14, 0.22) 72%, rgba(14, 14, 14, 0.08) 100%)',
             pointerEvents: 'none',
           }}
         />
 
-        {/* Bottom subtle edge transition into the next section */}
+        {/* Layer 2: Mobile vertical gradient preserving athlete in upper half, grounding typography at bottom */}
+        <div
+          className="mobile-only-block"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 2,
+            background:
+              'linear-gradient(to top, rgba(14, 14, 14, 0.95) 0%, rgba(14, 14, 14, 0.65) 48%, rgba(14, 14, 14, 0.2) 100%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Layer 3: Soft bottom edge grounding */}
         <div
           style={{
             position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            height: '80px',
+            height: '70px',
             background: 'linear-gradient(to top, #111111 0%, transparent 100%)',
             zIndex: 2,
             pointerEvents: 'none',
@@ -238,7 +280,7 @@ export const Hero: React.FC = () => {
         style={{
           position: 'absolute',
           right: '-5%',
-          top: '10%',
+          top: '8%',
           zIndex: 2,
           rotate: ringsRotate,
           y: ringsTranslateY,
@@ -252,7 +294,7 @@ export const Hero: React.FC = () => {
 
       {/* MAIN CONTAINER CONTENT WITH CHOREOGRAPHED KINETIC ENTRANCE */}
       <div className="container" style={{ position: 'relative', zIndex: 3 }}>
-        <motion.div style={{ y: textTranslateY, maxWidth: '880px' }}>
+        <motion.div style={{ y: textTranslateY, maxWidth: '860px' }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={slide.id}
@@ -264,30 +306,30 @@ export const Hero: React.FC = () => {
                 visible: {
                   opacity: 1,
                   transition: {
-                    staggerChildren: prefersReducedMotion ? 0 : 0.09,
-                    delayChildren: 0.05,
+                    staggerChildren: prefersReducedMotion ? 0 : 0.08,
+                    delayChildren: 0.04,
                   },
                 },
                 exit: {
                   opacity: 0,
-                  transition: { duration: 0.25 },
+                  transition: { duration: 0.22 },
                 },
               }}
             >
-              {/* 1. EYEBROW WITH PULSE INDICATOR */}
+              {/* 1. EYEBROW WITH LIVE INDICATOR */}
               <motion.div
                 variants={{
-                  hidden: { opacity: 0, y: 16 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
-                  exit: { opacity: 0, y: -10, transition: { duration: 0.2 } },
+                  hidden: { opacity: 0, y: 14 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+                  exit: { opacity: 0, y: -8, transition: { duration: 0.18 } },
                 }}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '10px',
                   padding: '6px 14px',
-                  backgroundColor: 'rgba(201, 162, 39, 0.12)',
-                  border: '1px solid rgba(201, 162, 39, 0.35)',
+                  backgroundColor: 'rgba(201, 162, 39, 0.14)',
+                  border: '1px solid rgba(201, 162, 39, 0.4)',
                   borderRadius: '2px',
                   marginBottom: 'clamp(14px, 2.5vw, 22px)',
                 }}
@@ -320,11 +362,11 @@ export const Hero: React.FC = () => {
               <h1
                 style={{
                   fontFamily: 'var(--font-display-xl)',
-                  fontSize: 'clamp(3.5rem, 11vw, 8.5rem)',
+                  fontSize: 'clamp(3.25rem, 10.5vw, 8rem)',
                   lineHeight: 0.88,
                   letterSpacing: '-0.035em',
                   textTransform: 'uppercase',
-                  margin: '0 0 clamp(16px, 3vw, 28px) 0',
+                  margin: '0 0 clamp(16px, 2.5vw, 26px) 0',
                   color: 'var(--color-pure-white)',
                   display: 'flex',
                   flexDirection: 'column',
@@ -355,15 +397,15 @@ export const Hero: React.FC = () => {
                           exit: {
                             y: '-100%',
                             opacity: 0,
-                            transition: { duration: 0.25 },
+                            transition: { duration: 0.22 },
                           },
                         }}
                         style={{
                           display: 'inline-block',
                           color: isGold ? 'var(--color-plate-gold)' : 'var(--color-pure-white)',
                           textShadow: isGold
-                            ? '0 0 40px rgba(201, 162, 39, 0.25)'
-                            : '0 2px 20px rgba(0,0,0,0.4)',
+                            ? '0 0 32px rgba(201, 162, 39, 0.3)'
+                            : '0 2px 18px rgba(0,0,0,0.6)',
                         }}
                       >
                         {word}
@@ -376,22 +418,23 @@ export const Hero: React.FC = () => {
               {/* 3. SUPPORTING EDITORIAL COPY */}
               <motion.p
                 variants={{
-                  hidden: { opacity: 0, y: 18 },
+                  hidden: { opacity: 0, y: 16 },
                   visible: {
                     opacity: 1,
                     y: 0,
-                    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                    transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
                   },
-                  exit: { opacity: 0, y: -12, transition: { duration: 0.2 } },
+                  exit: { opacity: 0, y: -10, transition: { duration: 0.18 } },
                 }}
                 style={{
-                  fontSize: 'clamp(1rem, 2.2vw, 1.25rem)',
+                  fontSize: 'clamp(0.95rem, 2vw, 1.1875rem)',
                   lineHeight: 1.5,
-                  color: '#D4CEBF',
-                  maxWidth: '640px',
-                  marginBottom: 'clamp(24px, 4vw, 36px)',
+                  color: '#E0DACF',
+                  maxWidth: '580px',
+                  marginBottom: 'clamp(24px, 3.5vw, 36px)',
                   fontFamily: 'var(--font-heading)',
                   fontWeight: 400,
+                  textShadow: '0 2px 10px rgba(0,0,0,0.5)',
                 }}
               >
                 {slide.copy}
@@ -400,20 +443,20 @@ export const Hero: React.FC = () => {
               {/* 4. PRIMARY & SECONDARY ACTION BUTTONS */}
               <motion.div
                 variants={{
-                  hidden: { opacity: 0, y: 20 },
+                  hidden: { opacity: 0, y: 18 },
                   visible: {
                     opacity: 1,
                     y: 0,
-                    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                    transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
                   },
-                  exit: { opacity: 0, y: -10, transition: { duration: 0.2 } },
+                  exit: { opacity: 0, y: -8, transition: { duration: 0.18 } },
                 }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   flexWrap: 'wrap',
-                  gap: '16px',
-                  marginBottom: 'clamp(28px, 4vw, 44px)',
+                  gap: '14px',
+                  marginBottom: 'clamp(24px, 3.5vw, 36px)',
                 }}
               >
                 <MagneticButton
@@ -434,32 +477,32 @@ export const Hero: React.FC = () => {
                 </MagneticButton>
               </motion.div>
 
-              {/* 5. TRUST SIGNALS STRIP */}
+              {/* 5. AUTHENTIC STORE SIGNALS (Confirmed Facts Only) */}
               <motion.div
                 variants={{
                   hidden: { opacity: 0 },
-                  visible: { opacity: 1, transition: { duration: 0.6 } },
+                  visible: { opacity: 1, transition: { duration: 0.5 } },
                   exit: { opacity: 0 },
                 }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   flexWrap: 'wrap',
-                  gap: 'clamp(16px, 3vw, 32px)',
-                  paddingTop: '20px',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  gap: 'clamp(14px, 2.5vw, 28px)',
+                  paddingTop: '18px',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.15)',
                   fontSize: '0.8125rem',
-                  color: '#A09C91',
+                  color: '#C7C2B6',
                   fontFamily: 'var(--font-ui)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <ShieldCheck size={16} color="var(--color-plate-gold)" />
-                  <span>100% Authorized Equipment & Willow</span>
+                  <MapPin size={15} color="var(--color-plate-gold)" />
+                  <span>Shop 247, MG Road, Camp, Pune</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Compass size={16} color="var(--color-plate-gold)" />
-                  <span>Turnkey Maharashtra Court Construction</span>
+                  <Wrench size={15} color="var(--color-plate-gold)" />
+                  <span>In-Store Racquet Stringing Counter</span>
                 </div>
               </motion.div>
             </motion.div>
@@ -472,7 +515,7 @@ export const Hero: React.FC = () => {
         className="hero-controls-bar"
         style={{
           position: 'absolute',
-          bottom: 'clamp(16px, 3vw, 32px)',
+          bottom: 'clamp(16px, 2.5vw, 28px)',
           left: 0,
           right: 0,
           zIndex: 10,
@@ -505,7 +548,7 @@ export const Hero: React.FC = () => {
                     border: 'none',
                     padding: '8px 4px',
                     cursor: 'pointer',
-                    color: isActive ? 'var(--color-plate-gold)' : '#7E7A70',
+                    color: isActive ? 'var(--color-plate-gold)' : '#999',
                     fontFamily: 'var(--font-ui)',
                     fontSize: '0.75rem',
                     fontWeight: 700,
@@ -520,9 +563,9 @@ export const Hero: React.FC = () => {
                   {/* Progress Pill Bar */}
                   <div
                     style={{
-                      width: isActive ? '48px' : '20px',
+                      width: isActive ? '52px' : '22px',
                       height: '3px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.25)',
                       borderRadius: '2px',
                       overflow: 'hidden',
                       position: 'relative',
@@ -543,6 +586,7 @@ export const Hero: React.FC = () => {
                           inset: 0,
                           backgroundColor: 'var(--color-plate-gold)',
                           transformOrigin: 'left',
+                          boxShadow: '0 0 8px var(--color-plate-gold)',
                         }}
                       />
                     )}
@@ -550,6 +594,28 @@ export const Hero: React.FC = () => {
                 </button>
               );
             })}
+
+            {/* Play/Pause Autoplay Indicator Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsPaused((prev) => !prev)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: isPaused ? 'var(--color-plate-gold)' : '#888',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px',
+                marginLeft: '4px',
+              }}
+              title={isPaused ? 'Resume autoplay' : 'Pause autoplay'}
+              aria-label={isPaused ? 'Resume autoplay' : 'Pause autoplay'}
+            >
+              {isPaused ? <Play size={13} /> : <Pause size={13} />}
+            </button>
           </div>
 
           {/* Right: Manual Slide Switchers (>= 44x44px Tap Targets) */}
@@ -559,8 +625,9 @@ export const Hero: React.FC = () => {
                 fontFamily: 'var(--font-ui)',
                 fontSize: '0.75rem',
                 letterSpacing: '0.12em',
-                color: '#999',
+                color: '#AAA',
                 marginRight: '8px',
+                fontVariantNumeric: 'tabular-nums',
               }}
               className="desktop-only"
             >
@@ -574,8 +641,8 @@ export const Hero: React.FC = () => {
                 width: '44px',
                 height: '44px',
                 borderRadius: '2px',
-                backgroundColor: 'rgba(20, 20, 20, 0.8)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
+                backgroundColor: 'rgba(20, 20, 20, 0.85)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
                 color: 'var(--color-ivory)',
                 display: 'flex',
                 alignItems: 'center',
@@ -589,7 +656,7 @@ export const Hero: React.FC = () => {
                 e.currentTarget.style.color = 'var(--color-plate-gold)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
                 e.currentTarget.style.color = 'var(--color-ivory)';
               }}
             >
@@ -603,8 +670,8 @@ export const Hero: React.FC = () => {
                 width: '44px',
                 height: '44px',
                 borderRadius: '2px',
-                backgroundColor: 'rgba(20, 20, 20, 0.8)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
+                backgroundColor: 'rgba(20, 20, 20, 0.85)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
                 color: 'var(--color-ivory)',
                 display: 'flex',
                 alignItems: 'center',
@@ -618,7 +685,7 @@ export const Hero: React.FC = () => {
                 e.currentTarget.style.color = 'var(--color-plate-gold)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
                 e.currentTarget.style.color = 'var(--color-ivory)';
               }}
             >

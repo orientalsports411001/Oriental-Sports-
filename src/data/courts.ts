@@ -82,7 +82,7 @@ export const COURT_SERVICES: CourtService[] = [
       'High-mast IP66 LED sports projectors with zero flickering',
       'Fast-draining porous gravel or PCC base structure',
     ],
-    standards: ['FIFA Quality Pro Matched Turf Specs', 'BCCI Box Cricket Standards'],
+    standards: ['High-Durability All-Weather Turf Specs', 'Box Cricket Dimensional Standards'],
     leadTime: '25 to 40 Days',
     estimatedPriceRange: '₹8 Lakh – ₹28 Lakh depending on arena footprint',
     gallery: [
@@ -178,7 +178,7 @@ export const COURT_PROJECTS: CourtProject[] = [
     title: 'Baner High-Mast Box Cricket & Futsal Arena',
     location: 'Baner-Balewadi Link Road, Pune',
     sport: 'Turf & Multi-sport',
-    surface: '50mm FIFA Certified Monofilament Grass',
+    surface: '50mm Monofilament Synthetic Turf',
     clientType: 'Commercial',
     year: '2024',
     heroImage: 'https://images.unsplash.com/photo-1529900245534-47fbf4cb3836?auto=format&fit=crop&w=1200&q=80',

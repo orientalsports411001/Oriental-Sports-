@@ -311,7 +311,7 @@ export const BentoBusiness: React.FC = () => {
                   </h3>
 
                   <p style={{ color: '#E0DACF', fontSize: '0.875rem', marginBottom: '18px', fontFamily: 'var(--font-heading)' }}>
-                    Commercial dumbbells, Olympic barbells, conditioning rigs and shock-absorbing flooring.
+                    Commercial dumbbells, precision barbells, conditioning rigs and shock-absorbing flooring.
                   </p>
 
                   <MagneticButton

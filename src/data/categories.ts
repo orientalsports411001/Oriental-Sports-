@@ -68,11 +68,11 @@ export const CATEGORIES: CategoryInfo[] = [
   {
     id: 'fitness',
     name: 'Fitness',
-    tagline: 'Commercial dumbbells, Olympic barbells, kettlebells and recovery gear',
-    description: 'Heavy duty strength and conditioning equipment built for personal gyms, training centers, and sports academies.',
+    tagline: 'Commercial dumbbells, competition barbells, kettlebells and recovery gear',
+    description: 'Precision cast iron and urethane weights, power cages, cable systems, and commercial rubber flooring for serious athlete conditioning.',
     image: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=1000&q=80',
     itemCount: 52,
-    featuredEquipments: ['Urethane Hex Dumbbells', 'Olympic Needle-Bearing Barbells', 'Cast Iron Competition Kettlebells', 'High-Density Rubber Flooring'],
+    featuredEquipments: ['Urethane Hex Dumbbells', 'Precision Bearing Barbells', 'Cast Iron Competition Kettlebells', 'High-Density Rubber Flooring'],
   },
   {
     id: 'recreation',
