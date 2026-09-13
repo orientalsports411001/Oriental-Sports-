@@ -4,7 +4,10 @@
  */
 
 export const MEDIA = {
-  // Hero: High-drama athletic action with negative space for typography
+  // Hero: 3 Cinematic Editorial Slides
+  heroSlide1: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=2400&q=90', // Tennis Court Action & Lighting
+  heroSlide2: 'https://images.unsplash.com/photo-1531415074868-036b1c57e329?auto=format&fit=crop&w=2400&q=90', // Cricket / Athletic Training High Drama
+  heroSlide3: 'https://images.unsplash.com/photo-1529900245534-47fbf4cb3836?auto=format&fit=crop&w=2400&q=90', // Architectural Floodlit Court Arena
   heroSports: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=2400&q=90',
   heroSportsMobile: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1200&q=85',
   

@@ -367,3 +367,26 @@ h1, h2, h3, h4, h5, h6 {
   transform: scale(1.04);
 }
 
+/* Tabular Numerals for Pricing and Step Sequences */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Accessibility & Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Touch targets: ensure buttons and navigation items meet minimum 44px on touch devices */
+@media (pointer: coarse) {
+  button, a.btn, .bottom-nav-item, .header-action-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+

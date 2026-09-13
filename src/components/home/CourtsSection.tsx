@@ -1,76 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Compass, CheckCircle2, Layers, Sun, ShieldCheck, Clock } from 'lucide-react';
+import { ArrowRight, Compass, ShieldCheck, CheckCircle2, Layers, Sun, HardHat, FileText } from 'lucide-react';
 import { MagneticButton } from '../ui/MagneticButton';
 import { BrandRings } from '../brand/BrandRings';
 import { MEDIA } from '../../data/media';
 
-const STAGES = [
+interface CourtStage {
+  step: string;
+  title: string;
+  category: string;
+  desc: string;
+  specs: string[];
+  image: string;
+  turnaround: string;
+}
+
+const COURT_STAGES: CourtStage[] = [
   {
     step: '01',
-    title: 'REGULATION COURTS',
-    category: 'DESIGN & ARCHITECTURE',
-    desc: 'Official USA Pickleball, ITF Tennis, and BWF Badminton dimensional layouts. Engineered for tournament velocity and true ball trajectory.',
-    specs: ['USAPA 20x44ft Pickleball', 'ITF 78x36ft Tennis', 'BWF 44x20ft Badminton', 'WSF Squash'],
+    title: 'COURTS',
+    category: 'REGULATION GEOMETRY',
+    desc: 'Official dimensional layouts engineered for tournament velocity, line-of-play clearance, and true ball trajectory across all competitive formats.',
+    specs: ['USAPA 20x44ft Pickleball', 'ITF 78x36ft Tennis (Singles/Doubles)', 'BWF 44x20ft Badminton', 'WSF Squash Regulation Courts'],
     image: MEDIA.courtStage01Grading,
+    turnaround: 'Precision CAD & Site Grading',
   },
   {
     step: '02',
-    title: 'CERTIFIED SURFACES',
-    category: 'SHOCK REDUCTION',
-    desc: '8-layer elastomeric cushion acrylics, DIN-compliant double-sprung seasoned teak floors, and 50mm diamond monofilament synthetic turf.',
-    specs: ['ITF Pace Rating 3 & 4', '62% Vertical Force Absorption', 'Non-glare UV resistant finish'],
+    title: 'SURFACES',
+    category: 'PERFORMANCE & FORCE ABSORPTION',
+    desc: '8-layer elastomeric cushion acrylic systems, DIN-certified double-sprung seasoned teak floors, and 50mm diamond monofilament synthetic grass.',
+    specs: ['ITF Pace Rating 3 (Medium) & 4 (Medium-Fast)', '62% Vertical Shock Reduction', 'Anti-Glare Non-Skid UV Resistant Finish', 'EN 14904 Indoor Sports Flooring Standards'],
     image: MEDIA.courtStage02Surfaces,
+    turnaround: 'Multi-Coat Micro-Texture Seal',
   },
   {
     step: '03',
-    title: 'SPORTS FLOODLIGHTING',
-    category: 'ILLUMINATION ENGINEERING',
-    desc: 'Tournament standard IP66 asymmetric LED projectors delivering 300 to 500 uniform lux across all playing zones with zero visual blinding.',
-    specs: ['350–500 Lux Uniformity', 'Asymmetric Glare Cut-Off', 'Anti-Flicker IP66 Optics'],
+    title: 'INFRASTRUCTURE',
+    category: 'CIVIL SUB-BASE & FLOODLIGHTING',
+    desc: 'Laser-guided sub-base grading with 1% perimeter French drains calibrated to withstand Maharashtra monsoon downpours, paired with tournament LED floodlighting.',
+    specs: ['350–500 Lux IP66 Anti-Glare LED Optics', 'Laser-Graded PCC Sub-Base to 1mm Tolerances', '1% Perimeter Water Runoff & French Drains', 'Heavy-Duty 3.5m Galvanized Chain-Link Enclosures'],
     image: MEDIA.courtStage03Lighting,
+    turnaround: 'Engineered for 15+ Year Lifespan',
   },
   {
     step: '04',
-    title: 'SUB-BASE & DRAINAGE',
-    category: 'CIVIL INTEGRITY',
-    desc: 'Laser-guided civil sub-base grading with 1% perimeter French drains calibrated to withstand Maharashtra monsoon downpours without waterlogging.',
-    specs: ['Laser Grading to 1mm', 'Reinforced PCC Sub-Base', 'Rapid Surface Runoff Grids'],
-    image: MEDIA.courtStage04Infrastructure,
-  },
-  {
-    step: '05',
-    title: 'PUNE CONSULTATION',
-    category: 'TURNKEY EXECUTION',
-    desc: 'Direct consultation from our Camp retail headquarters. We conduct on-site soil and laser gradient evaluations across Pune, PMRDA, and Maharashtra.',
-    specs: ['Free On-Site Feasibility', 'Detailed Itemized Estimates', 'Turnkey 20–40 Day Delivery'],
+    title: 'CONSULTATION',
+    category: 'TURNKEY EXECUTION · PUNE & BEYOND',
+    desc: 'Direct consultation from our Camp retail headquarters. We conduct on-site soil, laser gradient, and dimensional feasibility evaluations across Pune, PMRDA, and Maharashtra.',
+    specs: ['Free On-Site Topographical Survey in Pune', 'Itemized Bill of Quantities (BOQ)', 'Full Turnkey 20–40 Day Delivery', 'AMC Surface Re-Coating & Maintenance Plans'],
     image: MEDIA.courtStage05Consultation,
+    turnaround: 'Flagship Store at MG Road, Camp',
   },
 ];
 
 export const CourtsSection: React.FC = () => {
-  const [activeStage, setActiveStage] = useState(0);
-  const current = STAGES[activeStage];
+  const [activeStageIndex, setActiveStageIndex] = useState(0);
+  const current = COURT_STAGES[activeStageIndex];
+  const sectionRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <section
+      ref={sectionRef}
       className="section-padding bg-dark"
       style={{
         position: 'relative',
         overflow: 'hidden',
         borderTop: '1px solid rgba(246, 243, 234, 0.08)',
         borderBottom: '1px solid rgba(246, 243, 234, 0.08)',
+        backgroundColor: '#111111',
+        color: 'var(--color-ivory)',
       }}
-      aria-label="Court and Sports Infrastructure Construction"
+      aria-label="Sports Infrastructure and Court Engineering"
     >
-      {/* Kinetic Brand Concentric Rings Background */}
-      <div style={{ position: 'absolute', left: '-10%', bottom: '-15%', pointerEvents: 'none', zIndex: 1 }}>
-        <BrandRings size={740} opacity={0.12} />
+      {/* Background Architectural Concentric Rings */}
+      <div
+        style={{
+          position: 'absolute',
+          right: '-8%',
+          top: '-10%',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+        aria-hidden="true"
+      >
+        <BrandRings size={780} opacity={0.10} />
       </div>
 
       <div className="container" style={{ position: 'relative', zIndex: 3 }}>
-        {/* Section Headline */}
-        <div style={{ maxWidth: '820px', marginBottom: 'var(--space-3xl)' }}>
+        {/* Section Header: WE BUILD THE PLACE YOU PLAY. */}
+        <div style={{ maxWidth: '840px', marginBottom: 'clamp(32px, 5vw, 64px)' }}>
           <div
             style={{
               display: 'inline-flex',
@@ -78,12 +97,21 @@ export const CourtsSection: React.FC = () => {
               gap: '8px',
               padding: '6px 14px',
               backgroundColor: 'rgba(201, 162, 39, 0.12)',
-              border: '1px solid rgba(201, 162, 39, 0.3)',
+              border: '1px solid rgba(201, 162, 39, 0.35)',
               borderRadius: '2px',
               marginBottom: '20px',
             }}
           >
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-plate-gold)' }} />
+            <span
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--color-plate-gold)',
+                boxShadow: '0 0 8px var(--color-plate-gold)',
+              }}
+              aria-hidden="true"
+            />
             <span
               style={{
                 fontFamily: 'var(--font-ui)',
@@ -94,7 +122,7 @@ export const CourtsSection: React.FC = () => {
                 color: 'var(--color-plate-gold)',
               }}
             >
-              INFRASTRUCTURE ENGINEERING • PUNE
+              INFRASTRUCTURE ENGINEERING · PUNE
             </span>
           </div>
 
@@ -106,238 +134,315 @@ export const CourtsSection: React.FC = () => {
               letterSpacing: '-0.035em',
               textTransform: 'uppercase',
               color: 'var(--color-pure-white)',
-              margin: '0 0 20px 0',
+              margin: 0,
             }}
           >
             WE BUILD<br />
-            THE PLACE<br />
-            <span style={{ color: 'var(--color-plate-gold)' }}>YOU PLAY.</span>
+            <span style={{ color: 'var(--color-plate-gold)' }}>THE PLACE</span><br />
+            YOU PLAY.
           </h2>
 
           <p
             style={{
+              color: '#B5AFA4',
+              fontSize: 'clamp(1rem, 2vw, 1.1875rem)',
+              lineHeight: 1.55,
+              marginTop: '20px',
               fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(1.0625rem, 2vw, 1.25rem)',
-              color: 'var(--color-ivory)',
-              lineHeight: 1.45,
-              opacity: 0.9,
-              maxWidth: '640px',
-              marginBottom: '28px',
+              maxWidth: '680px',
             }}
           >
-            From club pickleball courts in Koregaon Park to championship hard courts at Deccan Gymkhana, we engineer tournament-grade sports infrastructure.
+            From USA Pickleball sanctioned courts in Koregaon Park to multi-sport turf arenas in Baner and school facilities across Pune. Full turnkey execution from sub-base civil grading to floodlights.
           </p>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px' }}>
-            <MagneticButton
-              variant="gold"
-              size="md"
-              onClick={() => (window.location.href = '/courts')}
-            >
-              <span>BUILD A COURT</span>
-              <ArrowRight size={16} />
-            </MagneticButton>
-
-            <MagneticButton
-              variant="outline-white"
-              size="md"
-              onClick={() => (window.location.href = '/courts/projects')}
-            >
-              <span>VIEW OUR PROJECTS</span>
-              <Compass size={16} />
-            </MagneticButton>
-          </div>
         </div>
 
-        {/* Sticky Scroll-Driven Storytelling Layout */}
+        {/* 2-COLUMN STICKY STORYTELLING LAYOUT */}
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 'var(--space-3xl)',
+            gap: 'clamp(32px, 5vw, 64px)',
             alignItems: 'start',
           }}
         >
-          {/* Left: 5-Stage Step Navigation Sequence */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {STAGES.map((st, idx) => {
-              const isActive = idx === activeStage;
+          {/* LEFT: 4 ARCHITECTURAL SEQUENTIAL STEPS */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {COURT_STAGES.map((stg, idx) => {
+              const isActive = idx === activeStageIndex;
               return (
                 <div
-                  key={st.step}
-                  onClick={() => setActiveStage(idx)}
-                  onMouseEnter={() => setActiveStage(idx)}
+                  key={stg.step}
+                  onClick={() => setActiveStageIndex(idx)}
+                  onMouseEnter={() => setActiveStageIndex(idx)}
+                  onFocus={() => setActiveStageIndex(idx)}
+                  tabIndex={0}
+                  role="button"
+                  aria-pressed={isActive}
                   style={{
-                    backgroundColor: isActive ? '#1C1C1C' : 'rgba(255,255,255,0.02)',
-                    border: isActive ? '1px solid var(--color-plate-gold)' : '1px solid rgba(255,255,255,0.06)',
+                    backgroundColor: isActive ? '#1A1A1A' : 'rgba(255, 255, 255, 0.02)',
+                    border: isActive
+                      ? '1px solid var(--color-plate-gold)'
+                      : '1px solid rgba(255, 255, 255, 0.08)',
                     borderRadius: '2px',
-                    padding: '24px',
+                    padding: 'clamp(20px, 3vw, 28px)',
                     cursor: 'pointer',
                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                     position: 'relative',
+                    overflow: 'hidden',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  {/* Active Indicator Bar on Left */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeCourtStageBar"
+                      style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: '4px',
+                        backgroundColor: 'var(--color-plate-gold)',
+                      }}
+                    />
+                  )}
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '10px',
+                    }}
+                  >
                     <span
                       style={{
                         fontFamily: 'var(--font-ui)',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
+                        fontSize: '0.8125rem',
+                        fontWeight: 800,
                         color: isActive ? 'var(--color-plate-gold)' : '#777',
                         letterSpacing: '0.12em',
+                        fontVariantNumeric: 'tabular-nums',
                       }}
                     >
-                      STAGE {st.step} • {st.category}
+                      STAGE {stg.step}
                     </span>
                     <span
                       style={{
-                        fontFamily: 'var(--font-display-xl)',
-                        fontSize: '1.5rem',
-                        color: isActive ? 'var(--color-plate-gold)' : '#555',
+                        fontFamily: 'var(--font-ui)',
+                        fontSize: '0.6875rem',
+                        textTransform: 'uppercase',
+                        color: isActive ? 'var(--color-plate-gold)' : '#666',
+                        letterSpacing: '0.08em',
+                        fontWeight: 600,
                       }}
                     >
-                      {st.step}
+                      {stg.category}
                     </span>
                   </div>
 
                   <h3
                     style={{
                       fontFamily: 'var(--font-display-xl)',
-                      fontSize: '2rem',
-                      lineHeight: 0.95,
-                      color: isActive ? '#FFFFFF' : '#BBB',
-                      marginBottom: '8px',
+                      fontSize: 'clamp(2rem, 4vw, 2.75rem)',
+                      lineHeight: 0.9,
+                      letterSpacing: '-0.02em',
+                      color: isActive ? 'var(--color-pure-white)' : '#CCC',
+                      margin: '0 0 12px 0',
                     }}
                   >
-                    {st.title}
+                    {stg.title}
                   </h3>
 
                   <p
                     style={{
-                      fontSize: '0.875rem',
-                      color: '#AAA',
-                      lineHeight: 1.45,
-                      display: isActive ? 'block' : 'none',
+                      color: isActive ? '#D4CEBF' : '#888',
+                      fontSize: '0.9375rem',
+                      lineHeight: 1.5,
                       fontFamily: 'var(--font-heading)',
+                      margin: 0,
                     }}
                   >
-                    {st.desc}
+                    {stg.desc}
                   </p>
 
+                  {/* Specs List when active */}
                   {isActive && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '14px' }}>
-                      {st.specs.map((sp, i) => (
-                        <span
-                          key={i}
-                          style={{
-                            padding: '3px 8px',
-                            backgroundColor: 'rgba(201,162,39,0.12)',
-                            border: '1px solid rgba(201,162,39,0.25)',
-                            borderRadius: '2px',
-                            fontSize: '0.6875rem',
-                            color: 'var(--color-plate-gold)',
-                            fontFamily: 'var(--font-ui)',
-                            fontWeight: 600,
-                          }}
-                        >
-                          {sp}
-                        </span>
-                      ))}
-                    </div>
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}
+                    >
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                          gap: '8px',
+                        }}
+                      >
+                        {stg.specs.map((spc) => (
+                          <div
+                            key={spc}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              fontSize: '0.75rem',
+                              fontFamily: 'var(--font-ui)',
+                              color: '#E0C56A',
+                            }}
+                          >
+                            <CheckCircle2 size={12} color="var(--color-plate-gold)" />
+                            <span>{spc}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
                   )}
                 </div>
               );
             })}
           </div>
 
-          {/* Right: Sticky Synchronized Stage Visual */}
+          {/* RIGHT: STICKY VISUAL PANEL */}
           <div
             style={{
               position: 'sticky',
               top: '100px',
-              height: '540px',
               backgroundColor: '#161616',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: '2px',
               overflow: 'hidden',
-              border: '1px solid var(--color-plate-gold)',
-              boxShadow: '0 20px 48px rgba(0,0,0,0.5)',
+              boxShadow: '0 20px 48px rgba(0,0,0,0.4)',
             }}
           >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={current.image}
-                initial={{ opacity: 0, scale: 1.08 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-                style={{ position: 'absolute', inset: 0 }}
-              >
-                <img
+            {/* Visual Image Container with Crossfade and Subtle Zoom */}
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                height: '380px',
+                overflow: 'hidden',
+                backgroundColor: '#0A0A0A',
+              }}
+            >
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={current.image}
                   src={current.image}
                   alt={current.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <div
+                  initial={{ opacity: 0, scale: 1.06 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.03 }}
+                  transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    background:
-                      'linear-gradient(180deg, rgba(17,17,17,0.1) 0%, rgba(17,17,17,0.65) 50%, #111111 95%)',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
                   }}
                 />
-              </motion.div>
-            </AnimatePresence>
+              </AnimatePresence>
 
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(180deg, transparent 30%, rgba(22,22,22,0.95) 100%)',
+                }}
+              />
+
+              {/* Stage Badge on Top Right */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  backgroundColor: 'rgba(17, 17, 17, 0.85)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid var(--color-plate-gold)',
+                  padding: '6px 12px',
+                  borderRadius: '2px',
+                  fontFamily: 'var(--font-ui)',
+                  fontSize: '0.6875rem',
+                  fontWeight: 800,
+                  color: 'var(--color-plate-gold)',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                STAGE {current.step} / 04
+              </div>
+
+              {/* Bottom Overlay Info */}
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '16px',
+                  left: '20px',
+                  right: '20px',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: '0.6875rem',
+                    fontFamily: 'var(--font-ui)',
+                    color: 'var(--color-plate-gold)',
+                    fontWeight: 700,
+                    letterSpacing: '0.12em',
+                  }}
+                >
+                  ENGINEERING PROTOCOL
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-display-xl)',
+                    fontSize: '1.75rem',
+                    color: '#FFFFFF',
+                    margin: '2px 0',
+                  }}
+                >
+                  {current.title}
+                </div>
+                <div style={{ fontSize: '0.8125rem', color: '#B5AFA4', fontFamily: 'var(--font-ui)' }}>
+                  {current.turnaround}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Actions inside Panel */}
             <div
               style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                padding: '32px',
-                zIndex: 3,
-                color: 'var(--color-pure-white)',
+                padding: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '16px',
+                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                backgroundColor: '#161616',
               }}
             >
-              <span
-                style={{
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  color: 'var(--color-plate-gold)',
-                  display: 'block',
-                  marginBottom: '6px',
-                }}
-              >
-                STAGE {current.step} OF 05
-              </span>
+              <div>
+                <div style={{ fontSize: '0.6875rem', color: '#888', fontFamily: 'var(--font-ui)' }}>
+                  PUNE HEADQUARTERS
+                </div>
+                <div style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#FFF' }}>
+                  Shop 247, MG Road, Camp
+                </div>
+              </div>
 
-              <h4
-                style={{
-                  fontFamily: 'var(--font-display-xl)',
-                  fontSize: '2.5rem',
-                  lineHeight: 0.9,
-                  color: '#FFFFFF',
-                  marginBottom: '10px',
-                }}
-              >
-                {current.title}
-              </h4>
-
-              <p style={{ fontSize: '0.9375rem', color: '#E0DACF', lineHeight: 1.4, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
-                {current.desc}
-              </p>
-
-              <MagneticButton
-                variant="gold"
-                size="sm"
-                onClick={() => (window.location.href = '/courts')}
-              >
-                <span>CONSULT FOR {current.title}</span>
-                <ArrowRight size={14} />
-              </MagneticButton>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <MagneticButton
+                  variant="gold"
+                  size="md"
+                  onClick={() => (window.location.href = '/courts')}
+                >
+                  <span>COURT CONSULTATION</span>
+                  <ArrowRight size={15} />
+                </MagneticButton>
+              </div>
             </div>
           </div>
         </div>

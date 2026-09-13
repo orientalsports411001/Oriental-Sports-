@@ -1,263 +1,631 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Compass, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { ArrowRight, ChevronLeft, ChevronRight, Compass, ShieldCheck } from 'lucide-react';
 import { MagneticButton } from '../ui/MagneticButton';
 import { BrandRings } from '../brand/BrandRings';
 import { MEDIA } from '../../data/media';
 
-export const Hero: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+interface HeroSlide {
+  id: string;
+  number: string;
+  eyebrow: string;
+  headlineWords: string[];
+  highlightIndex: number;
+  copy: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta: { label: string; href: string };
+  image: string;
+  alt: string;
+}
 
-  // Scroll driven animation
+const HERO_SLIDES: HeroSlide[] = [
+  {
+    id: 'slide-01',
+    number: '01',
+    eyebrow: "PUNE'S SPORTS HOUSE · EST. CAMP",
+    headlineWords: ['GEAR.', 'COURTS.', 'PUNE.'],
+    highlightIndex: 1, // COURTS.
+    copy: 'Premium athletic equipment, match racquet stringing, and professional court infrastructure engineered for schools, clubs, and athletes across Maharashtra.',
+    primaryCta: { label: 'SHOP GEAR', href: '/shop' },
+    secondaryCta: { label: 'BUILD A COURT', href: '/courts' },
+    image: MEDIA.heroSlide1,
+    alt: 'High performance tennis court action and competition lighting',
+  },
+  {
+    id: 'slide-02',
+    number: '02',
+    eyebrow: 'PRO-GRADE EQUIPMENT · CRICKET TO PICKLEBALL',
+    headlineWords: ['PLAY.', 'TRAIN.', 'PERFORM.'],
+    highlightIndex: 1, // TRAIN.
+    copy: 'Curated match-grade English willow, tour tennis racquets, tournament pickleball paddles, and commercial conditioning equipment ready at our Camp store.',
+    primaryCta: { label: 'EXPLORE SPORTS', href: '/shop' },
+    secondaryCta: { label: 'VISIT STORE', href: '/visit' },
+    image: MEDIA.heroSlide2,
+    alt: 'Athletic training, cricket willow craft, and match gear',
+  },
+  {
+    id: 'slide-03',
+    number: '03',
+    eyebrow: 'SPORTS INFRASTRUCTURE & CONSTRUCTION',
+    headlineWords: ['WE BUILD.', 'YOU PLAY.'],
+    highlightIndex: 1, // YOU PLAY.
+    copy: 'Turnkey ITF acrylic tennis courts, FIFA-quality synthetic turfs, Olympic shock absorption pads, and sports floodlighting executed across Pune and Western India.',
+    primaryCta: { label: 'COURT CONSULTATION', href: '/courts' },
+    secondaryCta: { label: 'VIEW PROJECTS', href: '/courts/projects' },
+    image: MEDIA.heroSlide3,
+    alt: 'Championship sports court architecture illuminated under floodlights',
+  },
+];
+
+const AUTOPLAY_DURATION_MS = 5500;
+
+export const Hero: React.FC = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const prefersReducedMotion = useReducedMotion();
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
+  // Parallax scroll effects across hero section
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
 
-  // Scale and shift image as user scrolls
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
-  const imageOpacity = useTransform(scrollYProgress, [0, 0.85], [0.45, 0.15]);
-  const textY = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const ringsScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
+  const scrollScale = useTransform(scrollYProgress, [0, 1], [1, 1.14]);
+  const scrollTranslateY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const textTranslateY = useTransform(scrollYProgress, [0, 1], [0, 50]);
+  const ringsRotate = useTransform(scrollYProgress, [0, 1], [0, 18]);
+  const ringsTranslateY = useTransform(scrollYProgress, [0, 1], [0, 40]);
+
+  const slide = HERO_SLIDES[currentSlide];
+
+  const handleNext = useCallback(() => {
+    setDirection(1);
+    setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+  }, []);
+
+  const handlePrev = useCallback(() => {
+    setDirection(-1);
+    setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  }, []);
+
+  const goToSlide = (idx: number) => {
+    if (idx === currentSlide) return;
+    setDirection(idx > currentSlide ? 1 : -1);
+    setCurrentSlide(idx);
+  };
+
+  // Autoplay loop with pause on hover/interaction
+  useEffect(() => {
+    if (isPaused || prefersReducedMotion) return;
+    const timer = setInterval(() => {
+      handleNext();
+    }, AUTOPLAY_DURATION_MS);
+    return () => clearInterval(timer);
+  }, [isPaused, handleNext, prefersReducedMotion, currentSlide]);
+
+  // Touch Swipe Handlers for Mobile (72-82vh)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    setIsPaused(true);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartYRef.current;
+
+    // Detect predominantly horizontal swipe
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX < 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+    }
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    setIsPaused(false);
+  };
 
   return (
     <section
       ref={containerRef}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="hero-editorial-section"
       style={{
         position: 'relative',
         backgroundColor: 'var(--color-ink)',
         color: 'var(--color-ivory)',
-        minHeight: '92vh',
+        minHeight: 'clamp(560px, 80vh, 920px)',
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
-        paddingTop: 'clamp(32px, 6vw, 64px)',
-        paddingBottom: 'clamp(48px, 8vw, 84px)',
+        paddingTop: 'clamp(28px, 5vw, 60px)',
+        paddingBottom: 'clamp(44px, 7vw, 84px)',
       }}
-      aria-label="Oriental Sports Hero Showcase"
+      aria-label="Oriental Sports Hero Editorial Showcase"
     >
-      {/* Background Editorial Visual with Scroll-driven Parallax Expansion */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          scale: imageScale,
-          opacity: imageOpacity,
-          zIndex: 1,
-          willChange: 'transform, opacity',
-        }}
-      >
-        <img
-          src={MEDIA.heroSports}
-          alt="High performance tennis and court action"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center 35%',
-            filter: 'contrast(1.1) brightness(0.95)',
-          }}
-        />
-      </motion.div>
-
-      {/* Cinematic Vignette & Radial Dark Gradient to keep typography ultra crisp */}
+      {/* BACKGROUND EDITORIAL VISUAL WITH SLIDE TRANSITION + SCROLL PARALLAX */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          zIndex: 2,
-          background:
-            'radial-gradient(ellipse at 25% 45%, rgba(17,17,17,0.4) 0%, rgba(17,17,17,0.85) 60%, #111111 100%)',
-          pointerEvents: 'none',
+          zIndex: 1,
+          overflow: 'hidden',
+          backgroundColor: '#0c0c0c',
         }}
-      />
+      >
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div
+            key={slide.id}
+            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.08 }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0.15, scale: 1.05 }}
+            transition={{
+              duration: prefersReducedMotion ? 0.3 : 0.85,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              willChange: 'transform, opacity',
+            }}
+          >
+            <motion.div
+              style={{
+                width: '100%',
+                height: '100%',
+                scale: scrollScale,
+                y: scrollTranslateY,
+              }}
+            >
+              <img
+                src={slide.image}
+                alt={slide.alt}
+                loading="eager"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center 38%',
+                  filter: 'contrast(1.12) brightness(0.9)',
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Cinematic Vignette & Radial Dark Gradient for Razor-Sharp Typography Contrast */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 2,
+            background:
+              'radial-gradient(ellipse at 25% 45%, rgba(17,17,17,0.48) 0%, rgba(17,17,17,0.85) 65%, #111111 100%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Bottom subtle edge transition into the next section */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '80px',
+            background: 'linear-gradient(to top, #111111 0%, transparent 100%)',
+            zIndex: 2,
+            pointerEvents: 'none',
+          }}
+        />
+      </div>
 
       {/* Kinetic Brand Rings System in Background */}
       <motion.div
         style={{
           position: 'absolute',
-          right: '-6%',
-          top: '8%',
+          right: '-5%',
+          top: '10%',
           zIndex: 2,
-          scale: ringsScale,
+          rotate: ringsRotate,
+          y: ringsTranslateY,
+          pointerEvents: 'none',
         }}
         className="desktop-only"
+        aria-hidden="true"
       >
-        <BrandRings size={680} opacity={0.18} />
+        <BrandRings size={680} opacity={0.16} />
       </motion.div>
 
-      {/* Main Container Content with Staggered Entrance */}
+      {/* MAIN CONTAINER CONTENT WITH CHOREOGRAPHED KINETIC ENTRANCE */}
       <div className="container" style={{ position: 'relative', zIndex: 3 }}>
-        <motion.div style={{ y: textY, maxWidth: '860px' }}>
-          {/* Eyebrow Label with Animated Pulse Dot */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 14px',
-              backgroundColor: 'rgba(201, 162, 39, 0.12)',
-              border: '1px solid rgba(201, 162, 39, 0.35)',
-              borderRadius: '2px',
-              marginBottom: '20px',
-            }}
-          >
-            <span
-              style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--color-plate-gold)',
-                boxShadow: '0 0 8px var(--color-plate-gold)',
+        <motion.div style={{ y: textTranslateY, maxWidth: '880px' }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={slide.id}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: prefersReducedMotion ? 0 : 0.09,
+                    delayChildren: 0.05,
+                  },
+                },
+                exit: {
+                  opacity: 0,
+                  transition: { duration: 0.25 },
+                },
               }}
-            />
+            >
+              {/* 1. EYEBROW WITH PULSE INDICATOR */}
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 16 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
+                  exit: { opacity: 0, y: -10, transition: { duration: 0.2 } },
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '6px 14px',
+                  backgroundColor: 'rgba(201, 162, 39, 0.12)',
+                  border: '1px solid rgba(201, 162, 39, 0.35)',
+                  borderRadius: '2px',
+                  marginBottom: 'clamp(14px, 2.5vw, 22px)',
+                }}
+              >
+                <span
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--color-plate-gold)',
+                    boxShadow: '0 0 8px var(--color-plate-gold)',
+                  }}
+                  aria-hidden="true"
+                />
+                <span
+                  style={{
+                    fontFamily: 'var(--font-ui)',
+                    fontWeight: 700,
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-plate-gold)',
+                  }}
+                >
+                  {slide.eyebrow}
+                </span>
+              </motion.div>
+
+              {/* 2. KINETIC HEADLINE (Masked Word Reveal with Athletic Condensed Scale) */}
+              <h1
+                style={{
+                  fontFamily: 'var(--font-display-xl)',
+                  fontSize: 'clamp(3.5rem, 11vw, 8.5rem)',
+                  lineHeight: 0.88,
+                  letterSpacing: '-0.035em',
+                  textTransform: 'uppercase',
+                  margin: '0 0 clamp(16px, 3vw, 28px) 0',
+                  color: 'var(--color-pure-white)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                {slide.headlineWords.map((word, wIdx) => {
+                  const isGold = wIdx === slide.highlightIndex;
+                  return (
+                    <span
+                      key={word}
+                      style={{
+                        display: 'block',
+                        overflow: 'hidden',
+                        lineHeight: 0.9,
+                      }}
+                    >
+                      <motion.span
+                        variants={{
+                          hidden: { y: '105%', opacity: 0 },
+                          visible: {
+                            y: '0%',
+                            opacity: 1,
+                            transition: {
+                              duration: prefersReducedMotion ? 0.2 : 0.65,
+                              ease: [0.16, 1, 0.3, 1],
+                            },
+                          },
+                          exit: {
+                            y: '-100%',
+                            opacity: 0,
+                            transition: { duration: 0.25 },
+                          },
+                        }}
+                        style={{
+                          display: 'inline-block',
+                          color: isGold ? 'var(--color-plate-gold)' : 'var(--color-pure-white)',
+                          textShadow: isGold
+                            ? '0 0 40px rgba(201, 162, 39, 0.25)'
+                            : '0 2px 20px rgba(0,0,0,0.4)',
+                        }}
+                      >
+                        {word}
+                      </motion.span>
+                    </span>
+                  );
+                })}
+              </h1>
+
+              {/* 3. SUPPORTING EDITORIAL COPY */}
+              <motion.p
+                variants={{
+                  hidden: { opacity: 0, y: 18 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                  },
+                  exit: { opacity: 0, y: -12, transition: { duration: 0.2 } },
+                }}
+                style={{
+                  fontSize: 'clamp(1rem, 2.2vw, 1.25rem)',
+                  lineHeight: 1.5,
+                  color: '#D4CEBF',
+                  maxWidth: '640px',
+                  marginBottom: 'clamp(24px, 4vw, 36px)',
+                  fontFamily: 'var(--font-heading)',
+                  fontWeight: 400,
+                }}
+              >
+                {slide.copy}
+              </motion.p>
+
+              {/* 4. PRIMARY & SECONDARY ACTION BUTTONS */}
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                  },
+                  exit: { opacity: 0, y: -10, transition: { duration: 0.2 } },
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '16px',
+                  marginBottom: 'clamp(28px, 4vw, 44px)',
+                }}
+              >
+                <MagneticButton
+                  variant="gold"
+                  size="lg"
+                  onClick={() => (window.location.href = slide.primaryCta.href)}
+                >
+                  <span>{slide.primaryCta.label}</span>
+                  <ArrowRight size={18} />
+                </MagneticButton>
+
+                <MagneticButton
+                  variant="outline-white"
+                  size="lg"
+                  onClick={() => (window.location.href = slide.secondaryCta.href)}
+                >
+                  <span>{slide.secondaryCta.label}</span>
+                </MagneticButton>
+              </motion.div>
+
+              {/* 5. TRUST SIGNALS STRIP */}
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: { opacity: 1, transition: { duration: 0.6 } },
+                  exit: { opacity: 0 },
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 'clamp(16px, 3vw, 32px)',
+                  paddingTop: '20px',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  fontSize: '0.8125rem',
+                  color: '#A09C91',
+                  fontFamily: 'var(--font-ui)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ShieldCheck size={16} color="var(--color-plate-gold)" />
+                  <span>100% Authorized Equipment & Willow</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Compass size={16} color="var(--color-plate-gold)" />
+                  <span>Turnkey Maharashtra Court Construction</span>
+                </div>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
+      {/* 6. SLIDE CONTROLS: PROGRESS BAR, SLIDE NUMBERS, & MANUAL NAV BUTTONS */}
+      <div
+        className="hero-controls-bar"
+        style={{
+          position: 'absolute',
+          bottom: 'clamp(16px, 3vw, 32px)',
+          left: 0,
+          right: 0,
+          zIndex: 10,
+        }}
+      >
+        <div
+          className="container"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px',
+          }}
+        >
+          {/* Left: Interactive Slide Progress Steps */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {HERO_SLIDES.map((s, idx) => {
+              const isActive = idx === currentSlide;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => goToSlide(idx)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: 'transparent',
+                    border: 'none',
+                    padding: '8px 4px',
+                    cursor: 'pointer',
+                    color: isActive ? 'var(--color-plate-gold)' : '#7E7A70',
+                    fontFamily: 'var(--font-ui)',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    minWidth: '44px',
+                    minHeight: '44px',
+                    textAlign: 'left',
+                  }}
+                  aria-label={`Go to slide ${idx + 1}: ${s.headlineWords.join(' ')}`}
+                >
+                  <span>{s.number}</span>
+                  {/* Progress Pill Bar */}
+                  <div
+                    style={{
+                      width: isActive ? '48px' : '20px',
+                      height: '3px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      borderRadius: '2px',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      transition: 'width 0.35s ease',
+                    }}
+                  >
+                    {isActive && (
+                      <motion.div
+                        key={`bar-${currentSlide}-${isPaused}`}
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{
+                          duration: prefersReducedMotion || isPaused ? 0 : AUTOPLAY_DURATION_MS / 1000,
+                          ease: 'linear',
+                        }}
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          backgroundColor: 'var(--color-plate-gold)',
+                          transformOrigin: 'left',
+                        }}
+                      />
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right: Manual Slide Switchers (>= 44x44px Tap Targets) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span
               style={{
                 fontFamily: 'var(--font-ui)',
-                fontWeight: 700,
                 fontSize: '0.75rem',
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: 'var(--color-plate-gold)',
+                letterSpacing: '0.12em',
+                color: '#999',
+                marginRight: '8px',
+              }}
+              className="desktop-only"
+            >
+              {slide.number} / 03
+            </span>
+
+            <button
+              type="button"
+              onClick={handlePrev}
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '2px',
+                backgroundColor: 'rgba(20, 20, 20, 0.8)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: 'var(--color-ivory)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              aria-label="Previous Slide"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--color-plate-gold)';
+                e.currentTarget.style.color = 'var(--color-plate-gold)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.color = 'var(--color-ivory)';
               }}
             >
-              PUNE’S SPORTS HOUSE • EST. CAMP
-            </span>
-          </motion.div>
+              <ChevronLeft size={20} />
+            </button>
 
-          {/* Signature Kinetic Headline: GEAR. COURTS. PUNE. */}
-          <h1
-            style={{
-              fontFamily: 'var(--font-display-xl)',
-              fontSize: 'clamp(3.5rem, 11.5vw, 8.5rem)',
-              lineHeight: 0.88,
-              letterSpacing: '-0.035em',
-              textTransform: 'uppercase',
-              margin: '0 0 24px 0',
-              fontWeight: 900,
-            }}
-          >
-            {/* Word 1: GEAR. */}
-            <span style={{ display: 'block', overflow: 'hidden' }}>
-              <motion.span
-                initial={{ y: '100%', rotateX: -25 }}
-                animate={{ y: '0%', rotateX: 0 }}
-                transition={{ duration: 0.65, delay: 0.2, type: 'spring', damping: 18 }}
-                style={{ display: 'inline-block', color: 'var(--color-pure-white)' }}
-              >
-                GEAR.
-              </motion.span>
-            </span>
-
-            {/* Word 2: COURTS. */}
-            <span style={{ display: 'block', overflow: 'hidden' }}>
-              <motion.span
-                initial={{ y: '100%', rotateX: -25 }}
-                animate={{ y: '0%', rotateX: 0 }}
-                transition={{ duration: 0.65, delay: 0.36, type: 'spring', damping: 18 }}
-                style={{
-                  display: 'inline-block',
-                  color: 'var(--color-plate-gold)',
-                  textShadow: '0 0 35px rgba(201, 162, 39, 0.3)',
-                }}
-              >
-                COURTS.
-              </motion.span>
-            </span>
-
-            {/* Word 3: PUNE. */}
-            <span style={{ display: 'block', overflow: 'hidden' }}>
-              <motion.span
-                initial={{ y: '100%', rotateX: -25 }}
-                animate={{ y: '0%', rotateX: 0 }}
-                transition={{ duration: 0.65, delay: 0.52, type: 'spring', damping: 18 }}
-                style={{ display: 'inline-block', color: 'var(--color-pure-white)' }}
-              >
-                PUNE.
-              </motion.span>
-            </span>
-          </h1>
-
-          {/* Supporting Copy */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.68 }}
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(1.0625rem, 2.2vw, 1.375rem)',
-              color: 'var(--color-ivory)',
-              lineHeight: 1.45,
-              maxWidth: '540px',
-              marginBottom: '36px',
-              opacity: 0.95,
-            }}
-          >
-            Everything you need to play, train and build. Match equipment for every sport. Certified courts engineered for Pune.
-          </motion.p>
-
-          {/* Magnetic CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.82 }}
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '16px',
-              alignItems: 'center',
-            }}
-          >
-            <MagneticButton
-              variant="gold"
-              size="lg"
-              onClick={() => (window.location.href = '/shop')}
+            <button
+              type="button"
+              onClick={handleNext}
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '2px',
+                backgroundColor: 'rgba(20, 20, 20, 0.8)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: 'var(--color-ivory)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              aria-label="Next Slide"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--color-plate-gold)';
+                e.currentTarget.style.color = 'var(--color-plate-gold)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.color = 'var(--color-ivory)';
+              }}
             >
-              <span>SHOP GEAR</span>
-              <ArrowRight size={18} />
-            </MagneticButton>
-
-            <MagneticButton
-              variant="outline-white"
-              size="lg"
-              onClick={() => (window.location.href = '/courts')}
-            >
-              <span>BUILD A COURT</span>
-              <Compass size={18} />
-            </MagneticButton>
-          </motion.div>
-
-          {/* Athletic Credibility Badges */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 'clamp(16px, 4vw, 32px)',
-              marginTop: '56px',
-              paddingTop: '24px',
-              borderTop: '1px solid rgba(246, 243, 234, 0.12)',
-              fontFamily: 'var(--font-ui)',
-              fontSize: '0.8125rem',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#D1CBBF' }}>
-              <ShieldCheck size={16} color="var(--color-plate-gold)" />
-              <span>Shop 247, MG Road, Camp</span>
-            </div>
-            <div style={{ color: '#D1CBBF' }}>
-              <strong style={{ color: '#FFF' }}>9 Sports</strong> Disciplines
-            </div>
-            <div style={{ color: '#D1CBBF' }}>
-              <strong style={{ color: '#FFF' }}>USAPA & ITF</strong> Certified Surfaces
-            </div>
-          </motion.div>
-        </motion.div>
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

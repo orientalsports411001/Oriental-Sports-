@@ -9,6 +9,14 @@ import { SpotlightCard } from '../ui/SpotlightCard';
 
 export const ProjectGallery: React.FC = () => {
   const [activeModalProject, setActiveModalProject] = useState<CourtProject | null>(null);
+  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+  const [isHoveringGallery, setIsHoveringGallery] = useState(false);
+  const isFinePointer = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isFinePointer) return;
+    setCursorPos({ x: e.clientX, y: e.clientY });
+  };
 
   return (
     <section className="section-padding bg-ivory" aria-label="Completed Sports Projects in Pune">
@@ -70,12 +78,49 @@ export const ProjectGallery: React.FC = () => {
 
         {/* Asymmetrical Architectural Portfolio Layout */}
         <div
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHoveringGallery(true)}
+          onMouseLeave={() => setIsHoveringGallery(false)}
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(12, 1fr)',
             gap: 'var(--space-lg)',
+            position: 'relative',
           }}
         >
+          {/* Subtle Desktop-Only Cursor Badge (21st.dev cursor pattern) */}
+          {isFinePointer && isHoveringGallery && (
+            <motion.div
+              style={{
+                position: 'fixed',
+                left: cursorPos.x + 14,
+                top: cursorPos.y + 14,
+                pointerEvents: 'none',
+                zIndex: 99,
+                backgroundColor: 'var(--color-ink)',
+                color: 'var(--color-plate-gold)',
+                border: '1px solid var(--color-plate-gold)',
+                padding: '6px 12px',
+                borderRadius: '2px',
+                fontSize: '0.6875rem',
+                fontFamily: 'var(--font-ui)',
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.15 }}
+            >
+              <span>VIEW PROJECT</span>
+              <ArrowRight size={12} />
+            </motion.div>
+          )}
+
           {COURT_PROJECTS.map((proj, idx) => {
             // Asymmetric spans: 0 is 7-col, 1 is 5-col, 2 is 5-col, 3 is 7-col
             const colSpan = idx % 3 === 0 ? 'span 7' : 'span 5';

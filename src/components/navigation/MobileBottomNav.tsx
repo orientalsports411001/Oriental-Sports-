@@ -1,8 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, ShoppingBag, LayoutGrid, MapPin } from 'lucide-react';
+import { Home, ShoppingBag, LayoutGrid, MapPin, ShoppingCart } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
 
 export const MobileBottomNav: React.FC = () => {
+  const { itemCount, openCart } = useCart();
+
   return (
     <nav className="mobile-bottom-nav" aria-label="Mobile Navigation">
       <NavLink
@@ -37,6 +40,46 @@ export const MobileBottomNav: React.FC = () => {
         <MapPin size={20} strokeWidth={2} />
         <span>VISIT</span>
       </NavLink>
+
+      <button
+        type="button"
+        onClick={openCart}
+        className="bottom-nav-item"
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          position: 'relative',
+        }}
+        aria-label={`Shopping Cart with ${itemCount} items`}
+      >
+        <div style={{ position: 'relative', display: 'inline-flex' }}>
+          <ShoppingCart size={20} strokeWidth={2} />
+          {itemCount > 0 && (
+            <span
+              style={{
+                position: 'absolute',
+                top: '-6px',
+                right: '-8px',
+                backgroundColor: 'var(--color-plate-gold)',
+                color: 'var(--color-ink)',
+                fontSize: '0.625rem',
+                fontWeight: 800,
+                width: '16px',
+                height: '16px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'var(--font-ui)',
+              }}
+            >
+              {itemCount}
+            </span>
+          )}
+        </div>
+        <span>CART</span>
+      </button>
     </nav>
   );
 };

@@ -5,6 +5,7 @@ import { TESTIMONIALS } from '../../data/testimonials';
 
 export const Testimonials: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const touchStartXRef = React.useRef<number | null>(null);
 
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev === 0 ? TESTIMONIALS.length - 1 : prev - 1));
@@ -12,6 +13,18 @@ export const Testimonials: React.FC = () => {
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev === TESTIMONIALS.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    if (deltaX < -40) handleNext();
+    else if (deltaX > 40) handlePrev();
+    touchStartXRef.current = null;
   };
 
   const active = TESTIMONIALS[currentIndex];
@@ -54,8 +67,10 @@ export const Testimonials: React.FC = () => {
           </h2>
         </div>
 
-        {/* Featured Testimonial Card */}
+        {/* Featured Testimonial Card with Touch Swipe */}
         <div
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           style={{
             backgroundColor: 'var(--color-ivory)',
             border: '1px solid var(--color-ivory-border)',
