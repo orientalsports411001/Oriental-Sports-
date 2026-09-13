@@ -9,6 +9,8 @@
   --color-canvas-surface: #FAF8F5;  /* Off-white secondary surfaces */
   --color-canvas-pure: #FFFFFF;     /* Crisp white cards, inputs, dialogs */
   --color-canvas-subtle: #EBE7DD;   /* Subtle divider backgrounds, chip bg */
+  --color-ivory: #F6F3EA;           /* Warm Ivory text/surface token */
+  --color-ivory-border: rgba(17, 17, 17, 0.12); /* Subtle ivory border */
 
   /* Jet Typography & Structure */
   --color-ink: #111111;             /* Jet black for headlines, borders, CTAs */

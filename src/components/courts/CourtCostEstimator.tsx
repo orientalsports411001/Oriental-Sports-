@@ -89,9 +89,9 @@ export const CourtCostEstimator: React.FC = () => {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-ink)',
-        color: 'var(--color-ivory)',
-        border: '1px solid rgba(201, 162, 39, 0.3)',
+        backgroundColor: '#121212',
+        color: '#FAF8F5',
+        border: '1px solid rgba(201, 162, 39, 0.4)',
         borderRadius: '2px',
         padding: 'clamp(24px, 5vw, 40px)',
       }}
@@ -117,13 +117,13 @@ export const CourtCostEstimator: React.FC = () => {
         className="font-display"
         style={{
           fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-          color: 'var(--color-pure-white)',
+          color: '#FFFFFF',
           marginBottom: '8px',
         }}
       >
         ESTIMATE YOUR COURT BUILD
       </h3>
-      <p style={{ color: '#C0B9AC', fontSize: '0.9375rem', marginBottom: '28px', maxWidth: '640px' }}>
+      <p style={{ color: '#DDD6C9', fontSize: '0.9375rem', marginBottom: '28px', maxWidth: '640px', lineHeight: 1.5 }}>
         Select your sport, surface tier, and infrastructure requirements to calculate an initial budgetary estimate calibrated for Pune & Maharashtra site conditions.
       </p>
 
@@ -142,29 +142,33 @@ export const CourtCostEstimator: React.FC = () => {
               1. Select Sport Discipline
             </label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {Object.keys(PRICING_MODEL).map((sport) => (
-                <button
-                  key={sport}
-                  type="button"
-                  onClick={() => {
-                    setSelectedSport(sport);
-                    setSelectedSurfaceIndex(0);
-                  }}
-                  style={{
-                    padding: '8px 14px',
-                    fontSize: '0.8125rem',
-                    fontFamily: 'var(--font-heading)',
-                    fontWeight: 700,
-                    borderRadius: '2px',
-                    backgroundColor: selectedSport === sport ? 'var(--color-plate-gold)' : 'rgba(255,255,255,0.06)',
-                    color: selectedSport === sport ? 'var(--color-ink)' : 'var(--color-ivory)',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {sport}
-                </button>
-              ))}
+              {Object.keys(PRICING_MODEL).map((sport) => {
+                const isSelected = selectedSport === sport;
+                return (
+                  <button
+                    key={sport}
+                    type="button"
+                    onClick={() => {
+                      setSelectedSport(sport);
+                      setSelectedSurfaceIndex(0);
+                    }}
+                    style={{
+                      padding: '10px 16px',
+                      fontSize: '0.875rem',
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 700,
+                      borderRadius: '2px',
+                      backgroundColor: isSelected ? 'var(--color-plate-gold)' : 'rgba(255,255,255,0.08)',
+                      color: isSelected ? '#111111' : '#FAF8F5',
+                      border: isSelected ? '1px solid var(--color-plate-gold)' : '1px solid rgba(255,255,255,0.25)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {sport}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -174,31 +178,38 @@ export const CourtCostEstimator: React.FC = () => {
               2. Surface Specification
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {model.surfaces.map((surf, idx) => (
-                <label
-                  key={idx}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px 14px',
-                    backgroundColor: selectedSurfaceIndex === idx ? 'rgba(201, 162, 39, 0.12)' : 'rgba(255,255,255,0.04)',
-                    border: selectedSurfaceIndex === idx ? '1px solid var(--color-plate-gold)' : '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '2px',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem',
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="surface"
-                    checked={selectedSurfaceIndex === idx}
-                    onChange={() => setSelectedSurfaceIndex(idx)}
-                    style={{ accentColor: '#C9A227' }}
-                  />
-                  <span>{surf.name}</span>
-                </label>
-              ))}
+              {model.surfaces.map((surf, idx) => {
+                const isSelected = selectedSurfaceIndex === idx;
+                return (
+                  <label
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '12px 16px',
+                      backgroundColor: isSelected ? 'rgba(201, 162, 39, 0.18)' : 'rgba(255,255,255,0.05)',
+                      border: isSelected ? '1px solid var(--color-plate-gold)' : '1px solid rgba(255,255,255,0.18)',
+                      borderRadius: '2px',
+                      cursor: 'pointer',
+                      fontSize: '0.875rem',
+                      color: '#FAF8F5',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="surface"
+                      checked={isSelected}
+                      onChange={() => setSelectedSurfaceIndex(idx)}
+                      style={{ accentColor: '#C9A227', width: '18px', height: '18px', cursor: 'pointer' }}
+                    />
+                    <span style={{ color: isSelected ? 'var(--color-plate-gold)' : '#FAF8F5', fontWeight: isSelected ? 700 : 500 }}>
+                      {surf.name}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </div>
 
@@ -208,7 +219,7 @@ export const CourtCostEstimator: React.FC = () => {
               <label style={{ fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-plate-gold)' }}>
                 3. Number of Courts
               </label>
-              <span style={{ fontWeight: 800, color: 'var(--color-pure-white)', fontSize: '1rem' }}>
+              <span style={{ fontWeight: 800, color: '#FFFFFF', fontSize: '1.125rem' }}>
                 {numCourts} {numCourts === 1 ? 'Court' : 'Courts'}
               </span>
             </div>
@@ -218,9 +229,9 @@ export const CourtCostEstimator: React.FC = () => {
               max="8"
               value={numCourts}
               onChange={(e) => setNumCourts(parseInt(e.target.value))}
-              style={{ width: '100%', accentColor: '#C9A227' }}
+              style={{ width: '100%', accentColor: '#C9A227', cursor: 'pointer' }}
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6875rem', color: '#888888', marginTop: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#B5AFA4', marginTop: '6px', fontWeight: 600 }}>
               <span>1 Court</span>
               <span>4 Courts</span>
               <span>8 Courts</span>
@@ -232,26 +243,26 @@ export const CourtCostEstimator: React.FC = () => {
             <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-plate-gold)', marginBottom: '8px' }}>
               4. Turnkey Infrastructure Options
             </label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.875rem', cursor: 'pointer' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.875rem', cursor: 'pointer', color: '#FAF8F5' }}>
                 <input
                   type="checkbox"
                   checked={includeLighting}
                   onChange={(e) => setIncludeLighting(e.target.checked)}
-                  style={{ accentColor: '#C9A227', width: '16px', height: '16px' }}
+                  style={{ accentColor: '#C9A227', width: '18px', height: '18px', cursor: 'pointer' }}
                 />
-                <span>LED Sports Floodlighting (300–400 Lux Tournament standard)</span>
+                <span style={{ color: '#FAF8F5', fontWeight: 500 }}>LED Sports Floodlighting (300–400 Lux Tournament standard)</span>
               </label>
 
               {model.fencingCost > 0 && (
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.875rem', cursor: 'pointer' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.875rem', cursor: 'pointer', color: '#FAF8F5' }}>
                   <input
                     type="checkbox"
                     checked={includeFencing}
                     onChange={(e) => setIncludeFencing(e.target.checked)}
-                    style={{ accentColor: '#C9A227', width: '16px', height: '16px' }}
+                    style={{ accentColor: '#C9A227', width: '18px', height: '18px', cursor: 'pointer' }}
                   />
-                  <span>Galvanized Chain-link Fencing / High-Mast Netting</span>
+                  <span style={{ color: '#FAF8F5', fontWeight: 500 }}>Galvanized Chain-link Fencing / High-Mast Netting</span>
                 </label>
               )}
             </div>
@@ -261,7 +272,7 @@ export const CourtCostEstimator: React.FC = () => {
         {/* Right: Calculated Estimate & Booking Card */}
         <div
           style={{
-            backgroundColor: '#161616',
+            backgroundColor: '#181818',
             border: '1px solid var(--color-plate-gold)',
             borderRadius: '2px',
             padding: '28px',
