@@ -72,12 +72,12 @@ export const FeaturedProducts: React.FC = () => {
           style={{
             maxWidth: 'var(--max-width-content)',
             margin: '0 auto',
-            padding: '0 clamp(20px, 5vw, 72px)',
+            padding: '0 0 0 clamp(20px, 5vw, 72px)',
             display: 'grid',
-            gridTemplateColumns: 'minmax(0,1fr) minmax(0,48%)',
+            gridTemplateColumns: 'minmax(0,1fr) minmax(0,52%)',
             gap: '0',
-            alignItems: 'center',
-            minHeight: 'clamp(460px, 60vh, 720px)',
+            alignItems: 'stretch',
+            minHeight: 'clamp(520px, 72vh, 800px)',
           }}
         >
           {/* LEFT — typography composition */}
@@ -174,27 +174,26 @@ export const FeaturedProducts: React.FC = () => {
             </Link>
           </div>
 
-          {/* RIGHT — oversized product image, compositionally floating */}
+          {/* RIGHT — oversized product image as the composition */}
           <div
             style={{
               position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              overflow: 'visible',
+              overflow: 'hidden',
+              alignSelf: 'stretch',
+              minHeight: 'clamp(440px, 65vh, 720px)',
             }}
           >
             <img
               src={PRODUCT.images?.[0]}
               alt={PRODUCT.name}
               style={{
-                width: '115%',      /* intentionally bleeds past container edge */
-                maxWidth: 'none',
-                height: 'clamp(440px, 65vh, 700px)',
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
                 objectFit: 'cover',
-                objectPosition: 'center',
+                objectPosition: 'center top',
                 display: 'block',
-                marginRight: '-5%', /* pull to right edge */
               }}
               onError={e => {
                 e.currentTarget.src =
