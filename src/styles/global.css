@@ -289,3 +289,88 @@ h1, h2, h3, h4, h5, h6 {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   Editorial Homepage — Mobile Responsive Overrides
+   Ensures all split-grid compositions reflow cleanly on ≤768px
+   ========================================================================== */
+
+/* Hero — stacked full-bleed on mobile */
+@media (max-width: 767px) {
+  /* Hero inner grid: stack vertically */
+  section[aria-label="Oriental Sports — Play. Train. Perform."] > div:first-child {
+    grid-template-columns: 1fr !important;
+    min-height: 100dvh !important;
+  }
+  /* Left text block: sits over photo */
+  section[aria-label="Oriental Sports — Play. Train. Perform."] > div:first-child > div:first-child {
+    padding: 100px 20px 48px !important;
+    background: linear-gradient(
+      180deg,
+      rgba(250,247,242,0.92) 0%,
+      rgba(250,247,242,0.85) 70%,
+      rgba(250,247,242,0.0) 100%
+    ) !important;
+    z-index: 3 !important;
+  }
+  /* Right photo: becomes absolute background */
+  section[aria-label="Oriental Sports — Play. Train. Perform."] > div:first-child > div:last-child {
+    position: absolute !important;
+    inset: 0 !important;
+    min-height: 100dvh !important;
+    z-index: 1 !important;
+  }
+}
+
+/* Shop by Sport — stacked on mobile */
+@media (max-width: 767px) {
+  section[aria-label="Shop by Sport"] > div > div:first-child {
+    grid-template-columns: 1fr !important;
+  }
+  section[aria-label="Shop by Sport"] > div {
+    grid-template-columns: 1fr !important;
+  }
+  /* Photo appears second on mobile */
+  section[aria-label="Shop by Sport"] > div > div:last-child {
+    order: -1;
+    aspect-ratio: 3 / 2 !important;
+  }
+}
+
+/* Featured Gear — stacked on mobile, photo full width */
+@media (max-width: 767px) {
+  section[aria-label^="Featured:"] > div:nth-child(2) {
+    grid-template-columns: 1fr !important;
+  }
+  section[aria-label^="Featured:"] > div:nth-child(2) > div:last-child {
+    order: -1;
+  }
+  section[aria-label^="Featured:"] > div:nth-child(2) > div:last-child img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: clamp(280px, 55vw, 420px) !important;
+    margin-right: 0 !important;
+  }
+  section[aria-label^="Featured:"] > div:nth-child(2) > div:first-child {
+    padding-right: 0 !important;
+  }
+}
+
+/* Specs strip — 2 columns on mobile */
+@media (max-width: 600px) {
+  section[aria-label$="specifications"] > div {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* Visit Store — stacked on mobile */
+@media (max-width: 767px) {
+  section[aria-label="Visit Oriental Sports — Camp, Pune"] > div {
+    grid-template-columns: 1fr !important;
+  }
+  section[aria-label="Visit Oriental Sports — Camp, Pune"] > div > div:last-child {
+    order: -1;
+    aspect-ratio: 4 / 3 !important;
+  }
+}
+

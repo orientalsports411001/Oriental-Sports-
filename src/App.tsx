@@ -10,7 +10,6 @@ import { CartDrawer } from './components/navigation/CartDrawer';
 import { AuthModal } from './components/auth/AuthModal';
 import { Footer } from './components/footer/Footer';
 import { BrandIntro } from './components/ui/BrandIntro';
-import { CustomCursor } from './components/ui/CustomCursor';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -46,7 +45,6 @@ export const App: React.FC = () => {
           <WishlistProvider>
             <ScrollToTop />
             <BrandIntro />
-            <CustomCursor />
             <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-canvas-base)' }}>
               <Header />
               <CartDrawer />

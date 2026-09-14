@@ -1,178 +1,167 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
 import { CATEGORIES } from '../../data/categories';
 
-export const ShopBySport: React.FC = () => {
-  const [activeSportId, setActiveSportId] = useState<string>('badminton');
+// Display up to 7 sport disciplines
+const SPORT_DISCIPLINES = CATEGORIES.slice(0, 7);
 
-  const activeCategory = CATEGORIES.find((c) => c.id === activeSportId) || CATEGORIES[0];
+export const ShopBySport: React.FC = () => {
+  const [activeId, setActiveId] = useState<string>(SPORT_DISCIPLINES[0]?.id ?? '');
+
+  const activeCat = SPORT_DISCIPLINES.find(c => c.id === activeId) ?? SPORT_DISCIPLINES[0];
 
   return (
-    <section className="editorial-section" style={{ backgroundColor: 'var(--color-canvas-base)' }}>
-      <div className="container">
-        {/* Section Header */}
-        <div style={{ marginBottom: 'clamp(32px, 5vw, 56px)' }}>
-          <span className="section-label">SPORT DISCIPLINES</span>
-          <h2
-            className="font-display"
-            style={{
-              fontSize: 'clamp(2.25rem, 5.5vw, 4.25rem)',
-              color: 'var(--color-ink)',
-              maxWidth: '800px',
-            }}
-          >
-            EQUIPMENT FOR EVERY CODE.
-          </h2>
-        </div>
-
-        {/* Editorial Layout: Typographic Index + Dominant Dynamic Photography Frame */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-            gap: 'clamp(28px, 6vw, 72px)',
-            alignItems: 'center',
-          }}
-        >
-          {/* Left: Typographic Vertical Sport List */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {CATEGORIES.slice(0, 7).map((cat) => {
-              const isCurrent = cat.id === activeSportId;
-              return (
-                <Link
-                  key={cat.id}
-                  to={`/shop/${cat.id}`}
-                  onMouseEnter={() => setActiveSportId(cat.id)}
+    <section
+      aria-label="Shop by Sport"
+      style={{
+        backgroundColor: 'var(--color-canvas-base)',
+        padding: 'clamp(80px, 12vw, 160px) 0',
+        width: '100%',
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 'var(--max-width-content)',
+          margin: '0 auto',
+          padding: '0 clamp(20px, 5vw, 72px)',
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0,1fr) minmax(0,44%)',
+          gap: 'clamp(40px, 6vw, 96px)',
+          alignItems: 'center',
+        }}
+      >
+        {/* LEFT — typographic sport index */}
+        <div>
+          {SPORT_DISCIPLINES.map((cat, i) => {
+            const isActive = cat.id === activeId;
+            return (
+              <Link
+                key={cat.id}
+                to={`/shop/${cat.id}`}
+                onMouseEnter={() => setActiveId(cat.id)}
+                onFocus={() => setActiveId(cat.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  justifyContent: 'space-between',
+                  padding: 'clamp(12px, 1.8vw, 20px) 0',
+                  borderBottom: i < SPORT_DISCIPLINES.length - 1
+                    ? '1px solid var(--color-border-subtle)'
+                    : 'none',
+                  textDecoration: 'none',
+                  transition: 'opacity 0.22s ease',
+                  opacity: isActive ? 1 : 0.22,
+                  cursor: 'pointer',
+                }}
+              >
+                {/* Sport name — the design element */}
+                <span
                   style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    justifyContent: 'space-between',
-                    paddingTop: 'clamp(14px, 2.2vw, 22px)',
-                    paddingBottom: 'clamp(14px, 2.2vw, 22px)',
-                    borderBottom: '1px solid var(--color-border-subtle)',
-                    transition: 'all var(--transition-normal)',
-                    color: isCurrent ? 'var(--color-ink)' : 'var(--color-ink-muted)',
-                    opacity: isCurrent ? 1 : 0.45,
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(2rem, 5vw, 4.25rem)',
+                    fontWeight: 800,
+                    letterSpacing: '-0.035em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-ink)',
+                    lineHeight: 1,
+                    transition: 'color 0.22s ease',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px' }}>
-                    <span
-                      className="font-display"
-                      style={{
-                        fontSize: 'clamp(1.75rem, 4vw, 3rem)',
-                        fontWeight: 800,
-                        letterSpacing: '-0.03em',
-                      }}
-                    >
-                      {cat.name}
-                    </span>
-                  </div>
+                  {cat.name}
+                </span>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span
-                      style={{
-                        fontSize: '0.8125rem',
-                        fontFamily: 'var(--font-mono)',
-                        fontWeight: 600,
-                        color: 'var(--color-ink-subtle)',
-                      }}
-                    >
-                      {cat.itemCount} ITEMS
-                    </span>
-                    <ArrowUpRight
-                      size={20}
-                      style={{
-                        transform: isCurrent ? 'translate(0, 0)' : 'translate(-4px, 4px)',
-                        opacity: isCurrent ? 1 : 0,
-                        transition: 'all var(--transition-fast)',
-                      }}
-                    />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+                {/* Item count — mono, only visible when active */}
+                {isActive && (
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'clamp(0.625rem, 1vw, 0.75rem)',
+                      fontWeight: 700,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: 'var(--color-brand-gold)',
+                    }}
+                  >
+                    {cat.itemCount} PRODUCTS →
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
 
-          {/* Right: Single Dominant Photography Frame (Editorial Display) */}
+        {/* RIGHT — dominant editorial photograph (no card, no border-radius) */}
+        <div
+          style={{
+            position: 'relative',
+            overflow: 'hidden',
+            aspectRatio: '3 / 4',
+            backgroundColor: '#111',
+          }}
+        >
+          <img
+            key={activeCat.id}
+            src={activeCat.image}
+            alt={`${activeCat.name} equipment`}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+              display: 'block',
+              animation: 'sportFade 0.4s ease',
+            }}
+            onError={e => {
+              e.currentTarget.src =
+                'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=900&q=80';
+            }}
+          />
+          {/* Subtle bottom gradient for category label readability */}
           <div
             style={{
-              position: 'relative',
-              borderRadius: 'var(--radius-lg)',
-              overflow: 'hidden',
-              aspectRatio: '4 / 3',
-              backgroundColor: '#111111',
-              boxShadow: 'var(--shadow-subtle)',
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(180deg, transparent 55%, rgba(17,17,17,0.75) 100%)',
+              pointerEvents: 'none',
+            }}
+          />
+          {/* Category name caption bottom of photo */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 'clamp(16px, 3vw, 28px)',
+              left: 'clamp(16px, 3vw, 28px)',
             }}
           >
-            <img
-              src={activeCategory.image}
-              alt={activeCategory.name}
+            <p
               style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                transition: 'transform 0.5s ease-out, opacity 0.3s ease',
-              }}
-              onError={(e) => {
-                e.currentTarget.src =
-                  'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=1200&q=80';
-              }}
-            />
-            {/* Subtle Gradient & Details Overlay */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(180deg, rgba(17,17,17,0.05) 0%, rgba(17,17,17,0.85) 100%)',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 'clamp(20px, 4vw, 36px)',
-                left: 'clamp(20px, 4vw, 36px)',
-                right: 'clamp(20px, 4vw, 36px)',
-                color: '#FFFFFF',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.6875rem',
+                fontWeight: 700,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.6)',
+                margin: '0 0 4px',
               }}
             >
-              <h3
-                className="font-display"
-                style={{
-                  fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
-                  color: '#FFFFFF',
-                  marginBottom: '8px',
-                }}
-              >
-                {activeCategory.name}
-              </h3>
-              <p
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#EDE8DE',
-                  maxWidth: '440px',
-                  marginBottom: '16px',
-                  lineHeight: 1.4,
-                }}
-              >
-                {activeCategory.tagline}
-              </p>
-              <Link
-                to={`/shop/${activeCategory.id}`}
-                className="btn btn-white"
-                style={{
-                  padding: '10px 24px',
-                  fontSize: '0.8125rem',
-                  fontWeight: 800,
-                }}
-              >
-                <span>SHOP {activeCategory.name}</span>
-                <ArrowUpRight size={15} />
-              </Link>
-            </div>
+              {activeCat.tagline.split(',')[0]}
+            </p>
           </div>
         </div>
       </div>
+
+      {/* Crossfade keyframe */}
+      <style>{`
+        @keyframes sportFade {
+          from { opacity: 0; transform: scale(1.03); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        @media (max-width: 767px) {
+          .sport-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </section>
   );
 };

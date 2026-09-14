@@ -1,139 +1,191 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Navigation, ArrowRight } from 'lucide-react';
-import { STORE_INFO } from '../../data/storeInfo';
 import { MEDIA } from '../../data/media';
 
 export const VisitStore: React.FC = () => {
   return (
-    <section className="editorial-section" style={{ backgroundColor: 'var(--color-canvas-surface)' }}>
-      <div className="container">
-        {/* Section Header */}
-        <div style={{ marginBottom: 'clamp(36px, 6vw, 64px)' }}>
-          <span className="section-label">PUNE CAMP FLAGSHIP</span>
-          <h2
-            className="font-display"
-            style={{
-              fontSize: 'clamp(2.5rem, 6.5vw, 5rem)',
-              color: 'var(--color-ink)',
-            }}
-          >
-            ESTABLISHED IN CAMP.
-          </h2>
-        </div>
-
-        {/* Editorial Destination Spread */}
+    <section
+      aria-label="Visit Oriental Sports — Camp, Pune"
+      style={{
+        backgroundColor: 'var(--color-canvas-base)',
+        padding: 'clamp(80px, 12vw, 160px) 0',
+        width: '100%',
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 'var(--max-width-content)',
+          margin: '0 auto',
+          padding: '0 clamp(20px, 5vw, 72px)',
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0,38%) minmax(0,1fr)',
+          gap: 'clamp(40px, 6vw, 80px)',
+          alignItems: 'center',
+        }}
+      >
+        {/* LEFT — typographic address composition */}
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-            gap: 'clamp(28px, 6vw, 72px)',
-            alignItems: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
           }}
         >
-          {/* Left: Authentic Store Imagery */}
+          {/* Tiny eyebrow — only one on this page */}
           <div
             style={{
-              position: 'relative',
-              borderRadius: 'var(--radius-lg)',
-              overflow: 'hidden',
-              aspectRatio: '16 / 11',
-              backgroundColor: '#111111',
-              boxShadow: 'var(--shadow-subtle)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.625rem',
+              fontWeight: 700,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--color-ink-subtle)',
+              marginBottom: 'clamp(20px, 3vh, 32px)',
             }}
           >
-            <img
-              src={MEDIA.heroSlide1}
-              alt="Oriental Sports Store MG Road Camp Pune"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-              onError={(e) => {
-                e.currentTarget.src =
-                  'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=1200&q=80';
-              }}
-            />
+            PUNE'S SPORTS FLAGSHIP
           </div>
 
-          {/* Right: Clean Quiet Store Details & Direct Actions */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div>
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.12em',
-                  color: 'var(--color-ink-muted)',
-                  textTransform: 'uppercase',
-                }}
-              >
-                SINCE 1968 • PUNE, MAHARASHTRA
-              </span>
-              <h3
-                className="font-display"
-                style={{
-                  fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                  color: 'var(--color-ink)',
-                  marginTop: '8px',
-                  marginBottom: '16px',
-                }}
-              >
-                ORIENTAL SPORTS
-              </h3>
-              <p
-                style={{
-                  fontSize: '1rem',
-                  color: 'var(--color-ink-muted)',
-                  lineHeight: 1.6,
-                  maxWidth: '460px',
-                }}
-              >
-                {STORE_INFO.addressLine1}, {STORE_INFO.addressLine2}, {STORE_INFO.city} {STORE_INFO.pincode}
-                <br />
-                Mon–Sat: {STORE_INFO.hours.weekdays} | Sun: {STORE_INFO.hours.sunday}
-              </p>
-            </div>
-
-            {/* Direct Action Links */}
+          {/* Address as giant editorial type — varying weights */}
+          <address
+            style={{
+              fontStyle: 'normal',
+              marginBottom: 'clamp(24px, 4vh, 40px)',
+            }}
+          >
             <div
               style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '12px',
-                alignItems: 'center',
-                paddingTop: '16px',
-                borderTop: '1px solid var(--color-border-subtle)',
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(2.5rem, 6.5vw, 5.5rem)',
+                fontWeight: 800,
+                lineHeight: 0.88,
+                letterSpacing: '-0.04em',
+                textTransform: 'uppercase',
+                color: 'var(--color-ink)',
               }}
             >
-              <Link to="/visit" className="btn btn-primary">
-                <span>VISIT STORE</span>
-                <ArrowRight size={16} />
-              </Link>
-
-              <a
-                href={`tel:${STORE_INFO.phone}`}
-                className="btn btn-outline"
-                aria-label={`Call Oriental Sports at ${STORE_INFO.phone}`}
+              <span style={{ display: 'block' }}>SHOP 247</span>
+              <span style={{ display: 'block' }}>MG ROAD</span>
+              <span
+                style={{
+                  display: 'block',
+                  fontWeight: 300,
+                  opacity: 0.7,
+                }}
               >
-                <Phone size={15} />
-                <span>CALL DIRECT</span>
-              </a>
-
-              <a
-                href={STORE_INFO.mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-outline"
-                aria-label="Get Google Maps directions to Oriental Sports Camp"
-              >
-                <Navigation size={15} />
-                <span>DIRECTIONS</span>
-              </a>
+                CAMP, PUNE
+              </span>
             </div>
+          </address>
+
+          {/* Thin charcoal divider */}
+          <div
+            style={{
+              width: 'clamp(48px, 6vw, 80px)',
+              height: '1.5px',
+              backgroundColor: 'var(--color-ink)',
+              marginBottom: 'clamp(24px, 4vh, 40px)',
+              opacity: 0.25,
+            }}
+          />
+
+          {/* Two text-link CTAs */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+            }}
+          >
+            {[
+              { label: 'VISIT STORE', href: '/visit' },
+              { label: 'GET DIRECTIONS', href: 'https://maps.google.com/?q=MG+Road+Camp+Pune', external: true },
+            ].map(({ label, href, external }) => (
+              external ? (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'clamp(0.6875rem, 1.1vw, 0.8125rem)',
+                    fontWeight: 700,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-ink)',
+                    textDecoration: 'none',
+                    borderBottom: '1.5px solid var(--color-border-medium)',
+                    paddingBottom: '3px',
+                    alignSelf: 'flex-start',
+                    minHeight: '44px',
+                    transition: 'opacity 0.2s ease',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                >
+                  {label} →
+                </a>
+              ) : (
+                <Link
+                  key={label}
+                  to={href}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'clamp(0.6875rem, 1.1vw, 0.8125rem)',
+                    fontWeight: 700,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-ink)',
+                    textDecoration: 'none',
+                    borderBottom: '1.5px solid var(--color-ink)',
+                    paddingBottom: '3px',
+                    alignSelf: 'flex-start',
+                    minHeight: '44px',
+                    transition: 'opacity 0.2s ease',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                >
+                  {label} →
+                </Link>
+              )
+            ))}
           </div>
+        </div>
+
+        {/* RIGHT — store photograph, rectangular, no border-radius */}
+        <div
+          style={{
+            position: 'relative',
+            overflow: 'hidden',
+            aspectRatio: '4 / 3',
+            backgroundColor: '#111',
+          }}
+        >
+          <img
+            src={MEDIA.puneCampExterior}
+            alt="Oriental Sports flagship store interior, Camp, Pune"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+              display: 'block',
+            }}
+            onError={e => {
+              e.currentTarget.src =
+                'https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1200&q=85';
+            }}
+          />
         </div>
       </div>
     </section>

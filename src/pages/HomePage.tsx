@@ -5,22 +5,27 @@ import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { CourtsSection } from '../components/home/CourtsSection';
 import { VisitStore } from '../components/home/VisitStore';
 
+/**
+ * Homepage — art-directed editorial sequence.
+ *
+ * Section rhythm (each has a unique composition anchor):
+ *  01. HERO         — giant stacked typography + full-bleed athlete photo (image-as-canvas)
+ *  02. SPORT STORY  — typographic index left + dominant photograph right
+ *  03. GEAR         — oversized product photo right + editorial name/price left
+ *                      + specs-as-visual strip (embedded in FeaturedProducts)
+ *  04. COURTS       — full-bleed architecture photo, headline overlaid bottom-left
+ *  05. VISIT STORE  — magazine spread: address typography left, store photo right
+ *
+ * NO section repeats the same layout anchor.
+ * NO cards, NO grids, NO badge clusters, NO stat boxes.
+ */
 export const HomePage: React.FC = () => {
   return (
     <main>
-      {/* 1. HERO: GEAR. COURTS. PUNE. Photorealistic Editorial Carousel */}
       <Hero />
-
-      {/* 2. SHOP BY SPORT: Primary Sports Editorial Cards + Secondary Tags */}
       <ShopBySport />
-
-      {/* 3. FEATURED GEAR: Clean Commerce Grid */}
       <FeaturedProducts />
-
-      {/* 4. BUILD A COURT: Infrastructure & Construction Showcase */}
       <CourtsSection />
-
-      {/* 5. VISIT ORIENTAL: Physical Camp Store Details & Direct Actions */}
       <VisitStore />
     </main>
   );
