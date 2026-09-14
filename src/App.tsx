@@ -9,6 +9,7 @@ import { MobileBottomNav } from './components/navigation/MobileBottomNav';
 import { CartDrawer } from './components/navigation/CartDrawer';
 import { AuthModal } from './components/auth/AuthModal';
 import { Footer } from './components/footer/Footer';
+import { BrandIntro } from './components/ui/BrandIntro';
 import { CustomCursor } from './components/ui/CustomCursor';
 
 // Pages
@@ -44,6 +45,7 @@ export const App: React.FC = () => {
         <CartProvider>
           <WishlistProvider>
             <ScrollToTop />
+            <BrandIntro />
             <CustomCursor />
             <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-canvas-base)' }}>
               <Header />

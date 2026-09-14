@@ -16,7 +16,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=800&q=80',
+      '/images/hero/hero_train_perform.jpg',
       'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=800&q=80',
     ],
     description: 'Engineered with friction-textured Japanese Toray T700 raw carbon fiber and a 16mm vibration-dampening polypropylene honeycomb core. Offers unmatched spin potential and plush dink control at the kitchen line.',

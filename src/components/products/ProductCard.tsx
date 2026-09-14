@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Plus, Check, ArrowRight } from 'lucide-react';
+import { Heart, Plus, Check } from 'lucide-react';
 import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
-import { GlassPanel } from '../ui/GlassPanel';
 
 interface ProductCardProps {
   product: Product;
   className?: string;
-  variant?: 'standard' | 'editorial';
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   className = '',
-  variant = 'standard',
 }) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -44,8 +41,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const secondaryImage = product.images[1] || primaryImage;
   const hasSecondaryImage = product.images.length > 1;
 
-  const fallbackImage = 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80';
-
   const discountPercent =
     product.originalPrice && product.originalPrice > product.price
       ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -53,7 +48,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div
-      className={`brutalist-product-card ${className}`}
+      className={`product-card ${className}`}
       data-cursor="add"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -61,15 +56,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#FFFFFF',
-        border: isHovered ? '1.5px solid #111111' : '1px solid #E5E0D5',
-        borderRadius: '2px', // Brutalist micro-corner
+        border: isHovered ? '1.5px solid var(--color-ink)' : '1px solid #E5E0D5',
+        borderRadius: 'var(--radius-xs)',
         overflow: 'hidden',
         position: 'relative',
-        transition: 'all 0.25s cubic-bezier(0.2, 0, 0, 1)',
-        boxShadow: isHovered ? '0 12px 30px rgba(0,0,0,0.08)' : '0 2px 8px rgba(0,0,0,0.02)',
+        transition: 'all 0.22s ease-out',
+        boxShadow: isHovered ? 'var(--shadow-card-hover)' : 'var(--shadow-card)',
+        width: '100%',
+        boxSizing: 'border-box',
       }}
     >
-      {/* Product Image Canvas with Hover Swap */}
+      {/* Product Image Canvas */}
       <Link
         to={`/product/${product.slug}`}
         style={{
@@ -78,91 +75,86 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           width: '100%',
           aspectRatio: '1 / 1',
           overflow: 'hidden',
-          backgroundColor: '#F7F5EE',
+          backgroundColor: '#FAF8F5',
           textDecoration: 'none',
         }}
       >
-        {/* Discount Glass Badge */}
+        {/* Discount Badge */}
         {discountPercent && (
-          <GlassPanel
-            variant="light"
-            blur="10px"
+          <div
             style={{
               position: 'absolute',
-              top: '12px',
-              left: '12px',
+              top: '10px',
+              left: '10px',
               zIndex: 3,
               padding: '4px 8px',
               fontSize: '0.6875rem',
               fontWeight: 800,
-              color: '#FF5A1F',
-              border: '1px solid rgba(255, 90, 31, 0.3)',
+              color: '#FFFFFF',
+              backgroundColor: 'var(--color-safety-orange)',
+              borderRadius: 'var(--radius-xs)',
+              lineHeight: 1,
             }}
           >
             -{discountPercent}%
-          </GlassPanel>
+          </div>
         )}
 
-        {/* Wishlist Button with Tactile Bounce */}
+        {/* Wishlist Button */}
         <button
           type="button"
           onClick={handleFavoriteClick}
           style={{
             position: 'absolute',
-            top: '12px',
-            right: '12px',
-            width: '36px',
-            height: '36px',
+            top: '10px',
+            right: '10px',
+            width: '44px',
+            height: '44px',
             borderRadius: '50%',
-            backgroundColor: isFavorited ? '#111111' : 'rgba(255, 255, 255, 0.9)',
+            backgroundColor: isFavorited ? 'var(--color-ink)' : 'rgba(255, 255, 255, 0.92)',
             backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: isFavorited ? '#C9A227' : '#111111',
+            color: isFavorited ? 'var(--color-plate-gold)' : 'var(--color-ink)',
             zIndex: 4,
-            border: '1px solid rgba(0,0,0,0.06)',
-            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease',
-            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+            border: '1px solid rgba(0,0,0,0.08)',
+            transition: 'transform 0.2s ease, background-color 0.2s ease',
           }}
           aria-label={isFavorited ? 'Remove from wishlist' : 'Add to wishlist'}
         >
           <Heart
-            size={16}
-            fill={isFavorited ? '#C9A227' : 'none'}
-            style={{
-              transform: isFavorited ? 'scale(1.1)' : 'scale(1)',
-              transition: 'transform 0.2s ease',
-            }}
+            size={17}
+            fill={isFavorited ? 'var(--color-plate-gold)' : 'none'}
           />
         </button>
 
-        {/* Primary Product Image */}
+        {/* Primary Image */}
         <img
           src={primaryImage}
           alt={product.name}
           loading="lazy"
           onError={(e) => {
-            e.currentTarget.src = fallbackImage;
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80';
           }}
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            transform: isHovered ? 'scale(1.06)' : 'scale(1)',
+            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
             opacity: isHovered && hasSecondaryImage ? 0 : 1,
-            transition: 'transform 0.5s cubic-bezier(0.2, 0, 0, 1), opacity 0.35s ease',
+            transition: 'transform 0.4s ease, opacity 0.3s ease',
           }}
         />
 
-        {/* Secondary Angle Image */}
+        {/* Secondary Image for Desktop Hover */}
         {hasSecondaryImage && (
           <img
             src={secondaryImage}
             alt=""
             loading="lazy"
             onError={(e) => {
-              e.currentTarget.src = fallbackImage;
+              e.currentTarget.src = 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=800&q=80';
             }}
             style={{
               position: 'absolute',
@@ -170,25 +162,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              transform: isHovered ? 'scale(1.06)' : 'scale(1)',
+              transform: isHovered ? 'scale(1.05)' : 'scale(1)',
               opacity: isHovered ? 1 : 0,
-              transition: 'transform 0.5s cubic-bezier(0.2, 0, 0, 1), opacity 0.35s ease',
+              transition: 'transform 0.4s ease, opacity 0.3s ease',
             }}
           />
         )}
 
-        {/* Quick Add Tactile Slide-Up Overlay */}
+        {/* Desktop Quick Add Slide-Up Overlay */}
         <div
           className="desktop-only"
           style={{
             position: 'absolute',
-            bottom: '12px',
-            left: '12px',
-            right: '12px',
+            bottom: '10px',
+            left: '10px',
+            right: '10px',
             zIndex: 3,
-            transform: isHovered ? 'translateY(0)' : 'translateY(48px)',
+            transform: isHovered ? 'translateY(0)' : 'translateY(40px)',
             opacity: isHovered ? 1 : 0,
-            transition: 'transform 0.25s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s ease',
+            transition: 'transform 0.22s ease, opacity 0.2s ease',
           }}
         >
           <button
@@ -196,50 +188,50 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             onClick={handleQuickAdd}
             style={{
               width: '100%',
-              padding: '12px 16px',
+              padding: '12px',
               backgroundColor: justAdded ? '#111111' : '#111111',
-              color: justAdded ? '#D7FF00' : '#FFFFFF',
-              border: justAdded ? '1px solid #D7FF00' : '1px solid #111111',
+              color: justAdded ? 'var(--color-acid-lime)' : '#FFFFFF',
+              border: 'none',
               fontSize: '0.75rem',
               fontWeight: 800,
-              letterSpacing: '0.1em',
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '8px',
+              gap: '6px',
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
+              minHeight: '44px',
+              borderRadius: 'var(--radius-xs)',
+              transition: 'all 0.18s ease',
             }}
             onMouseEnter={(e) => {
               if (!justAdded) {
-                e.currentTarget.style.backgroundColor = '#2457FF';
-                e.currentTarget.style.borderColor = '#2457FF';
+                e.currentTarget.style.backgroundColor = 'var(--color-electric-blue)';
               }
             }}
             onMouseLeave={(e) => {
               if (!justAdded) {
                 e.currentTarget.style.backgroundColor = '#111111';
-                e.currentTarget.style.borderColor = '#111111';
               }
             }}
           >
             {justAdded ? (
               <>
-                <Check size={15} color="#D7FF00" />
+                <Check size={16} color="var(--color-acid-lime)" />
                 <span>ADDED TO BAG</span>
               </>
             ) : (
               <>
-                <Plus size={15} />
-                <span>QUICK ADD TO BAG</span>
+                <Plus size={16} />
+                <span>QUICK ADD</span>
               </>
             )}
           </button>
         </div>
       </Link>
 
-      {/* Product Information Panel */}
+      {/* Product Details Block */}
       <div
         style={{
           padding: '16px',
@@ -251,7 +243,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         }}
       >
         <div>
-          {/* Category kicker & Meta */}
+          {/* Category & Rating */}
           <div
             style={{
               display: 'flex',
@@ -264,9 +256,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               className="font-mono"
               style={{
                 fontSize: '0.6875rem',
-                color: '#888888',
+                color: '#777777',
                 textTransform: 'uppercase',
-                letterSpacing: '0.12em',
+                letterSpacing: '0.08em',
                 fontWeight: 700,
               }}
             >
@@ -279,7 +271,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 style={{
                   fontSize: '0.6875rem',
                   fontWeight: 700,
-                  color: '#111111',
+                  color: 'var(--color-ink)',
                 }}
               >
                 ★ {product.rating.toFixed(1)}
@@ -295,52 +287,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               fontSize: '0.9375rem',
               fontWeight: 700,
               lineHeight: 1.3,
-              color: '#111111',
+              color: 'var(--color-ink)',
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               textDecoration: 'none',
               marginBottom: '6px',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#2457FF';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#111111';
+              minHeight: 'auto',
             }}
           >
             {product.name}
           </Link>
-
-          {/* Short Specs preview if available */}
-          {product.description && (
-            <p
-              style={{
-                fontSize: '0.78125rem',
-                color: '#666666',
-                lineHeight: 1.4,
-                display: '-webkit-box',
-                WebkitLineClamp: 1,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                margin: '0 0 12px 0',
-              }}
-            >
-              {product.description}
-            </p>
-          )}
         </div>
 
-        {/* Price & Mobile Add Button */}
+        {/* Pricing & Mobile Quick Add Touch Target */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingTop: '10px',
-            borderTop: '1px solid #F5F3EC',
+            borderTop: '1px solid #F6F3EA',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
@@ -349,7 +317,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               style={{
                 fontSize: '1.125rem',
                 fontWeight: 800,
-                color: '#111111',
+                color: 'var(--color-ink)',
                 letterSpacing: '-0.02em',
               }}
             >
@@ -369,25 +337,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </div>
 
-          {/* Mobile Direct Quick Add Button */}
+          {/* Mobile Direct Add Button (>=44px touch target) */}
           <button
             type="button"
             onClick={handleQuickAdd}
             className="mobile-only"
             style={{
-              padding: '8px 12px',
-              backgroundColor: justAdded ? '#111111' : '#111111',
-              color: justAdded ? '#D7FF00' : '#FFFFFF',
+              padding: '8px 14px',
+              backgroundColor: justAdded ? 'var(--color-ink)' : 'var(--color-ink)',
+              color: justAdded ? 'var(--color-acid-lime)' : '#FFFFFF',
               border: 'none',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-xs)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              minHeight: '44px',
+              minWidth: '44px',
             }}
             aria-label={`Add ${product.name} to bag`}
           >
-            {justAdded ? <Check size={15} color="#D7FF00" /> : <Plus size={15} />}
+            {justAdded ? <Check size={16} color="var(--color-acid-lime)" /> : <Plus size={16} />}
           </button>
         </div>
       </div>

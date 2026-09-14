@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Navigation, Phone, Mail, MapPin } from 'lucide-react';
-import { Logo } from '../brand/Logo';
+import { Navigation } from 'lucide-react';
 import { STORE_INFO } from '../../data/storeInfo';
 
 export const Footer: React.FC = () => {
@@ -11,20 +10,22 @@ export const Footer: React.FC = () => {
         backgroundColor: '#0A0A0A',
         color: '#FFFFFF',
         borderTop: '2px solid #222222',
-        paddingTop: 'clamp(64px, 8vw, 100px)',
-        paddingBottom: 'clamp(36px, 5vw, 48px)',
+        paddingTop: 'clamp(56px, 7vw, 96px)',
+        paddingBottom: 'clamp(32px, 4vw, 48px)',
         position: 'relative',
         overflow: 'hidden',
+        width: '100%',
+        boxSizing: 'border-box',
       }}
       aria-label="Oriental Sports Footer"
     >
       <div className="container">
-        {/* Large Brutalist Interactive Header Banner */}
+        {/* Large Editorial Brand Header */}
         <div
           style={{
             borderBottom: '2px solid #222222',
-            paddingBottom: 'clamp(36px, 5vw, 64px)',
-            marginBottom: 'clamp(36px, 5vw, 64px)',
+            paddingBottom: 'clamp(32px, 5vw, 56px)',
+            marginBottom: 'clamp(32px, 5vw, 56px)',
             display: 'flex',
             flexDirection: 'column',
             gap: '24px',
@@ -34,8 +35,8 @@ export const Footer: React.FC = () => {
             <h2
               className="font-display"
               style={{
-                fontSize: 'clamp(3rem, 11vw, 9.5rem)',
-                lineHeight: 0.85,
+                fontSize: 'clamp(2.75rem, 10vw, 8.5rem)',
+                lineHeight: 0.88,
                 fontWeight: 900,
                 color: '#FFFFFF',
                 margin: 0,
@@ -43,8 +44,7 @@ export const Footer: React.FC = () => {
                 textTransform: 'uppercase',
               }}
             >
-              ORIENTAL
-              <br />
+              ORIENTAL<br />
               SPORTS.
             </h2>
 
@@ -53,18 +53,18 @@ export const Footer: React.FC = () => {
                 className="font-mono"
                 style={{
                   fontSize: '0.75rem',
-                  fontWeight: 800,
-                  letterSpacing: '0.14em',
-                  color: '#C9A227',
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  color: 'var(--color-plate-gold)',
                   textTransform: 'uppercase',
                   display: 'block',
                   marginBottom: '8px',
                 }}
               >
-                PUNE, MAHARASHTRA // ESTABLISHED HEADQUARTERS
+                PUNE SPORTS HOUSE • SINCE 1974
               </span>
-              <p style={{ fontSize: '0.9375rem', color: '#AAAAAA', lineHeight: 1.5, margin: '0 0 20px 0' }}>
-                Pune’s dedicated sports house. Supplying tournament-grade gear to athletes and engineering championship court infrastructure across Maharashtra.
+              <p style={{ fontSize: '0.9375rem', color: '#AAAAAA', lineHeight: 1.5, margin: '0 0 16px 0' }}>
+                Supplying tournament equipment to athletes and constructing sports court infrastructure across Pune and Maharashtra.
               </p>
               <a
                 href={STORE_INFO.mapsUrl}
@@ -75,20 +75,21 @@ export const Footer: React.FC = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '12px 20px',
+                  padding: '10px 18px',
                   backgroundColor: '#161616',
                   border: '1px solid #333333',
                   color: '#FFFFFF',
                   fontSize: '0.8125rem',
-                  fontWeight: 800,
-                  letterSpacing: '0.08em',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
-                  transition: 'all 0.2s ease',
+                  transition: 'all var(--transition-fast)',
+                  minHeight: '44px',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#C9A227';
-                  e.currentTarget.style.backgroundColor = '#C9A227';
+                  e.currentTarget.style.borderColor = 'var(--color-plate-gold)';
+                  e.currentTarget.style.backgroundColor = 'var(--color-plate-gold)';
                   e.currentTarget.style.color = '#0A0A0A';
                 }}
                 onMouseLeave={(e) => {
@@ -97,8 +98,8 @@ export const Footer: React.FC = () => {
                   e.currentTarget.style.color = '#FFFFFF';
                 }}
               >
-                <Navigation size={15} />
-                <span>GET DIRECTIONS TO CAMP STORE →</span>
+                <Navigation size={14} />
+                <span>CAMP STORE DIRECTIONS</span>
               </a>
             </div>
           </div>
@@ -109,8 +110,8 @@ export const Footer: React.FC = () => {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: 'clamp(32px, 4vw, 48px)',
-            marginBottom: '64px',
+            gap: 'clamp(28px, 4vw, 44px)',
+            marginBottom: '48px',
           }}
         >
           {/* Column 1: Store & Workshop Details */}
@@ -119,12 +120,12 @@ export const Footer: React.FC = () => {
               className="font-mono"
               style={{
                 fontSize: '0.75rem',
-                fontWeight: 800,
-                letterSpacing: '0.14em',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                color: '#C9A227',
+                color: 'var(--color-plate-gold)',
                 display: 'block',
-                marginBottom: '16px',
+                marginBottom: '14px',
               }}
             >
               CAMP WORKSHOP
@@ -133,7 +134,7 @@ export const Footer: React.FC = () => {
               <div>Shop 247, MG Road</div>
               <div>New Modikhana, Camp</div>
               <div>Pune 411001, Maharashtra</div>
-              <div style={{ marginTop: '12px' }}>
+              <div style={{ marginTop: '10px' }}>
                 <a
                   href={`tel:${STORE_INFO.phone}`}
                   className="font-mono"
@@ -157,24 +158,23 @@ export const Footer: React.FC = () => {
               className="font-mono"
               style={{
                 fontSize: '0.75rem',
-                fontWeight: 800,
-                letterSpacing: '0.14em',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: '#FFFFFF',
                 display: 'block',
-                marginBottom: '16px',
+                marginBottom: '14px',
               }}
             >
               EQUIPMENT
             </span>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.8125rem' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8125rem' }}>
               <li><Link to="/shop/pickleball" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Pickleball</Link></li>
               <li><Link to="/shop/cricket" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Cricket</Link></li>
               <li><Link to="/shop/badminton" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Badminton</Link></li>
               <li><Link to="/shop/volleyball" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Volleyball</Link></li>
               <li><Link to="/shop/tennis" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Tennis</Link></li>
               <li><Link to="/shop/squash" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Squash</Link></li>
-              <li><Link to="/shop/fitness" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Fitness & Conditioning</Link></li>
             </ul>
           </div>
 
@@ -184,47 +184,47 @@ export const Footer: React.FC = () => {
               className="font-mono"
               style={{
                 fontSize: '0.75rem',
-                fontWeight: 800,
-                letterSpacing: '0.14em',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: '#FFFFFF',
                 display: 'block',
-                marginBottom: '16px',
+                marginBottom: '14px',
               }}
             >
               INFRASTRUCTURE
             </span>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.8125rem' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8125rem' }}>
               <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Court Construction</Link></li>
-              <li><Link to="/courts/projects" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Completed Pune Projects</Link></li>
+              <li><Link to="/courts/projects" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Pune Court Projects</Link></li>
               <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Acrylic Cushion Surfacing</Link></li>
-              <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Multi-Sport Turf & Arenas</Link></li>
-              <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Sports LED Floodlighting</Link></li>
+              <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Multi-Sport Turf</Link></li>
+              <li><Link to="/courts" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Floodlighting & Fencing</Link></li>
             </ul>
           </div>
 
-          {/* Column 4: House & Client Care */}
+          {/* Column 4: The House */}
           <div>
             <span
               className="font-mono"
               style={{
                 fontSize: '0.75rem',
-                fontWeight: 800,
-                letterSpacing: '0.14em',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: '#FFFFFF',
                 display: 'block',
-                marginBottom: '16px',
+                marginBottom: '14px',
               }}
             >
               THE HOUSE
             </span>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.8125rem' }}>
-              <li><Link to="/about" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Our Heritage</Link></li>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8125rem' }}>
+              <li><Link to="/about" style={{ color: '#AAAAAA', textDecoration: 'none' }}>About Heritage</Link></li>
               <li><Link to="/visit" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Visit Camp Store</Link></li>
-              <li><Link to="/contact" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Contact Team</Link></li>
-              <li><Link to="/account" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Player Account</Link></li>
-              <li><Link to="/wishlist" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Saved Gear</Link></li>
+              <li><Link to="/contact" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Contact Us</Link></li>
+              <li><Link to="/account" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Athlete Account</Link></li>
+              <li><Link to="/wishlist" style={{ color: '#AAAAAA', textDecoration: 'none' }}>Wishlist</Link></li>
             </ul>
           </div>
         </div>
@@ -233,12 +233,12 @@ export const Footer: React.FC = () => {
         <div
           style={{
             borderTop: '1px solid #1F1F1F',
-            paddingTop: '24px',
+            paddingTop: '20px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: '16px',
+            gap: '12px',
             fontSize: '0.75rem',
             color: '#666666',
           }}
@@ -247,9 +247,8 @@ export const Footer: React.FC = () => {
             © {new Date().getFullYear()} ORIENTAL SPORTS, PUNE. ALL RIGHTS RESERVED.
           </div>
 
-          <div className="font-mono" style={{ display: 'flex', gap: '20px' }}>
+          <div className="font-mono" style={{ display: 'flex', gap: '16px' }}>
             <span>GEAR. COURTS. PUNE.</span>
-            <span>18.5204° N, 73.8567° E</span>
           </div>
         </div>
       </div>

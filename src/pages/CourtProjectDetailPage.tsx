@@ -194,11 +194,11 @@ export const CourtProjectDetailPage: React.FC = () => {
                 BUILD A COURT LIKE THIS
               </h3>
               <p style={{ color: '#D1CBBF', fontSize: '0.875rem', lineHeight: 1.5, margin: 0 }}>
-                Connect with Oriental Sports engineers for an on-site soil and laser gradient assessment in Pune.
+                Consult with Oriental Sports for on-site assessment, surfacing, fencing, and lighting requirements across Pune.
               </p>
 
               <Link
-                to="/courts#court-estimator"
+                to="/courts"
                 className="btn btn-gold btn-lg"
                 style={{ width: '100%', boxShadow: '3px 3px 0px #111111' }}
               >
