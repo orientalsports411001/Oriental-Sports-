@@ -1,294 +1,413 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { MEDIA } from '../../data/media';
 import { MagneticButton } from '../ui/MagneticButton';
 
 /**
- * HERO — Art-Directed Editorial Sports Canvas.
+ * HERO — PHASE 1: MASTER MOTION & EDITORIAL REDESIGN
  *
- * Core Brand Positioning: "GEAR. COURTS. PUNE."
- *
- * Visual Mechanics:
- * - Clear vertical separation: Headline sits in upper canvas, CTA group securely in lower band (no overlapping text).
- * - Clean editorial typography without artificial trailing dots on every word.
- * - Single-discipline authentic sport photography (badminton championship smash) with video-ready architecture.
- * - Reduced motion & touch bypass on magnetic physics and kinetic reveal.
+ * Design Language:
+ * - Single art-directed visual canvas (NO 50/50 SaaS split).
+ * - Photography bleeds behind and around the enormous typography.
+ * - Words: PLAY. TRAIN. PERFORM. with masked editorial reveals.
+ * - Choreographed entrance:
+ *     1. Quiet/clean initial canvas
+ *     2. Photography enters with subtle scale and lateral drift
+ *     3. Typography reveals sequentially through overflow-hidden masks
+ *     4. Subtle 2.5D depth settles into an ultra-quiet, razor-clean resting state
+ * - Full support for prefers-reduced-motion and touch-screen devices.
  */
+
+const WORDS = ['PLAY.', 'TRAIN.', 'PERFORM.'];
+
 export const Hero: React.FC = () => {
-  const heroRef = useRef<HTMLElement>(null);
-  const isReducedMotion =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isReducedMotion = useReducedMotion();
+  const containerRef = useRef<HTMLElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
-    const el = heroRef.current;
-    if (!el || isReducedMotion) return;
-    el.style.opacity = '0';
-    const t = setTimeout(() => {
-      el.style.transition = 'opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1)';
-      el.style.opacity = '1';
-    }, 100);
-    return () => clearTimeout(t);
-  }, [isReducedMotion]);
+    if (typeof window !== 'undefined') {
+      setIsTouchDevice(
+        window.matchMedia('(pointer: coarse)').matches ||
+        'ontouchstart' in window
+      );
+    }
+  }, []);
 
-  // Clean words without awkward per-word periods
-  const words = ['GEAR', 'COURTS', 'PUNE'];
+  // Restrained 2.5D mouse parallax — only active on desktop when motion is allowed
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (isReducedMotion || isTouchDevice || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const xRatio = (e.clientX - rect.left) / rect.width - 0.5;
+    const yRatio = (e.clientY - rect.top) / rect.height - 0.5;
+    setMousePos({ x: xRatio, y: yRatio });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos({ x: 0, y: 0 });
+  };
 
   return (
     <section
-      ref={heroRef}
-      aria-label="Oriental Sports — Gear. Courts. Pune."
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      aria-label="Oriental Sports — Play. Train. Perform."
       style={{
         position: 'relative',
         minHeight: 'calc(100dvh - var(--header-height-desktop, 72px))',
         backgroundColor: 'var(--color-canvas-base)',
         overflow: 'hidden',
         width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        boxSizing: 'border-box',
+        padding: 'clamp(20px, 3.5vh, 44px) clamp(20px, 4.5vw, 72px) clamp(28px, 4.5vh, 52px)',
       }}
     >
-      {/* ATHLETE PHOTOGRAPH & VIDEO FALLBACK CANVAS
-          z-index: 2 — sits in front of the typography base.
-          Left-edge gradient fades to ivory so overlapping type remains legible. */}
-      <div
+      {/* ────────────────────────────────────────────────────────
+          UNIFIED CANVAS PHOTOGRAPHY — BLEEDS BEHIND & AROUND TYPE
+          Z-Index: 1 (Behind typography & CTAs)
+      ──────────────────────────────────────────────────────── */}
+      <motion.div
+        className="hero-media-canvas"
+        initial={isReducedMotion ? { opacity: 1, scale: 1, x: 0 } : { opacity: 0, scale: 1.06, x: 24 }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          x: isReducedMotion ? 0 : mousePos.x * 14,
+          y: isReducedMotion ? 0 : mousePos.y * 10,
+        }}
+        transition={{
+          opacity: { duration: isReducedMotion ? 0 : 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.1 },
+          scale: { duration: isReducedMotion ? 0 : 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.1 },
+          x: { duration: isReducedMotion ? 0 : 0.6, ease: 'easeOut' },
+          y: { duration: isReducedMotion ? 0 : 0.6, ease: 'easeOut' },
+        }}
         style={{
           position: 'absolute',
           right: 0,
           top: 0,
           bottom: 0,
-          width: 'clamp(260px, 54%, 880px)',
-          zIndex: 2,
+          width: 'clamp(320px, 58%, 940px)',
+          zIndex: 1,
+          pointerEvents: 'none',
         }}
       >
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={MEDIA.heroSlide1}
+        <img
+          src={MEDIA.heroSlide1}
+          alt="Badminton champion athlete mid-smash in arena"
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            objectPosition: 'center 18%',
+            objectPosition: 'center 20%',
             display: 'block',
           }}
-        >
-          <source src="/videos/hero_court_reel.mp4" type="video/mp4" />
-          <img
-            src={MEDIA.heroSlide1}
-            alt="Badminton athlete mid-smash on championship court"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center 18%',
-              display: 'block',
-            }}
-            onError={(e) => {
-              e.currentTarget.src = MEDIA.heroSlide3;
-            }}
-          />
-        </video>
+          onError={(e) => {
+            e.currentTarget.src = MEDIA.heroSlide3;
+          }}
+        />
 
-        {/* Gradient: image fades into canvas at left edge where type overlaps */}
+        {/* Feathered gradient masks: blends image organically into the ivory canvas */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             background:
-              'linear-gradient(to right, var(--color-canvas-base) 0%, rgba(250,247,242,0.85) 15%, rgba(250,247,242,0.3) 35%, transparent 55%)',
-            pointerEvents: 'none',
+              'linear-gradient(to right, var(--color-canvas-base) 0%, rgba(246,243,234,0.92) 18%, rgba(246,243,234,0.4) 42%, transparent 68%)',
           }}
         />
-      </div>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              'linear-gradient(to bottom, var(--color-canvas-base) 0%, transparent 14%, transparent 86%, var(--color-canvas-base) 100%)',
+          }}
+        />
+      </motion.div>
 
-      {/* EYEBROW — category context, top left */}
-      <div
-        className="hero-eyebrow"
+      {/* ────────────────────────────────────────────────────────
+          TOP BAR — EYEBROW & ARCHITECTURAL METADATA
+          Z-Index: 3
+      ──────────────────────────────────────────────────────── */}
+      <motion.div
+        className="hero-eyebrow-bar"
+        initial={isReducedMotion ? { opacity: 1 } : { opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: isReducedMotion ? 0 : 0.7,
+          delay: isReducedMotion ? 0 : 0.2,
+          ease: [0.16, 1, 0.3, 1],
+        }}
         style={{
-          position: 'absolute',
-          top: 'clamp(24px, 3.8vh, 44px)',
-          left: 'clamp(20px, 4vw, 64px)',
-          zIndex: 4,
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.625rem',
-          fontWeight: 700,
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color: 'var(--color-ink-subtle)',
           display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          gap: '8px',
+          width: '100%',
+          zIndex: 3,
+          position: 'relative',
         }}
       >
-        <span
-          style={{
-            width: '6px',
-            height: '6px',
-            backgroundColor: 'var(--color-brand-gold)',
-            borderRadius: '50%',
-            display: 'inline-block',
-          }}
-        />
-        <span>EQUIPMENT & COURT INFRASTRUCTURE · PUNE</span>
-      </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span
+            style={{
+              width: '6px',
+              height: '6px',
+              backgroundColor: 'var(--color-brand-gold)',
+              borderRadius: '50%',
+              display: 'inline-block',
+            }}
+          />
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.625rem',
+              fontWeight: 700,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--color-ink-subtle)',
+            }}
+          >
+            EQUIPMENT & COURT INFRASTRUCTURE · PUNE
+          </span>
+        </div>
 
-      {/* GIANT HEADLINE — z-index: 3
-          Positioned clearly in upper canvas so words NEVER collide with CTA buttons below. */}
-      <h1
+        <div
+          className="hero-est-badge"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.625rem',
+            fontWeight: 600,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: 'var(--color-ink-subtle)',
+          }}
+        >
+          EST. CAMP
+        </div>
+      </motion.div>
+
+      {/* ────────────────────────────────────────────────────────
+          CENTER — ENORMOUS CINEMATIC TYPOGRAPHY
+          PLAY. TRAIN. PERFORM.
+          Z-Index: 2 (Overlaps athlete photographic canvas)
+      ──────────────────────────────────────────────────────── */}
+      <div
         style={{
-          position: 'absolute',
-          top: 'clamp(80px, 12.5vh, 130px)',
-          left: 'clamp(20px, 4vw, 64px)',
-          right: 0,
-          margin: 0,
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(3.5rem, 12vw, 9.75rem)',
-          fontWeight: 800,
-          lineHeight: 0.88,
-          letterSpacing: '-0.04em',
-          textTransform: 'uppercase',
-          color: 'var(--color-ink)',
-          zIndex: 3,
+          position: 'relative',
+          zIndex: 2,
+          margin: 'clamp(24px, 4vh, 48px) 0',
           pointerEvents: 'none',
           userSelect: 'none',
         }}
       >
-        {words.map((word, idx) => (
-          <span
-            key={word}
-            style={{
-              display: 'block',
-              overflow: 'hidden',
-            }}
-          >
-            <motion.span
-              style={{ display: 'block', willChange: 'transform, opacity' }}
-              initial={isReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: '85%' }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: isReducedMotion ? 0 : 0.7,
-                delay: isReducedMotion ? 0 : 0.15 + idx * 0.12,
-                ease: [0.16, 1, 0.3, 1],
+        <h1
+          style={{
+            margin: 0,
+            fontFamily: 'var(--font-display)',
+            fontSize: 'clamp(3.75rem, 13vw, 10.25rem)',
+            fontWeight: 800,
+            lineHeight: 0.86,
+            letterSpacing: '-0.04em',
+            textTransform: 'uppercase',
+            color: 'var(--color-ink)',
+          }}
+        >
+          {WORDS.map((word, idx) => (
+            <span
+              key={word}
+              style={{
+                display: 'block',
+                overflow: 'hidden',
+                paddingBottom: '0.04em',
               }}
             >
-              {word}
-            </motion.span>
-          </span>
-        ))}
-      </h1>
+              <motion.span
+                style={{
+                  display: 'block',
+                  willChange: 'transform, opacity',
+                }}
+                initial={isReducedMotion ? { y: 0, opacity: 1 } : { y: '105%', opacity: 0 }}
+                animate={{
+                  y: 0,
+                  opacity: 1,
+                  x: isReducedMotion ? 0 : mousePos.x * -6,
+                }}
+                transition={{
+                  y: {
+                    duration: isReducedMotion ? 0 : 0.85,
+                    delay: isReducedMotion ? 0 : 0.28 + idx * 0.14,
+                    ease: [0.16, 1, 0.3, 1],
+                  },
+                  opacity: {
+                    duration: isReducedMotion ? 0 : 0.85,
+                    delay: isReducedMotion ? 0 : 0.28 + idx * 0.14,
+                    ease: [0.16, 1, 0.3, 1],
+                  },
+                  x: { duration: isReducedMotion ? 0 : 0.5, ease: 'easeOut' },
+                }}
+              >
+                {word}
+              </motion.span>
+            </span>
+          ))}
+        </h1>
+      </div>
 
-      {/* CTA GROUP — bottom left anchor with dedicated vertical clearance */}
-      <div
-        className="hero-cta-group"
+      {/* ────────────────────────────────────────────────────────
+          BOTTOM BAR — ARCHITECTURAL RULE & PRIMARY ACTIONS
+          Z-Index: 3
+      ──────────────────────────────────────────────────────── */}
+      <motion.div
+        className="hero-bottom-bar"
+        initial={isReducedMotion ? { opacity: 1 } : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: isReducedMotion ? 0 : 0.75,
+          delay: isReducedMotion ? 0 : 0.75,
+          ease: [0.16, 1, 0.3, 1],
+        }}
         style={{
-          position: 'absolute',
-          bottom: 'clamp(32px, 5.5vh, 56px)',
-          left: 'clamp(20px, 4vw, 64px)',
-          zIndex: 4,
+          zIndex: 3,
+          position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          gap: '14px',
+          gap: '16px',
         }}
       >
-        {/* Single gold hairline */}
+        {/* Subtle Gold Hairline */}
         <div
           style={{
-            width: 'clamp(28px, 3.5vw, 52px)',
+            width: 'clamp(36px, 4vw, 64px)',
             height: '1.5px',
             backgroundColor: 'var(--color-brand-gold)',
           }}
         />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <Link to="/shop" style={{ textDecoration: 'none' }} data-cursor="view">
-            <MagneticButton
-              variant="primary"
-              size="md"
-              ariaLabel="Explore Sports Gear"
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '20px',
+          }}
+        >
+          {/* Action Links */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+            <Link to="/shop" style={{ textDecoration: 'none' }} data-cursor="view">
+              <MagneticButton
+                variant="primary"
+                size="md"
+                ariaLabel="Explore Pro Sports Gear"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'clamp(0.6875rem, 1.1vw, 0.8125rem)',
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  padding: '13px 24px',
+                  borderRadius: 'var(--radius-xs)',
+                  cursor: 'pointer',
+                  backgroundColor: 'var(--color-ink)',
+                  color: 'var(--color-canvas-base)',
+                  border: '1px solid var(--color-ink)',
+                }}
+              >
+                EXPLORE GEAR →
+              </MagneticButton>
+            </Link>
+
+            <Link
+              to="/courts"
+              data-cursor="view"
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
                 fontFamily: 'var(--font-mono)',
                 fontSize: 'clamp(0.6875rem, 1.1vw, 0.8125rem)',
                 fontWeight: 700,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                padding: '12px 22px',
-                borderRadius: 'var(--radius-xs)',
-                cursor: 'pointer',
+                color: 'var(--color-ink)',
+                textDecoration: 'none',
+                borderBottom: '1.5px solid var(--color-ink)',
+                paddingBottom: '3px',
+                minHeight: '44px',
+                transition: 'opacity 0.2s ease, border-color 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '0.55';
+                e.currentTarget.style.borderColor = 'var(--color-brand-gold)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.borderColor = 'var(--color-ink)';
               }}
             >
-              EXPLORE GEAR →
-            </MagneticButton>
-          </Link>
+              TURNKEY COURTS →
+            </Link>
+          </div>
 
-          <Link
-            to="/courts"
-            data-cursor="view"
+          {/* Quiet Narrative Tag */}
+          <div
+            className="hero-narrative-tag"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
               fontFamily: 'var(--font-mono)',
-              fontSize: 'clamp(0.6875rem, 1.1vw, 0.8125rem)',
-              fontWeight: 700,
-              letterSpacing: '0.12em',
+              fontSize: '0.625rem',
+              fontWeight: 600,
+              letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: 'var(--color-ink)',
-              textDecoration: 'none',
-              borderBottom: '1.5px solid var(--color-ink)',
-              paddingBottom: '3px',
-              minHeight: '44px',
-              transition: 'opacity 0.2s ease',
+              color: 'var(--color-ink-subtle)',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.5')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
           >
-            TURNKEY COURTS →
-          </Link>
+            PUNE SPORTS ARCHIVE & INFRASTRUCTURE
+          </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* RESPONSIVE CSS */}
+      {/* ────────────────────────────────────────────────────────
+          RESPONSIVE ADAPTATIONS (ZERO HORIZONTAL OVERFLOW)
+      ──────────────────────────────────────────────────────── */}
       <style>{`
         @media (max-width: 767px) {
-          section[aria-label="Oriental Sports — Gear. Courts. Pune."] {
+          section[aria-label="Oriental Sports — Play. Train. Perform."] {
             min-height: calc(100dvh - var(--header-height-mobile, 60px) - var(--bottom-nav-height, 60px)) !important;
+            padding: 16px 20px 24px !important;
           }
-          /* On mobile: image canvas becomes full-bleed background */
-          section[aria-label="Oriental Sports — Gear. Courts. Pune."] > div:first-child {
+          .hero-media-canvas {
             width: 100% !important;
             right: 0 !important;
-            z-index: 1 !important;
+            opacity: 0.85 !important;
           }
-          /* Heavier left fade on mobile to keep ivory zone for type readability */
-          section[aria-label="Oriental Sports — Gear. Courts. Pune."] > div:first-child > div {
+          .hero-media-canvas > div:first-of-type {
             background: linear-gradient(
               to right,
               var(--color-canvas-base) 0%,
-              rgba(250,247,242,0.94) 25%,
-              rgba(250,247,242,0.7) 60%,
-              rgba(250,247,242,0.3) 100%
+              rgba(246,243,234,0.95) 28%,
+              rgba(246,243,234,0.65) 65%,
+              rgba(246,243,234,0.3) 100%
             ) !important;
           }
-          /* Headline: sits cleanly in upper half on mobile */
-          section[aria-label="Oriental Sports — Gear. Courts. Pune."] > h1 {
-            top: 24% !important;
-            font-size: clamp(3.25rem, 15vw, 5.25rem) !important;
-            line-height: 0.9 !important;
+          .hero-est-badge,
+          .hero-narrative-tag {
+            display: none !important;
           }
-          .hero-eyebrow {
-            top: 18px !important;
-          }
-          /* Position CTA securely above the fixed mobile bottom bar */
-          .hero-cta-group {
-            bottom: 24px !important;
+          section[aria-label="Oriental Sports — Play. Train. Perform."] h1 {
+            font-size: clamp(3.15rem, 15.5vw, 5.5rem) !important;
+            line-height: 0.88 !important;
           }
         }
 
-        @media (max-width: 430px) {
-          section[aria-label="Oriental Sports — Gear. Courts. Pune."] > h1 {
-            font-size: clamp(2.85rem, 14vw, 4.25rem) !important;
+        @media (max-width: 360px) {
+          section[aria-label="Oriental Sports — Play. Train. Perform."] h1 {
+            font-size: 2.85rem !important;
           }
         }
       `}</style>
@@ -297,3 +416,4 @@ export const Hero: React.FC = () => {
 };
 
 export default Hero;
+
