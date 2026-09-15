@@ -304,10 +304,11 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: 'var(--color-electric-blue)',
+                    color: 'var(--color-ink)',
                     fontWeight: 700,
                     cursor: 'pointer',
                     fontSize: '0.875rem',
+                    textDecoration: 'underline',
                   }}
                 >
                   Sign in to sync across devices →
@@ -462,8 +463,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'overview' ? 'var(--color-electric-blue)' : '#4B5563',
-                borderBottom: activeTab === 'overview' ? '3px solid var(--color-electric-blue)' : '3px solid transparent',
+                color: activeTab === 'overview' ? 'var(--color-ink)' : '#4B5563',
+                borderBottom: activeTab === 'overview' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
               }}
             >
               <Activity size={16} />
@@ -483,8 +484,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'orders' ? 'var(--color-electric-blue)' : '#4B5563',
-                borderBottom: activeTab === 'orders' ? '3px solid var(--color-electric-blue)' : '3px solid transparent',
+                color: activeTab === 'orders' ? 'var(--color-ink)' : '#4B5563',
+                borderBottom: activeTab === 'orders' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
               }}
             >
               <Package size={16} />
@@ -504,8 +505,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'addresses' ? 'var(--color-electric-blue)' : '#4B5563',
-                borderBottom: activeTab === 'addresses' ? '3px solid var(--color-electric-blue)' : '3px solid transparent',
+                color: activeTab === 'addresses' ? 'var(--color-ink)' : '#4B5563',
+                borderBottom: activeTab === 'addresses' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
               }}
             >
               <MapPin size={16} />
@@ -525,8 +526,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'courts' ? 'var(--color-electric-blue)' : '#4B5563',
-                borderBottom: activeTab === 'courts' ? '3px solid var(--color-electric-blue)' : '3px solid transparent',
+                color: activeTab === 'courts' ? 'var(--color-ink)' : '#4B5563',
+                borderBottom: activeTab === 'courts' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
               }}
             >
               <Layers size={16} />
@@ -546,8 +547,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'wishlist' ? 'var(--color-electric-blue)' : '#4B5563',
-                borderBottom: activeTab === 'wishlist' ? '3px solid var(--color-electric-blue)' : '3px solid transparent',
+                color: activeTab === 'wishlist' ? 'var(--color-ink)' : '#4B5563',
+                borderBottom: activeTab === 'wishlist' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
               }}
             >
               <Heart size={16} />
@@ -567,8 +568,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'profile' ? 'var(--color-electric-blue)' : '#4B5563',
-                borderBottom: activeTab === 'profile' ? '3px solid var(--color-electric-blue)' : '3px solid transparent',
+                color: activeTab === 'profile' ? 'var(--color-ink)' : '#4B5563',
+                borderBottom: activeTab === 'profile' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
               }}
             >
               <User size={16} />
@@ -604,7 +605,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6B7280' }}>
                     Total Orders
                   </span>
-                  <Package size={18} color="var(--color-electric-blue)" />
+                  <Package size={18} color="var(--color-brand-gold)" />
                 </div>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--color-ink)' }}>
                   {user.orders.length}
@@ -694,7 +695,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: 'var(--color-electric-blue)',
+                      color: 'var(--color-ink)',
                       fontWeight: 700,
                       cursor: 'pointer',
                       fontSize: '0.8125rem',
@@ -773,8 +774,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Shield size={18} color="var(--color-electric-blue)" />
-                    <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--color-electric-blue)' }}>
+                    <Shield size={18} color="var(--color-brand-gold)" />
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--color-ink)' }}>
                       DEFAULT SHIPPING DESTINATION
                     </span>
                   </div>
@@ -957,7 +958,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                   style={{
                     backgroundColor: '#FFFFFF',
                     borderRadius: '6px',
-                    border: addr.isDefault ? '2px solid var(--color-electric-blue)' : '1px solid var(--color-ivory-border)',
+                    border: addr.isDefault ? '2px solid var(--color-brand-gold)' : '1px solid var(--color-ivory-border)',
                     padding: '20px',
                     position: 'relative',
                     display: 'flex',
@@ -984,8 +985,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       {addr.isDefault && (
                         <span
                           style={{
-                            backgroundColor: 'rgba(36, 87, 255, 0.1)',
-                            color: 'var(--color-electric-blue)',
+                            backgroundColor: 'var(--color-ink)',
+                            color: 'var(--color-brand-gold)',
                             fontSize: '0.6875rem',
                             fontWeight: 800,
                             padding: '2px 8px',
@@ -1029,7 +1030,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: 'var(--color-electric-blue)',
+                          color: 'var(--color-ink)',
                           fontSize: '0.75rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -1231,7 +1232,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       <span style={{ color: '#6B7280', display: 'block', fontSize: '0.6875rem', textTransform: 'uppercase', fontWeight: 700 }}>
                         Estimated Turnkey BOQ
                       </span>
-                      <strong style={{ color: 'var(--color-electric-blue)' }}>{project.estimatedBudget}</strong>
+                      <strong style={{ color: 'var(--color-brand-gold)' }}>{project.estimatedBudget}</strong>
                     </div>
                   </div>
 

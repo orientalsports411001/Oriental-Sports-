@@ -130,7 +130,7 @@ export const CartDrawer: React.FC = () => {
                   <Truck size={14} color="#C9A227" />
                   <span>Free Delivery in Pune</span>
                 </span>
-                <span className="font-mono" style={{ fontWeight: 800, color: '#D7FF00' }}>
+                <span className="font-mono" style={{ fontWeight: 800, color: 'var(--color-brand-gold)' }}>
                   Add ₹{amountNeeded.toLocaleString('en-IN')}
                 </span>
               </div>
@@ -146,14 +146,14 @@ export const CartDrawer: React.FC = () => {
                   style={{
                     width: `${progressPercent}%`,
                     height: '100%',
-                    backgroundColor: '#C9A227',
+                    backgroundColor: 'var(--color-brand-gold)',
                     transition: 'width 0.3s ease',
                   }}
                 />
               </div>
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#D7FF00', fontSize: '0.8125rem', fontWeight: 800 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-brand-gold)', fontSize: '0.8125rem', fontWeight: 800 }}>
               <Check size={16} />
               <span>FREE EXPEDITE DISPATCH IN PUNE QUALIFIED!</span>
             </div>
@@ -202,14 +202,17 @@ export const CartDrawer: React.FC = () => {
                   alignItems: 'center',
                   gap: '8px',
                   padding: '12px 24px',
-                  backgroundColor: '#2457FF',
-                  color: '#FFFFFF',
+                  backgroundColor: 'var(--color-brand-gold)',
+                  color: 'var(--color-ink)',
                   fontSize: '0.8125rem',
                   fontWeight: 800,
                   letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   textDecoration: 'none',
+                  transition: 'opacity 0.2s ease',
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
               >
                 <span>SHOP SPORTS CATALOG</span>
                 <ArrowRight size={15} />
@@ -348,8 +351,8 @@ export const CartDrawer: React.FC = () => {
               style={{
                 width: '100%',
                 padding: '14px',
-                backgroundColor: '#2457FF',
-                color: '#FFFFFF',
+                backgroundColor: 'var(--color-brand-gold)',
+                color: 'var(--color-ink)',
                 border: 'none',
                 fontSize: '0.8125rem',
                 fontWeight: 800,
@@ -360,10 +363,10 @@ export const CartDrawer: React.FC = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                transition: 'background-color 0.2s ease',
+                transition: 'opacity 0.2s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1C44CC')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2457FF')}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
             >
               <span>PROCEED TO CHECKOUT</span>
               <ArrowRight size={16} />

@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, ArrowRight, Calendar, Layers } from 'lucide-react';
+import { MapPin, ArrowUpRight, Layers, Calendar } from 'lucide-react';
 import { COURT_PROJECTS } from '../data/courts';
 
+/**
+ * CourtProjectsPage — Architectural Sports Infrastructure Portfolio.
+ *
+ * Design Direction:
+ * - Cosmos-style editorial canvas with asymmetric masonry rhythm.
+ * - Clean architectural framing, restrained typography, zero brutalist fake badges.
+ * - Canonical tokens only: #FAF7F2 ivory, #17181A ink, #C9A227 gold.
+ */
 export const CourtProjectsPage: React.FC = () => {
   const [filterSport, setFilterSport] = useState<string>('all');
 
@@ -13,149 +21,324 @@ export const CourtProjectsPage: React.FC = () => {
     : COURT_PROJECTS.filter((p) => p.sport === filterSport);
 
   return (
-    <div className="bg-ivory" style={{ minHeight: '80vh', paddingBottom: 'var(--space-4xl)' }}>
-      {/* Header */}
-      <div
+    <div
+      style={{
+        backgroundColor: 'var(--color-canvas-base)',
+        minHeight: '100vh',
+        color: 'var(--color-ink)',
+        paddingBottom: 'clamp(80px, 10vw, 140px)',
+      }}
+    >
+      {/* Portfolio Masthead */}
+      <header
         style={{
           backgroundColor: 'var(--color-ink)',
-          color: 'var(--color-ivory)',
-          padding: 'var(--space-3xl) 0',
-          borderBottom: '1px solid rgba(246, 243, 234, 0.08)',
+          color: 'var(--color-canvas-base)',
+          padding: 'clamp(64px, 8vw, 110px) 0 clamp(48px, 6vw, 80px)',
+          borderBottom: '1px solid #222222',
         }}
       >
         <div className="container">
-          <span
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: 'var(--color-plate-gold)',
-              display: 'block',
-              marginBottom: '8px',
-            }}
-          >
-            EXECUTION PORTFOLIO
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <span
+              style={{
+                width: '8px',
+                height: '8px',
+                backgroundColor: 'var(--color-brand-gold)',
+                borderRadius: '50%',
+              }}
+            />
+            <span
+              className="font-mono"
+              style={{
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: 'rgba(250, 247, 242, 0.7)',
+              }}
+            >
+              INFRASTRUCTURE & SURFACING // PUNE
+            </span>
+          </div>
+
           <h1
             className="font-display"
             style={{
-              fontSize: 'clamp(2.25rem, 5vw, 3.5rem)',
-              color: 'var(--color-pure-white)',
-              lineHeight: 1.05,
-              marginBottom: '12px',
+              fontSize: 'clamp(2.75rem, 6.5vw, 5.25rem)',
+              color: 'var(--color-canvas-base)',
+              lineHeight: 0.94,
+              letterSpacing: '-0.035em',
+              textTransform: 'uppercase',
+              margin: '0 0 16px 0',
+              maxWidth: '900px',
             }}
           >
-            COURT PROJECTS IN PUNE
+            COMMISSIONED COURTS
           </h1>
-          <p style={{ color: '#C5BFB3', maxWidth: '640px', fontSize: '1rem' }}>
-            Verified sports surfaces, pickleball arenas, championship tennis hardcourts and rooftop turf facilities across Pune.
+
+          <p
+            style={{
+              color: 'rgba(250, 247, 242, 0.75)',
+              maxWidth: '620px',
+              fontSize: 'clamp(0.9375rem, 1.2vw, 1.0625rem)',
+              lineHeight: 1.6,
+              margin: 0,
+            }}
+          >
+            Turnkey sports facility design, ITF & USAPA multi-layer acrylic court systems,
+            championship pickleball complexes, and multi-sport turf installations across Pune.
           </p>
         </div>
-      </div>
+      </header>
 
-      <div className="container" style={{ paddingTop: 'var(--space-2xl)' }}>
-        {/* Sport Filter Tabs */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '32px' }}>
-          {sports.map((sp) => (
-            <button
-              key={sp}
-              type="button"
-              onClick={() => setFilterSport(sp)}
-              style={{
-                padding: '8px 16px',
-                fontSize: '0.8125rem',
-                fontFamily: 'var(--font-heading)',
-                fontWeight: 700,
-                borderRadius: '2px',
-                backgroundColor: filterSport === sp ? 'var(--color-ink)' : 'var(--color-pure-white)',
-                color: filterSport === sp ? 'var(--color-pure-white)' : 'var(--color-ink)',
-                border: '1px solid var(--color-ivory-border)',
-                cursor: 'pointer',
-                textTransform: 'uppercase',
-              }}
-            >
-              {sp === 'all' ? 'All Projects' : sp}
-            </button>
-          ))}
+      {/* Main Canvas */}
+      <main className="container" style={{ paddingTop: 'clamp(32px, 4vw, 56px)' }}>
+        {/* Disciplines Filter Bar */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap',
+            marginBottom: 'clamp(32px, 4vw, 48px)',
+            alignItems: 'center',
+          }}
+        >
+          {sports.map((sp) => {
+            const isActive = filterSport === sp;
+            return (
+              <button
+                key={sp}
+                type="button"
+                onClick={() => setFilterSport(sp)}
+                style={{
+                  padding: '10px 18px',
+                  fontSize: '0.75rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  borderRadius: 'var(--radius-xs)',
+                  backgroundColor: isActive ? 'var(--color-ink)' : '#FFFFFF',
+                  color: isActive ? 'var(--color-canvas-base)' : 'var(--color-ink)',
+                  border: isActive ? '1px solid var(--color-ink)' : '1px solid var(--color-border-subtle)',
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                  minHeight: '44px',
+                  transition: 'all 0.18s ease',
+                }}
+              >
+                {sp === 'all' ? 'All Disciplines' : sp}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Projects Grid */}
+        {/* Asymmetric Editorial Grid */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap: 'clamp(24px, 3vw, 36px)',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+            gap: 'clamp(28px, 3.5vw, 44px)',
           }}
         >
           {filtered.map((proj) => (
-            <div
+            <Link
               key={proj.id}
+              to={`/courts/${proj.slug}`}
+              data-cursor="view"
               style={{
-                backgroundColor: 'var(--color-pure-white)',
-                border: '2px solid #111111',
-                boxShadow: '6px 6px 0px #111111',
                 display: 'flex',
                 flexDirection: 'column',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid var(--color-border-subtle)',
+                borderRadius: 'var(--radius-xs)',
+                overflow: 'hidden',
+                textDecoration: 'none',
+                color: 'var(--color-ink)',
+                transition: 'border-color 0.22s ease, transform 0.22s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--color-ink)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--color-border-subtle)';
+                e.currentTarget.style.transform = 'translateY(0px)';
               }}
             >
-              <div style={{ position: 'relative', width: '100%', height: '240px', borderBottom: '2px solid #111111', overflow: 'hidden' }}>
+              {/* Photo Canvas */}
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  aspectRatio: '16 / 10',
+                  overflow: 'hidden',
+                  backgroundColor: '#111111',
+                }}
+              >
                 <img
                   src={proj.heroImage}
                   alt={proj.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  loading="lazy"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                    transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.04)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                 />
-                <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
-                  <span className="badge badge-dark" style={{ border: '1px solid rgba(255,255,255,0.3)', boxShadow: '2px 2px 0px #111111' }}>{proj.sport}</span>
+
+                {/* Subdued Discipline Tag */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '12px',
+                    left: '12px',
+                    backgroundColor: 'rgba(23, 24, 26, 0.85)',
+                    backdropFilter: 'blur(6px)',
+                    color: 'var(--color-canvas-base)',
+                    padding: '4px 10px',
+                    fontSize: '0.6875rem',
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 700,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    borderRadius: 'var(--radius-xs)',
+                  }}
+                >
+                  {proj.sport}
                 </div>
-                <div style={{ position: 'absolute', top: '12px', right: '12px' }}>
-                  <span className="badge badge-gold" style={{ boxShadow: '2px 2px 0px #111111' }}>{proj.clientType}</span>
+
+                {/* Client / Venue Tag */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    backgroundColor: 'rgba(23, 24, 26, 0.85)',
+                    backdropFilter: 'blur(6px)',
+                    color: 'var(--color-brand-gold)',
+                    padding: '4px 10px',
+                    fontSize: '0.6875rem',
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    borderRadius: 'var(--radius-xs)',
+                  }}
+                >
+                  {proj.clientType}
                 </div>
               </div>
 
-              <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              {/* Details Section */}
+              <div
+                style={{
+                  padding: '24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  flex: 1,
+                  justifyContent: 'space-between',
+                }}
+              >
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-plate-gold)', fontSize: '0.8125rem', fontWeight: 800, marginBottom: '6px' }}>
-                    <MapPin size={14} />
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      color: 'var(--color-ink-subtle)',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <MapPin size={13} color="var(--color-brand-gold)" />
                     <span>{proj.location}</span>
                   </div>
 
-                  <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.25rem', lineHeight: 1.2, marginBottom: '8px', color: '#111111' }}>
+                  <h2
+                    className="font-display"
+                    style={{
+                      fontSize: '1.375rem',
+                      fontWeight: 800,
+                      lineHeight: 1.2,
+                      margin: '0 0 10px 0',
+                      letterSpacing: '-0.02em',
+                    }}
+                  >
                     {proj.title}
-                  </h3>
+                  </h2>
 
-                  <p style={{ color: '#444444', fontSize: '0.9375rem', lineHeight: 1.45, marginBottom: '16px' }}>
+                  <p
+                    style={{
+                      color: '#555555',
+                      fontSize: '0.875rem',
+                      lineHeight: 1.55,
+                      margin: '0 0 20px 0',
+                    }}
+                  >
                     {proj.description}
                   </p>
+                </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8125rem', color: '#555555', marginBottom: '20px', padding: '10px 12px', backgroundColor: '#F6F3EA', border: '1px solid #111111' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Layers size={14} color="#C9A227" />
+                {/* Metadata Strip */}
+                <div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '12px 14px',
+                      backgroundColor: 'var(--color-canvas-subtle, #F7F5EE)',
+                      borderRadius: 'var(--radius-xs)',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.75rem',
+                      color: 'var(--color-ink)',
+                      marginBottom: '16px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Layers size={14} color="var(--color-brand-gold)" />
                       <span style={{ fontWeight: 700 }}>{proj.surface}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Calendar size={14} color="#C9A227" />
-                      <span>Commissioned: <strong>{proj.year}</strong></span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-ink-subtle)' }}>
+                      <Calendar size={13} />
+                      <span>{proj.year}</span>
                     </div>
                   </div>
-                </div>
 
-                <div style={{ paddingTop: '16px', borderTop: '2px solid #111111' }}>
-                  <Link
-                    to={`/courts/${proj.slug}`}
-                    className="btn btn-primary"
-                    style={{ width: '100%', boxShadow: '3px 3px 0px #C9A227' }}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingTop: '12px',
+                      borderTop: '1px solid var(--color-border-subtle)',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                    }}
                   >
-                    <span>VIEW CASE STUDY</span>
-                    <ArrowRight size={16} />
-                  </Link>
+                    <span>EXPLORE PROJECT CASE</span>
+                    <ArrowUpRight size={16} color="var(--color-brand-gold)" />
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
-      </div>
+      </main>
     </div>
   );
 };
+
+export default CourtProjectsPage;

@@ -10,6 +10,8 @@ import { CartDrawer } from './components/navigation/CartDrawer';
 import { AuthModal } from './components/auth/AuthModal';
 import { Footer } from './components/footer/Footer';
 import { BrandIntro } from './components/ui/BrandIntro';
+import { SmoothScroll } from './components/ui/SmoothScroll';
+import { CustomCursor } from './components/ui/CustomCursor';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -40,15 +42,17 @@ const ScrollToTop: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <ScrollToTop />
-            <BrandIntro />
-            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-canvas-base)' }}>
-              <Header />
-              <CartDrawer />
-              <AuthModal />
+      <SmoothScroll>
+        <CustomCursor />
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <ScrollToTop />
+              <BrandIntro />
+              <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-canvas-base)' }}>
+                <Header />
+                <CartDrawer />
+                <AuthModal />
 
               <div style={{ flex: 1 }}>
                 <Routes>
@@ -100,7 +104,8 @@ export const App: React.FC = () => {
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </SmoothScroll>
+  </BrowserRouter>
   );
 };
 

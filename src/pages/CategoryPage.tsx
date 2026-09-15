@@ -96,7 +96,7 @@ export const CategoryPage: React.FC = () => {
             </Link>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <span style={{ width: '8px', height: '8px', backgroundColor: '#2457FF' }} />
+              <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-brand-gold)' }} />
               <span className="font-mono" style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.16em', color: '#888888', textTransform: 'uppercase' }}>
                 ATHLETIC CATALOG // PUNE DISCIPLINE
               </span>

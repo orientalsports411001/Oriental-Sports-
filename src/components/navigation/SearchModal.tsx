@@ -127,7 +127,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
             backgroundColor: '#161616',
           }}
         >
-          <Search size={22} color="#2457FF" style={{ marginRight: '14px', flexShrink: 0 }} />
+          <Search size={22} color="var(--color-brand-gold)" style={{ marginRight: '14px', flexShrink: 0 }} />
           <input
             ref={inputRef}
             type="search"
@@ -187,7 +187,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                       fontSize: '0.6875rem',
                       fontWeight: 800,
                       letterSpacing: '0.14em',
-                      color: '#2457FF',
+                      color: 'var(--color-brand-gold)',
                       textTransform: 'uppercase',
                       marginBottom: '12px',
                     }}
@@ -211,7 +211,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = '#202020';
-                          e.currentTarget.style.borderColor = '#2457FF';
+                          e.currentTarget.style.borderColor = 'var(--color-brand-gold)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = '#161616';
@@ -234,10 +234,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                             {p.name}
                           </div>
                           <div className="font-mono" style={{ fontSize: '0.75rem', color: '#999999', marginTop: '2px' }}>
-                            {p.categoryName || p.category} • <strong style={{ color: '#D7FF00' }}>₹{p.price.toLocaleString('en-IN')}</strong>
+                            {p.categoryName || p.category} • <strong style={{ color: 'var(--color-brand-gold)' }}>₹{p.price.toLocaleString('en-IN')}</strong>
                           </div>
                         </div>
-                        <ArrowRight size={15} color="#2457FF" />
+                        <ArrowRight size={15} color="var(--color-brand-gold)" />
                       </div>
                     ))}
                   </div>
@@ -313,8 +313,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                     }}
                     style={{
                       padding: '10px 20px',
-                      backgroundColor: '#2457FF',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--color-brand-gold)',
+                      color: 'var(--color-ink)',
                       fontSize: '0.75rem',
                       fontWeight: 800,
                       letterSpacing: '0.08em',
@@ -344,7 +344,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                   gap: '6px',
                 }}
               >
-                <Flame size={14} color="#FF5A1F" />
+                <Flame size={14} color="var(--color-brand-gold)" />
                 <span>POPULAR EQUIPMENT & SEARCH SHORTCUTS</span>
               </div>
 
@@ -365,8 +365,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                       transition: 'all 0.18s ease',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#2457FF';
-                      e.currentTarget.style.color = '#FFFFFF';
+                      e.currentTarget.style.borderColor = 'var(--color-brand-gold)';
+                      e.currentTarget.style.color = 'var(--color-brand-gold)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = '#2B2B2B';

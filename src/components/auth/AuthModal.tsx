@@ -266,8 +266,8 @@ export const AuthModal: React.FC = () => {
                     padding: '10px 0',
                     border: 'none',
                     background: 'transparent',
-                    borderBottom: mode === 'phone' ? '2px solid var(--color-electric-blue)' : '2px solid transparent',
-                    color: mode === 'phone' ? 'var(--color-electric-blue)' : '#6B7280',
+                    borderBottom: mode === 'phone' ? '2px solid var(--color-ink)' : '2px solid transparent',
+                    color: mode === 'phone' ? 'var(--color-ink)' : '#6B7280',
                     fontWeight: 700,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
@@ -288,8 +288,8 @@ export const AuthModal: React.FC = () => {
                     padding: '10px 0',
                     border: 'none',
                     background: 'transparent',
-                    borderBottom: mode === 'email' ? '2px solid var(--color-electric-blue)' : '2px solid transparent',
-                    color: mode === 'email' ? 'var(--color-electric-blue)' : '#6B7280',
+                    borderBottom: mode === 'email' ? '2px solid var(--color-ink)' : '2px solid transparent',
+                    color: mode === 'email' ? 'var(--color-ink)' : '#6B7280',
                     fontWeight: 700,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
@@ -520,8 +520,8 @@ export const AuthModal: React.FC = () => {
               {/* Quick Dev OTP Auto-fill Chip */}
               <div
                 style={{
-                  backgroundColor: 'rgba(36, 87, 255, 0.08)',
-                  border: '1px dashed var(--color-electric-blue)',
+                  backgroundColor: 'rgba(201, 162, 39, 0.08)',
+                  border: '1px dashed var(--color-brand-gold)',
                   borderRadius: '4px',
                   padding: '10px 12px',
                   marginBottom: '16px',
@@ -531,7 +531,7 @@ export const AuthModal: React.FC = () => {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Sparkles size={14} color="var(--color-electric-blue)" />
+                  <Sparkles size={14} color="var(--color-brand-gold)" />
                   <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-ink)' }}>
                     Demo code: <strong>123456</strong>
                   </span>
@@ -540,8 +540,8 @@ export const AuthModal: React.FC = () => {
                   type="button"
                   onClick={autoFillDemoOtp}
                   style={{
-                    backgroundColor: 'var(--color-electric-blue)',
-                    color: '#FFFFFF',
+                    backgroundColor: 'var(--color-ink)',
+                    color: 'var(--color-canvas-base)',
                     border: 'none',
                     borderRadius: '2px',
                     padding: '3px 8px',
@@ -724,7 +724,7 @@ export const AuthModal: React.FC = () => {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: 'var(--color-electric-blue)',
+                      color: 'var(--color-ink)',
                       fontWeight: 700,
                       cursor: 'pointer',
                       padding: 0,

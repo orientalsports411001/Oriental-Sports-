@@ -421,9 +421,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                     flex: 1,
                     padding: '8px 12px',
                     borderRadius: '4px',
-                    border: formData.type === type ? '2px solid var(--color-electric-blue)' : '1px solid #D1D5DB',
-                    backgroundColor: formData.type === type ? 'rgba(36, 87, 255, 0.05)' : '#FFFFFF',
-                    color: formData.type === type ? 'var(--color-electric-blue)' : '#4B5563',
+                    border: formData.type === type ? '2px solid var(--color-ink)' : '1px solid #D1D5DB',
+                    backgroundColor: formData.type === type ? 'rgba(201, 162, 39, 0.08)' : '#FFFFFF',
+                    color: formData.type === type ? 'var(--color-ink)' : '#4B5563',
                     fontWeight: 700,
                     fontSize: '0.8125rem',
                     cursor: 'pointer',
@@ -442,7 +442,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
               type="checkbox"
               checked={formData.isDefault}
               onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-              style={{ width: '16px', height: '16px', accentColor: 'var(--color-electric-blue)' }}
+              style={{ width: '16px', height: '16px', accentColor: 'var(--color-ink)' }}
             />
             <span style={{ fontSize: '0.8125rem', color: '#374151' }}>
               Make this my default shipping address for gear checkout

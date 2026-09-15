@@ -127,7 +127,7 @@ export const AboutPage: React.FC = () => {
                 </div>
 
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                  <div style={{ width: '48px', height: '48px', backgroundColor: '#111111', color: '#D7FF00', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid #111111' }}>
+                  <div style={{ width: '48px', height: '48px', backgroundColor: '#111111', color: 'var(--color-brand-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid #111111' }}>
                     <Hammer size={22} />
                   </div>
                   <div>

@@ -58,7 +58,7 @@ export const ShopPage: React.FC = () => {
       >
         <div className="container">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <span style={{ width: '8px', height: '8px', backgroundColor: '#2457FF' }} />
+            <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-brand-gold)' }} />
             <span
               className="font-mono"
               style={{
@@ -287,7 +287,7 @@ export const ShopPage: React.FC = () => {
             </div>
 
             <div style={{ marginBottom: '24px' }}>
-              <span className="font-mono" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#2457FF', textTransform: 'uppercase', marginBottom: '12px' }}>
+              <span className="font-mono" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-ink)', textTransform: 'uppercase', marginBottom: '12px' }}>
                 SELECT SPORT DISCIPLINE:
               </span>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -301,8 +301,8 @@ export const ShopPage: React.FC = () => {
                     padding: '8px 14px',
                     fontSize: '0.75rem',
                     fontWeight: 800,
-                    backgroundColor: selectedCategory === 'all' ? '#111111' : '#F7F5EE',
-                    color: selectedCategory === 'all' ? '#FFFFFF' : '#111111',
+                    backgroundColor: selectedCategory === 'all' ? 'var(--color-ink)' : '#F7F5EE',
+                    color: selectedCategory === 'all' ? 'var(--color-canvas-base)' : 'var(--color-ink)',
                     border: '1px solid #D8D4C8',
                   }}
                 >
@@ -320,8 +320,8 @@ export const ShopPage: React.FC = () => {
                       padding: '8px 14px',
                       fontSize: '0.75rem',
                       fontWeight: 800,
-                      backgroundColor: selectedCategory === c.id ? '#2457FF' : '#F7F5EE',
-                      color: selectedCategory === c.id ? '#FFFFFF' : '#111111',
+                      backgroundColor: selectedCategory === c.id ? 'var(--color-ink)' : '#F7F5EE',
+                      color: selectedCategory === c.id ? 'var(--color-canvas-base)' : 'var(--color-ink)',
                       border: '1px solid #D8D4C8',
                     }}
                   >

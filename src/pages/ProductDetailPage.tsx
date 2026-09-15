@@ -77,15 +77,15 @@ export const ProductDetailPage: React.FC = () => {
       <div style={{ backgroundColor: '#EFECE2', padding: '14px 0', borderBottom: '1px solid #DFD9CB' }}>
         <div className="container">
           <div className="font-mono" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', color: '#666666', textTransform: 'uppercase' }}>
-            <Link to="/" style={{ color: '#111111', textDecoration: 'none' }}>HOME</Link>
+            <Link to="/" style={{ color: 'var(--color-ink)', textDecoration: 'none' }}>HOME</Link>
             <span>/</span>
-            <Link to="/shop" style={{ color: '#111111', textDecoration: 'none' }}>SHOP</Link>
+            <Link to="/shop" style={{ color: 'var(--color-ink)', textDecoration: 'none' }}>SHOP</Link>
             <span>/</span>
-            <Link to={`/shop?category=${product.category}`} style={{ color: '#2457FF', textDecoration: 'none' }}>
+            <Link to={`/shop?category=${product.category}`} style={{ color: 'var(--color-brand-gold)', textDecoration: 'none' }}>
               {product.categoryName || product.category}
             </Link>
             <span>/</span>
-            <span style={{ color: '#999999', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <span style={{ color: 'var(--color-ink-subtle)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {product.name}
             </span>
           </div>
@@ -108,10 +108,10 @@ export const ProductDetailPage: React.FC = () => {
                 width: '100%',
                 aspectRatio: '1 / 1',
                 backgroundColor: '#FFFFFF',
-                border: '2px solid #111111',
+                border: '1.5px solid var(--color-ink)',
                 overflow: 'hidden',
                 marginBottom: '14px',
-                boxShadow: '0 12px 32px rgba(0,0,0,0.06)',
+                boxShadow: 'var(--shadow-subtle)',
               }}
             >
               <img
@@ -140,8 +140,8 @@ export const ProductDetailPage: React.FC = () => {
                       fontSize: '0.6875rem',
                       fontWeight: 800,
                       letterSpacing: '0.12em',
-                      color: '#D7FF00',
-                      border: '1px solid rgba(215, 255, 0, 0.4)',
+                      color: 'var(--color-brand-gold)',
+                      border: '1px solid rgba(201, 162, 39, 0.4)',
                     }}
                   >
                     {product.badge.toUpperCase()}
@@ -161,7 +161,7 @@ export const ProductDetailPage: React.FC = () => {
                     style={{
                       width: '76px',
                       height: '76px',
-                      border: idx === activeImageIndex ? '2px solid #2457FF' : '1px solid #D8D4C8',
+                      border: idx === activeImageIndex ? '2px solid var(--color-ink)' : '1px solid var(--color-border-medium)',
                       backgroundColor: '#FFFFFF',
                       padding: 0,
                       cursor: 'pointer',
@@ -187,7 +187,7 @@ export const ProductDetailPage: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ width: '6px', height: '6px', backgroundColor: '#2457FF' }} />
+                <span style={{ width: '6px', height: '6px', backgroundColor: 'var(--color-brand-gold)' }} />
                 <span
                   className="font-mono"
                   style={{
@@ -195,7 +195,7 @@ export const ProductDetailPage: React.FC = () => {
                     fontWeight: 800,
                     letterSpacing: '0.14em',
                     textTransform: 'uppercase',
-                    color: '#2457FF',
+                    color: 'var(--color-ink-muted)',
                   }}
                 >
                   {product.brand} // {product.categoryName || product.category}
@@ -390,9 +390,9 @@ export const ProductDetailPage: React.FC = () => {
                     style={{
                       flex: 1,
                       padding: '16px',
-                      backgroundColor: addedAnimation ? '#111111' : '#111111',
-                      color: addedAnimation ? '#D7FF00' : '#FFFFFF',
-                      border: '2px solid #111111',
+                      backgroundColor: 'var(--color-ink)',
+                      color: addedAnimation ? 'var(--color-brand-gold)' : '#FFFFFF',
+                      border: '1.5px solid var(--color-ink)',
                       fontSize: '0.8125rem',
                       fontWeight: 900,
                       letterSpacing: '0.1em',
@@ -405,15 +405,15 @@ export const ProductDetailPage: React.FC = () => {
                       transition: 'all 0.2s ease',
                     }}
                     onMouseEnter={(e) => {
-                      if (!addedAnimation) e.currentTarget.style.backgroundColor = '#2457FF';
+                      if (!addedAnimation) e.currentTarget.style.opacity = '0.88';
                     }}
                     onMouseLeave={(e) => {
-                      if (!addedAnimation) e.currentTarget.style.backgroundColor = '#111111';
+                      if (!addedAnimation) e.currentTarget.style.opacity = '1';
                     }}
                   >
                     {addedAnimation ? (
                       <>
-                        <Check size={16} color="#D7FF00" />
+                        <Check size={16} color="var(--color-brand-gold)" />
                         <span>ADDED TO BAG</span>
                       </>
                     ) : (
@@ -427,9 +427,9 @@ export const ProductDetailPage: React.FC = () => {
                     style={{
                       flex: 1,
                       padding: '16px',
-                      backgroundColor: '#2457FF',
-                      color: '#FFFFFF',
-                      border: '2px solid #2457FF',
+                      backgroundColor: 'var(--color-brand-gold)',
+                      color: 'var(--color-ink)',
+                      border: '1.5px solid var(--color-brand-gold)',
                       fontSize: '0.8125rem',
                       fontWeight: 900,
                       letterSpacing: '0.1em',
@@ -439,10 +439,10 @@ export const ProductDetailPage: React.FC = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '8px',
-                      transition: 'background-color 0.2s ease',
+                      transition: 'opacity 0.2s ease',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1A42C8')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2457FF')}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
                   >
                     <span>BUY NOW</span>
                     <ArrowRight size={16} />
@@ -457,8 +457,8 @@ export const ProductDetailPage: React.FC = () => {
                     width: '100%',
                     padding: '12px',
                     backgroundColor: '#FFFFFF',
-                    border: '1.5px solid #111111',
-                    color: '#111111',
+                    border: '1.5px solid var(--color-ink)',
+                    color: 'var(--color-ink)',
                     fontSize: '0.75rem',
                     fontWeight: 800,
                     letterSpacing: '0.08em',
@@ -470,7 +470,7 @@ export const ProductDetailPage: React.FC = () => {
                     gap: '8px',
                   }}
                 >
-                  <MessageSquare size={16} color="#25D366" />
+                  <MessageSquare size={16} color="var(--color-brand-gold)" />
                   <span>INQUIRE VIA WHATSAPP (CAMP WORKSHOP)</span>
                 </a>
               </div>
@@ -479,7 +479,7 @@ export const ProductDetailPage: React.FC = () => {
               <div
                 style={{
                   backgroundColor: '#FFFFFF',
-                  border: '1px solid #DFD9CB',
+                  border: '1px solid var(--color-border-medium)',
                   padding: '18px 20px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -488,15 +488,15 @@ export const ProductDetailPage: React.FC = () => {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Truck size={17} color="#2457FF" />
+                  <Truck size={17} color="var(--color-ink)" />
                   <span><strong>Free Pune Delivery</strong> on orders above ₹2,000. Same-day Camp dispatch.</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <RotateCcw size={17} color="#2457FF" />
+                  <RotateCcw size={17} color="var(--color-ink)" />
                   <span><strong>7-Day Replacement</strong> on manufacturing defects.</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <ShieldCheck size={17} color="#2457FF" />
+                  <ShieldCheck size={17} color="var(--color-brand-gold)" />
                   <span><strong>100% Genuine Gear</strong> verified by Oriental Sports Camp store.</span>
                 </div>
               </div>
@@ -504,29 +504,29 @@ export const ProductDetailPage: React.FC = () => {
               {/* Technical Specifications Table */}
               <div style={{ marginTop: '28px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-                  <Layers size={16} color="#111111" />
+                  <Layers size={16} color="var(--color-ink)" />
                   <h3 className="font-mono" style={{ fontSize: '0.8125rem', fontWeight: 800, letterSpacing: '0.1em', margin: 0, textTransform: 'uppercase' }}>
                     TECHNICAL SPECIFICATIONS AUDIT
                   </h3>
                 </div>
 
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem', backgroundColor: '#FFFFFF', border: '1px solid #DFD9CB' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem', backgroundColor: '#FFFFFF', border: '1px solid var(--color-border-medium)' }}>
                   <tbody>
                     {Object.entries(product.specs).map(([k, v], idx) => (
-                      <tr key={idx} style={{ borderBottom: '1px solid #EFECE2' }}>
-                        <td className="font-mono" style={{ padding: '10px 14px', color: '#666666', fontWeight: 700, width: '40%', textTransform: 'uppercase', fontSize: '0.75rem' }}>
+                      <tr key={idx} style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
+                        <td className="font-mono" style={{ padding: '10px 14px', color: 'var(--color-ink-muted)', fontWeight: 700, width: '40%', textTransform: 'uppercase', fontSize: '0.75rem' }}>
                           {k}
                         </td>
-                        <td style={{ padding: '10px 14px', color: '#111111', fontWeight: 700 }}>
+                        <td style={{ padding: '10px 14px', color: 'var(--color-ink)', fontWeight: 700 }}>
                           {v}
                         </td>
                       </tr>
                     ))}
                     <tr style={{ borderBottom: 'none' }}>
-                      <td className="font-mono" style={{ padding: '10px 14px', color: '#666666', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem' }}>
+                      <td className="font-mono" style={{ padding: '10px 14px', color: 'var(--color-ink-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem' }}>
                         WORKSHOP
                       </td>
-                      <td style={{ padding: '10px 14px', color: '#111111', fontWeight: 700 }}>
+                      <td style={{ padding: '10px 14px', color: 'var(--color-ink)', fontWeight: 700 }}>
                         Shop 247, MG Road, Camp, Pune
                       </td>
                     </tr>
@@ -539,10 +539,10 @@ export const ProductDetailPage: React.FC = () => {
 
         {/* Related Equipment Section */}
         {relatedProducts.length > 0 && (
-          <div style={{ marginTop: '72px', paddingTop: '40px', borderTop: '2px solid #111111' }}>
+          <div style={{ marginTop: '72px', paddingTop: '40px', borderTop: '2px solid var(--color-ink)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '28px' }}>
               <div>
-                <span className="font-mono" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2457FF', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                <span className="font-mono" style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-brand-gold)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
                   CURATED GEAR
                 </span>
                 <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', color: '#111111', margin: '4px 0 0 0' }}>

@@ -34,7 +34,7 @@ export const CATEGORIES: CategoryInfo[] = [
     name: 'Pickleball',
     tagline: 'USA Pickleball certified composite paddles, outdoor balls & portable nets',
     description: "Pune's premier destination for the fastest growing court sport. USAPA approved raw carbon fiber paddles and outdoor tournament balls.",
-    image: 'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=1000&q=80',
+    image: '/images/categories/pickleball_category.jpg',
     itemCount: 24,
     featuredEquipments: ['Toray T700 Raw Carbon Paddles', '40-Hole Outdoor Dura Balls', 'Portable Quick-Set Nets', 'Court Boundary Markers'],
   },

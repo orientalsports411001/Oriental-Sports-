@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Plus, Check } from 'lucide-react';
 import { Product } from '../../types';
@@ -19,7 +19,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [justAdded, setJustAdded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
+
   const isFavorited = isInWishlist(product.id);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current || window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -2.5;
+    const rotateY = ((x - centerX) / centerX) * 2.5;
+    setTilt({ rotateX, rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTilt({ rotateX: 0, rotateY: 0 });
+  };
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -48,10 +70,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div
+      ref={cardRef}
       className={`product-card ${className}`}
       data-cursor="add"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -60,8 +84,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         borderRadius: 'var(--radius-xs)',
         overflow: 'hidden',
         position: 'relative',
-        transition: 'all 0.22s ease-out',
+        transition: 'border-color 0.22s ease-out, box-shadow 0.22s ease-out, transform 0.15s ease-out',
         boxShadow: isHovered ? 'var(--shadow-card-hover)' : 'var(--shadow-card)',
+        transform: tilt.rotateX !== 0 || tilt.rotateY !== 0
+          ? `perspective(1000px) rotateX(${tilt.rotateX.toFixed(2)}deg) rotateY(${tilt.rotateY.toFixed(2)}deg) translateY(-2px)`
+          : 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)',
+        transformStyle: 'preserve-3d',
+        willChange: 'transform',
         width: '100%',
         boxSizing: 'border-box',
       }}
@@ -90,8 +119,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               padding: '4px 8px',
               fontSize: '0.6875rem',
               fontWeight: 800,
-              color: '#FFFFFF',
-              backgroundColor: 'var(--color-safety-orange)',
+              color: 'var(--color-brand-gold)',
+              backgroundColor: 'var(--color-ink)',
               borderRadius: 'var(--radius-xs)',
               lineHeight: 1,
             }}
@@ -189,8 +218,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             style={{
               width: '100%',
               padding: '12px',
-              backgroundColor: justAdded ? '#111111' : '#111111',
-              color: justAdded ? 'var(--color-acid-lime)' : '#FFFFFF',
+              backgroundColor: justAdded ? 'var(--color-brand-gold)' : 'var(--color-ink)',
+              color: justAdded ? 'var(--color-ink)' : 'var(--color-canvas-base)',
               border: 'none',
               fontSize: '0.75rem',
               fontWeight: 800,
@@ -207,18 +236,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             }}
             onMouseEnter={(e) => {
               if (!justAdded) {
-                e.currentTarget.style.backgroundColor = 'var(--color-electric-blue)';
+                e.currentTarget.style.backgroundColor = 'var(--color-brand-gold)';
+                e.currentTarget.style.color = 'var(--color-ink)';
               }
             }}
             onMouseLeave={(e) => {
               if (!justAdded) {
-                e.currentTarget.style.backgroundColor = '#111111';
+                e.currentTarget.style.backgroundColor = 'var(--color-ink)';
+                e.currentTarget.style.color = 'var(--color-canvas-base)';
               }
             }}
           >
             {justAdded ? (
               <>
-                <Check size={16} color="var(--color-acid-lime)" />
+                <Check size={16} color="var(--color-ink)" />
                 <span>ADDED TO BAG</span>
               </>
             ) : (
@@ -344,8 +375,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             className="mobile-only"
             style={{
               padding: '8px 14px',
-              backgroundColor: justAdded ? 'var(--color-ink)' : 'var(--color-ink)',
-              color: justAdded ? 'var(--color-acid-lime)' : '#FFFFFF',
+              backgroundColor: 'var(--color-ink)',
+              color: justAdded ? 'var(--color-brand-gold)' : 'var(--color-canvas-base)',
               border: 'none',
               borderRadius: 'var(--radius-xs)',
               cursor: 'pointer',
@@ -357,7 +388,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             }}
             aria-label={`Add ${product.name} to bag`}
           >
-            {justAdded ? <Check size={16} color="var(--color-acid-lime)" /> : <Plus size={16} />}
+            {justAdded ? <Check size={16} color="var(--color-brand-gold)" /> : <Plus size={16} />}
           </button>
         </div>
       </div>

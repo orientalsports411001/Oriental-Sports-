@@ -50,12 +50,12 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
   };
 
   const statusColorMap: Record<Order['status'], { bg: string; text: string; border: string }> = {
-    confirmed: { bg: '#EFF6FF', text: '#1D4ED8', border: '#93C5FD' },
-    processing: { bg: '#FEF3C7', text: '#B45309', border: '#FCD34D' },
-    shipped: { bg: '#EEF2FF', text: '#4338CA', border: '#A5B4FC' },
-    out_for_delivery: { bg: '#ECFDF5', text: '#047857', border: '#6EE7B7' },
-    delivered: { bg: '#F0FDF4', text: '#15803D', border: '#86EFAC' },
-    cancelled: { bg: '#FEF2F2', text: '#B91C1C', border: '#FCA5A5' },
+    confirmed: { bg: 'var(--color-canvas-subtle, #F7F5EE)', text: 'var(--color-ink)', border: 'var(--color-brand-gold)' },
+    processing: { bg: 'var(--color-canvas-subtle, #F7F5EE)', text: 'var(--color-ink)', border: 'var(--color-brand-gold-soft)' },
+    shipped: { bg: 'var(--color-canvas-subtle, #F7F5EE)', text: 'var(--color-ink)', border: 'var(--color-brand-gold)' },
+    out_for_delivery: { bg: 'var(--color-canvas-subtle, #F7F5EE)', text: 'var(--color-ink)', border: 'var(--color-brand-gold)' },
+    delivered: { bg: 'var(--color-ink)', text: 'var(--color-canvas-base)', border: 'var(--color-ink)' },
+    cancelled: { bg: '#F5F5F5', text: '#777777', border: '#DDDDDD' },
   };
 
   const currentStatusStyle = statusColorMap[order.status] || statusColorMap.delivered;
@@ -168,7 +168,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
       <div style={{ padding: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Package size={18} color="var(--color-electric-blue)" />
+            <Package size={18} color="var(--color-brand-gold)" />
             <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--color-ink)' }}>
               {order.orderNumber}
             </span>
@@ -341,20 +341,20 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                         height: '24px',
                         borderRadius: '50%',
                         backgroundColor: isCurr
-                          ? 'var(--color-electric-blue)'
+                          ? 'var(--color-brand-gold)'
                           : isPast
-                          ? '#10B981'
+                          ? 'var(--color-ink)'
                           : '#FFFFFF',
                         border: isCurr
                           ? '2px solid #FFFFFF'
                           : isPast
                           ? 'none'
                           : '2px solid #D1D5DB',
-                        boxShadow: isCurr ? '0 0 0 3px rgba(36, 87, 255, 0.25)' : 'none',
+                        boxShadow: isCurr ? '0 0 0 3px rgba(201, 162, 39, 0.25)' : 'none',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#FFFFFF',
+                        color: isPast ? 'var(--color-canvas-base)' : '#FFFFFF',
                       }}
                     >
                       {isPast ? <Check size={14} /> : isCurr ? <Clock size={13} /> : null}
@@ -362,7 +362,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
 
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontWeight: 700, fontSize: '0.875rem', color: isCurr ? 'var(--color-electric-blue)' : '#111827' }}>
+                        <span style={{ fontWeight: 700, fontSize: '0.875rem', color: isCurr ? 'var(--color-brand-gold)' : '#111827' }}>
                           {step.title}
                         </span>
                         <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>

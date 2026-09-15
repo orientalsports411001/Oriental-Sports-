@@ -1,4 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
+/**
+ * Hook to animate numbers smoothly using requestAnimationFrame
+ * Bypassed when prefers-reduced-motion is active.
+ */
+const useAnimatedNumber = (targetValue: number, durationMs: number = 400) => {
+  const [displayValue, setDisplayValue] = useState(targetValue);
+  const currentRef = useRef(targetValue);
+  const startTimeRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setDisplayValue(targetValue);
+      currentRef.current = targetValue;
+      return;
+    }
+
+    const startVal = currentRef.current;
+    const diff = targetValue - startVal;
+    if (Math.abs(diff) < 0.001) return;
+
+    let animFrame: number;
+    startTimeRef.current = null;
+
+    const step = (now: number) => {
+      if (!startTimeRef.current) startTimeRef.current = now;
+      const progress = Math.min((now - startTimeRef.current) / durationMs, 1);
+      // easeOutExpo
+      const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const currentVal = startVal + diff * ease;
+      setDisplayValue(currentVal);
+
+      if (progress < 1) {
+        animFrame = requestAnimationFrame(step);
+      } else {
+        currentRef.current = targetValue;
+      }
+    };
+
+    animFrame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animFrame);
+  }, [targetValue, durationMs]);
+
+  return displayValue;
+};
 import { Calculator, ArrowRight, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { STORE_INFO } from '../../data/storeInfo';
 
@@ -80,6 +125,9 @@ export const CourtCostEstimator: React.FC = () => {
 
   const lowEstimate = Math.round(grandTotal * 0.95);
   const highEstimate = Math.round(grandTotal * 1.08);
+
+  const animatedLow = useAnimatedNumber(lowEstimate / 100000);
+  const animatedHigh = useAnimatedNumber(highEstimate / 100000);
 
   const getWhatsAppEstimatorUrl = () => {
     const text = `Hello Oriental Sports, I configured a court estimate on your website:\n\n• Sport: ${selectedSport}\n• Courts: ${numCourts}\n• Surface: ${currentSurface.name}\n• Lighting: ${includeLighting ? 'Yes' : 'No'}\n• Fencing/Netting: ${includeFencing ? 'Yes' : 'No'}\n• Location: ${locationPincode}\n• Estimated Range: ₹${(lowEstimate / 100000).toFixed(2)}L – ₹${(highEstimate / 100000).toFixed(2)}L\n\nI would like to schedule a site consultation.`;
@@ -295,7 +343,7 @@ export const CourtCostEstimator: React.FC = () => {
                 margin: '12px 0',
               }}
             >
-              ₹{(lowEstimate / 100000).toFixed(2)}L – ₹{(highEstimate / 100000).toFixed(2)}L*
+              ₹{animatedLow.toFixed(2)}L – ₹{animatedHigh.toFixed(2)}L*
             </div>
 
             <div style={{ fontSize: '0.8125rem', color: '#B5AFA4', marginBottom: '20px', lineHeight: 1.4 }}>

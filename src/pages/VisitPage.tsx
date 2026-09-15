@@ -89,7 +89,7 @@ export const VisitPage: React.FC = () => {
                     fontWeight: 800,
                     padding: '3px 8px',
                     backgroundColor: '#111111',
-                    color: '#D7FF00',
+                    color: 'var(--color-brand-gold)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                   }}

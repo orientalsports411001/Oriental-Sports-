@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface GlassPanelProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'light' | 'dark' | 'cobalt' | 'gold';
+  variant?: 'light' | 'dark' | 'ivory' | 'gold';
   blur?: 'sm' | 'md' | 'lg' | string;
   border?: boolean;
   children: React.ReactNode;
@@ -29,15 +29,15 @@ export const GlassPanel: React.FC<GlassPanelProps> = ({
 
   const bgStyles = {
     light: 'rgba(255, 255, 255, 0.22)',
-    dark: 'rgba(17, 17, 17, 0.72)',
-    cobalt: 'rgba(36, 87, 255, 0.24)',
-    gold: 'rgba(201, 162, 39, 0.24)',
+    dark: 'rgba(23, 24, 26, 0.75)',
+    ivory: 'rgba(250, 247, 242, 0.85)',
+    gold: 'rgba(201, 162, 39, 0.18)',
   };
 
   const borderStyles = {
     light: '1px solid rgba(255, 255, 255, 0.32)',
     dark: '1px solid rgba(255, 255, 255, 0.14)',
-    cobalt: '1px solid rgba(36, 87, 255, 0.45)',
+    ivory: '1px solid var(--color-border-subtle)',
     gold: '1px solid rgba(201, 162, 39, 0.45)',
   };
 

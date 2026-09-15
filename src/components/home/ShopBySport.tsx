@@ -22,12 +22,13 @@ export const ShopBySport: React.FC = () => {
       }}
     >
       <div
+        className="sport-grid"
         style={{
           maxWidth: 'var(--max-width-content)',
           margin: '0 auto',
           padding: '0 clamp(20px, 5vw, 72px)',
           display: 'grid',
-          gridTemplateColumns: 'minmax(0,1fr) minmax(0,44%)',
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 44%)',
           gap: 'clamp(40px, 6vw, 96px)',
           alignItems: 'center',
         }}

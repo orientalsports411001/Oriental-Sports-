@@ -16,8 +16,8 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=800&q=80',
+      '/images/products/pickleball_paddle_toray.jpg',
+      '/images/categories/pickleball_category.jpg',
     ],
     description: 'Engineered with friction-textured Japanese Toray T700 raw carbon fiber and a 16mm vibration-dampening polypropylene honeycomb core. Offers unmatched spin potential and plush dink control at the kitchen line.',
     features: [
@@ -55,8 +55,8 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&q=80',
+      '/images/products/cricket_bat_willow.jpg',
+      '/images/products/cricket_bat_willow.jpg',
     ],
     description: 'Handcrafted exclusively for Oriental Sports from hand-selected clefts of unbleached Grade 1 English Willow. Pressed to perfection with a mid-to-low sweet spot tuned for Maharashtra turf wickets.',
     features: [
@@ -91,8 +91,8 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=800&q=80',
+      '/images/products/tennis_racquet_pro.jpg',
+      '/images/products/tennis_racquet_pro.jpg',
     ],
     description: 'Optimized for baseline attackers and all-court players. 100 sq inch head size provides dynamic forgiveness without sacrificing directional precision on hard acrylic courts.',
     features: [
@@ -126,8 +126,8 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1613918108466-292b78a8ef95?auto=format&fit=crop&w=800&q=80',
+      '/images/products/badminton_racquet_carbon.jpg',
+      '/images/products/badminton_racquet_carbon.jpg',
     ],
     description: 'Ultra-fast aerodynamic frame built for rapid doubles flat drives and steep defensive clears. Japanese high-elastic carbon fiber withstands stringing tension up to 30 lbs.',
     features: [

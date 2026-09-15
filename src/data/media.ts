@@ -8,27 +8,27 @@ export const FALLBACK_IMAGE =
 
 export const MEDIA = {
   // Hero: 3 Cinematic Editorial Slides (Local High-Resolution Assets)
-  heroSlide1: '/images/hero/hero_gear_pune.jpg', // Athlete with racket & bat on illuminated championship court
+  heroSlide1: '/images/hero/hero_train_perform.jpg', // Dynamic badminton smash in mid-air with arena lights
   heroSlide2: '/images/hero/hero_train_perform.jpg', // Dynamic badminton smash in mid-air with arena lights
   heroSlide3: '/images/hero/hero_court_build.jpg', // Architectural sports court at twilight with floodlights
-  heroSports: '/images/hero/hero_gear_pune.jpg',
-  heroSportsMobile: '/images/hero/hero_gear_pune.jpg',
+  heroSports: '/images/hero/hero_train_perform.jpg',
+  heroSportsMobile: '/images/hero/hero_train_perform.jpg',
   fallbackImage: FALLBACK_IMAGE,
   
   // Pillars
-  shopPillar: '/images/hero/hero_gear_pune.jpg',
+  shopPillar: '/images/hero/hero_train_perform.jpg',
   buildPillar: '/images/hero/hero_court_build.jpg',
 
   // Disciplines (High-Res Verified Visuals)
-  cricketHero: '/images/hero/hero_gear_pune.jpg',
+  cricketHero: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1600&q=85',
   tennisHero: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1600&q=85',
-  pickleballHero: 'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=1600&q=85',
-  badmintonHero: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1600&q=85',
+  pickleballHero: '/images/categories/pickleball_category.jpg',
+  badmintonHero: '/images/hero/hero_train_perform.jpg',
   tableTennisHero: 'https://images.unsplash.com/photo-1534158914592-062992fbe900?auto=format&fit=crop&w=1600&q=85',
   squashHero: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=1600&q=85',
   fitnessHero: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=1600&q=85',
   recreationHero: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1600&q=85',
-  accessoriesHero: '/images/hero/hero_gear_pune.jpg',
+  accessoriesHero: '/images/hero/hero_court_build.jpg',
 
   // Court Projects (Pune Locations)
   courtProjectKoregaon: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1800&q=85',
@@ -44,6 +44,6 @@ export const MEDIA = {
   courtStage05Consultation: '/images/hero/hero_train_perform.jpg',
 
   // Pune Heritage & Camp Retail
-  puneCampExterior: '/images/hero/hero_gear_pune.jpg',
+  puneCampExterior: '/images/hero/hero_court_build.jpg',
   puneCampMapContext: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1400&q=85',
 };
