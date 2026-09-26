@@ -16,10 +16,10 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      '/images/products/pickleball_paddle_toray.jpg',
-      '/images/categories/pickleball_category.jpg',
+      '/images/products/pickleball_paddle_toray.webp',
+      '/images/categories/pickleball_category.webp',
     ],
-    description: 'Engineered with friction-textured Japanese Toray T700 raw carbon fiber and a 16mm vibration-dampening polypropylene honeycomb core. Offers unmatched spin potential and plush dink control at the kitchen line.',
+    description: 'Engineered with friction-textured Japanese Toray T700 raw carbon fiber and a 16mm vibration-dampening polypropylene honeycomb core. Built for spin and soft dink control at the kitchen line.',
     features: [
       'USA Pickleball approved tournament dimensions',
       'Raw textured Toray T700 carbon face for maximum RPM spin',
@@ -27,14 +27,7 @@ export const PRODUCTS: Product[] = [
       'Sweat-wicking perforated comfort grip (4.25 in. circumference)',
       'Low profile edge guard for aerodynamic speed',
     ],
-    specs: {
-      'Core Thickness': '16 mm',
-      'Average Weight': '225 grams (7.9 oz)',
-      'Paddle Length': '418 mm (16.5 in)',
-      'Paddle Width': '190 mm (7.5 in)',
-      'Grip Length': '135 mm (5.3 in)',
-      'Grip Circumference': '108 mm (4.25 in)',
-    },
+    specs: {},
     variants: [
       { id: 'v-std', name: '16mm Control Edition', inStock: true },
       { id: 'v-pwr', name: '14mm Power Edition', inStock: true, priceDelta: 0 },
@@ -55,8 +48,8 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      '/images/products/cricket_bat_willow.jpg',
-      '/images/products/cricket_bat_willow.jpg',
+      '/images/products/cricket_bat_willow.webp',
+      '/images/products/cricket_bat_willow.webp',
     ],
     description: 'Handcrafted exclusively for Oriental Sports from hand-selected clefts of unbleached Grade 1 English Willow. Pressed to perfection with a mid-to-low sweet spot tuned for Maharashtra turf wickets.',
     features: [
@@ -91,8 +84,8 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      '/images/products/tennis_racquet_pro.jpg',
-      '/images/products/tennis_racquet_pro.jpg',
+      '/images/products/tennis_racquet_pro.webp',
+      '/images/products/tennis_racquet_pro.webp',
     ],
     description: 'Optimized for baseline attackers and all-court players. 100 sq inch head size provides dynamic forgiveness without sacrificing directional precision on hard acrylic courts.',
     features: [
@@ -126,8 +119,8 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     inStock: true,
     images: [
-      '/images/products/badminton_racquet_carbon.jpg',
-      '/images/products/badminton_racquet_carbon.jpg',
+      '/images/products/badminton_racquet_carbon.webp',
+      '/images/products/badminton_racquet_carbon.webp',
     ],
     description: 'Ultra-fast aerodynamic frame built for rapid doubles flat drives and steep defensive clears. Japanese high-elastic carbon fiber withstands stringing tension up to 30 lbs.',
     features: [
@@ -166,7 +159,7 @@ export const PRODUCTS: Product[] = [
       'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=80',
     ],
-    description: 'Premium virgin polyurethane heads mechanically welded to solid steel ergonomic hard-chrome handles. Odor-free, floor-protecting, and engineered for relentless institutional athletic training.',
+    description: 'Virgin polyurethane heads mechanically welded to solid steel ergonomic hard-chrome handles. Odor-free, floor-protecting, and engineered for relentless institutional athletic training.',
     features: [
       'Virgin CPU urethane coating prevents cracking and protects hardwood courts',
       'Precision hard-chrome handles with medium diamond knurling',
@@ -230,14 +223,14 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1652558973183-a3f046921163?auto=format&fit=crop&w=800&q=80',
     ],
     description: 'Authentic 20mm imported English Birch plywood board with mirror smooth polyurethane coating. Heavy-duty 3x2 inch Kikar wood frame ensures tournament rebound elasticity.',
     features: [
       '20mm thick zero-warp English Birch playing ply',
       '3 x 2 inch rosewood finished hard frame with rounded inner corners',
       'Hand-knitted wool pocket nets with reinforced leather guards',
-      'Includes premium tournament coins, acrylic striker, and boric powder',
+      'Includes tournament coins, acrylic striker, and boric powder',
     ],
     specs: {
       'Ply Thickness': '20 mm English Birch',
@@ -261,7 +254,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1711996151738-657bd95b7cdb?auto=format&fit=crop&w=800&q=80',
     ],
     description: 'Rotomolded one-piece seamless tournament balls with 40 precision laser-drilled holes. Engineered to resist cracking on rough outdoor acrylic courts in Pune climate.',
     features: [
@@ -291,7 +284,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1554290813-ec6a2a72e5c7?auto=format&fit=crop&w=800&q=80',
     ],
     description: 'Featherweight 125g teardrop frame designed for supreme maneuverability and whip-like wrist snaps on boast shots and tight wall drops.',
     features: [
@@ -321,7 +314,7 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     inStock: true,
     images: [
-      'https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1672223303533-05fddcbf6e6c?auto=format&fit=crop&w=800&q=80',
     ],
     description: 'Crafted with waterproof ballistic nylon and an insulated Thermoguard racquet compartment protecting high-tension strings from extreme heat and humidity.',
     features: [

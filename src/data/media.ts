@@ -1,49 +1,94 @@
 /**
- * Centralized Editorial Media Repository for Oriental Sports
- * High-resolution authentic sports photography, court architecture, and equipment craft.
+ * Image library for Oriental Sports.
+ *
+ * Every entry carries honest alt text and a focal point so crops can be
+ * art-directed per breakpoint. Local photographs are served as WebP at two
+ * widths; Unsplash photographs use the CDN's width parameter for srcset.
+ * No image here is presented as an Oriental Sports project or the store itself.
  */
 
-export const FALLBACK_IMAGE =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Crect width='800' height='600' fill='%23111111'/%3E%3Ccircle cx='400' cy='300' r='70' stroke='%23C9A227' stroke-width='4' fill='none'/%3E%3Ctext x='400' y='310' fill='%23C9A227' font-family='sans-serif' font-size='24' font-weight='900' text-anchor='middle' letter-spacing='2'%3EORIENTAL SPORTS%3C/text%3E%3C/svg%3E";
+export interface MediaImage {
+  src: string;
+  srcSet?: string;
+  alt: string;
+  /** CSS object-position — where the subject sits in the frame. */
+  position?: string;
+}
 
+const local = (path: string, alt: string, widths: [number, number], position = 'center'): MediaImage => ({
+  src: `${path}.webp`,
+  srcSet: `${path}-sm.webp ${widths[0]}w, ${path}.webp ${widths[1]}w`,
+  alt,
+  position,
+});
+
+export const unsplashUrl = (id: string, w: number) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=72`;
+
+const unsplash = (id: string, alt: string, position = 'center'): MediaImage => ({
+  src: unsplashUrl(id, 1400),
+  srcSet: [480, 800, 1200, 1800].map((w) => `${unsplashUrl(id, w)} ${w}w`).join(', '),
+  alt,
+  position,
+});
+
+export const IMAGES = {
+  // ---- Local photography ----------------------------------------------------
+  badmintonSmash: local('/images/hero/hero_train_perform', 'Badminton player jumping for a smash under arena lights', [800, 1376], '72% 30%'),
+  courtDusk: local('/images/hero/hero_court_build', 'Floodlit outdoor hard court at dusk, fenced on all sides', [640, 992], '58% 55%'),
+  athleteBatRacquet: local('/images/hero/hero_gear_pune', 'Player holding a cricket bat and a tennis racquet on a floodlit court', [800, 1376], '70% 35%'),
+  pickleballNet: local('/images/categories/pickleball_category', 'Pickleball paddle and ball beside the net on a blue court', [700, 1200], '55% 70%'),
+
+  // ---- Sport photography (Unsplash) -----------------------------------------
+  cricketStrike: unsplash('1593341646782-e0b495cff86d', 'Batsman driving a cricket ball, dust flying off the pitch', 'center 40%'),
+  cricketStadium: unsplash('1540747913346-19e32dc3e97e', 'Cricket stadium under floodlights during an evening match'),
+  cricketBall: unsplash('1690111354184-cceee42df518', 'Worn red leather cricket ball on grass'),
+  tennisClay: unsplash('1554068865-24cecd4e34b8', 'Overhead view of a player serving on a red clay tennis court'),
+  tennisGrass: unsplash('1622279457486-62dcc4a431d6', 'Player hitting a forehand on an outdoor tennis court'),
+  badmintonHall: unsplash('1626224583764-f87db24ac4ea', 'Badminton player leaping for a shot in an indoor hall', 'center 35%'),
+  pickleballCorner: unsplash('1711996151738-657bd95b7cdb', 'Pickleball resting in the corner of a blue and green court'),
+  pickleballPaddles: unsplash('1693142518820-78d7a05f1546', 'Two pickleball paddles and balls at the net'),
+  tableTennisHall: unsplash('1511067007398-7e4b90cfa4bc', 'Table tennis tables in a dark club hall'),
+  tableTennisBat: unsplash('1534158914592-062992fbe900', 'Table tennis bat resting on a green table'),
+  squashPlayer: unsplash('1554290813-ec6a2a72e5c7', 'Squash player reaching for a shot inside a court, black and white'),
+  squashCourts: unsplash('1711294545092-303f7161017c', 'Row of glass-backed squash courts with timber floors', 'center 60%'),
+  fitnessBarbell: unsplash('1574680096145-d05b474e2155', 'Athlete holding a barbell across the shoulders, black and white'),
+  fitnessDumbbells: unsplash('1584735935682-2f2b69dff9d2', 'Dumbbells and resistance bands on a wooden floor'),
+  carromPlay: unsplash('1768518354646-33833e95a24d', 'Group of men gathered around a carrom board game'),
+  carromBoard: unsplash('1652558973183-a3f046921163', 'Carrom board with coins and striker, close up'),
+  volleyballSunset: unsplash('1612872087720-bb876e2e67d1', 'Beach volleyball players silhouetted at sunset'),
+  volleyballBall: unsplash('1592656094267-764a45160876', 'Volleyball on sand in front of the net'),
+  kitBag: unsplash('1672223303533-05fddcbf6e6c', 'Racquet kit bag lying on a blue court with tennis balls'),
+  turfFootball: unsplash('1574629810360-7efbbe195018', 'Football at a player’s feet on synthetic turf'),
+
+  // ---- Court surfaces (material close-ups) ---------------------------------
+  surfaceBlueLines: unsplash('1552741775-7817c0c85843', 'White line markings on a blue acrylic court'),
+  surfaceNet: unsplash('1622669253059-e345500cf0e9', 'Tennis net across a blue and green hard court'),
+  surfaceClay: unsplash('1465125672495-63cdc2fa22ed', 'White line on a red clay court surface'),
+  surfaceCorner: unsplash('1622668459907-f1fa3113bbcf', 'Corner of a blue court with green run-off'),
+} satisfies Record<string, MediaImage>;
+
+/** Fallback when a remote image fails — a local photo, never a remote placeholder. */
+export const FALLBACK_IMAGE = '/images/hero/hero_court_build-sm.webp';
+
+/** Legacy keys kept for pages that still reference MEDIA. */
 export const MEDIA = {
-  // Hero: 3 Cinematic Editorial Slides (Local High-Resolution Assets)
-  heroSlide1: '/images/hero/hero_train_perform.jpg', // Dynamic badminton smash in mid-air with arena lights
-  heroSlide2: '/images/hero/hero_train_perform.jpg', // Dynamic badminton smash in mid-air with arena lights
-  heroSlide3: '/images/hero/hero_court_build.jpg', // Architectural sports court at twilight with floodlights
-  heroSports: '/images/hero/hero_train_perform.jpg',
-  heroSportsMobile: '/images/hero/hero_train_perform.jpg',
+  heroSlide1: IMAGES.badmintonSmash.src,
+  heroSlide2: IMAGES.courtDusk.src,
+  heroSlide3: IMAGES.courtDusk.src,
+  heroSports: IMAGES.badmintonSmash.src,
+  heroSportsMobile: IMAGES.badmintonSmash.src,
   fallbackImage: FALLBACK_IMAGE,
-  
-  // Pillars
-  shopPillar: '/images/hero/hero_train_perform.jpg',
-  buildPillar: '/images/hero/hero_court_build.jpg',
-
-  // Disciplines (High-Res Verified Visuals)
-  cricketHero: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1600&q=85',
-  tennisHero: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1600&q=85',
-  pickleballHero: '/images/categories/pickleball_category.jpg',
-  badmintonHero: '/images/hero/hero_train_perform.jpg',
-  tableTennisHero: 'https://images.unsplash.com/photo-1534158914592-062992fbe900?auto=format&fit=crop&w=1600&q=85',
-  squashHero: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=1600&q=85',
-  fitnessHero: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=1600&q=85',
-  recreationHero: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1600&q=85',
-  accessoriesHero: '/images/hero/hero_court_build.jpg',
-
-  // Court Projects (Pune Locations)
-  courtProjectKoregaon: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1800&q=85',
-  courtProjectDeccan: 'https://images.unsplash.com/photo-1529900245534-47fbf4cb3836?auto=format&fit=crop&w=1800&q=85',
-  courtProjectBaner: '/images/hero/hero_court_build.jpg',
-  courtProjectCamp: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1800&q=85',
-
-  // Court Construction Process Stages
-  courtStage01Grading: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1200&q=80',
-  courtStage02Surfaces: '/images/hero/hero_court_build.jpg',
-  courtStage03Lighting: 'https://images.unsplash.com/photo-1529900245534-47fbf4cb3836?auto=format&fit=crop&w=1200&q=80',
-  courtStage04Infrastructure: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1200&q=80',
-  courtStage05Consultation: '/images/hero/hero_train_perform.jpg',
-
-  // Pune Heritage & Camp Retail
-  puneCampExterior: '/images/hero/hero_court_build.jpg',
-  puneCampMapContext: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1400&q=85',
+  shopPillar: IMAGES.badmintonSmash.src,
+  buildPillar: IMAGES.courtDusk.src,
+  cricketHero: IMAGES.cricketStadium.src,
+  tennisHero: IMAGES.tennisClay.src,
+  pickleballHero: IMAGES.pickleballNet.src,
+  badmintonHero: IMAGES.badmintonHall.src,
+  tableTennisHero: IMAGES.tableTennisHall.src,
+  squashHero: IMAGES.squashPlayer.src,
+  fitnessHero: IMAGES.fitnessBarbell.src,
+  recreationHero: IMAGES.carromPlay.src,
+  accessoriesHero: IMAGES.kitBag.src,
+  puneCampExterior: IMAGES.courtDusk.src,
 };

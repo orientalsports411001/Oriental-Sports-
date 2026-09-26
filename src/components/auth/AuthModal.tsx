@@ -213,7 +213,7 @@ export const AuthModal: React.FC = () => {
               CAMP • PUNE
             </span>
             <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-              ORIENTAL ATHLETE ID
+              ORIENTAL SPORTS
             </span>
           </div>
 
@@ -221,12 +221,12 @@ export const AuthModal: React.FC = () => {
             className="font-display"
             style={{ fontSize: '1.5rem', margin: 0, color: '#FFFFFF', letterSpacing: '0.02em' }}
           >
-            {step === 'otp' ? 'VERIFY OTP' : 'ATHLETE SIGN IN'}
+            {step === 'otp' ? 'VERIFY OTP' : 'SIGN IN'}
           </h2>
           <p style={{ margin: '6px 0 0 0', fontSize: '0.8125rem', color: 'rgba(255, 255, 255, 0.7)' }}>
             {step === 'otp'
               ? `Enter 6-digit code sent to +91 ${pendingPhone || phoneNumber}`
-              : 'Access your orders, stringing records, and turnkey court proposals'}
+              : 'See your orders and saved delivery addresses'}
           </p>
         </div>
 
@@ -340,7 +340,7 @@ export const AuthModal: React.FC = () => {
                       <input
                         id="phone-input"
                         type="tel"
-                        placeholder="98230 45812"
+                        placeholder="98XXX XXXXX"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         style={{
@@ -357,7 +357,7 @@ export const AuthModal: React.FC = () => {
                       />
                     </div>
                     <span style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '4px', display: 'block' }}>
-                      Quick 1-tap OTP login for sports clubs and athletes.
+                      We’ll text you a one-time code.
                     </span>
                   </div>
 
@@ -405,7 +405,7 @@ export const AuthModal: React.FC = () => {
                     <input
                       id="email-input"
                       type="email"
-                      placeholder="arjun.deshmukh@gmail.com"
+                      placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       style={{
@@ -618,7 +618,7 @@ export const AuthModal: React.FC = () => {
                   <input
                     id="first-name-input"
                     type="text"
-                    placeholder="Arjun"
+                    placeholder="First name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     style={{
@@ -648,7 +648,7 @@ export const AuthModal: React.FC = () => {
                   <input
                     id="last-name-input"
                     type="text"
-                    placeholder="Deshmukh"
+                    placeholder="Last name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     style={{

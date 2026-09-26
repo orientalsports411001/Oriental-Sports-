@@ -1,74 +1,168 @@
+/* ==========================================================================
+   Oriental Sports — Design Tokens
+   One brand, one system. See DESIGN.md for the rules behind these values.
+   ========================================================================== */
+
 :root {
-  /* ==========================================================================
-     Oriental Sports Editorial Palette & Canonical Tokens
-     Direction: Editorial Sports Publication / Contemporary Athletic Flagship
-     Inspiration: Cosmos Visual Taste Board (Natural Neutrals + Deep Charcoal)
-     ========================================================================== */
+  /* ---- Official brand palette (Branding Map) ---------------------------- */
+  --ink: #111111;          /* Ink Black — text, primary actions, dark chapters */
+  --black: #000000;        /* True Black — night-court chapter, deepest surfaces */
+  --gold: #C9A227;         /* Plate Gold — accents on dark, rules, one CTA per chapter */
+  --gold-hi: #E0C56A;      /* Highlight Gold — hover/active on dark */
+  --ivory: #F6F3EA;        /* Ivory Court — page canvas */
 
-  /* 70–80% Neutral / Off-White Editorial Canvas */
-  --color-canvas-base: #FAF7F2;     /* Warm editorial paper foundation */
-  --color-canvas-surface: #F3EFE8;  /* Soft off-white secondary surface */
-  --color-canvas-pure: #FFFFFF;     /* Pure white for focus contrast moments */
-  --color-canvas-subtle: #EBE5DB;   /* Subtle warm stone for dividers & chips */
-  --color-canvas-muted: #E2DBD0;    /* Muted stone boundary */
+  /* ---- Derived neutrals (warm, mixed from ivory + ink) ------------------ */
+  --paper: #FBF9F4;        /* lifted surface: inputs, dialogs, drawers */
+  --stone: #ECE7DB;        /* recessed band, alternate section */
+  --stage: #E9E2D3;        /* product photo staging (matches studio backdrops) */
+  --stone-deep: #DCD4C3;   /* hover staging, strong dividers on stone */
+  --ink-2: #2A2926;        /* hover of ink surfaces */
+  --muted: #56524A;        /* secondary text — 7.0:1 on ivory */
+  --subtle: #6B665C;       /* tertiary text / meta — 5.1:1 on ivory */
+  --gold-ink: #7A5F0E;     /* gold-toned text on light surfaces — 5.4:1 */
+  --line: rgba(17, 17, 17, 0.12);
+  --line-strong: rgba(17, 17, 17, 0.28);
 
-  /* 5–10% Deep Charcoal Typography & Structure (Never harsh digital black) */
-  --color-ink: #17181A;             /* Deep rich editorial charcoal */
-  --color-ink-rgb: 23, 24, 26;
-  --color-ink-muted: #565960;       /* Editorial subheadlines, descriptions */
-  --color-ink-subtle: #858890;      /* Muted secondary labels, mono numerals */
+  /* On dark (ink / black) */
+  --on-dark: #F6F3EA;
+  --on-dark-muted: #A9A397;   /* 7.5:1 on ink */
+  --on-dark-subtle: #8F897D;  /* 5.4:1 on ink */
+  --line-dark: rgba(246, 243, 234, 0.16);
+
+  /* Feedback */
+  --success: #2E6B3C;
+  --error: #B3261E;
+
+  /* ---- Typography ------------------------------------------------------- */
+  /* Archivo variable (wdth 62–100): condensed black for display, normal width for text. */
+  --font: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --stretch-display: 62%;
+  --stretch-tight: 75%;
+
+  --fs-hero: clamp(3.4rem, 13.5vw, 11.5rem);
+  --fs-d1: clamp(2.9rem, 8.6vw, 7.5rem);
+  --fs-d2: clamp(2.25rem, 5.4vw, 4.5rem);
+  --fs-d3: clamp(1.6rem, 2.9vw, 2.5rem);
+  --fs-d4: clamp(1.25rem, 1.8vw, 1.625rem);
+  --fs-lead: clamp(1.0625rem, 1.25vw, 1.25rem);
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-label: 0.75rem;
+
+  /* ---- Space (8pt rhythm) ----------------------------------------------- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+  --section-y: clamp(72px, 10vw, 144px);
+  --gutter: clamp(20px, 4.4vw, 64px);
+  --max: 1440px;
+  /* Text measures use em, not ch: Chrome can resolve ch against the fallback
+     font before Archivo loads and keep that width. 1ch of Archivo ≈ 0.588em. */
+  --max-text: 36.5em;
+
+  --header-h: 64px;
+  --utility-h: 0px;
+
+  /* ---- Shape & depth ---------------------------------------------------- */
+  --r-0: 0;
+  --r-1: 2px;   /* buttons, inputs, chips */
+  --r-2: 4px;   /* dialogs */
+  --r-pill: 999px; /* count badges and icon buttons only */
+  --shadow-overlay: 0 24px 64px -24px rgba(17, 17, 17, 0.45);
+
+  /* ---- Motion ----------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-1: 160ms;
+  --t-2: 280ms;
+  --t-3: 560ms;
+  --t-4: 900ms;
+
+  /* ---- Layers ----------------------------------------------------------- */
+  --z-header: 60;
+  --z-sticky: 50;
+  --z-overlay: 80;
+  --z-dialog: 90;
+
+  /* ======================================================================
+     Legacy aliases — older pages reference these names. They resolve to the
+     system above so every screen shares one palette and one type family.
+     ====================================================================== */
+  --color-canvas-base: var(--ivory);
+  --color-canvas-surface: var(--stone);
+  --color-canvas-pure: var(--paper);
+  --color-canvas-subtle: var(--stone);
+  --color-canvas-muted: var(--stone-deep);
+  --color-ink: var(--ink);
+  --color-ink-rgb: 17, 17, 17;
+  --color-ink-muted: var(--muted);
+  --color-ink-subtle: var(--subtle);
   --color-pure-white: #FFFFFF;
-
-  /* 0–5% Restrained Brand Signature Accent (Logo Heritage Only) */
-  --color-brand-gold: #C9A227;      /* Official Oriental Sports gold */
+  --color-ivory: var(--ivory);
+  --color-ivory-border: var(--line);
+  --color-text-dark: var(--ink);
+  --color-brand-gold: var(--gold);
   --color-brand-gold-rgb: 201, 162, 39;
-  --color-brand-gold-soft: #D8B74E;
+  --color-brand-gold-soft: var(--gold-hi);
+  --color-plate-gold: var(--gold);
+  --color-highlight-gold: var(--gold-hi);
+  --color-border-subtle: var(--line);
+  --color-border-medium: var(--line-strong);
+  --color-border-dark: var(--ink);
+  --color-border-light: var(--line-dark);
 
-  /* Structural Clean Neutral Borders */
-  --color-border-subtle: rgba(23, 24, 26, 0.08);
-  --color-border-medium: rgba(23, 24, 26, 0.16);
-  --color-border-dark: #17181A;
-  --color-border-light: rgba(255, 255, 255, 0.2);
+  --font-display: var(--font);
+  --font-heading: var(--font);
+  --font-sans: var(--font);
+  --font-body: var(--font);
+  --font-ui: var(--font);
+  --font-mono: var(--font);
+  --font-display-xl: var(--fs-d1);
 
-  /* Typography Hierarchy */
-  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Space Mono', monospace, ui-monospace, SFMono-Regular;
+  --space-2xs: var(--s-1);
+  --space-xs: var(--s-2);
+  --space-sm: var(--s-3);
+  --space-md: var(--s-4);
+  --space-lg: var(--s-6);
+  --space-xl: var(--s-7);
+  --space-2xl: var(--s-8);
+  --space-3xl: var(--s-9);
+  --space-4xl: var(--s-10);
 
-  /* Generous Editorial Spatial Scale */
-  --space-2xs: 4px;
-  --space-xs: 8px;
-  --space-sm: 14px;
-  --space-md: 20px;
-  --space-lg: 32px;
-  --space-xl: 48px;
-  --space-2xl: 72px;
-  --space-3xl: 104px;
-  --space-4xl: 140px;
-
-  /* Layout Container Metrics */
-  --max-width-content: 1380px;
+  --max-width-content: var(--max);
   --max-width-editorial: 1140px;
-  --header-height-mobile: 60px;
-  --header-height-desktop: 72px;
-  --bottom-nav-height: 60px;
+  --header-height-mobile: var(--header-h);
+  --header-height-desktop: var(--header-h);
+  --bottom-nav-height: 0px;
 
-  /* Editorial Radii (Soft Geometry & Refined Precision) */
-  --radius-none: 0px;
-  --radius-xs: 3px;
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 32px;
-  --radius-pill: 9999px;
+  --radius-none: 0;
+  --radius-xs: var(--r-1);
+  --radius-sm: var(--r-1);
+  --radius-md: var(--r-2);
+  --radius-lg: var(--r-2);
+  --radius-xl: var(--r-2);
+  --radius-pill: var(--r-pill);
 
-  /* Natural Contrast Shadows (Subtle, Organic) */
-  --shadow-subtle: 0 4px 24px rgba(23, 24, 26, 0.04);
-  --shadow-float: 0 16px 48px rgba(23, 24, 26, 0.08);
+  --shadow-subtle: none;
+  --shadow-card: none;
+  --shadow-card-hover: none;
+  --shadow-float: var(--shadow-overlay);
 
-  /* Transitions */
-  --transition-fast: 160ms ease;
-  --transition-normal: 260ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: 450ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: var(--t-1) ease;
+  --transition-normal: var(--t-2) var(--ease-out);
+  --transition-slow: var(--t-3) var(--ease-out);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 72px;
+    --utility-h: 44px;
+  }
 }

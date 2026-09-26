@@ -1,185 +1,103 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Compass, CheckCircle2, ArrowRight, MessageSquare, Phone, MapPin } from 'lucide-react';
 import { COURT_SERVICES } from '../data/courts';
-import { CourtCostEstimator } from '../components/courts/CourtCostEstimator';
-import { ProjectGallery } from '../components/home/ProjectGallery';
+import { IMAGES, MediaImage } from '../data/media';
 import { STORE_INFO } from '../data/storeInfo';
+import { CourtCostEstimator } from '../components/courts/CourtCostEstimator';
+import { BuildSteps } from '../components/courts/BuildSteps';
+import { ProjectGallery } from '../components/home/ProjectGallery';
+import { PageHeader } from '../components/ui/PageHeader';
+import { Img } from '../components/ui/Img';
+import { ImageReveal, Reveal } from '../components/motion/Reveal';
 
-export const CourtsPage: React.FC = () => {
-  return (
-    <div className="bg-ivory" style={{ minHeight: '80vh', paddingBottom: 'var(--space-4xl)' }}>
-      {/* Hero */}
-      <div
-        style={{
-          backgroundColor: 'var(--color-ink)',
-          color: 'var(--color-ivory)',
-          padding: 'clamp(48px, 8vw, 96px) 0',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            opacity: 0.35,
-          }}
-        >
-          <img
-            src="https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=2000&q=80"
-            alt="Courts and infrastructure"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(180deg, rgba(17,17,17,0.7) 0%, rgba(17,17,17,0.95) 85%)',
-          }}
-        />
-
-        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ maxWidth: '800px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-heading)',
-                fontWeight: 700,
-                fontSize: '0.75rem',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'var(--color-plate-gold)',
-                display: 'block',
-                marginBottom: '12px',
-              }}
-            >
-              INFRASTRUCTURE DIVISION • PUNE
-            </span>
-
-            <h1
-              className="font-display"
-              style={{
-                fontSize: 'clamp(2.5rem, 6.5vw, 4.5rem)',
-                lineHeight: 1.0,
-                color: 'var(--color-pure-white)',
-                marginBottom: '20px',
-              }}
-            >
-              WE BUILD THE PLACE<br />
-              <span style={{ color: 'var(--color-plate-gold)' }}>YOU PLAY.</span>
-            </h1>
-
-            <p style={{ color: '#E0DACF', fontSize: '1.125rem', lineHeight: 1.45, marginBottom: '32px' }}>
-              Turn-key court engineering for clubs, private residences, educational institutions and commercial arenas across Pune and Western Maharashtra.
-            </p>
-
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px' }}>
-              <a href="#court-estimator" className="btn btn-gold">
-                <span>ESTIMATE COURT COST</span>
-                <ArrowRight size={16} />
-              </a>
-
-              <a
-                href={STORE_INFO.whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-outline-white"
-              >
-                <MessageSquare size={16} />
-                <span>WHATSAPP CONSULTATION</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Disciplines Grid */}
-      <div className="container" style={{ paddingTop: 'var(--space-3xl)' }}>
-        <div style={{ marginBottom: 'var(--space-2xl)' }}>
-          <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', marginBottom: '8px' }}>
-            OUR COURT DISCIPLINES
-          </h2>
-          <p style={{ color: '#666', fontSize: '1rem' }}>
-            From high-speed pickleball acrylic surfaces to all-weather synthetic turf setups.
-          </p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'clamp(20px, 3vw, 32px)' }}>
-          {COURT_SERVICES.map((serv) => (
-            <div
-              key={serv.id}
-              style={{
-                backgroundColor: 'var(--color-pure-white)',
-                border: '2px solid #111111',
-                boxShadow: '6px 6px 0px #111111',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div style={{ position: 'relative', height: '220px', borderBottom: '2px solid #111111', overflow: 'hidden' }}>
-                <img
-                  src={serv.heroImage}
-                  alt={serv.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <div style={{ position: 'absolute', top: '12px', left: '12px' }}>
-                  <span className="badge badge-gold" style={{ boxShadow: '2px 2px 0px #111111' }}>{serv.sport}</span>
-                </div>
-              </div>
-
-              <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-heading)', fontWeight: 800, marginBottom: '8px', color: '#111111' }}>
-                    {serv.name}
-                  </h3>
-                  <p style={{ color: '#444444', fontSize: '0.9375rem', lineHeight: 1.5, marginBottom: '16px' }}>
-                    {serv.description}
-                  </p>
-
-                  <div style={{ marginBottom: '16px' }}>
-                    <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: 'var(--color-plate-gold)', textTransform: 'uppercase', display: 'block', marginBottom: '8px', letterSpacing: '0.08em' }}>
-                      ENGINEERED SURFACES:
-                    </span>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                      {serv.surfaceTypes.map((st, i) => (
-                        <span key={i} style={{ fontSize: '0.75rem', fontWeight: 700, padding: '3px 8px', backgroundColor: '#F6F3EA', border: '1px solid #111111' }}>
-                          {st}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ paddingTop: '16px', borderTop: '2px solid #111111', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#888888', display: 'block', textTransform: 'uppercase' }}>Timeline</span>
-                    <strong style={{ fontSize: '0.875rem', color: '#111111', fontFamily: 'monospace' }}>{serv.leadTime}</strong>
-                  </div>
-                  <a
-                    href="#court-estimator"
-                    className="btn btn-sm btn-primary"
-                    style={{ boxShadow: '2px 2px 0px #C9A227' }}
-                  >
-                    <span>ESTIMATE</span>
-                    <ArrowRight size={14} />
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Interactive Estimator Section */}
-        <div style={{ marginTop: 'var(--space-4xl)' }}>
-          <CourtCostEstimator />
-        </div>
-
-        {/* Real Pune Projects Gallery */}
-        <div style={{ marginTop: 'var(--space-4xl)' }}>
-          <ProjectGallery />
-        </div>
-      </div>
-    </div>
-  );
+const COURT_ART: Record<string, MediaImage> = {
+  Pickleball: IMAGES.pickleballNet,
+  Tennis: IMAGES.surfaceNet,
+  Badminton: IMAGES.badmintonHall,
+  'Turf & Multi-sport': IMAGES.turfFootball,
+  Squash: IMAGES.squashCourts,
 };
+
+export const CourtsPage: React.FC = () => (
+  <div className="courts-page">
+    <PageHeader
+      crumbs={[{ label: 'Home', to: '/' }, { label: 'Courts' }]}
+      eyebrow="Court construction · Pune & Maharashtra"
+      title={['We build', 'courts.']}
+      lead="Turnkey court construction, surface systems, fencing, lighting and line marking — for clubs, schools, residential societies and homes."
+      image={IMAGES.courtDusk}
+    >
+      <Reveal className="page-header-actions" delay={0.25}>
+        <a href="#court-estimator" className="btn btn-light">
+          Estimate your court <span className="btn-arrow" aria-hidden="true">→</span>
+        </a>
+        <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-outline-light">
+          WhatsApp us
+        </a>
+      </Reveal>
+    </PageHeader>
+
+    <section className="container section court-services" aria-label="Courts we build">
+      {COURT_SERVICES.map((service, i) => (
+        <article key={service.id} id={service.slug} className={`court-service ${i % 2 ? 'is-flipped' : ''}`}>
+          <ImageReveal className="court-service-media">
+            <Img image={COURT_ART[service.sport] ?? service.heroImage} alt="" sizes="(min-width: 1024px) 50vw, 100vw" />
+          </ImageReveal>
+          <Reveal className="court-service-body">
+            <p className="eyebrow">{service.sport}</p>
+            <h2 className="display d-2 court-service-title">{service.name}</h2>
+            <p className="court-service-desc">{service.description}</p>
+            <dl className="court-service-facts">
+              <div>
+                <dt>Surfaces</dt>
+                <dd>{service.surfaceTypes.join(' · ')}</dd>
+              </div>
+              <div>
+                <dt>Typical build</dt>
+                <dd>{service.leadTime}</dd>
+              </div>
+              <div>
+                <dt>Pricing</dt>
+                <dd>{service.estimatedPriceRange}</dd>
+              </div>
+            </dl>
+            <ul className="dash-list">
+              {service.features.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+            <a href="#court-estimator" className="link-arrow">
+              Estimate a {service.sport.toLowerCase()} court <span className="btn-arrow" aria-hidden="true">→</span>
+            </a>
+          </Reveal>
+        </article>
+      ))}
+    </section>
+
+    <section className="on-dark courts-sequence" aria-label="What a build covers">
+      <div className="container">
+        <BuildSteps />
+      </div>
+    </section>
+
+    <section id="court-estimator" className="container section estimator-section" aria-label="Court cost estimate">
+      <CourtCostEstimator />
+    </section>
+
+    <ProjectGallery />
+
+    <section className="container contact-band" aria-label="Talk to us about a court">
+      <Reveal>
+        <p className="display d-2">Got a space in mind?</p>
+        <p className="lead">Tell us the sport and the size of the site. We’ll call back and arrange a visit.</p>
+      </Reveal>
+      <Reveal className="contact-band-actions" delay={0.1}>
+        <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
+          WhatsApp {STORE_INFO.displayPhone}
+        </a>
+        <a href={`mailto:${STORE_INFO.email}`} className="btn btn-outline">Email us</a>
+      </Reveal>
+    </section>
+  </div>
+);
+
+export default CourtsPage;

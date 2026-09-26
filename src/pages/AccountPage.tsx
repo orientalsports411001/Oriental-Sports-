@@ -32,6 +32,7 @@ import { STORE_INFO } from '../data/storeInfo';
 import { OrderTracker } from '../components/account/OrderTracker';
 import { AddressModal } from '../components/account/AddressModal';
 import { Address } from '../types/auth';
+import { PageHeader } from '../components/ui/PageHeader';
 
 export type AccountTab = 'overview' | 'orders' | 'addresses' | 'courts' | 'wishlist' | 'profile';
 
@@ -128,201 +129,44 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     setTimeout(() => setProfileSaveSuccess(false), 3000);
   };
 
-  // If user is not authenticated, show modern high-conversion login/welcome page
+  // Signed out: say plainly what an account is for, one clear action.
   if (!isAuthenticated || !user) {
     return (
-      <div style={{ minHeight: '85vh', paddingBottom: 'var(--space-4xl)', backgroundColor: 'var(--color-canvas-base)' }}>
-        {/* Hero Banner */}
-        <div style={{ backgroundColor: 'var(--color-ink)', color: '#FFFFFF', padding: '56px 0 44px' }}>
-          <div className="container">
-            <div style={{ maxWidth: '680px' }}>
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: 'rgba(201, 162, 39, 0.15)',
-                  border: '1px solid var(--color-plate-gold)',
-                  borderRadius: 'var(--radius-pill)',
-                  padding: '4px 14px',
-                  marginBottom: '16px',
-                }}
-              >
-                <Award size={14} color="var(--color-plate-gold)" />
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-plate-gold)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  PUNE CAMP SPORTS HOUSE
-                </span>
-              </div>
-              <h1 className="font-display" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', color: '#FFFFFF', lineHeight: 1.1, margin: '0 0 16px' }}>
-                ATHLETE ACCOUNT & SERVICES
-              </h1>
-              <p style={{ fontSize: '1rem', color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.6, margin: 0 }}>
-                Track sports equipment orders, check electronic restringing records, manage delivery addresses across Pune, and access court construction proposals.
-              </p>
-              <div style={{ display: 'flex', gap: '12px', marginTop: '28px', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  onClick={() => openAuthModal('phone')}
-                  className="btn btn-primary btn-pill btn-lg"
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                >
-                  <Phone size={18} />
-                  <span>SIGN IN WITH PHONE OTP</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => openAuthModal('phone')}
-                  className="btn btn-outline-white btn-pill btn-lg"
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                >
-                  <Sparkles size={18} />
-                  <span>DEMO SIGN IN</span>
-                </button>
-              </div>
-            </div>
+      <div className="account-page">
+        <PageHeader
+          crumbs={[{ label: 'Home', to: '/' }, { label: 'Account' }]}
+          title={['Your', 'account.']}
+          lead="Sign in with your phone number to see your orders and keep your delivery addresses in one place."
+        >
+          <div className="page-header-actions">
+            <button type="button" className="btn btn-primary" onClick={() => openAuthModal('phone')}>
+              Sign in with phone <span className="btn-arrow" aria-hidden="true">→</span>
+            </button>
+            <Link to="/shop" className="link-arrow">Keep shopping <span className="btn-arrow" aria-hidden="true">→</span></Link>
           </div>
-        </div>
+        </PageHeader>
 
-        {/* Feature Cards Grid */}
-        <div className="container" style={{ marginTop: '-24px' }}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '20px',
-              marginBottom: '48px',
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: 'var(--color-canvas-pure)',
-                padding: '24px',
-                borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--color-border-subtle)',
-                boxShadow: 'var(--shadow-card)',
-              }}
-            >
-              <div
-                style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'var(--color-canvas-surface)',
-                  border: '1px solid var(--color-border-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '16px',
-                }}
-              >
-                <Package size={22} color="var(--color-ink)" />
-              </div>
-              <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, marginBottom: '8px', color: 'var(--color-ink)' }}>
-                Real-Time Order & Stringing Tracking
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--color-ink-muted)', lineHeight: 1.5, margin: 0 }}>
-                Live dispatch timeline from our Camp flagship store with electronic stringing tension inspection records and AWB courier tracking.
-              </p>
-            </div>
+        <section className="container account-intro" aria-label="What your account holds">
+          <ul className="counter-list">
+            <li><span className="counter-name">Orders</span><span className="counter-note">What you’ve ordered and where it is.</span></li>
+            <li><span className="counter-name">Addresses</span><span className="counter-note">Home, office or club — ready at checkout.</span></li>
+            <li><span className="counter-name">Wishlist</span><span className="counter-note">Gear you’ve saved to come back to.</span></li>
+          </ul>
 
-            <div
-              style={{
-                backgroundColor: '#FFFFFF',
-                padding: '24px',
-                borderRadius: '6px',
-                border: '1px solid var(--color-ivory-border)',
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)',
-              }}
-            >
-              <div
-                style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '8px',
-                  backgroundColor: 'rgba(201, 162, 39, 0.15)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '16px',
-                }}
-              >
-                <Layers size={22} color="var(--color-plate-gold)" />
-              </div>
-              <h3 style={{ fontSize: '1.0625rem', fontWeight: 800, marginBottom: '8px' }}>
-                Turnkey Court Construction Hub
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: '#666', lineHeight: 1.5, margin: 0 }}>
-                Track institutional court inquiries, review site survey engineering reports, and download turnkey BOQ cost estimates.
-              </p>
-            </div>
-
-            <div
-              style={{
-                backgroundColor: '#FFFFFF',
-                padding: '24px',
-                borderRadius: '6px',
-                border: '1px solid var(--color-ivory-border)',
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)',
-              }}
-            >
-              <div
-                style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '8px',
-                  backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '16px',
-                }}
-              >
-                <MapPin size={22} color="#10B981" />
-              </div>
-              <h3 style={{ fontSize: '1.0625rem', fontWeight: 800, marginBottom: '8px' }}>
-                Address Book & Camp Pickup
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: '#666', lineHeight: 1.5, margin: 0 }}>
-                Save delivery locations for your home, office, sports club or badminton academy across Pune and Maharashtra with 1-tap checkout.
-              </p>
-            </div>
-          </div>
-
-          {/* Wishlist quick preview */}
           {favoritedProducts.length > 0 && (
-            <div style={{ marginTop: '32px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Heart size={20} color="#C9A227" fill="#C9A227" />
-                  <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0 }}>
-                    SAVED GEAR IN THIS SESSION ({favoritedProducts.length})
-                  </h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => openAuthModal('phone')}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--color-ink)',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    fontSize: '0.875rem',
-                    textDecoration: 'underline',
-                  }}
-                >
-                  Sign in to sync across devices →
-                </button>
+            <div className="account-saved">
+              <div className="section-bar">
+                <h2 className="display d-3">Saved on this device</h2>
+                <span className="results-count">{favoritedProducts.length}</span>
               </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 'var(--space-md)' }}>
+              <ul className="product-grid">
                 {favoritedProducts.map((p) => (
-                  <ProductCard key={p.id} product={p} />
+                  <li key={p.id}><ProductCard product={p} /></li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
-        </div>
+        </section>
       </div>
     );
   }

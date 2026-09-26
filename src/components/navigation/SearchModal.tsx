@@ -1,403 +1,157 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, X, ArrowRight, Sparkles, Layers, ShieldCheck, Flame } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { PRODUCTS } from '../../data/products';
 import { CATEGORIES } from '../../data/categories';
-import { COURT_SERVICES, COURT_PROJECTS } from '../../data/courts';
-import { GlassPanel } from '../ui/GlassPanel';
+import { COURT_SERVICES } from '../../data/courts';
+import { Img } from '../ui/Img';
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+const SHORTCUTS = ['Cricket bat', 'Pickleball paddle', 'Badminton', 'Tennis court', 'Carrom'];
+
+/** Search overlay — instant results for gear, sports and court types. */
 export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 60);
-    } else {
+    if (!isOpen) {
       setQuery('');
+      return;
     }
-  }, [isOpen]);
-
-  // ESC key listener
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
+    const root = document.documentElement;
+    const prev = root.style.overflow;
+    root.style.overflow = 'hidden';
+    const t = window.setTimeout(() => inputRef.current?.focus(), 40);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => {
+      root.style.overflow = prev;
+      window.clearTimeout(t);
+      window.removeEventListener('keydown', onKey);
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const normalizedQuery = query.toLowerCase().trim();
+  const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const hit = (...fields: string[]) => terms.length > 0 && terms.every((t) => fields.some((f) => f.toLowerCase().includes(t)));
 
-  const filteredProducts = normalizedQuery
-    ? PRODUCTS.filter(
-        (p) =>
-          p.name.toLowerCase().includes(normalizedQuery) ||
-          p.category.toLowerCase().includes(normalizedQuery) ||
-          p.brand.toLowerCase().includes(normalizedQuery) ||
-          p.description.toLowerCase().includes(normalizedQuery)
-      ).slice(0, 5)
-    : [];
+  const products = PRODUCTS.filter((p) => hit(p.name, p.category, p.categoryName, p.brand)).slice(0, 5);
+  const sports = CATEGORIES.filter((c) => hit(c.name, c.id)).slice(0, 4);
+  const courts = COURT_SERVICES.filter((c) => hit(c.name, c.sport, 'court')).slice(0, 3);
+  const nothing = terms.length > 0 && products.length + sports.length + courts.length === 0;
 
-  const filteredCourts = normalizedQuery
-    ? COURT_PROJECTS.filter(
-        (c) =>
-          c.title.toLowerCase().includes(normalizedQuery) ||
-          c.sport.toLowerCase().includes(normalizedQuery) ||
-          c.location.toLowerCase().includes(normalizedQuery)
-      ).slice(0, 3)
-    : [];
-
-  const handleSelectProduct = (slug: string) => {
+  const go = (to: string) => {
     onClose();
-    navigate(`/product/${slug}`);
+    navigate(to);
   };
-
-  const handleSelectCourt = (slug: string) => {
-    onClose();
-    navigate(`/courts/projects`);
-  };
-
-  const handleViewAllSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (query.trim()) {
-      onClose();
-      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
-    }
-  };
-
-  const quickShortcuts = [
-    { label: 'Toray Raw Carbon', q: 'carbon' },
-    { label: 'Grade 1 Cricket Willow', q: 'cricket' },
-    { label: 'Badminton Frames', q: 'badminton' },
-    { label: 'Pickleball Outdoor Balls', q: 'balls' },
-    { label: 'Pune Court Projects', q: 'pickleball' },
-  ];
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        backgroundColor: 'rgba(8, 8, 8, 0.82)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        padding: 'clamp(20px, 6vw, 60px) 16px',
-        overflowY: 'auto',
-      }}
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Search Oriental Sports"
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '680px',
-          backgroundColor: '#111111',
-          border: '1.5px solid #333333',
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(36, 87, 255, 0.15)',
-          overflow: 'hidden',
-          animation: 'fadeIn 0.2s ease-out forwards',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Search Header Bar */}
+    <div className="search-overlay" role="dialog" aria-modal="true" aria-label="Search" onClick={onClose}>
+      <div className="search-panel" onClick={(e) => e.stopPropagation()}>
         <form
-          onSubmit={handleViewAllSearch}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '18px 24px',
-            borderBottom: '1px solid #222222',
-            backgroundColor: '#161616',
+          className="search-bar container"
+          role="search"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (query.trim()) go(`/search?q=${encodeURIComponent(query.trim())}`);
           }}
         >
-          <Search size={22} color="var(--color-brand-gold)" style={{ marginRight: '14px', flexShrink: 0 }} />
+          <Search size={22} strokeWidth={1.8} aria-hidden="true" />
+          <label htmlFor="site-search" className="visually-hidden">Search gear, sports and courts</label>
           <input
             ref={inputRef}
+            id="site-search"
             type="search"
-            placeholder="Search sports gear, raw carbon, cricket willow, courts..."
+            className="search-input"
+            placeholder="Search gear, sports, courts"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{
-              flex: 1,
-              border: 'none',
-              outline: 'none',
-              fontSize: '1.0625rem',
-              fontWeight: 600,
-              fontFamily: 'var(--font-sans)',
-              color: '#FFFFFF',
-              backgroundColor: 'transparent',
-            }}
+            autoComplete="off"
           />
-          {query && (
-            <button
-              type="button"
-              onClick={() => setQuery('')}
-              style={{ color: '#888888', padding: '6px', marginRight: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
-              aria-label="Clear query"
-            >
-              <X size={18} />
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={onClose}
-            className="font-mono"
-            style={{
-              fontSize: '0.6875rem',
-              fontWeight: 800,
-              color: '#999999',
-              backgroundColor: '#222222',
-              border: '1px solid #333333',
-              padding: '5px 9px',
-              cursor: 'pointer',
-              letterSpacing: '0.08em',
-            }}
-          >
-            ESC
+          <button type="button" className="menu-close" onClick={onClose}>
+            <span className="menu-close-x" aria-hidden="true" />
+            <span>Close</span>
           </button>
         </form>
 
-        {/* Results / Suggestions Container */}
-        <div style={{ maxHeight: '460px', overflowY: 'auto', padding: '20px 24px' }}>
-          {normalizedQuery ? (
-            <div>
-              {/* Product Results */}
-              {filteredProducts.length > 0 && (
-                <div style={{ marginBottom: '24px' }}>
-                  <div
-                    className="font-mono"
-                    style={{
-                      fontSize: '0.6875rem',
-                      fontWeight: 800,
-                      letterSpacing: '0.14em',
-                      color: 'var(--color-brand-gold)',
-                      textTransform: 'uppercase',
-                      marginBottom: '12px',
-                    }}
-                  >
-                    EQUIPMENT & GEAR ({filteredProducts.length})
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {filteredProducts.map((p) => (
-                      <div
-                        key={p.id}
-                        onClick={() => handleSelectProduct(p.slug)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '14px',
-                          padding: '10px 14px',
-                          backgroundColor: '#161616',
-                          border: '1px solid #242424',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#202020';
-                          e.currentTarget.style.borderColor = 'var(--color-brand-gold)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#161616';
-                          e.currentTarget.style.borderColor = '#242424';
-                        }}
-                      >
-                        <img
-                          src={p.images[0]}
-                          alt={p.name}
-                          style={{
-                            width: '48px',
-                            height: '48px',
-                            objectFit: 'cover',
-                            backgroundColor: '#222222',
-                            border: '1px solid #333333',
-                          }}
-                        />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#FFFFFF' }}>
-                            {p.name}
-                          </div>
-                          <div className="font-mono" style={{ fontSize: '0.75rem', color: '#999999', marginTop: '2px' }}>
-                            {p.categoryName || p.category} • <strong style={{ color: 'var(--color-brand-gold)' }}>₹{p.price.toLocaleString('en-IN')}</strong>
-                          </div>
-                        </div>
-                        <ArrowRight size={15} color="var(--color-brand-gold)" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Court Results */}
-              {filteredCourts.length > 0 && (
-                <div style={{ marginBottom: '16px' }}>
-                  <div
-                    className="font-mono"
-                    style={{
-                      fontSize: '0.6875rem',
-                      fontWeight: 800,
-                      letterSpacing: '0.14em',
-                      color: '#C9A227',
-                      textTransform: 'uppercase',
-                      marginBottom: '12px',
-                    }}
-                  >
-                    COURT INFRASTRUCTURE ({filteredCourts.length})
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {filteredCourts.map((c) => (
-                      <div
-                        key={c.id}
-                        onClick={() => handleSelectCourt(c.slug)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '12px 14px',
-                          backgroundColor: '#161616',
-                          border: '1px solid #242424',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#202020';
-                          e.currentTarget.style.borderColor = '#C9A227';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#161616';
-                          e.currentTarget.style.borderColor = '#242424';
-                        }}
-                      >
-                        <div>
-                          <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#FFFFFF' }}>
-                            {c.title}
-                          </div>
-                          <div className="font-mono" style={{ fontSize: '0.75rem', color: '#888888', marginTop: '2px' }}>
-                            {c.sport} • {c.location}
-                          </div>
-                        </div>
-                        <ArrowRight size={15} color="#C9A227" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* No Results Fallback */}
-              {filteredProducts.length === 0 && filteredCourts.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '40px 16px' }}>
-                  <p style={{ color: '#888888', fontSize: '0.9375rem', marginBottom: '20px' }}>
-                    No equipment or court builds found matching "{query}".
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      navigate('/shop');
-                    }}
-                    style={{
-                      padding: '10px 20px',
-                      backgroundColor: 'var(--color-brand-gold)',
-                      color: 'var(--color-ink)',
-                      fontSize: '0.75rem',
-                      fontWeight: 800,
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    EXPLORE ALL GEAR
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div>
-              <div
-                className="font-mono"
-                style={{
-                  fontSize: '0.6875rem',
-                  fontWeight: 800,
-                  letterSpacing: '0.14em',
-                  color: '#888888',
-                  textTransform: 'uppercase',
-                  marginBottom: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <Flame size={14} color="var(--color-brand-gold)" />
-                <span>POPULAR EQUIPMENT & SEARCH SHORTCUTS</span>
-              </div>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '28px' }}>
-                {quickShortcuts.map((item) => (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => setQuery(item.q)}
-                    style={{
-                      padding: '8px 14px',
-                      backgroundColor: '#1C1C1C',
-                      border: '1px solid #2B2B2B',
-                      color: '#DDDDDD',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      transition: 'all 0.18s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--color-brand-gold)';
-                      e.currentTarget.style.color = 'var(--color-brand-gold)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#2B2B2B';
-                      e.currentTarget.style.color = '#DDDDDD';
-                    }}
-                  >
-                    {item.label}
-                  </button>
+        <div className="search-panel-body container">
+          {terms.length === 0 && (
+            <div className="search-suggest">
+              <p className="label subtle">Try</p>
+              <div className="search-suggest-chips">
+                {SHORTCUTS.map((s) => (
+                  <button key={s} type="button" className="chip" onClick={() => setQuery(s)}>{s}</button>
                 ))}
               </div>
-
-              {/* Physical Workshop Flagship Note */}
-              <div
-                style={{
-                  padding: '14px 18px',
-                  backgroundColor: 'rgba(201, 162, 39, 0.1)',
-                  border: '1px solid rgba(201, 162, 39, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                }}
-              >
-                <ShieldCheck size={18} color="#C9A227" style={{ flexShrink: 0 }} />
-                <div style={{ fontSize: '0.8125rem', color: '#CCCCCC', lineHeight: 1.4 }}>
-                  Looking for custom racquet restringing or bat oiling? Visit our workshop at <strong>Shop 247, MG Road, Camp, Pune</strong>.
-                </div>
-              </div>
             </div>
+          )}
+
+          {sports.length > 0 && (
+            <section className="search-group" aria-label="Sports">
+              <p className="label subtle">Sports</p>
+              <div className="search-suggest-chips">
+                {sports.map((c) => (
+                  <Link key={c.id} to={`/shop/${c.id}`} className="chip" onClick={onClose}>{c.name}</Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {products.length > 0 && (
+            <section className="search-group" aria-label="Gear">
+              <p className="label subtle">Gear</p>
+              <ul className="search-hits">
+                {products.map((p) => (
+                  <li key={p.id}>
+                    <button type="button" className="search-hit" onClick={() => go(`/product/${p.slug}`)}>
+                      <span className="search-hit-media"><Img image={p.images[0]} alt="" sizes="56px" /></span>
+                      <span className="search-hit-text">
+                        <span className="search-hit-name">{p.name}</span>
+                        <span className="muted">{p.categoryName} · ₹{p.price.toLocaleString('en-IN')}</span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {courts.length > 0 && (
+            <section className="search-group" aria-label="Courts">
+              <p className="label subtle">Courts we build</p>
+              <ul className="search-hits">
+                {courts.map((c) => (
+                  <li key={c.id}>
+                    <button type="button" className="search-hit" onClick={() => go(`/courts#${c.slug}`)}>
+                      <span className="search-hit-text">
+                        <span className="search-hit-name">{c.name}</span>
+                        <span className="muted">Typical build: {c.leadTime.toLowerCase()}</span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {nothing && <p className="muted search-none">Nothing matches “{query}” online — the Camp store may still have it.</p>}
+
+          {terms.length > 0 && !nothing && (
+            <button type="button" className="link-arrow" onClick={() => go(`/search?q=${encodeURIComponent(query.trim())}`)}>
+              See all results <span className="btn-arrow" aria-hidden="true">→</span>
+            </button>
           )}
         </div>
       </div>
     </div>
   );
 };
+
+export default SearchModal;

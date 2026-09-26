@@ -1,405 +1,128 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { X, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Check, ShoppingBag, Truck } from 'lucide-react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { STORE_INFO } from '../../data/storeInfo';
+import { Img } from '../ui/Img';
 
+const FREE_DELIVERY_FROM = 2000;
+
+/** Bag drawer — light panel, delivery progress, lines, one clear next step. */
 export const CartDrawer: React.FC = () => {
-  const {
-    cart,
-    isCartOpen,
-    closeCart,
-    removeFromCart,
-    updateQuantity,
-    subtotal,
-  } = useCart();
-
+  const { cart, isCartOpen, closeCart, removeFromCart, updateQuantity, subtotal } = useCart();
   const navigate = useNavigate();
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isCartOpen) return;
+    const root = document.documentElement;
+    const prev = root.style.overflow;
+    root.style.overflow = 'hidden';
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeCart();
+    window.addEventListener('keydown', onKey);
+    return () => {
+      root.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isCartOpen, closeCart]);
 
   if (!isCartOpen) return null;
 
-  const freeShippingThreshold = 2000;
-  const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
-  const amountNeeded = Math.max(0, freeShippingThreshold - subtotal);
-
-  const handleCheckout = () => {
-    closeCart();
-    navigate('/cart');
-  };
+  const units = cart.reduce((s, i) => s + i.quantity, 0);
+  const needed = Math.max(0, FREE_DELIVERY_FROM - subtotal);
+  const progress = Math.min(100, Math.round((subtotal / FREE_DELIVERY_FROM) * 100));
 
   return (
     <>
-      {/* Liquid Glass Backdrop */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 9998,
-          backgroundColor: 'rgba(8, 8, 8, 0.75)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          transition: 'opacity 0.3s ease',
-        }}
-        onClick={closeCart}
-        aria-hidden="true"
-      />
-
-      {/* Slide-out Brutalist Glass Drawer */}
-      <aside
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: '100%',
-          maxWidth: '460px',
-          zIndex: 9999,
-          backgroundColor: '#0F0F0F',
-          borderLeft: '2px solid #262626',
-          boxShadow: '-16px 0 50px rgba(0, 0, 0, 0.8)',
-          display: 'flex',
-          flexDirection: 'column',
-          color: '#FFFFFF',
-          animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        }}
-        aria-label="Shopping Bag Drawer"
-      >
-        {/* Drawer Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '20px 24px',
-            borderBottom: '1px solid #222222',
-            backgroundColor: '#141414',
-          }}
-        >
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ShoppingBag size={18} color="#C9A227" />
-              <h3
-                className="font-display"
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 900,
-                  color: '#FFFFFF',
-                  margin: 0,
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                YOUR BAG ({cart.reduce((s, i) => s + i.quantity, 0)})
-              </h3>
-            </div>
-            <span className="font-mono" style={{ fontSize: '0.6875rem', color: '#888888', marginTop: '2px', display: 'block' }}>
-              PUNE SPORTS HOUSE // CAMP DISPATCH
-            </span>
-          </div>
-
-          <button
-            type="button"
-            onClick={closeCart}
-            style={{
-              padding: '6px',
-              backgroundColor: '#222222',
-              border: '1px solid #333333',
-              color: '#FFFFFF',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            aria-label="Close Bag"
-          >
-            <X size={18} />
+      <div className="drawer-backdrop" onClick={closeCart} aria-hidden="true" />
+      <aside className="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+        <div className="drawer-head">
+          <h2 id="drawer-title" className="display d-4">Your bag {units > 0 && <span className="drawer-count">({units})</span>}</h2>
+          <button ref={closeRef} type="button" className="menu-close" onClick={closeCart}>
+            <span className="menu-close-x" aria-hidden="true" />
+            <span>Close</span>
           </button>
         </div>
 
-        {/* Free Pune Delivery Progress Rail */}
-        <div
-          style={{
-            backgroundColor: '#181818',
-            padding: '14px 24px',
-            borderBottom: '1px solid #222222',
-          }}
-        >
-          {amountNeeded > 0 ? (
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', fontSize: '0.75rem' }}>
-                <span style={{ color: '#AAAAAA', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Truck size={14} color="#C9A227" />
-                  <span>Free Delivery in Pune</span>
-                </span>
-                <span className="font-mono" style={{ fontWeight: 800, color: 'var(--color-brand-gold)' }}>
-                  Add ₹{amountNeeded.toLocaleString('en-IN')}
-                </span>
-              </div>
-              <div
-                style={{
-                  width: '100%',
-                  height: '4px',
-                  backgroundColor: '#2A2A2A',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    width: `${progressPercent}%`,
-                    height: '100%',
-                    backgroundColor: 'var(--color-brand-gold)',
-                    transition: 'width 0.3s ease',
-                  }}
-                />
-              </div>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-brand-gold)', fontSize: '0.8125rem', fontWeight: 800 }}>
-              <Check size={16} />
-              <span>FREE EXPEDITE DISPATCH IN PUNE QUALIFIED!</span>
-            </div>
-          )}
-        </div>
-
-        {/* Bag Item List */}
-        <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '20px 24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-          }}
-        >
-          {cart.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 16px', margin: 'auto' }}>
-              <div
-                style={{
-                  width: '56px',
-                  height: '56px',
-                  backgroundColor: '#1E1E1E',
-                  border: '1px solid #333333',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 16px auto',
-                  color: '#666666',
-                }}
-              >
-                <ShoppingBag size={24} />
-              </div>
-              <h4 style={{ fontSize: '1.125rem', color: '#FFFFFF', marginBottom: '8px' }}>
-                Your sports bag is empty
-              </h4>
-              <p style={{ color: '#777777', fontSize: '0.875rem', marginBottom: '24px' }}>
-                Explore tournament racquets, raw carbon paddles, and cricket willow.
-              </p>
-              <Link
-                to="/shop"
-                onClick={closeCart}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 24px',
-                  backgroundColor: 'var(--color-brand-gold)',
-                  color: 'var(--color-ink)',
-                  fontSize: '0.8125rem',
-                  fontWeight: 800,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  textDecoration: 'none',
-                  transition: 'opacity 0.2s ease',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-              >
-                <span>SHOP SPORTS CATALOG</span>
-                <ArrowRight size={15} />
-              </Link>
-            </div>
-          ) : (
-            cart.map((item) => (
-              <div
-                key={`${item.product.id}-${item.selectedVariant || ''}-${item.selectedSize || ''}`}
-                style={{
-                  display: 'flex',
-                  gap: '14px',
-                  paddingBottom: '16px',
-                  borderBottom: '1px solid #1E1E1E',
-                }}
-              >
-                {/* Thumbnail */}
-                <Link
-                  to={`/product/${item.product.slug}`}
-                  onClick={closeCart}
-                  style={{
-                    width: '76px',
-                    height: '76px',
-                    backgroundColor: '#1A1A1A',
-                    border: '1px solid #2A2A2A',
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                  }}
-                >
-                  <img
-                    src={item.product.images[0]}
-                    alt={item.product.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </Link>
-
-                {/* Details */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-                      <Link
-                        to={`/product/${item.product.slug}`}
-                        onClick={closeCart}
-                        style={{
-                          fontSize: '0.875rem',
-                          fontWeight: 700,
-                          color: '#FFFFFF',
-                          lineHeight: 1.3,
-                          textDecoration: 'none',
-                        }}
-                      >
-                        {item.product.name}
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => removeFromCart(item.product.id, item.selectedVariant, item.selectedSize)}
-                        style={{ color: '#666666', background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}
-                        aria-label="Remove item"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-
-                    {(item.selectedVariant || item.selectedSize) && (
-                      <div className="font-mono" style={{ fontSize: '0.6875rem', color: '#888888', marginTop: '4px' }}>
-                        {item.selectedVariant} {item.selectedSize && `• ${item.selectedSize}`}
-                      </div>
-                    )}
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-                    {/* Stepper */}
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        border: '1px solid #333333',
-                        backgroundColor: '#161616',
-                      }}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.selectedVariant, item.selectedSize)}
-                        style={{ padding: '4px 8px', color: '#DDDDDD', background: 'none', border: 'none', cursor: 'pointer' }}
-                        aria-label="Decrease quantity"
-                      >
-                        <Minus size={12} />
-                      </button>
-                      <span className="font-mono" style={{ padding: '0 8px', fontSize: '0.8125rem', fontWeight: 800, color: '#FFFFFF' }}>
-                        {item.quantity}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.selectedVariant, item.selectedSize)}
-                        style={{ padding: '4px 8px', color: '#DDDDDD', background: 'none', border: 'none', cursor: 'pointer' }}
-                        aria-label="Increase quantity"
-                      >
-                        <Plus size={12} />
-                      </button>
-                    </div>
-
-                    <div className="font-mono" style={{ fontSize: '0.9375rem', fontWeight: 800, color: '#FFFFFF' }}>
-                      ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Drawer Footer with Subtotal & Checkout */}
         {cart.length > 0 && (
-          <div
-            style={{
-              padding: '20px 24px',
-              backgroundColor: '#141414',
-              borderTop: '1px solid #222222',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <span className="font-mono" style={{ fontSize: '0.8125rem', color: '#888888', textTransform: 'uppercase' }}>
-                ESTIMATED SUBTOTAL
-              </span>
-              <span className="font-mono" style={{ fontSize: '1.5rem', fontWeight: 900, color: '#FFFFFF' }}>
-                ₹{subtotal.toLocaleString('en-IN')}
-              </span>
+          <div className="drawer-delivery">
+            <p>
+              {needed > 0
+                ? <>Add <strong>₹{needed.toLocaleString('en-IN')}</strong> for free delivery in Pune</>
+                : <>Free delivery in Pune on this order</>}
+            </p>
+            <div className="drawer-progress" aria-hidden="true"><span style={{ transform: `scaleX(${progress / 100})` }} /></div>
+          </div>
+        )}
+
+        <div className="drawer-body">
+          {cart.length === 0 ? (
+            <div className="drawer-empty">
+              <p className="display d-3">Nothing here yet.</p>
+              <p className="muted">Racquets, bats, paddles and more are waiting in the shop.</p>
+              <Link to="/shop" className="btn btn-primary" onClick={closeCart}>Shop gear</Link>
             </div>
+          ) : (
+            <ul className="drawer-lines">
+              {cart.map((item, idx) => (
+                <li key={`${item.product.id}-${item.selectedVariant}-${item.selectedSize}-${idx}`} className="drawer-line">
+                  <Link to={`/product/${item.product.slug}`} onClick={closeCart} className="drawer-line-media" tabIndex={-1} aria-hidden="true">
+                    <Img image={item.product.images[0]} alt="" sizes="80px" />
+                  </Link>
+                  <div className="drawer-line-body">
+                    <Link to={`/product/${item.product.slug}`} onClick={closeCart} className="cart-line-name">{item.product.name}</Link>
+                    {(item.selectedVariant || item.selectedSize) && (
+                      <p className="cart-line-options">{[item.selectedVariant, item.selectedSize].filter(Boolean).join(' · ')}</p>
+                    )}
+                    <div className="cart-line-foot">
+                      <div className="qty qty-sm" role="group" aria-label={`Quantity of ${item.product.name}`}>
+                        <button type="button" onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.selectedVariant, item.selectedSize)} aria-label="Decrease quantity">
+                          <Minus size={14} />
+                        </button>
+                        <output>{item.quantity}</output>
+                        <button type="button" onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.selectedVariant, item.selectedSize)} aria-label="Increase quantity">
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                      <span className="price">₹{(item.product.price * item.quantity).toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="cart-line-remove"
+                    onClick={() => removeFromCart(item.product.id, item.selectedVariant, item.selectedSize)}
+                    aria-label={`Remove ${item.product.name}`}
+                  >
+                    <Trash2 size={17} strokeWidth={1.8} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
+        {cart.length > 0 && (
+          <div className="drawer-foot">
+            <div className="drawer-subtotal">
+              <span>Subtotal</span>
+              <strong>₹{subtotal.toLocaleString('en-IN')}</strong>
+            </div>
             <button
               type="button"
-              onClick={handleCheckout}
-              style={{
-                width: '100%',
-                padding: '14px',
-                backgroundColor: 'var(--color-brand-gold)',
-                color: 'var(--color-ink)',
-                border: 'none',
-                fontSize: '0.8125rem',
-                fontWeight: 800,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'opacity 0.2s ease',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-            >
-              <span>PROCEED TO CHECKOUT</span>
-              <ArrowRight size={16} />
-            </button>
-
-            <button
-              type="button"
-              onClick={closeCart}
-              style={{
-                width: '100%',
-                padding: '10px',
-                backgroundColor: 'transparent',
-                color: '#AAAAAA',
-                border: '1px solid #333333',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
+              className="btn btn-primary btn-block btn-lg"
+              onClick={() => {
+                closeCart();
+                navigate('/cart');
               }}
             >
-              CONTINUE BROWSING
+              Review & checkout <span className="btn-arrow" aria-hidden="true">→</span>
             </button>
+            <button type="button" className="link-arrow drawer-continue" onClick={closeCart}>Keep shopping</button>
           </div>
         )}
       </aside>
-
-      <style>{`
-        @keyframes slideInRight {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
-        }
-      `}</style>
     </>
   );
 };
+
+export default CartDrawer;

@@ -18,26 +18,21 @@ export const STORE_INFO: StoreDetails = {
   whatsappUrl: 'https://wa.me/919890990022?text=Hi%20Oriental%20Sports,%20I%20would%20like%20to%20inquire%20about%20',
 };
 
+/** Opening hours as minutes from midnight, Pune time. Mirrors STORE_INFO.hours. */
+export const STORE_SCHEDULE = {
+  timeZone: 'Asia/Kolkata',
+  /** Monday–Saturday */
+  weekdays: { open: 10 * 60 + 30, close: 20 * 60 + 30 },
+  sunday: { open: 11 * 60, close: 18 * 60 },
+};
+
 export const BRAND_STORY = {
   headline: 'ROOTED IN CAMP. BUILT FOR THE GAME.',
   subheadline: 'Pune’s sports house. Gear for the game. Courts for the city.',
+  /** Facts only: what the store sells, what it does in-house, what it builds and where. */
   narrative: [
-    'Located at Shop 247 on MG Road in Camp, Oriental Sports stands at the historic heart of Pune’s sporting tradition. For generations of players, coaches, school champions and club captains across the city, our store has been the first stop before stepping onto the pitch, field, or court.',
-    'We believe sports equipment shouldn’t just be picked from a generic warehouse rack. It demands real athletic expertise: understanding the grain and balance of a bat, dialing in the string tension of a racquet, choosing the right footwear grip for Deccan red clay or modern cushioned acrylic.',
-    'Over the years, our passion for the game grew beyond the four walls of our Camp store into building the places where Pune plays. Today, Oriental Sports is one of Maharashtra’s trusted names in sports infrastructure—engineering tournament-standard pickleball arenas, championship tennis courts, indoor badminton halls, and commercial multi-sport turf arenas.',
-  ],
-  pillars: [
-    {
-      title: 'THE CAMP STORE',
-      desc: 'Hands-on equipment selection, expert racquet stringing, custom bat knocking and in-person gear consultations.',
-    },
-    {
-      title: 'SPORTS INFRASTRUCTURE',
-      desc: 'Turnkey court construction, laser grading, ITF/USAPA/BWF certified sports surfaces, LED lighting and netting.',
-    },
-    {
-      title: 'INSTITUTIONAL PARTNERSHIP',
-      desc: 'Dedicated procurement and equipment solutions for Pune’s premier schools, colleges, academies, and clubs.',
-    },
+    'Oriental Sports is a sports goods shop at Shop 247, MG Road, in Camp, Pune. Players, coaches, schools and clubs come to the counter for cricket bats, racquets, paddles and fitness equipment.',
+    'Gear is picked up and tried in the hand before it is bought. Racquet stringing and bat knocking-in are done at the store, so a racquet or bat leaves ready to play.',
+    'The store also builds courts: turnkey construction covering surface, fencing, lighting and line marking, for clubs, schools, housing societies and homes across Pune and Maharashtra.',
   ],
 };

@@ -225,13 +225,9 @@ export class AuthService {
   }
 
   static getCurrentUser(): UserProfile | null {
-    const user = this.loadUser();
-    // Default to the realistic Pune demo profile if not logged out explicitly
-    if (!user && localStorage.getItem('oriental_sports_logged_out') !== 'true') {
-      this.saveUser(INITIAL_USER);
-      return INITIAL_USER;
-    }
-    return user;
+    // Visitors start signed out. (Previously every first visit was signed in as
+    // the demo profile, showing a stranger's name, phone and address.)
+    return this.loadUser();
   }
 
   static async requestOtp(phone: string): Promise<{ success: boolean; devOtp: string }> {

@@ -15,6 +15,22 @@ const VIEWPORTS = [
   { name: '2560_ultrawide_4k', width: 2560, height: 1440 },
 ];
 
+// Real browser windows are shorter than the device: browser chrome, taskbars,
+// mobile URL bars. The hero is checked at these heights as well.
+const SHORT_VIEWPORTS = [
+  { name: '320_short', width: 320, height: 568 },
+  { name: '360_short', width: 360, height: 640 },
+  { name: '390_safari', width: 390, height: 664 },
+  { name: '1024_short', width: 1024, height: 600 },
+  { name: '1280_short', width: 1280, height: 600 },
+  { name: '1366_laptop', width: 1366, height: 657 },
+  { name: '1440_browser', width: 1440, height: 760 },
+  { name: '1920_browser_scaled', width: 1817, height: 700 },
+];
+
+const HERO_SLIDES = ['gear', 'courts', 'store'];
+const HERO_MIN_GAP = 16;
+
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const OUT_DIR = path.resolve('docs/visual-audits');
 
@@ -100,6 +116,66 @@ async function runAudit() {
     }
   }
 
+  // Hero composition: on every slide the copy must sit inside the hero and
+  // clear the tab bar, and the hero must not change height between slides.
+  console.log(`\n🎞  Hero collision audit (all slides, standard + short viewports)...\n`);
+  const heroResults = [];
+  for (const vp of [...VIEWPORTS, ...SHORT_VIEWPORTS]) {
+    const context = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, reducedMotion: 'reduce' });
+    await context.addInitScript(() => sessionStorage.setItem('oriental_intro_shown', 'true'));
+    const page = await context.newPage();
+    const issues = [];
+    try {
+      await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 20000 });
+      // Measure the settled composition: until Archivo arrives the fallback
+      // font sets text slightly taller (a one-off swap on first load).
+      // fonts.ready alone can resolve before the request starts, so wait for
+      // the face itself, then for the hero height to hold across frames.
+      await page.waitForFunction(
+        () => document.fonts.status === 'loaded' && document.fonts.check('400 16px Archivo') && document.fonts.check('800 16px Archivo'),
+        null,
+        { timeout: 10000 }
+      );
+      await page.waitForFunction(
+        () =>
+          new Promise((resolve) => {
+            const h = () => document.querySelector('.hero').getBoundingClientRect().height;
+            const before = h();
+            setTimeout(() => resolve(Math.abs(h() - before) < 1), 250);
+          }),
+        null,
+        { timeout: 5000 }
+      );
+      const heights = [];
+      for (const id of HERO_SLIDES) {
+        await page.evaluate((id) => document.querySelector(`#hero-tab-${id}`).click(), id);
+        await page.waitForTimeout(150);
+        const m = await page.evaluate((id) => {
+          const hero = document.querySelector('.hero').getBoundingClientRect();
+          const slide = document.querySelector(`#hero-slide-${id}`);
+          const copy = slide.querySelector('.hero-copy').getBoundingClientRect();
+          const actions = slide.querySelector('.hero-actions').getBoundingClientRect();
+          const tabs = document.querySelector('.hero-tablist').getBoundingClientRect();
+          return {
+            heroH: Math.round(hero.height),
+            copyTop: Math.round(copy.top - hero.top),
+            gap: Math.round(tabs.top - actions.bottom),
+          };
+        }, id);
+        heights.push(m.heroH);
+        if (m.copyTop < 0) issues.push(`${id}: copy clipped ${-m.copyTop}px above the hero`);
+        if (m.gap < HERO_MIN_GAP) issues.push(`${id}: actions ${m.gap}px from tab bar (min ${HERO_MIN_GAP})`);
+      }
+      if (new Set(heights).size > 1) issues.push(`hero height changes between slides: ${heights.join(' / ')}`);
+    } catch (err) {
+      issues.push(`error: ${err.message}`);
+    } finally {
+      await context.close();
+    }
+    heroResults.push({ ...vp, issues });
+    console.log(`${issues.length ? '❌ FAIL' : '✅ PASS'} [${vp.name.padEnd(22)}] ${vp.width}x${vp.height}${issues.length ? ` -> ${issues.join('; ')}` : ''}`);
+  }
+
   await browser.close();
 
   // Write markdown report
@@ -126,7 +202,20 @@ ${results
 
 ---
 
-## 2. Assertion Verification
+## 2. Hero Collision Audit
+
+Every slide, at every viewport above plus short browser windows: copy stays inside the hero,
+actions clear the tab bar by at least ${HERO_MIN_GAP}px, and the hero height is the same on every slide.
+
+| Viewport | Dimensions | Result |
+| :--- | :--- | :--- |
+${heroResults
+  .map((r) => `| **${r.name}** | \`${r.width}x${r.height}\` | ${r.issues.length ? `❌ ${r.issues.join('; ')}` : '✅ PASSED'} |`)
+  .join('\n')}
+
+---
+
+## 3. Assertion Verification
 - **Strict Law**: \`document.documentElement.scrollWidth === window.innerWidth\` strictly enforced.
 - **Root Container Overflow Hiding**: Prohibited. Layout components intrinsically bounded to viewport.
 `;
@@ -134,7 +223,7 @@ ${results
   fs.writeFileSync(reportPath, markdown, 'utf-8');
   console.log(`\n📄 Report written to ${reportPath}\n`);
 
-  const allPassed = results.every((r) => r.passed);
+  const allPassed = results.every((r) => r.passed) && heroResults.every((r) => r.issues.length === 0);
   if (!allPassed) {
     process.exit(1);
   }

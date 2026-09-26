@@ -1,238 +1,136 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, MessageSquare, CheckCircle2, ArrowRight } from 'lucide-react';
 import { STORE_INFO } from '../data/storeInfo';
+import { PageHeader } from '../components/ui/PageHeader';
+import { Reveal } from '../components/motion/Reveal';
+import { useStoreStatus } from '../utils/storeHours';
 
+const TOPICS = [
+  'Sports equipment',
+  'Court construction',
+  'School, club or academy order',
+  'Racquet stringing or bat service',
+];
+
+/**
+ * There is no form backend, so the enquiry is handed to WhatsApp (or email)
+ * with the message already written — the visitor always knows where it went.
+ */
 export const ContactPage: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    inquiryType: 'Gear & Equipment',
-    message: '',
-  });
-  const [submitted, setSubmitted] = useState(false);
+  const status = useStoreStatus();
+  const [form, setForm] = useState({ name: '', phone: '', email: '', topic: TOPICS[0], message: '' });
+  const [sent, setSent] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
+  const body = () =>
+    [
+      `Hello Oriental Sports,`,
+      ``,
+      form.message,
+      ``,
+      `Topic: ${form.topic}`,
+      `Name: ${form.name}`,
+      `Phone: ${form.phone}`,
+      form.email ? `Email: ${form.email}` : '',
+    ]
+      .filter((line, i, all) => line !== '' || all[i - 1] !== '')
+      .join('\n');
+
+  const whatsappHref = () => `https://wa.me/${STORE_INFO.phone.replace(/\D/g, '')}?text=${encodeURIComponent(body())}`;
+  const mailHref = () =>
+    `mailto:${STORE_INFO.email}?subject=${encodeURIComponent(`${form.topic} — ${form.name}`)}&body=${encodeURIComponent(body())}`;
+
+  const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    setForm({ ...form, [key]: e.target.value });
 
   return (
-    <div className="bg-ivory" style={{ minHeight: '80vh', paddingBottom: 'var(--space-4xl)' }}>
-      {/* Header */}
-      <div
-        style={{
-          backgroundColor: 'var(--color-ink)',
-          color: 'var(--color-ivory)',
-          padding: 'var(--space-3xl) 0',
-          borderBottom: '1px solid rgba(246, 243, 234, 0.08)',
-        }}
-      >
-        <div className="container">
-          <span
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: 'var(--color-plate-gold)',
-              display: 'block',
-              marginBottom: '8px',
+    <div className="contact-page">
+      <PageHeader
+        crumbs={[{ label: 'Home', to: '/' }, { label: 'Contact' }]}
+        title={['Talk to', 'the store.']}
+        lead="Gear questions, bulk orders for schools and clubs, or a court you want built. Write it here and send it to us on WhatsApp or by email."
+      />
+
+      <section className="container contact-grid" aria-label="Send us a message">
+        <Reveal className="contact-form-wrap">
+          <form
+            className="contact-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              window.open(whatsappHref(), '_blank', 'noopener');
+              setSent(true);
             }}
           >
-            CONNECT WITH ORIENTAL SPORTS
-          </span>
-          <h1
-            className="font-display"
-            style={{
-              fontSize: 'clamp(2.25rem, 5vw, 3.5rem)',
-              color: 'var(--color-pure-white)',
-              lineHeight: 1.05,
-              marginBottom: '12px',
-            }}
-          >
-            CONTACT & INQUIRIES
-          </h1>
-          <p style={{ color: '#C5BFB3', maxWidth: '640px', fontSize: '1rem' }}>
-            Equipment inquiries, institutional school/club procurement, or turn-key court construction estimates in Pune.
-          </p>
-        </div>
-      </div>
-
-      <div className="container" style={{ paddingTop: 'var(--space-2xl)' }}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 'var(--space-3xl)',
-          }}
-        >
-          {/* Left: Contact Form */}
-          <div style={{ backgroundColor: '#FFFFFF', padding: 'clamp(24px, 5vw, 40px)', borderRadius: '2px', border: '1px solid var(--color-ivory-border)' }}>
-            <h2 className="font-display" style={{ fontSize: '1.5rem', marginBottom: '8px' }}>
-              SEND AN INQUIRY
-            </h2>
-            <p style={{ color: '#666', fontSize: '0.875rem', marginBottom: '24px' }}>
-              We typically respond within 2 to 4 business hours.
-            </p>
-
-            {submitted ? (
-              <div style={{ backgroundColor: '#EDE8DC', padding: '24px', borderRadius: '2px', border: '1px solid #C9A227' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#111111', fontWeight: 800, marginBottom: '8px' }}>
-                  <CheckCircle2 size={20} color="#C9A227" />
-                  <span>INQUIRY RECEIVED</span>
-                </div>
-                <p style={{ fontSize: '0.875rem', color: '#555555', lineHeight: 1.45, marginBottom: '16px' }}>
-                  Thank you, {formData.name}. Our team at the Camp store will reach out to you at {formData.phone || formData.email}.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setSubmitted(false)}
-                  className="btn btn-outline-dark btn-sm"
-                >
-                  SEND ANOTHER MESSAGE
-                </button>
+            <div className="field">
+              <label className="field-label" htmlFor="c-name">Name</label>
+              <input id="c-name" className="input" required autoComplete="name" value={form.name} onChange={set('name')} />
+            </div>
+            <div className="contact-form-row">
+              <div className="field">
+                <label className="field-label" htmlFor="c-phone">Phone</label>
+                <input id="c-phone" className="input" type="tel" required autoComplete="tel" inputMode="tel" value={form.phone} onChange={set('phone')} />
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Your Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Rohan Joshi"
-                    style={{ width: '100%', padding: '10px 14px', border: '1px solid #D1CBBF', borderRadius: '2px', fontSize: '0.9375rem', outline: 'none' }}
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>
-                      Phone / WhatsApp *
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+91 98..."
-                      style={{ width: '100%', padding: '10px 14px', border: '1px solid #D1CBBF', borderRadius: '2px', fontSize: '0.9375rem', outline: 'none' }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="rohan@example.com"
-                      style={{ width: '100%', padding: '10px 14px', border: '1px solid #D1CBBF', borderRadius: '2px', fontSize: '0.9375rem', outline: 'none' }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Inquiry Nature
-                  </label>
-                  <select
-                    value={formData.inquiryType}
-                    onChange={(e) => setFormData({ ...formData, inquiryType: e.target.value })}
-                    style={{ width: '100%', padding: '10px 14px', border: '1px solid #D1CBBF', borderRadius: '2px', fontSize: '0.9375rem', outline: 'none', backgroundColor: '#FFF' }}
-                  >
-                    <option value="Gear & Equipment">Sports Equipment / Retail Order</option>
-                    <option value="Court Construction">Court Construction & Surfacing (Pickleball/Tennis/Turf)</option>
-                    <option value="Institutional Procurement">School / College / Club Institutional Procurement</option>
-                    <option value="Racquet Stringing">Racquet Stringing & Custom Bat Services</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Message Details *
-                  </label>
-                  <textarea
-                    required
-                    rows={4}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Provide details about requirements, sport, preferred timelines..."
-                    style={{ width: '100%', padding: '10px 14px', border: '1px solid #D1CBBF', borderRadius: '2px', fontSize: '0.9375rem', outline: 'none', resize: 'vertical' }}
-                  />
-                </div>
-
-                <button type="submit" className="btn btn-primary" style={{ marginTop: '8px' }}>
-                  <span>SUBMIT INQUIRY</span>
-                  <ArrowRight size={16} />
-                </button>
-              </form>
-            )}
-          </div>
-
-          {/* Right: Direct Information Channels */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ backgroundColor: '#111111', color: '#FFFFFF', padding: '32px', borderRadius: '2px', border: '1px solid var(--color-plate-gold)' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--color-plate-gold)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
-                DIRECT CONTACT
-              </span>
-              <h3 className="font-display" style={{ fontSize: '1.5rem', marginBottom: '16px' }}>
-                SPEAK DIRECTLY TO OUR CAMP STORE
-              </h3>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '0.9375rem', marginBottom: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Phone size={18} color="var(--color-plate-gold)" />
-                  <a href={`tel:${STORE_INFO.phone}`} style={{ color: '#FFFFFF', fontWeight: 700 }}>
-                    {STORE_INFO.displayPhone}
-                  </a>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Mail size={18} color="var(--color-plate-gold)" />
-                  <a href={`mailto:${STORE_INFO.email}`} style={{ color: '#EAE5D9' }}>
-                    {STORE_INFO.email}
-                  </a>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                  <MapPin size={18} color="var(--color-plate-gold)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <span style={{ color: '#C5BFB3', fontSize: '0.875rem' }}>
-                    {STORE_INFO.addressLine1}, {STORE_INFO.addressLine2}, {STORE_INFO.locality}, {STORE_INFO.city} 411001
-                  </span>
-                </div>
+              <div className="field">
+                <label className="field-label" htmlFor="c-email">Email (optional)</label>
+                <input id="c-email" className="input" type="email" autoComplete="email" value={form.email} onChange={set('email')} />
               </div>
+            </div>
+            <div className="field">
+              <label className="field-label" htmlFor="c-topic">About</label>
+              <select id="c-topic" className="select" value={form.topic} onChange={set('topic')}>
+                {TOPICS.map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label className="field-label" htmlFor="c-message">Message</label>
+              <textarea id="c-message" className="textarea" required rows={5} value={form.message} onChange={set('message')} />
+            </div>
 
-              <a
-                href={STORE_INFO.whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-gold"
-                style={{ width: '100%' }}
-              >
-                <MessageSquare size={16} />
-                <span>CHAT ON WHATSAPP</span>
+            <div className="contact-form-actions">
+              <button type="submit" className="btn btn-primary">Send on WhatsApp</button>
+              <a href={mailHref()} className="link-arrow">
+                Send by email instead <span className="btn-arrow" aria-hidden="true">→</span>
               </a>
             </div>
 
-            <div style={{ backgroundColor: '#EDE8DC', padding: '24px', borderRadius: '2px', border: '1px solid #E2DCCF' }}>
-              <h4 style={{ fontSize: '0.875rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px' }}>
-                INSTITUTIONAL & BULK PROCUREMENT
-              </h4>
-              <p style={{ fontSize: '0.8125rem', color: '#555555', lineHeight: 1.45 }}>
-                Specialized rates and GST invoicing for schools, colleges, sports academies and housing societies across Pune, Pimpri-Chinchwad, and PMRDA.
-              </p>
+            <p className="contact-form-note" role="status">
+              {sent
+                ? 'WhatsApp opened in a new tab with your message written out — press send there to reach us.'
+                : 'Your message opens in WhatsApp (or your email app) ready to send. Nothing is stored on this website.'}
+            </p>
+          </form>
+        </Reveal>
+
+        <Reveal as="aside" className="contact-side" delay={0.1}>
+          <p className={`store-status ${status.isOpen ? 'is-open' : ''}`}>
+            <span className="status-dot" aria-hidden="true" />
+            {status.label}
+          </p>
+          <dl className="store-hours">
+            <div>
+              <dt>Phone</dt>
+              <dd><a href={`tel:${STORE_INFO.phone}`}>{STORE_INFO.displayPhone}</a></dd>
             </div>
-          </div>
-        </div>
-      </div>
+            <div>
+              <dt>WhatsApp</dt>
+              <dd><a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer">Chat now</a></dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd><a href={`mailto:${STORE_INFO.email}`}>{STORE_INFO.email}</a></dd>
+            </div>
+            <div>
+              <dt>Store</dt>
+              <dd>{STORE_INFO.addressLine1}, {STORE_INFO.locality}</dd>
+            </div>
+          </dl>
+          <p className="contact-side-note">
+            Schools, colleges, academies and housing societies: tell us what you need and how many — we’ll put together a bulk order.
+          </p>
+        </Reveal>
+      </section>
     </div>
   );
 };
+
+export default ContactPage;

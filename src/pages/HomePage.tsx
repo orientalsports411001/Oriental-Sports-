@@ -1,40 +1,29 @@
 import React from 'react';
 import { Hero } from '../components/home/Hero';
-import { BuiltForMarquee } from '../components/home/BuiltForMarquee';
-import { ShopBySport } from '../components/home/ShopBySport';
+import { SportIndex } from '../components/home/SportIndex';
 import { OrbitalGallery } from '../components/home/OrbitalGallery';
-import { FeaturedProducts } from '../components/home/FeaturedProducts';
-import { CourtsSection } from '../components/home/CourtsSection';
-import { VisitStore } from '../components/home/VisitStore';
+import { GearEdit } from '../components/home/GearEdit';
+import { CourtsChapter } from '../components/home/CourtsChapter';
+import { StoreChapter } from '../components/home/StoreChapter';
 
 /**
- * Homepage — art-directed editorial sequence.
- *
- * Section rhythm (each has a unique composition anchor):
- *  01. HERO            — giant stacked typography + full-bleed athlete photo (image-as-canvas)
- *  02. MARQUEE         — continuous discipline & craft strip
- *  03. SPORT STORY     — typographic index left + dominant photograph right
- *  04. ORBITAL GALLERY — "The Game in Motion" spatial 3D orbiting archive
- *  05. GEAR            — oversized product photo right + editorial name/price left
- *                         + specs-as-visual strip (embedded in FeaturedProducts)
- *  06. COURTS          — full-bleed architecture photo, headline overlaid bottom-left
- *  07. VISIT STORE     — magazine spread: address typography left, store photo right
- *
- * NO section repeats the same layout anchor.
- * NO cards, NO grids, NO badge clusters, NO stat boxes.
+ * Homepage — GEAR + COURTS, told in six chapters.
+ *  Hero      photographic slides: Gear / Courts / Camp store (tabs name all three)
+ *  Sport     expanding sport rail → tap list on mobile        (ivory)
+ *  Gallery   six sport photos orbiting in 3D as you scroll    (ivory)
+ *  Gear      sticky intro + studio-shot products               (stone)
+ *  Courts    night-court chapter: build types + sequence       (ink)
+ *  Store     the address as a shop sign, live hours            (ivory)
  */
-export const HomePage: React.FC = () => {
-  return (
-    <main>
-      <Hero />
-      <BuiltForMarquee />
-      <ShopBySport />
-      <OrbitalGallery />
-      <FeaturedProducts />
-      <CourtsSection />
-      <VisitStore />
-    </main>
-  );
-};
+export const HomePage: React.FC = () => (
+  <>
+    <Hero />
+    <SportIndex />
+    <OrbitalGallery />
+    <GearEdit />
+    <CourtsChapter />
+    <StoreChapter />
+  </>
+);
 
 export default HomePage;

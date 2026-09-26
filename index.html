@@ -2,22 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>Oriental Sports | Pune's Sports House & Court Builders</title>
     <meta name="description" content="Oriental Sports - Shop 247, MG Road, Camp, Pune. Sports goods, fitness equipment, court construction and sports infrastructure. GEAR. COURTS. PUNE." />
-    <meta name="theme-color" content="#2457FF" />
+    <meta name="theme-color" content="#F6F3EA" />
     <meta property="og:title" content="Oriental Sports | Gear. Courts. Pune." />
     <meta property="og:description" content="Sports goods, fitness equipment & court construction. Rooted in Camp, Pune." />
     <meta property="og:type" content="website" />
-    
-    <!-- Preload First Hero Image for Immediate LCP Paint -->
-    <link rel="preload" as="image" href="/images/hero/hero_gear_pune.jpg" />
-    
-    <!-- Google Fonts: Space Grotesk (Playful Display & Numerals), Plus Jakarta Sans (Contemporary Athletic Sans), Barlow Condensed (Sport Tags) -->
+
+    <!-- First hero slide (LCP): small file on phones, full width on desktop -->
+    <link rel="preload" as="image" href="/images/hero/hero_train_perform.webp"
+      imagesrcset="/images/hero/hero_train_perform-sm.webp 800w, /images/hero/hero_train_perform.webp 1376w"
+      imagesizes="100vw" fetchpriority="high" />
+
+    <!-- Archivo (variable width + weight): condensed black for display, normal width for text -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..100,400..900;1,62..100,700..900&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="root"></div>

@@ -1,7 +1,7 @@
 # Oriental Sports — Responsive & Zero-Overflow Audit
 
-**Audit Date**: 2026-09-15T11:46:04.500Z  
-**Target URL**: http://localhost:4000
+**Audit Date**: 2026-09-26T10:02:51.462Z  
+**Target URL**: http://localhost:3000
 
 ---
 
@@ -22,6 +22,34 @@
 
 ---
 
-## 2. Assertion Verification
+## 2. Hero Collision Audit
+
+Every slide, at every viewport above plus short browser windows: copy stays inside the hero,
+actions clear the tab bar by at least 16px, and the hero height is the same on every slide.
+
+| Viewport | Dimensions | Result |
+| :--- | :--- | :--- |
+| **320_mobile_small** | `320x844` | ✅ PASSED |
+| **360_mobile_android** | `360x800` | ✅ PASSED |
+| **390_mobile_iphone14** | `390x844` | ✅ PASSED |
+| **430_mobile_promax** | `430x932` | ✅ PASSED |
+| **768_tablet_portrait** | `768x1024` | ✅ PASSED |
+| **1024_tablet_desktop** | `1024x768` | ✅ PASSED |
+| **1280_laptop_small** | `1280x800` | ✅ PASSED |
+| **1440_desktop_standard** | `1440x900` | ✅ PASSED |
+| **1920_ultrawide** | `1920x1080` | ✅ PASSED |
+| **2560_ultrawide_4k** | `2560x1440` | ✅ PASSED |
+| **320_short** | `320x568` | ✅ PASSED |
+| **360_short** | `360x640` | ✅ PASSED |
+| **390_safari** | `390x664` | ✅ PASSED |
+| **1024_short** | `1024x600` | ✅ PASSED |
+| **1280_short** | `1280x600` | ✅ PASSED |
+| **1366_laptop** | `1366x657` | ✅ PASSED |
+| **1440_browser** | `1440x760` | ✅ PASSED |
+| **1920_browser_scaled** | `1817x700` | ✅ PASSED |
+
+---
+
+## 3. Assertion Verification
 - **Strict Law**: `document.documentElement.scrollWidth === window.innerWidth` strictly enforced.
 - **Root Container Overflow Hiding**: Prohibited. Layout components intrinsically bounded to viewport.

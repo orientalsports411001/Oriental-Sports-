@@ -1,215 +1,120 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, Menu, X, ArrowRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { NavLink, Link, useLocation } from 'react-router-dom';
+import { Search, ShoppingBag } from 'lucide-react';
 import { Logo } from '../brand/Logo';
 import { useCart } from '../../context/CartContext';
 import { SearchModal } from './SearchModal';
+import { MobileMenu } from './MobileMenu';
+import { STORE_INFO } from '../../data/storeInfo';
+import { useStoreStatus } from '../../utils/storeHours';
+
+export const NAV_ITEMS = [
+  { to: '/shop', label: 'Shop' },
+  { to: '/courts', label: 'Courts' },
+  { to: '/about', label: 'About' },
+  { to: '/visit', label: 'Visit' },
+];
 
 export const Header: React.FC = () => {
   const { itemCount, openCart } = useCart();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const navigate = useNavigate();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const { pathname } = useLocation();
+  const status = useStoreStatus();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setIsScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [navigate]);
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   return (
     <>
-      <header
-        className={`site-header ${isScrolled ? 'scrolled' : ''}`}
-      >
-        <div className="container">
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              height: 'var(--header-height-desktop)',
-            }}
-          >
-            {/* Left: Mobile Menu Trigger + Brand Identity */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <button
-                type="button"
-                className="header-icon-btn mobile-only"
-                onClick={() => setIsMobileMenuOpen(true)}
-                aria-label="Open navigation menu"
-              >
-                <Menu size={22} />
-              </button>
+      <a className="skip-link" href="#main">Skip to content</a>
 
-              <Logo variant="light" size="md" />
-            </div>
+      <div className="utility-bar desktop-only">
+        <div className="container utility-row">
+          <Link to="/visit" className="utility-link">
+            {STORE_INFO.addressLine1}, {STORE_INFO.locality}, {STORE_INFO.city}
+          </Link>
+          <span className={`utility-status ${status.isOpen ? 'is-open' : ''}`}>
+            <span className="status-dot" aria-hidden="true" />
+            {status.label}
+          </span>
+          <span className="utility-contacts">
+            <a href={`tel:${STORE_INFO.phone}`} className="utility-link">{STORE_INFO.displayPhone}</a>
+            <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="utility-link">WhatsApp</a>
+          </span>
+        </div>
+      </div>
 
-            {/* Center: Quiet Editorial Navigation */}
-            <nav
-              className="desktop-only"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
+      <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
+        <div className="container header-row">
+          <Logo variant="light" size="md" className="header-logo" />
+
+          <nav className="header-nav desktop-only" aria-label="Primary">
+            {NAV_ITEMS.map((item) => (
+              <NavLink key={item.to} to={item.to} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="header-actions">
+            <button
+              type="button"
+              className="header-icon-btn"
+              onClick={() => setIsSearchOpen(true)}
+              aria-label="Search gear and courts"
             >
-              <NavLink
-                to="/shop"
-                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              >
-                SHOP
-              </NavLink>
-
-              <NavLink
-                to="/courts"
-                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              >
-                COURTS
-              </NavLink>
-
-              <NavLink
-                to="/about"
-                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              >
-                ABOUT
-              </NavLink>
-
-              <NavLink
-                to="/visit"
-                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              >
-                VISIT
-              </NavLink>
-            </nav>
-
-            {/* Right: Search & Cart Only (Quiet & Restrained) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <button
-                type="button"
-                className="header-icon-btn"
-                onClick={() => setIsSearchOpen(true)}
-                aria-label="Search equipment and courts"
-                title="Search"
-              >
-                <Search size={18} strokeWidth={2.2} />
-              </button>
-
-              <button
-                type="button"
-                className="header-icon-btn"
-                onClick={openCart}
-                aria-label={`Shopping Bag (${itemCount} items)`}
-                title="Shopping Bag"
-              >
-                <ShoppingBag size={18} strokeWidth={2.2} />
-                {itemCount > 0 && <span className="header-badge">{itemCount}</span>}
-              </button>
-            </div>
+              <Search size={20} strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              className="header-icon-btn"
+              onClick={openCart}
+              aria-label={`Shopping bag, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`}
+            >
+              <ShoppingBag size={20} strokeWidth={1.8} />
+              {itemCount > 0 && <span className="header-badge">{itemCount}</span>}
+            </button>
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="menu-toggle mobile-only"
+              onClick={() => setIsMenuOpen(true)}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+            >
+              <span className="menu-toggle-bars" aria-hidden="true">
+                <span />
+                <span />
+              </span>
+              <span className="menu-toggle-label">Menu</span>
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Drawer */}
-      {isMobileMenuOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(17, 17, 17, 0.65)',
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
-            zIndex: 999,
-          }}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              bottom: 0,
-              width: '85%',
-              maxWidth: '340px',
-              backgroundColor: 'var(--color-canvas-base)',
-              padding: '28px 24px',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: 'var(--shadow-float)',
-              borderRight: '1.5px solid var(--color-ink)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
-              <Logo variant="light" size="sm" />
-              <button
-                type="button"
-                onClick={() => setIsMobileMenuOpen(false)}
-                style={{ padding: '8px', color: 'var(--color-ink)' }}
-                aria-label="Close navigation"
-              >
-                <X size={22} />
-              </button>
-            </div>
+      <MobileMenu
+        open={isMenuOpen}
+        onClose={() => {
+          setIsMenuOpen(false);
+          menuButtonRef.current?.focus();
+        }}
+        onSearch={() => {
+          setIsMenuOpen(false);
+          setIsSearchOpen(true);
+        }}
+      />
 
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <Link
-                to="/shop"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="font-display"
-                style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-ink)' }}
-              >
-                SHOP SPORTS →
-              </Link>
-
-              <Link
-                to="/courts"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="font-display"
-                style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-ink)' }}
-              >
-                BUILD A COURT →
-              </Link>
-
-              <Link
-                to="/about"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="font-display"
-                style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-ink)' }}
-              >
-                ABOUT ORIENTAL →
-              </Link>
-
-              <Link
-                to="/visit"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="font-display"
-                style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-ink)' }}
-              >
-                VISIT STORE →
-              </Link>
-            </nav>
-
-            <div style={{ marginTop: 'auto', borderTop: '1px solid var(--color-border-subtle)', paddingTop: '24px' }}>
-              <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--color-ink-muted)', marginBottom: '8px' }}>
-                FLAGSHIP STORE
-              </div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--color-ink)', lineHeight: 1.4 }}>
-                Shop 247, MG Road, Camp, Pune
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Global Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   );

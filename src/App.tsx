@@ -1,60 +1,89 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 
 import { Header } from './components/navigation/Header';
-import { MobileBottomNav } from './components/navigation/MobileBottomNav';
 import { CartDrawer } from './components/navigation/CartDrawer';
-import { AuthModal } from './components/auth/AuthModal';
 import { Footer } from './components/footer/Footer';
 import { BrandIntro } from './components/ui/BrandIntro';
-import { SmoothScroll } from './components/ui/SmoothScroll';
-import { CustomCursor } from './components/ui/CustomCursor';
 
-// Pages
+// Pages — the homepage ships in the main bundle; every other route loads on demand.
 import { HomePage } from './pages/HomePage';
-import { ShopPage } from './pages/ShopPage';
-import { CategoryPage } from './pages/CategoryPage';
-import { ProductDetailPage } from './pages/ProductDetailPage';
-import { CourtsPage } from './pages/CourtsPage';
-import { CourtProjectsPage } from './pages/CourtProjectsPage';
-import { CourtProjectDetailPage } from './pages/CourtProjectDetailPage';
-import { AboutPage } from './pages/AboutPage';
-import { VisitPage } from './pages/VisitPage';
-import { ContactPage } from './pages/ContactPage';
-import { SearchPage } from './pages/SearchPage';
-import { CartPage } from './pages/CartPage';
-import { AccountPage } from './pages/AccountPage';
-import { NotFoundPage } from './pages/NotFoundPage';
-import { ShippingPage, ReturnsPage, PrivacyPage, TermsPage } from './pages/PolicyPages';
+
+const page = <K extends string>(loader: () => Promise<Record<K, React.ComponentType<any>>>, name: K) =>
+  lazy(() => loader().then((m) => ({ default: m[name] })));
+
+const ShopPage = page(() => import('./pages/ShopPage'), 'ShopPage');
+const CategoryPage = page(() => import('./pages/CategoryPage'), 'CategoryPage');
+const ProductDetailPage = page(() => import('./pages/ProductDetailPage'), 'ProductDetailPage');
+const CourtsPage = page(() => import('./pages/CourtsPage'), 'CourtsPage');
+const CourtProjectsPage = page(() => import('./pages/CourtProjectsPage'), 'CourtProjectsPage');
+const CourtProjectDetailPage = page(() => import('./pages/CourtProjectDetailPage'), 'CourtProjectDetailPage');
+const AboutPage = page(() => import('./pages/AboutPage'), 'AboutPage');
+const VisitPage = page(() => import('./pages/VisitPage'), 'VisitPage');
+const ContactPage = page(() => import('./pages/ContactPage'), 'ContactPage');
+const SearchPage = page(() => import('./pages/SearchPage'), 'SearchPage');
+const CartPage = page(() => import('./pages/CartPage'), 'CartPage');
+const AccountPage = page(() => import('./pages/AccountPage'), 'AccountPage');
+const NotFoundPage = page(() => import('./pages/NotFoundPage'), 'NotFoundPage');
+const ShippingPage = page(() => import('./pages/PolicyPages'), 'ShippingPage');
+const ReturnsPage = page(() => import('./pages/PolicyPages'), 'ReturnsPage');
+const PrivacyPage = page(() => import('./pages/PolicyPages'), 'PrivacyPage');
+const TermsPage = page(() => import('./pages/PolicyPages'), 'TermsPage');
+const AuthModal = page(() => import('./components/auth/AuthModal'), 'AuthModal');
+
+/** Route loading state: a quiet skeleton of the shared page header. */
+const PageSkeleton: React.FC = () => (
+  <div className="container page-skeleton" aria-busy="true" aria-label="Loading">
+    <span className="skeleton skeleton-crumb" />
+    <span className="skeleton skeleton-eyebrow" />
+    <span className="skeleton skeleton-title" />
+    <span className="skeleton skeleton-title short" />
+  </div>
+);
+
+/** The sign-in dialog is only fetched once someone opens it. */
+const LazyAuthModal: React.FC = () => {
+  const { isAuthModalOpen } = useAuth();
+  if (!isAuthModalOpen) return null;
+  return (
+    <Suspense fallback={null}>
+      <AuthModal />
+    </Suspense>
+  );
+};
 
 // Scroll restoration component
 const ScrollToTop: React.FC = () => {
-  const { pathname, search } = useLocation();
+  const { pathname, search, hash } = useLocation();
   useEffect(() => {
+    if (hash) {
+      // Wait a frame so the target section has rendered.
+      requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView());
+      return;
+    }
     window.scrollTo(0, 0);
-  }, [pathname, search]);
+  }, [pathname, search, hash]);
   return null;
 };
 
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <SmoothScroll>
-        <CustomCursor />
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
               <ScrollToTop />
               <BrandIntro />
-              <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-canvas-base)' }}>
+              <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--ivory)' }}>
                 <Header />
                 <CartDrawer />
-                <AuthModal />
+                <LazyAuthModal />
 
-              <div style={{ flex: 1 }}>
+              <main id="main" style={{ flex: 1 }}>
+                <Suspense fallback={<PageSkeleton />}>
                 <Routes>
                   {/* Core Commerce & Content */}
                   <Route path="/" element={<HomePage />} />
@@ -96,15 +125,14 @@ export const App: React.FC = () => {
                   <Route path="/404" element={<NotFoundPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
-              </div>
+                </Suspense>
+              </main>
 
               <Footer />
-              <MobileBottomNav />
             </div>
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
-    </SmoothScroll>
   </BrowserRouter>
   );
 };

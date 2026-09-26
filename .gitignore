@@ -24,5 +24,10 @@ dist-ssr
 *.sw?
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+.playwright/
 .agents/
 .claude/
+courts_audit_screens/
+courts_screenshots/
+courts_screenshots2/
+

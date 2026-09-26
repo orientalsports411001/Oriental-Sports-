@@ -454,10 +454,8 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                 <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>
                   Shop 247, MG Road, New Modikhana, Camp, Pune - 411001
                 </span>
-                <br />
-                <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>
-                  GSTIN: 27AAAAO1974P1Z4 • CIN: U36940PN1974PTC018241
-                </span>
+                {/* GSTIN / CIN intentionally omitted: the previous values were placeholders, not
+                    the business's registration numbers. Add the real ones before issuing invoices. */}
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span style={{ backgroundColor: 'var(--color-plate-gold)', color: 'var(--color-ink)', fontWeight: 800, fontSize: '0.6875rem', padding: '2px 8px', borderRadius: '2px' }}>

@@ -6,7 +6,7 @@ export const COURT_SERVICES: CourtService[] = [
     slug: 'pickleball-court-construction',
     name: 'Pickleball Courts & Facilities',
     sport: 'Pickleball',
-    heroImage: 'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=1200&q=80',
+    heroImage: '/images/categories/pickleball_category.webp',
     surfaceTypes: ['Cushion Acrylic System', 'Hard Acrylic', 'Modular Sports Tiles'],
     description: 'Turnkey construction of regulation pickleball courts for clubs, residential townships, and private facilities across Pune and Maharashtra.',
     features: [
@@ -20,8 +20,8 @@ export const COURT_SERVICES: CourtService[] = [
     leadTime: '3 to 4 Weeks',
     estimatedPriceRange: 'Custom quote based on site conditions',
     gallery: [
-      'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1000&q=80',
+      '/images/categories/pickleball_category.webp',
+      'https://images.unsplash.com/photo-1622669253059-e345500cf0e9?auto=format&fit=crop&w=1000&q=80',
     ],
   },
   {
@@ -29,7 +29,7 @@ export const COURT_SERVICES: CourtService[] = [
     slug: 'tennis-court-construction',
     name: 'Tennis Court Surfacing & Construction',
     sport: 'Tennis',
-    heroImage: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1200&q=80',
+    heroImage: 'https://images.unsplash.com/photo-1622669253059-e345500cf0e9?auto=format&fit=crop&w=1200&q=80',
     surfaceTypes: ['Multi-Layer Acrylic Cushion', 'Hard Court Acrylic', 'Synthetic Grass'],
     description: 'Full-size championship tennis courts engineered for sports clubs, academies, and private residences with shock-absorbing multi-layer acrylic systems.',
     features: [
@@ -42,7 +42,7 @@ export const COURT_SERVICES: CourtService[] = [
     leadTime: '4 to 6 Weeks',
     estimatedPriceRange: 'Custom quote based on site dimensions',
     gallery: [
-      'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1622669253059-e345500cf0e9?auto=format&fit=crop&w=1000&q=80',
       'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=1000&q=80',
     ],
   },
@@ -65,7 +65,7 @@ export const COURT_SERVICES: CourtService[] = [
     estimatedPriceRange: 'Custom quote based on hall dimensions',
     gallery: [
       'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1613918108466-292b78a8ef95?auto=format&fit=crop&w=1000&q=80',
+      '/images/hero/hero_train_perform.webp',
     ],
   },
   {
@@ -95,7 +95,7 @@ export const COURT_SERVICES: CourtService[] = [
     slug: 'squash-court-construction',
     name: 'Squash Courts & Wall Systems',
     sport: 'Squash',
-    heroImage: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=1200&q=80',
+    heroImage: 'https://images.unsplash.com/photo-1711294545092-303f7161017c?auto=format&fit=crop&w=1200&q=80',
     surfaceTypes: ['Hard Plaster Wall System', 'Toughened Glass Back Wall', 'Hardwood Sprung Flooring'],
     description: 'Regulation squash court installations featuring impact-resistant high-density plaster walls and toughened glass backwall assemblies.',
     features: [
@@ -108,7 +108,7 @@ export const COURT_SERVICES: CourtService[] = [
     leadTime: '4 to 6 Weeks',
     estimatedPriceRange: 'Custom quote based on facility scope',
     gallery: [
-      'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1711294545092-303f7161017c?auto=format&fit=crop&w=1000&q=80',
     ],
   },
 ];
@@ -123,10 +123,10 @@ export const COURT_PROJECTS: CourtProject[] = [
     surface: 'Cushion Acrylic System',
     clientType: 'Club',
     year: '2024',
-    heroImage: 'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=1200&q=80',
+    heroImage: '/images/categories/pickleball_category.webp',
     images: [
-      'https://images.unsplash.com/photo-1627627256672-027a4613d028?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80',
+      '/images/categories/pickleball_category.webp',
+      'https://images.unsplash.com/photo-1622669253059-e345500cf0e9?auto=format&fit=crop&w=800&q=80',
     ],
     description: 'Turnkey construction of multi-court pickleball facility with two-tone playing surfaces, floodlighting, and perimeter chainlink fencing.',
     scope: [
@@ -152,9 +152,9 @@ export const COURT_PROJECTS: CourtProject[] = [
     surface: 'All-Weather Acrylic Surface',
     clientType: 'Club',
     year: '2023',
-    heroImage: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=1200&q=80',
+    heroImage: 'https://images.unsplash.com/photo-1622669253059-e345500cf0e9?auto=format&fit=crop&w=1200&q=80',
     images: [
-      'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1622669253059-e345500cf0e9?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=800&q=80',
     ],
     description: 'Resurfacing and precision leveling of outdoor tennis hard court with UV-stabilized acrylic matrix formulated for Pune weather conditions.',

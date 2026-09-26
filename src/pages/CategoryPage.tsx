@@ -1,211 +1,126 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
 import { CATEGORIES } from '../data/categories';
 import { PRODUCTS } from '../data/products';
+import { IMAGES, MediaImage } from '../data/media';
+import { STORE_INFO } from '../data/storeInfo';
 import { ProductCard } from '../components/products/ProductCard';
-import { GlassPanel } from '../components/ui/GlassPanel';
+import { PageHeader } from '../components/ui/PageHeader';
+import { Reveal } from '../components/motion/Reveal';
+import { SportCategory } from '../types';
+
+// Same art direction as the homepage sport rail.
+const ART: Partial<Record<SportCategory, MediaImage>> = {
+  cricket: IMAGES.cricketStadium,
+  badminton: IMAGES.badmintonHall,
+  tennis: IMAGES.tennisClay,
+  pickleball: IMAGES.pickleballNet,
+  'table-tennis': IMAGES.tableTennisHall,
+  squash: IMAGES.squashPlayer,
+  fitness: IMAGES.fitnessBarbell,
+  recreation: IMAGES.carromPlay,
+  accessories: IMAGES.kitBag,
+  volleyball: IMAGES.volleyballSunset,
+};
 
 export const CategoryPage: React.FC = () => {
   const { category } = useParams<{ category: string }>();
+  const info = CATEGORIES.find((c) => c.id === category);
 
-  const categoryInfo = CATEGORIES.find((c) => c.id === category);
-  const products = PRODUCTS.filter((p) => p.category === category);
-
-  if (!categoryInfo) {
+  if (!info) {
     return (
-      <div style={{ backgroundColor: '#F7F5EE', padding: '100px 16px', textAlign: 'center', minHeight: '60vh' }}>
-        <h1 className="font-display" style={{ fontSize: '2.5rem', marginBottom: '16px' }}>DISCIPLINE NOT FOUND</h1>
-        <p style={{ color: '#666', marginBottom: '24px' }}>The sport category you requested is currently not listed.</p>
-        <Link
-          to="/shop"
-          style={{
-            display: 'inline-flex',
-            padding: '12px 24px',
-            backgroundColor: '#111111',
-            color: '#FFFFFF',
-            textDecoration: 'none',
-            fontSize: '0.8125rem',
-            fontWeight: 800,
-            letterSpacing: '0.08em',
-          }}
-        >
-          BROWSE ALL GEAR
-        </Link>
+      <div className="container section empty-state">
+        <h1 className="display d-2">Sport not found</h1>
+        <p className="muted">We don’t list that sport online. Browse everything we carry, or ask the store.</p>
+        <Link to="/shop" className="btn btn-primary">Browse all gear</Link>
       </div>
     );
   }
 
+  const products = PRODUCTS.filter((p) => p.category === info.id);
+  const others = CATEGORIES.filter((c) => c.id !== info.id);
+  // When a sport has few pieces online, keep the page useful with the store's featured gear.
+  const more = products.length < 4 ? PRODUCTS.filter((p) => p.isFeatured && p.category !== info.id).slice(0, 4) : [];
+
   return (
-    <div style={{ backgroundColor: '#F7F5EE', minHeight: '80vh', paddingBottom: '80px' }}>
-      {/* Category Editorial Hero Banner */}
-      <div
-        style={{
-          position: 'relative',
-          backgroundColor: '#0D0D0D',
-          color: '#FFFFFF',
-          padding: 'clamp(64px, 8vw, 100px) 0',
-          overflow: 'hidden',
-          borderBottom: '2px solid #222222',
-        }}
-      >
-        <img
-          src={categoryInfo.image}
-          alt={categoryInfo.name}
-          onError={(e) => {
-            e.currentTarget.src = 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=1200&q=80';
-          }}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            opacity: 0.38,
-            filter: 'grayscale(0.3) contrast(1.1)',
-          }}
-        />
+    <div className="category-page">
+      <PageHeader
+        crumbs={[{ label: 'Home', to: '/' }, { label: 'Shop', to: '/shop' }, { label: info.name }]}
+        title={[info.name]}
+        lead={info.description}
+        image={ART[info.id] ?? { src: info.image, alt: '' }}
+      />
 
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(180deg, rgba(13,13,13,0.5) 0%, rgba(13,13,13,0.95) 90%)',
-          }}
-        />
+      <section className="container section-tight category-stock" aria-labelledby="stock-title">
+        <Reveal className="category-stock-head">
+          <h2 id="stock-title" className="label muted">At the Camp store</h2>
+          <ul className="stock-list">
+            {info.featuredEquipments.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </Reveal>
+      </section>
 
-        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ maxWidth: '800px' }}>
-            <Link
-              to="/shop"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#C9A227',
-                fontSize: '0.75rem',
-                fontWeight: 800,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                textDecoration: 'none',
-                marginBottom: '20px',
-              }}
-            >
-              <ArrowLeft size={14} />
-              <span>BACK TO ALL DISCIPLINES</span>
-            </Link>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--color-brand-gold)' }} />
-              <span className="font-mono" style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.16em', color: '#888888', textTransform: 'uppercase' }}>
-                ATHLETIC CATALOG // PUNE DISCIPLINE
-              </span>
-            </div>
-
-            <h1
-              className="font-display"
-              style={{
-                fontSize: 'clamp(3rem, 7.5vw, 5.5rem)',
-                lineHeight: 0.92,
-                color: '#FFFFFF',
-                marginBottom: '16px',
-                letterSpacing: '-0.03em',
-              }}
-            >
-              {categoryInfo.name.toUpperCase()}
-            </h1>
-
-            <p style={{ color: '#CCCCCC', fontSize: '1.0625rem', lineHeight: 1.55, marginBottom: '24px', maxWidth: '640px' }}>
-              {categoryInfo.description}
-            </p>
-
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {categoryInfo.featuredEquipments.map((eq, i) => (
-                <span
-                  key={i}
-                  className="font-mono"
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: 'rgba(255,255,255,0.08)',
-                    border: '1px solid rgba(255,255,255,0.18)',
-                    fontSize: '0.6875rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.08em',
-                    color: '#FFFFFF',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {eq}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Products Grid Section */}
-      <div className="container" style={{ paddingTop: 'clamp(40px, 5vw, 60px)' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            flexWrap: 'wrap',
-            gap: '16px',
-            marginBottom: '32px',
-            borderBottom: '2px solid #111111',
-            paddingBottom: '16px',
-          }}
-        >
-          <div>
-            <span className="font-mono" style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.12em', color: '#111111', textTransform: 'uppercase' }}>
-              INVENTORY IN STOCK
-            </span>
-            <h2 className="font-display" style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', color: '#111111', margin: '4px 0 0 0' }}>
-              AVAILABLE {categoryInfo.name.toUpperCase()} GEAR ({products.length})
-            </h2>
-          </div>
-
-          <div className="font-mono" style={{ fontSize: '0.8125rem', color: '#666666' }}>
-            CAMP STORE VERIFIED • SHOP 247, MG ROAD
-          </div>
+      <section className="container category-products" aria-labelledby="online-title">
+        <div className="section-bar">
+          <h2 id="online-title" className="display d-3">Online now</h2>
+          <p className="results-count">{products.length} {products.length === 1 ? 'product' : 'products'}</p>
         </div>
 
         {products.length > 0 ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))',
-              gap: '24px',
-            }}
-          >
+          <ul className="product-grid">
             {products.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <li key={p.id}>
+                <ProductCard product={p} />
+              </li>
             ))}
-          </div>
+          </ul>
         ) : (
-          <div style={{ padding: '64px 20px', backgroundColor: '#FFFFFF', border: '1px solid #E5E0D5', textAlign: 'center' }}>
-            <p style={{ color: '#666666', fontSize: '1rem', marginBottom: '20px' }}>
-              Additional {categoryInfo.name} equipment is available directly at our physical workshop in Camp, Pune.
-            </p>
-            <Link
-              to="/contact"
-              style={{
-                display: 'inline-flex',
-                padding: '12px 24px',
-                backgroundColor: '#111111',
-                color: '#FFFFFF',
-                textDecoration: 'none',
-                fontSize: '0.8125rem',
-                fontWeight: 800,
-                letterSpacing: '0.08em',
-              }}
-            >
-              INQUIRE AT CAMP STORE
-            </Link>
+          <div className="empty-state">
+            <p className="muted">{info.name} gear isn’t listed online yet — the Camp store carries it.</p>
+            <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-primary">Ask the store</a>
           </div>
         )}
-      </div>
+
+        <div className="store-callout">
+          <p>
+            Want to feel the weight and grip first? Come to <strong>{STORE_INFO.addressLine1}, {STORE_INFO.locality}</strong>.
+          </p>
+          <Link to="/visit" className="link-arrow">
+            Plan a visit <span className="btn-arrow" aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </section>
+
+      {more.length > 0 && (
+        <section className="container category-more" aria-labelledby="more-title">
+          <div className="section-bar">
+            <h2 id="more-title" className="display d-3">More from the store</h2>
+            <Link to="/shop" className="link-arrow">All gear <span className="btn-arrow" aria-hidden="true">→</span></Link>
+          </div>
+          <ul className="product-grid">
+            {more.map((p) => (
+              <li key={p.id}>
+                <ProductCard product={p} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <nav className="container other-sports" aria-label="Other sports">
+        <h2 className="label muted">Other sports</h2>
+        <ul>
+          {others.map((c) => (
+            <li key={c.id}>
+              <Link to={`/shop/${c.id}`} className="chip">{c.name}</Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   );
 };
+
+export default CategoryPage;

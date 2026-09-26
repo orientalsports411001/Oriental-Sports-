@@ -1,3 +1,6 @@
+> **Superseded (September 2026):** the current design system is documented in [/DESIGN.md](../../DESIGN.md).
+> This file is kept for history only — its fonts (Space Grotesk / Plus Jakarta Sans) and tokens are no longer used.
+
 # Oriental Sports — Master Design System (Clean Sports Lifestyle & Editorial Commerce)
 
 > **Brand Identity**: Oriental Sports, Shop 247, MG Road, New Modikhana, Camp, Pune 411001.  
