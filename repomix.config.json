@@ -1,0 +1,47 @@
+{
+  "$schema": "https://repomix.com/schemas/config.json",
+  "output": {
+    "filePath": "repomix-output.md",
+    "style": "markdown",
+    "parsableStyle": true,
+    "fileSummary": true,
+    "directoryStructure": true,
+    "removeComments": false,
+    "removeEmptyLines": false,
+    "showLineNumbers": true,
+    "headerText": "Oriental Sports Pune — Full Codebase & Architecture Pack"
+  },
+  "include": [
+    "src/**/*",
+    "scripts/**/*",
+    "docs/**/*.md",
+    "docs/**/*.json",
+    "index.html",
+    "package.json",
+    "tsconfig.json",
+    "vite.config.ts",
+    "AGENTS.md"
+  ],
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "dist/**",
+      "node_modules/**",
+      "**/*.png",
+      "**/*.jpg",
+      "**/*.jpeg",
+      "**/*.webp",
+      "**/*.xlsx",
+      "package-lock.json",
+      ".git/**",
+      "oriental_sports_excel_original_images/**",
+      ".agents/**",
+      "repomix-output.md",
+      "repomix-output.xml"
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  }
+}

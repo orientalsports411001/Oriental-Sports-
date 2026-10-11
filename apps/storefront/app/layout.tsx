@@ -1,0 +1,28 @@
+import type { Metadata } from 'next';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import '../styles/navigation.css';
+import '../styles/components.css';
+import '../styles/home.css';
+import '../styles/pages.css';
+import '../styles/checkout.css';
+import '../styles/auth-modal.css';
+import { Providers } from './providers';
+import { AppShell } from './app-shell';
+
+export const metadata: Metadata = {
+  title: 'Oriental Sports Pune',
+  description: 'Turnkey court construction, surface systems, fencing, lighting and line marking, plus a Camp flagship sports store in Pune.',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>
+          <AppShell>{children}</AppShell>
+        </Providers>
+      </body>
+    </html>
+  );
+}

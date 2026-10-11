@@ -1,0 +1,200 @@
+[
+  {
+    "product": "Genesis 9i Commercial Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 7,
+    "file": "genesis-9i-commercial-treadmill.jpeg",
+    "sourceMedia": "image1.jpeg",
+    "width": 539,
+    "height": 410,
+    "bytes": 33591,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-3300 Commercial Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 17,
+    "file": "t-3300-commercial-treadmill.jpeg",
+    "sourceMedia": "image2.jpeg",
+    "width": 545,
+    "height": 488,
+    "bytes": 39388,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-1212 Commercial Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 28,
+    "file": "t-1212-commercial-treadmill.jpeg",
+    "sourceMedia": "image3.jpeg",
+    "width": 552,
+    "height": 488,
+    "bytes": 41226,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "Q3 Light Commercial Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 39,
+    "file": "q3-light-commercial-treadmill.jpeg",
+    "sourceMedia": "image4.jpeg",
+    "width": 559,
+    "height": 479,
+    "bytes": 35636,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "X10 Light Commercial Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 50,
+    "file": "x10-light-commercial-treadmill.jpeg",
+    "sourceMedia": "image5.jpeg",
+    "width": 545,
+    "height": 525,
+    "bytes": 38965,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "Q5 Light Commercial Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 62,
+    "file": "q5-light-commercial-treadmill.jpeg",
+    "sourceMedia": "image6.jpeg",
+    "width": 534,
+    "height": 528,
+    "bytes": 40069,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-6666 Curve Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 74,
+    "file": "t-6666-curve-treadmill.jpeg",
+    "sourceMedia": "image7.jpeg",
+    "width": 536,
+    "height": 511,
+    "bytes": 42392,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-6262 Curve Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 86,
+    "file": "t-6262-curve-treadmill.jpeg",
+    "sourceMedia": "image8.jpeg",
+    "width": 534,
+    "height": 518,
+    "bytes": 50529,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "Q8 Commercial Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 98,
+    "file": "q8-commercial-treadmill.jpeg",
+    "sourceMedia": "image9.jpeg",
+    "width": 562,
+    "height": 518,
+    "bytes": 36744,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "Q7 Commercial Treadmill",
+    "sheet": "Commercial Treadmill",
+    "row": 110,
+    "file": "q7-commercial-treadmill.jpeg",
+    "sourceMedia": "image10.jpeg",
+    "width": 543,
+    "height": 528,
+    "bytes": 41910,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-102 Treadmill (Vivafitness)",
+    "sheet": "Domestic Treadmill",
+    "row": 8,
+    "file": "t-102-treadmill-vivafitness.jpeg",
+    "sourceMedia": "image11.jpeg",
+    "width": 497,
+    "height": 431,
+    "bytes": 29099,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-415 Treadmill (Vivafitness)",
+    "sheet": "Domestic Treadmill",
+    "row": 18,
+    "file": "t-415-treadmill-vivafitness.jpeg",
+    "sourceMedia": "image12.jpeg",
+    "width": 491,
+    "height": 474,
+    "bytes": 35062,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-425 Treadmill (Vivafitness)",
+    "sheet": "Domestic Treadmill",
+    "row": 29,
+    "file": "t-425-treadmill-vivafitness.jpeg",
+    "sourceMedia": "image13.jpeg",
+    "width": 500,
+    "height": 488,
+    "bytes": 34548,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-902 Treadmill (Vivafitness)",
+    "sheet": "Domestic Treadmill",
+    "row": 40,
+    "file": "t-902-treadmill-vivafitness.jpeg",
+    "sourceMedia": "image14.jpeg",
+    "width": 500,
+    "height": 474,
+    "bytes": 32700,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-906 Treadmill (Vivafitness)",
+    "sheet": "Domestic Treadmill",
+    "row": 51,
+    "file": "t-906-treadmill-vivafitness.jpeg",
+    "sourceMedia": "image15.jpeg",
+    "width": 495,
+    "height": 509,
+    "bytes": 30538,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-911 Treadmill (Vivafitness)",
+    "sheet": "Domestic Treadmill",
+    "row": 63,
+    "file": "t-911-treadmill-vivafitness.jpeg",
+    "sourceMedia": "image16.jpeg",
+    "width": 504,
+    "height": 518,
+    "bytes": 39458,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-145 Treadmill (Vivafitness)",
+    "sheet": "Domestic Treadmill",
+    "row": 75,
+    "file": "t-145-treadmill-vivafitness.jpeg",
+    "sourceMedia": "image17.jpeg",
+    "width": 486,
+    "height": 528,
+    "bytes": 28800,
+    "status": "mapped (anchor row = product row)"
+  },
+  {
+    "product": "T-19 Treadmill (Adidas)",
+    "sheet": "Domestic Treadmill",
+    "row": 87,
+    "file": "t-19-treadmill-adidas.jpeg",
+    "sourceMedia": "image18.jpeg",
+    "width": 493,
+    "height": 525,
+    "bytes": 40726,
+    "status": "mapped (anchor row = product row)"
+  }
+]

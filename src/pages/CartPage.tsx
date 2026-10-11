@@ -27,8 +27,6 @@ export const CartPage: React.FC = () => {
     discount,
     promoCode,
     applyPromoCode,
-    checkoutUrl,
-    isSyncing,
   } = useCart();
 
   const [inputCode, setInputCode] = useState('');
@@ -196,16 +194,6 @@ export const CartPage: React.FC = () => {
               <dd>₹{grandTotal.toLocaleString('en-IN')}</dd>
             </div>
           </dl>
-
-          {checkoutUrl ? (
-            <a
-              href={checkoutUrl}
-              className="btn btn-secondary btn-block"
-              style={{ textAlign: 'center', textDecoration: 'none', marginBottom: '8px' }}
-            >
-              {isSyncing ? 'Syncing Shopify...' : 'Checkout with Shopify'} <span className="btn-arrow" aria-hidden="true">→</span>
-            </a>
-          ) : null}
 
           <Link
             to="/checkout"

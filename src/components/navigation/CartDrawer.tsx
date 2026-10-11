@@ -8,7 +8,7 @@ const FREE_DELIVERY_FROM = 2000;
 
 /** Bag drawer — light panel, delivery progress, lines, one clear next step. */
 export const CartDrawer: React.FC = () => {
-  const { cart, isCartOpen, closeCart, removeFromCart, updateQuantity, subtotal, checkoutUrl } = useCart();
+  const { cart, isCartOpen, closeCart, removeFromCart, updateQuantity, subtotal } = useCart();
   const navigate = useNavigate();
   const closeRef = useRef<HTMLButtonElement>(null);
 
