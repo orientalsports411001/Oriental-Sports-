@@ -28,7 +28,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
-import { PRODUCTS } from '@/data/products';
+import { Product } from '@/types';
 import { ProductCard } from '@/components/products/ProductCard';
 import { STORE_INFO } from '@/data/storeInfo';
 import { OrderTracker } from '@/components/account/OrderTracker';
@@ -98,7 +98,32 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     }
   }, [user]);
 
-  const favoritedProducts = PRODUCTS.filter((p) => wishlist.includes(p.id));
+  // The wishlist only ever stores product ids (see WishlistContext,
+  // localStorage-backed); resolving them to full product objects has to go
+  // through the DB — not the static data/products.ts catalogue — and can
+  // only run from a route handler since this component is client-side and
+  // lib/supabase/queries.ts is server-only.
+  const [favoritedProducts, setFavoritedProducts] = useState<Product[]>([]);
+
+  React.useEffect(() => {
+    if (wishlist.length === 0) {
+      setFavoritedProducts([]);
+      return;
+    }
+    const controller = new AbortController();
+    fetch('/api/products/by-ids', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: wishlist }),
+      signal: controller.signal,
+    })
+      .then((res) => (res.ok ? res.json() : { products: [] }))
+      .then((data) => setFavoritedProducts(Array.isArray(data.products) ? data.products : []))
+      .catch((err) => {
+        if (err?.name !== 'AbortError') setFavoritedProducts([]);
+      });
+    return () => controller.abort();
+  }, [wishlist]);
 
   const handleOpenNewAddress = () => {
     setEditingAddress(null);

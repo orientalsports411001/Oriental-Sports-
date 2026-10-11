@@ -22,6 +22,22 @@ function parseJsonArray(value: string | null): unknown[] {
   }
 }
 
+/** The SEO editor's per-image alt text, submitted as a JSON object string. */
+function parseAltTextMap(value: string | null): Record<string, string> {
+  if (!value || !value.trim()) return {};
+  try {
+    const parsed = JSON.parse(value);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    const out: Record<string, string> = {};
+    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
+      if (typeof v === 'string' && v.trim()) out[k] = v;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 /**
  * Publish guard: name + price > 0 + category_slug + at least one image must
  * all be present before a product can be set to 'published'. If not, the
@@ -57,6 +73,13 @@ function buildProductPayload(formData: FormData) {
   const lowStockThreshold = Number(formData.get('low_stock_threshold') || 5);
   const requestedStatus = String(formData.get('status') || 'draft');
 
+  const seoTitle = String(formData.get('seo_title') || '').trim();
+  const seoDescription = String(formData.get('seo_description') || '').trim();
+  const seoKeywords = parseLines(String(formData.get('seo_keywords') || ''));
+  const ogTitle = String(formData.get('og_title') || '').trim();
+  const ogDescription = String(formData.get('og_description') || '').trim();
+  const imageAltText = parseAltTextMap(String(formData.get('image_alt_text') || ''));
+
   return {
     name,
     slug,
@@ -71,6 +94,12 @@ function buildProductPayload(formData: FormData) {
     stockQuantity,
     lowStockThreshold,
     requestedStatus,
+    seoTitle,
+    seoDescription,
+    seoKeywords,
+    ogTitle,
+    ogDescription,
+    imageAltText,
   };
 }
 
@@ -107,6 +136,12 @@ export async function createProduct(formData: FormData) {
       stock_quantity: fields.stockQuantity,
       low_stock_threshold: fields.lowStockThreshold,
       status,
+      seo_title: fields.seoTitle || null,
+      seo_description: fields.seoDescription || null,
+      seo_keywords: fields.seoKeywords,
+      og_title: fields.ogTitle || null,
+      og_description: fields.ogDescription || null,
+      image_alt_text: fields.imageAltText,
     })
     .select('id')
     .single();
@@ -155,6 +190,12 @@ export async function updateProduct(productId: string, formData: FormData) {
       stock_quantity: fields.stockQuantity,
       low_stock_threshold: fields.lowStockThreshold,
       status,
+      seo_title: fields.seoTitle || null,
+      seo_description: fields.seoDescription || null,
+      seo_keywords: fields.seoKeywords,
+      og_title: fields.ogTitle || null,
+      og_description: fields.ogDescription || null,
+      image_alt_text: fields.imageAltText,
       updated_at: new Date().toISOString(),
     })
     .eq('id', productId);

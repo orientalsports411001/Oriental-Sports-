@@ -9,9 +9,14 @@ import '../styles/checkout.css';
 import '../styles/auth-modal.css';
 import { Providers } from './providers';
 import { AppShell } from './app-shell';
+import { SITE_URL } from '@/lib/seo/constants';
 
 export const metadata: Metadata = {
-  title: 'Oriental Sports Pune',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Oriental Sports Pune',
+    template: '%s | Oriental Sports Pune',
+  },
   description: 'Turnkey court construction, surface systems, fencing, lighting and line marking, plus a Camp flagship sports store in Pune.',
 };
 

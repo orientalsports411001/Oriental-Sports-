@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Order } from '@/types/auth';
+import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
-import { PRODUCTS } from '@/data/products';
 import { STORE_INFO } from '@/data/storeInfo';
 import {
   Package,
@@ -40,15 +40,40 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
     }
   };
 
-  const handleReorder = (e: React.MouseEvent) => {
+  const [isReordering, setIsReordering] = useState(false);
+
+  // "Buy again" needs full Product objects (variants, images, slug) to hand
+  // to addToCart — order.items only carries a point-in-time snapshot
+  // (name/image/price at purchase time), so the current catalogue is looked
+  // up by id via the by-ids route handler rather than the static
+  // data/products.ts array, which would miss anything added after launch
+  // and could resurrect a now-archived product.
+  const handleReorder = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    order.items.forEach((item) => {
-      const prod = PRODUCTS.find((p) => p.id === item.productId || p.slug === item.productSlug);
-      if (prod) {
-        addToCart(prod, item.quantity, item.selectedVariant);
-      }
-    });
-    openCart();
+    const productIds = order.items.map((item) => item.productId).filter(Boolean);
+    if (productIds.length === 0) return;
+
+    setIsReordering(true);
+    try {
+      const res = await fetch('/api/products/by-ids', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: productIds }),
+      });
+      const data = res.ok ? await res.json() : { products: [] };
+      const products: Product[] = Array.isArray(data.products) ? data.products : [];
+      const productById = new Map(products.map((p) => [p.id, p]));
+
+      order.items.forEach((item) => {
+        const prod = productById.get(item.productId);
+        if (prod) {
+          addToCart(prod, item.quantity, item.selectedVariant);
+        }
+      });
+      if (productById.size > 0) openCart();
+    } finally {
+      setIsReordering(false);
+    }
   };
 
   const statusColorMap: Record<Order['status'], { bg: string; text: string; border: string }> = {
@@ -261,11 +286,12 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
             <button
               type="button"
               onClick={handleReorder}
+              disabled={isReordering}
               className="btn btn-outline-dark btn-sm"
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', opacity: isReordering ? 0.6 : 1 }}
             >
               <RotateCcw size={14} />
-              <span>BUY AGAIN</span>
+              <span>{isReordering ? 'ADDING…' : 'BUY AGAIN'}</span>
             </button>
 
             <button

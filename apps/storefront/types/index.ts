@@ -79,6 +79,12 @@ export interface Product {
   discountPrice?: number;
   seoTitle?: string;
   seoDescription?: string;
+  /** SEO fields added by supabase/migrations/20261011100000_seo_fields.sql. */
+  seoKeywords?: string[];
+  ogTitle?: string;
+  ogDescription?: string;
+  /** Alt text per image URL, keyed exactly as it appears in `images`. */
+  imageAltText?: Record<string, string>;
   shopifyId?: string;
   shopifyVariantId?: string;
   handle?: string;

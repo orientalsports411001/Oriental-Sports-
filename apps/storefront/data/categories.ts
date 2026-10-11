@@ -8,6 +8,9 @@ export interface CategoryInfo {
   image: string;
   itemCount: number;
   featuredEquipments: string[];
+  /** SEO fields added by supabase/migrations/20261011100000_seo_fields.sql. */
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export const CATEGORIES: CategoryInfo[] = [

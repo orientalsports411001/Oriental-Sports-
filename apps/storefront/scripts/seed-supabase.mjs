@@ -81,6 +81,15 @@ function productToRow(p) {
     variants: p.variants ?? [],
     sizes: p.sizes ?? [],
     in_stock: p.inStock ?? true,
+    // Stage 2 Phase 1 added products.status (default 'draft') and
+    // stock_quantity (default 0) — without setting these here, every seeded
+    // product is invisible to customers and unpurchasable until an admin
+    // manually publishes and stocks all 60 of them. The static catalog this
+    // seeds from is the real, already-curated product list, so it should
+    // start published/stocked; admins can still draft/unpublish individual
+    // items afterward.
+    status: p.inStock === false ? 'draft' : 'published',
+    stock_quantity: p.inStock === false ? 0 : 50,
     rating: p.rating ?? null,
     review_count: p.reviewsCount ?? 0,
     tags: p.subcategory ? [p.subcategory] : [],

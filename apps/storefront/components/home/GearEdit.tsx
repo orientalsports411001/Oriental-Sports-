@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Link } from '@/lib/router-shim';
-import { PRODUCTS } from '@/data/products';
 import { Product } from '@/types';
 import { ProductCard } from '../products/ProductCard';
 import { Reveal, RevealLines, Stagger, StaggerItem } from '../motion/Reveal';
@@ -11,11 +10,14 @@ import { Reveal, RevealLines, Stagger, StaggerItem } from '../motion/Reveal';
  * GEAR — "On the wall at Camp".
  * Desktop: sticky chapter column + 2×2 studio-shot products.
  * Mobile: chapter intro, then a swipeable rail with the next card peeking.
+ *
+ * `products` is fetched server-side (see app/page.tsx, via
+ * lib/supabase/queries.ts#getFeaturedProducts) and passed down as a prop —
+ * this component itself stays a client component for the motion wrappers.
  */
-
-// The four pieces photographed in the studio — consistent staging, real prices.
-const EDIT_IDS = ['prod-crick-01', 'prod-bad-01', 'prod-ten-01', 'prod-pb-01'];
-const EDIT = EDIT_IDS.map((id) => PRODUCTS.find((p) => p.id === id)).filter((p): p is Product => Boolean(p));
+interface GearEditProps {
+  products: Product[];
+}
 
 const SERVICES = [
   { name: 'Racquet stringing', note: 'Badminton, tennis and squash' },
@@ -23,7 +25,7 @@ const SERVICES = [
   { name: 'Fitting advice', note: 'Grips, weights and sizes, in person' },
 ];
 
-export const GearEdit: React.FC = () => (
+export const GearEdit: React.FC<GearEditProps> = ({ products }) => (
   <section className="gear-edit section bg-stone" aria-labelledby="gear-edit-title">
     <div className="container gear-grid">
       <div className="gear-intro">
@@ -51,7 +53,7 @@ export const GearEdit: React.FC = () => (
       </div>
 
       <Stagger as="ul" className="gear-products" stagger={0.08} amount={0.1}>
-        {EDIT.map((product) => (
+        {products.map((product) => (
           <StaggerItem as="li" key={product.id} className="gear-product">
             <ProductCard product={product} sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 78vw" />
           </StaggerItem>

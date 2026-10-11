@@ -1,3 +1,5 @@
+import { SeoEditor } from '@/components/seo/SeoEditor';
+
 type ProductFormValues = {
   id?: string;
   name: string;
@@ -13,6 +15,12 @@ type ProductFormValues = {
   stock_quantity: number;
   low_stock_threshold: number;
   status: string;
+  seo_title: string | null;
+  seo_description: string | null;
+  seo_keywords: string[] | null;
+  og_title: string | null;
+  og_description: string | null;
+  image_alt_text: Record<string, string> | null;
 };
 
 type Category = { slug: string; name: string };
@@ -158,6 +166,27 @@ export function ProductForm({
           </select>
         </div>
       </div>
+
+      <SeoEditor
+        productId={product?.id}
+        slug={product?.slug || ''}
+        name={product?.name || ''}
+        brand={product?.brand || ''}
+        categoryName={categories.find((c) => c.slug === product?.category_slug)?.name || ''}
+        description={product?.description || ''}
+        price={product?.price ?? 0}
+        sizes={Array.isArray(product?.sizes) ? (product?.sizes as string[]) : []}
+        variants={Array.isArray(product?.variants) ? (product?.variants as unknown[]) : []}
+        images={product?.images || []}
+        initial={{
+          seoTitle: product?.seo_title || '',
+          seoDescription: product?.seo_description || '',
+          seoKeywords: product?.seo_keywords || [],
+          ogTitle: product?.og_title || '',
+          ogDescription: product?.og_description || '',
+          imageAltText: product?.image_alt_text || {},
+        }}
+      />
 
       <div style={{ marginTop: 24 }}>
         <button type="submit">{product?.id ? 'Save changes' : 'Create product'}</button>

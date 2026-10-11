@@ -1,4 +1,10 @@
+import type { Metadata } from 'next';
 import { AccountPage } from '@/components/pages/AccountPage';
+
+export const metadata: Metadata = {
+  title: 'Order Details',
+  robots: { index: false, follow: false },
+};
 
 export default function Page() {
   // orderId is read client-side (e.g. via useParams/useSearchParams in OrderTracker)

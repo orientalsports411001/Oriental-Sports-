@@ -35,8 +35,7 @@ export const Img: React.FC<ImgProps> = ({
       alt={alt ?? media.alt}
       loading={priority ? 'eager' : 'lazy'}
       decoding={priority ? 'sync' : 'async'}
-      // React 18 warns on camelCase fetchPriority; the lowercase attribute passes through.
-      {...(priority ? { fetchpriority: 'high' } : {})}
+      {...(priority ? ({ fetchPriority: 'high' } as any) : {})}
       style={{
         width: '100%',
         height: '100%',

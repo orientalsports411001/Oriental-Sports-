@@ -3,9 +3,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from '@/lib/router-shim';
 import { Search } from 'lucide-react';
-import { PRODUCTS } from '@/data/products';
 import { CATEGORIES } from '@/data/categories';
 import { COURT_SERVICES } from '@/data/courts';
+import { Product } from '@/types';
 import { Img } from '../ui/Img';
 
 interface SearchModalProps {
@@ -18,12 +18,15 @@ const SHORTCUTS = ['Cricket bat', 'Pickleball paddle', 'Badminton', 'Tennis cour
 /** Search overlay — instant results for gear, sports and court types. */
 export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isOpen) {
       setQuery('');
+      setProducts([]);
       return;
     }
     const root = document.documentElement;
@@ -39,15 +42,40 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
     };
   }, [isOpen, onClose]);
 
+  // Live-typing product search against the real catalogue (published only),
+  // debounced so we don't fire a request per keystroke.
+  useEffect(() => {
+    const term = query.trim();
+    if (!term) {
+      setProducts([]);
+      setIsSearching(false);
+      return;
+    }
+    setIsSearching(true);
+    const controller = new AbortController();
+    const t = window.setTimeout(() => {
+      fetch(`/api/search?q=${encodeURIComponent(term)}&limit=5`, { signal: controller.signal })
+        .then((res) => (res.ok ? res.json() : { products: [] }))
+        .then((data) => setProducts(Array.isArray(data.products) ? data.products : []))
+        .catch((err) => {
+          if (err?.name !== 'AbortError') setProducts([]);
+        })
+        .finally(() => setIsSearching(false));
+    }, 200);
+    return () => {
+      window.clearTimeout(t);
+      controller.abort();
+    };
+  }, [query]);
+
   if (!isOpen) return null;
 
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const hit = (...fields: string[]) => terms.length > 0 && terms.every((t) => fields.some((f) => f.toLowerCase().includes(t)));
 
-  const products = PRODUCTS.filter((p) => hit(p.name, p.category, p.categoryName, p.brand)).slice(0, 5);
   const sports = CATEGORIES.filter((c) => hit(c.name, c.id)).slice(0, 4);
   const courts = COURT_SERVICES.filter((c) => hit(c.name, c.sport, 'court')).slice(0, 3);
-  const nothing = terms.length > 0 && products.length + sports.length + courts.length === 0;
+  const nothing = terms.length > 0 && !isSearching && products.length + sports.length + courts.length === 0;
 
   const go = (to: string) => {
     onClose();
