@@ -24,6 +24,7 @@ interface AuthContextType {
   deleteAddress: (id: string) => Promise<void>;
   setDefaultAddress: (id: string) => Promise<void>;
   getOrderById: (orderId: string) => Order | undefined;
+  addOrder: (order: Order) => Promise<Order>;
   returnToUrl: string | null;
 }
 
@@ -151,6 +152,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return user?.orders.find((o) => o.id === orderId || o.orderNumber === orderId);
   };
 
+  const addOrder = async (order: Order): Promise<Order> => {
+    const saved = await AuthService.addOrder(order);
+    setUser(AuthService.getCurrentUser());
+    return saved;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -175,6 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deleteAddress,
         setDefaultAddress,
         getOrderById,
+        addOrder,
         returnToUrl,
       }}
     >

@@ -817,6 +817,7 @@
   flex: 1;
   min-height: 0;
   perspective: 1200px; /* = PERSPECTIVE in OrbitalGallery.tsx */
+  overflow: hidden;
 }
 
 .orbit-stage-head {

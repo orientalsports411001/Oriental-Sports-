@@ -12,12 +12,14 @@ import { SportCategory } from '../types';
 // Same art direction as the homepage sport rail.
 const ART: Partial<Record<SportCategory, MediaImage>> = {
   cricket: IMAGES.cricketStadium,
+  football: IMAGES.turfFootball,
   badminton: IMAGES.badmintonHall,
   tennis: IMAGES.tennisClay,
   pickleball: IMAGES.pickleballNet,
   'table-tennis': IMAGES.tableTennisHall,
   squash: IMAGES.squashPlayer,
   fitness: IMAGES.fitnessBarbell,
+  'gym-equipment': IMAGES.fitnessDumbbells,
   recreation: IMAGES.carromPlay,
   accessories: IMAGES.kitBag,
   volleyball: IMAGES.volleyballSunset,
@@ -25,7 +27,13 @@ const ART: Partial<Record<SportCategory, MediaImage>> = {
 
 export const CategoryPage: React.FC = () => {
   const { category } = useParams<{ category: string }>();
-  const info = CATEGORIES.find((c) => c.id === category);
+  // /products/commercial-treadmills etc. resolve to the parent category with that subcategory selected.
+  const subAlias = PRODUCTS.find((p) => p.subcategory === category);
+  const info = CATEGORIES.find((c) => c.id === (subAlias ? subAlias.category : category));
+  const [selectedSub, setSelectedSub] = React.useState<string>(subAlias ? category! : 'all');
+  React.useEffect(() => {
+    setSelectedSub(subAlias ? category! : 'all');
+  }, [category, subAlias]);
 
   if (!info) {
     return (
@@ -37,7 +45,19 @@ export const CategoryPage: React.FC = () => {
     );
   }
 
-  const products = PRODUCTS.filter((p) => p.category === info.id);
+  const allCategoryProducts = PRODUCTS.filter((p) => p.category === info.id);
+  const subcategories = React.useMemo(() => {
+    const map = new Map<string, string>();
+    allCategoryProducts.forEach((p) => {
+      if (p.subcategory && p.subcategoryName) map.set(p.subcategory, p.subcategoryName);
+    });
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }, [allCategoryProducts]);
+
+  const products = selectedSub === 'all'
+    ? allCategoryProducts
+    : allCategoryProducts.filter((p) => p.subcategory === selectedSub);
+
   const others = CATEGORIES.filter((c) => c.id !== info.id);
   // When a sport has few pieces online, keep the page useful with the store's featured gear.
   const more = products.length < 4 ? PRODUCTS.filter((p) => p.isFeatured && p.category !== info.id).slice(0, 4) : [];
@@ -64,7 +84,32 @@ export const CategoryPage: React.FC = () => {
 
       <section className="container category-products" aria-labelledby="online-title">
         <div className="section-bar">
-          <h2 id="online-title" className="display d-3">Online now</h2>
+          <div>
+            <h2 id="online-title" className="display d-3">Online now</h2>
+            {subcategories.length > 1 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
+                <button
+                  type="button"
+                  className="chip"
+                  aria-pressed={selectedSub === 'all'}
+                  onClick={() => setSelectedSub('all')}
+                >
+                  All ({allCategoryProducts.length})
+                </button>
+                {subcategories.map((sub) => (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    className="chip"
+                    aria-pressed={selectedSub === sub.id}
+                    onClick={() => setSelectedSub(sub.id)}
+                  >
+                    {sub.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <p className="results-count">{products.length} {products.length === 1 ? 'product' : 'products'}</p>
         </div>
 

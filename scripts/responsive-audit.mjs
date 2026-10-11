@@ -51,7 +51,8 @@ async function runAudit() {
     const page = await context.newPage();
 
     try {
-      await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 20000 });
+      await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 35000 });
+      await page.waitForLoadState('load', { timeout: 15000 }).catch(() => {});
       await page.waitForTimeout(600);
 
       // Evaluate document-level overflow
@@ -126,7 +127,8 @@ async function runAudit() {
     const page = await context.newPage();
     const issues = [];
     try {
-      await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 20000 });
+      await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 35000 });
+      await page.waitForLoadState('load', { timeout: 15000 }).catch(() => {});
       // Measure the settled composition: until Archivo arrives the fallback
       // font sets text slightly taller (a one-off swap on first load).
       // fonts.ready alone can resolve before the request starts, so wait for

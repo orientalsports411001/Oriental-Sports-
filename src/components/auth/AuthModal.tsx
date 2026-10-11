@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { X, Phone, Mail, ArrowRight, ShieldCheck, CheckCircle2, Sparkles, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Phone, Mail, ArrowRight, ShieldCheck, CheckCircle2, Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import '../../styles/auth-modal.css';
 
 export const AuthModal: React.FC = () => {
   const {
@@ -18,7 +19,7 @@ export const AuthModal: React.FC = () => {
 
   const [mode, setMode] = useState<'phone' | 'email'>('phone');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState('');
+  const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -27,10 +28,12 @@ export const AuthModal: React.FC = () => {
   const [step, setStep] = useState<'input' | 'otp'>('input');
   const [countdown, setCountdown] = useState(30);
 
+  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   useEffect(() => {
     if (isAuthModalOpen) {
       setError(null);
-      setOtp('');
+      setOtpDigits(['', '', '', '', '', '']);
       if (authModalView === 'otp') {
         setStep('otp');
       } else {
@@ -49,6 +52,15 @@ export const AuthModal: React.FC = () => {
     return () => clearInterval(timer);
   }, [step, countdown]);
 
+  // Focus first OTP cell on entering OTP step
+  useEffect(() => {
+    if (step === 'otp' && otpInputRefs.current[0]) {
+      setTimeout(() => {
+        otpInputRefs.current[0]?.focus();
+      }, 100);
+    }
+  }, [step]);
+
   if (!isAuthModalOpen) return null;
 
   const handleSendOtp = async (e: React.FormEvent) => {
@@ -56,7 +68,7 @@ export const AuthModal: React.FC = () => {
     setError(null);
     const cleaned = phoneNumber.replace(/\D/g, '');
     if (cleaned.length < 10) {
-      setError('Please enter a valid 10-digit Indian mobile number');
+      setError('Please enter a valid 10-digit mobile number');
       return;
     }
     setIsSubmitting(true);
@@ -75,22 +87,62 @@ export const AuthModal: React.FC = () => {
     }
   };
 
+  const handleOtpChange = (index: number, value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (!cleaned) {
+      const newDigits = [...otpDigits];
+      newDigits[index] = '';
+      setOtpDigits(newDigits);
+      return;
+    }
+
+    // If pasted multiple digits
+    if (cleaned.length > 1) {
+      const pasteDigits = cleaned.slice(0, 6).split('');
+      const newDigits = [...otpDigits];
+      for (let i = 0; i < 6; i++) {
+        newDigits[i] = pasteDigits[i] || '';
+      }
+      setOtpDigits(newDigits);
+      const nextIdx = Math.min(pasteDigits.length, 5);
+      otpInputRefs.current[nextIdx]?.focus();
+      return;
+    }
+
+    // Single digit
+    const newDigits = [...otpDigits];
+    newDigits[index] = cleaned[0];
+    setOtpDigits(newDigits);
+
+    // Auto advance
+    if (index < 5 && cleaned[0]) {
+      otpInputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      otpInputRefs.current[index - 1]?.focus();
+    }
+  };
+
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!otp || otp.trim().length < 4) {
+    const fullOtp = otpDigits.join('');
+    if (fullOtp.length < 4) {
       setError('Please enter the 6-digit verification code');
       return;
     }
     setIsSubmitting(true);
     try {
-      const success = await verifyOtp(otp.trim(), {
+      const success = await verifyOtp(fullOtp, {
         firstName: firstName.trim() || 'Sports',
         lastName: lastName.trim() || 'Athlete',
         email: email.trim() || undefined,
       });
       if (!success) {
-        setError('Invalid OTP. Use demo code 123456');
+        setError('Invalid OTP code. For demo use: 123456');
       }
     } catch {
       setError('Authentication failed. Please verify the code.');
@@ -132,150 +184,70 @@ export const AuthModal: React.FC = () => {
   };
 
   const autoFillDemoOtp = () => {
-    setOtp('123456');
+    setOtpDigits(['1', '2', '3', '4', '5', '6']);
   };
+
+  const displayPhone = pendingPhone || phoneNumber || '98765 43210';
 
   return (
     <div
       role="dialog"
       aria-modal="true"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px',
-        backgroundColor: 'rgba(10, 10, 10, 0.75)',
-        backdropFilter: 'blur(6px)',
-      }}
+      className="auth-modal-backdrop"
       onClick={(e) => {
         if (e.target === e.currentTarget) closeAuthModal();
       }}
     >
-      <div
-        style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '4px',
-          maxWidth: '460px',
-          width: '100%',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
-          overflow: 'hidden',
-          position: 'relative',
-          animation: 'fadeIn 0.2s ease-out',
-        }}
-      >
-        {/* Top brand header */}
-        <div
-          style={{
-            backgroundColor: 'var(--color-ink)',
-            color: '#FFFFFF',
-            padding: '24px',
-            position: 'relative',
-          }}
+      <div className="auth-modal-container">
+        {/* Close Button */}
+        <button
+          type="button"
+          onClick={closeAuthModal}
+          className="auth-close-btn"
+          aria-label="Close dialog"
         >
-          <button
-            type="button"
-            onClick={closeAuthModal}
-            style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              background: 'transparent',
-              border: 'none',
-              color: 'rgba(255, 255, 255, 0.7)',
-              cursor: 'pointer',
-              padding: '6px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            aria-label="Close dialog"
-          >
-            <X size={20} />
-          </button>
+          <X size={18} />
+        </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <span
-              style={{
-                backgroundColor: 'var(--color-plate-gold)',
-                color: 'var(--color-ink)',
-                fontSize: '0.625rem',
-                fontWeight: 800,
-                letterSpacing: '0.08em',
-                padding: '2px 8px',
-                borderRadius: 'var(--radius-pill)',
-                textTransform: 'uppercase',
-              }}
-            >
-              CAMP • PUNE
-            </span>
-            <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-              ORIENTAL SPORTS
-            </span>
+        <div className="auth-modal-body">
+          {/* Brand Header */}
+          <div className="auth-header">
+            <div className="auth-brand-badge">
+              <div className="auth-brand-logo-icon">OS</div>
+              <span className="auth-brand-label">Oriental Sports</span>
+            </div>
+
+            <h2 className="auth-title">
+              {step === 'otp' ? 'Verify Mobile Number' : 'Sign In or Create Account'}
+            </h2>
+            <p className="auth-subtitle">
+              {step === 'otp' ? (
+                <span>
+                  Enter the 6-digit code sent to{' '}
+                  <strong style={{ color: '#111827' }}>+91 {displayPhone}</strong>
+                </span>
+              ) : (
+                'Access your orders, saved addresses, and express athletic gear checkout.'
+              )}
+            </p>
           </div>
 
-          <h2
-            className="font-display"
-            style={{ fontSize: '1.5rem', margin: 0, color: '#FFFFFF', letterSpacing: '0.02em' }}
-          >
-            {step === 'otp' ? 'VERIFY OTP' : 'SIGN IN'}
-          </h2>
-          <p style={{ margin: '6px 0 0 0', fontSize: '0.8125rem', color: 'rgba(255, 255, 255, 0.7)' }}>
-            {step === 'otp'
-              ? `Enter 6-digit code sent to +91 ${pendingPhone || phoneNumber}`
-              : 'See your orders and saved delivery addresses'}
-          </p>
-        </div>
-
-        {/* Body content */}
-        <div style={{ padding: '24px' }}>
+          {/* Error Alert */}
           {error && (
-            <div
-              style={{
-                backgroundColor: '#FEE2E2',
-                border: '1px solid #F87171',
-                borderRadius: '4px',
-                padding: '10px 14px',
-                color: '#991B1B',
-                fontSize: '0.8125rem',
-                marginBottom: '16px',
-              }}
-            >
-              {error}
+            <div className="auth-error-alert">
+              <AlertCircle size={16} />
+              <span>{error}</span>
             </div>
           )}
 
           {step === 'input' ? (
             <>
               {/* Method Switcher */}
-              <div
-                style={{
-                  display: 'flex',
-                  borderBottom: '1px solid #E5E7EB',
-                  marginBottom: '20px',
-                }}
-              >
+              <div className="auth-method-switcher">
                 <button
                   type="button"
                   onClick={() => setMode('phone')}
-                  style={{
-                    flex: 1,
-                    padding: '10px 0',
-                    border: 'none',
-                    background: 'transparent',
-                    borderBottom: mode === 'phone' ? '2px solid var(--color-ink)' : '2px solid transparent',
-                    color: mode === 'phone' ? 'var(--color-ink)' : '#6B7280',
-                    fontWeight: 700,
-                    fontSize: '0.875rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                  }}
+                  className={`auth-method-tab ${mode === 'phone' ? 'active' : ''}`}
                 >
                   <Phone size={15} />
                   <span>Mobile OTP</span>
@@ -283,21 +255,7 @@ export const AuthModal: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setMode('email')}
-                  style={{
-                    flex: 1,
-                    padding: '10px 0',
-                    border: 'none',
-                    background: 'transparent',
-                    borderBottom: mode === 'email' ? '2px solid var(--color-ink)' : '2px solid transparent',
-                    color: mode === 'email' ? 'var(--color-ink)' : '#6B7280',
-                    fontWeight: 700,
-                    fontSize: '0.875rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                  }}
+                  className={`auth-method-tab ${mode === 'email' ? 'active' : ''}`}
                 >
                   <Mail size={15} />
                   <span>Email</span>
@@ -306,80 +264,42 @@ export const AuthModal: React.FC = () => {
 
               {mode === 'phone' ? (
                 <form onSubmit={handleSendOtp}>
-                  <div style={{ marginBottom: '16px' }}>
-                    <label
-                      htmlFor="phone-input"
-                      style={{
-                        display: 'block',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        color: 'var(--color-text-dark)',
-                        marginBottom: '6px',
-                      }}
-                    >
-                      Indian Mobile Number
+                  <div className="auth-field-group">
+                    <label htmlFor="phone-input" className="auth-field-label">
+                      Mobile Number
                     </label>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          padding: '0 12px',
-                          backgroundColor: '#F3F4F6',
-                          border: '1px solid #D1D5DB',
-                          borderRadius: '4px',
-                          fontSize: '0.875rem',
-                          fontWeight: 700,
-                          color: '#374151',
-                        }}
-                      >
-                        🇮🇳 +91
+                    <div className="auth-phone-input-wrap">
+                      <div className="auth-country-code">
+                        <span>🇮🇳</span>
+                        <span>+91</span>
                       </div>
                       <input
                         id="phone-input"
                         type="tel"
-                        placeholder="98XXX XXXXX"
+                        maxLength={12}
+                        placeholder="98765 43210"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
-                        style={{
-                          flex: 1,
-                          height: '46px',
-                          padding: '0 14px',
-                          fontSize: '0.9375rem',
-                          border: '1px solid #D1D5DB',
-                          borderRadius: '4px',
-                          outline: 'none',
-                        }}
+                        className="auth-phone-input"
                         autoFocus
                         required
                       />
                     </div>
-                    <span style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '4px', display: 'block' }}>
-                      We’ll text you a one-time code.
+                    <span className="auth-field-hint">
+                      We'll send a 6-digit one-time code to verify your phone.
                     </span>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="btn btn-primary"
-                    style={{
-                      width: '100%',
-                      height: '46px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      fontWeight: 700,
-                    }}
+                    className="auth-submit-btn"
                   >
                     {isSubmitting ? (
                       <RefreshCw size={18} className="animate-spin" />
                     ) : (
                       <>
-                        <span>GET OTP VIA SMS</span>
+                        <span>Continue with OTP</span>
                         <ArrowRight size={16} />
                       </>
                     )}
@@ -387,61 +307,35 @@ export const AuthModal: React.FC = () => {
                 </form>
               ) : (
                 <form onSubmit={handleEmailSignIn}>
-                  <div style={{ marginBottom: '16px' }}>
-                    <label
-                      htmlFor="email-input"
-                      style={{
-                        display: 'block',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        color: 'var(--color-text-dark)',
-                        marginBottom: '6px',
-                      }}
-                    >
+                  <div className="auth-field-group">
+                    <label htmlFor="email-input" className="auth-field-label">
                       Email Address
                     </label>
-                    <input
-                      id="email-input"
-                      type="email"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      style={{
-                        width: '100%',
-                        height: '46px',
-                        padding: '0 14px',
-                        fontSize: '0.9375rem',
-                        border: '1px solid #D1D5DB',
-                        borderRadius: '4px',
-                        outline: 'none',
-                        boxSizing: 'border-box',
-                      }}
-                      autoFocus
-                      required
-                    />
+                    <div className="auth-text-input-wrap">
+                      <Mail size={18} />
+                      <input
+                        id="email-input"
+                        type="email"
+                        placeholder="athlete@orientalsports.in"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="auth-text-input"
+                        autoFocus
+                        required
+                      />
+                    </div>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="btn btn-primary"
-                    style={{
-                      width: '100%',
-                      height: '46px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      fontWeight: 700,
-                    }}
+                    className="auth-submit-btn"
                   >
                     {isSubmitting ? (
                       <RefreshCw size={18} className="animate-spin" />
                     ) : (
                       <>
-                        <span>CONTINUE WITH EMAIL</span>
+                        <span>Continue with Email</span>
                         <ArrowRight size={16} />
                       </>
                     )}
@@ -450,19 +344,10 @@ export const AuthModal: React.FC = () => {
               )}
 
               {/* Social Login Divider */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  margin: '20px 0',
-                  gap: '12px',
-                }}
-              >
-                <div style={{ flex: 1, height: '1px', backgroundColor: '#E5E7EB' }} />
-                <span style={{ fontSize: '0.75rem', color: '#9CA3AF', textTransform: 'uppercase' }}>
-                  or continue with
-                </span>
-                <div style={{ flex: 1, height: '1px', backgroundColor: '#E5E7EB' }} />
+              <div className="auth-divider">
+                <div className="auth-divider-line" />
+                <span className="auth-divider-text">or continue with</span>
+                <div className="auth-divider-line" />
               </div>
 
               {/* Google Button */}
@@ -470,28 +355,7 @@ export const AuthModal: React.FC = () => {
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={isSubmitting}
-                style={{
-                  width: '100%',
-                  height: '44px',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #D1D5DB',
-                  borderRadius: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                  fontWeight: 600,
-                  fontSize: '0.875rem',
-                  color: '#374151',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F9FAFB';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
-                }}
+                className="auth-google-btn"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24">
                   <path
@@ -517,149 +381,61 @@ export const AuthModal: React.FC = () => {
           ) : (
             /* OTP Step */
             <form onSubmit={handleVerifyOtp}>
-              {/* Quick Dev OTP Auto-fill Chip */}
-              <div
-                style={{
-                  backgroundColor: 'rgba(201, 162, 39, 0.08)',
-                  border: '1px dashed var(--color-brand-gold)',
-                  borderRadius: '4px',
-                  padding: '10px 12px',
-                  marginBottom: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Sparkles size={14} color="var(--color-brand-gold)" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-ink)' }}>
-                    Demo code: <strong>123456</strong>
-                  </span>
+              {/* Quick Dev Code Helper */}
+              <div className="auth-otp-helper">
+                <div className="auth-otp-helper-left">
+                  <Sparkles size={14} color="#6366F1" />
+                  <span>Demo test code: <strong>123456</strong></span>
                 </div>
                 <button
                   type="button"
                   onClick={autoFillDemoOtp}
-                  style={{
-                    backgroundColor: 'var(--color-ink)',
-                    color: 'var(--color-canvas-base)',
-                    border: 'none',
-                    borderRadius: '2px',
-                    padding: '3px 8px',
-                    fontSize: '0.6875rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
+                  className="auth-otp-helper-btn"
                 >
-                  Auto Fill
+                  Auto-fill
                 </button>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label
-                  htmlFor="otp-code"
-                  style={{
-                    display: 'block',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    color: 'var(--color-text-dark)',
-                    marginBottom: '6px',
-                  }}
-                >
-                  6-Digit OTP Code
-                </label>
-                <input
-                  id="otp-code"
-                  type="text"
-                  maxLength={6}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                  placeholder="123456"
-                  style={{
-                    width: '100%',
-                    height: '50px',
-                    textAlign: 'center',
-                    fontSize: '1.5rem',
-                    fontWeight: 800,
-                    letterSpacing: '0.3em',
-                    border: '1px solid #D1D5DB',
-                    borderRadius: '4px',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                  autoFocus
-                  required
-                />
+              {/* 6 Digit Cells */}
+              <div className="auth-field-group">
+                <label className="auth-field-label">Verification Code</label>
+                <div className="auth-otp-grid">
+                  {otpDigits.map((digit, idx) => (
+                    <input
+                      key={idx}
+                      ref={(el) => (otpInputRefs.current[idx] = el)}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(idx, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                      className="auth-otp-cell"
+                      autoComplete="one-time-code"
+                      required
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Optional Athlete Name for new users */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '10px',
-                  marginBottom: '16px',
-                }}
-              >
-                <div>
-                  <label
-                    htmlFor="first-name-input"
-                    style={{
-                      display: 'block',
-                      fontSize: '0.6875rem',
-                      fontWeight: 600,
-                      color: '#4B5563',
-                      marginBottom: '4px',
-                    }}
-                  >
-                    First Name (Optional)
-                  </label>
+              <div className="auth-field-group">
+                <label className="auth-field-label">Your Name (Optional)</label>
+                <div className="auth-name-grid">
                   <input
-                    id="first-name-input"
                     type="text"
                     placeholder="First name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    style={{
-                      width: '100%',
-                      height: '38px',
-                      padding: '0 10px',
-                      fontSize: '0.8125rem',
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '4px',
-                      boxSizing: 'border-box',
-                    }}
+                    className="auth-name-cell"
                   />
-                </div>
-                <div>
-                  <label
-                    htmlFor="last-name-input"
-                    style={{
-                      display: 'block',
-                      fontSize: '0.6875rem',
-                      fontWeight: 600,
-                      color: '#4B5563',
-                      marginBottom: '4px',
-                    }}
-                  >
-                    Last Name (Optional)
-                  </label>
                   <input
-                    id="last-name-input"
                     type="text"
                     placeholder="Last name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    style={{
-                      width: '100%',
-                      height: '38px',
-                      padding: '0 10px',
-                      fontSize: '0.8125rem',
-                      border: '1px solid #D1D5DB',
-                      borderRadius: '4px',
-                      boxSizing: 'border-box',
-                    }}
+                    className="auth-name-cell"
                   />
                 </div>
               </div>
@@ -667,53 +443,29 @@ export const AuthModal: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="btn btn-primary"
-                style={{
-                  width: '100%',
-                  height: '46px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  fontWeight: 700,
-                }}
+                className="auth-submit-btn"
               >
                 {isSubmitting ? (
                   <RefreshCw size={18} className="animate-spin" />
                 ) : (
                   <>
                     <CheckCircle2 size={16} />
-                    <span>VERIFY & SIGN IN</span>
+                    <span>Verify & Continue</span>
                   </>
                 )}
               </button>
 
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginTop: '16px',
-                  fontSize: '0.8125rem',
-                }}
-              >
+              <div className="auth-otp-actions">
                 <button
                   type="button"
                   onClick={() => setStep('input')}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#6B7280',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    padding: 0,
-                  }}
+                  className="auth-link-btn"
                 >
-                  Change number
+                  Change phone number
                 </button>
 
                 {countdown > 0 ? (
-                  <span style={{ color: '#9CA3AF' }}>Resend in {countdown}s</span>
+                  <span className="auth-countdown-text">Resend in {countdown}s</span>
                 ) : (
                   <button
                     type="button"
@@ -721,42 +473,35 @@ export const AuthModal: React.FC = () => {
                       setCountdown(30);
                       requestOtp(pendingPhone || phoneNumber);
                     }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--color-ink)',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      padding: 0,
-                    }}
+                    className="auth-resend-btn"
                   >
-                    Resend OTP
+                    Resend code
                   </button>
                 )}
               </div>
             </form>
           )}
 
-          {/* Trust badges */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
-              marginTop: '20px',
-              paddingTop: '16px',
-              borderTop: '1px solid #F3F4F6',
-              fontSize: '0.75rem',
-              color: '#6B7280',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <ShieldCheck size={14} color="#10B981" />
-              <span>100% Genuine Gear</span>
+          {/* Bottom Legal & Security Notice */}
+          <div className="auth-footer-notice">
+            <p className="auth-terms-text">
+              By continuing, you agree to Oriental Sports{' '}
+              <a href="/terms" onClick={(e) => { e.preventDefault(); closeAuthModal(); window.location.href = '/terms'; }}>
+                Terms
+              </a>{' '}
+              and{' '}
+              <a href="/privacy" onClick={(e) => { e.preventDefault(); closeAuthModal(); window.location.href = '/privacy'; }}>
+                Privacy Policy
+              </a>.
+            </p>
+            <div className="auth-trust-badges">
+              <div className="auth-trust-item">
+                <ShieldCheck size={14} color="#10B981" />
+                <span>256-Bit SSL Encrypted</span>
+              </div>
+              <span>•</span>
+              <div>Official Oriental Sports Pune Store</div>
             </div>
-            <span>•</span>
-            <div>Camp Store Pune Pickup Available</div>
           </div>
         </div>
       </div>

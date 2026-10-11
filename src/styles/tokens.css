@@ -163,6 +163,6 @@
 @media (min-width: 1024px) {
   :root {
     --header-h: 72px;
-    --utility-h: 44px;
+    --utility-h: 0px;
   }
 }

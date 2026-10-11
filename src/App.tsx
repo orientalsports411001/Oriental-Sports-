@@ -6,6 +6,7 @@ import { WishlistProvider } from './context/WishlistContext';
 
 import { Header } from './components/navigation/Header';
 import { CartDrawer } from './components/navigation/CartDrawer';
+import { BottomNav } from './components/navigation/BottomNav';
 import { Footer } from './components/footer/Footer';
 import { BrandIntro } from './components/ui/BrandIntro';
 
@@ -26,6 +27,8 @@ const VisitPage = page(() => import('./pages/VisitPage'), 'VisitPage');
 const ContactPage = page(() => import('./pages/ContactPage'), 'ContactPage');
 const SearchPage = page(() => import('./pages/SearchPage'), 'SearchPage');
 const CartPage = page(() => import('./pages/CartPage'), 'CartPage');
+const CheckoutPage = page(() => import('./pages/CheckoutPage'), 'CheckoutPage');
+const OrderSuccessPage = page(() => import('./pages/OrderSuccessPage'), 'OrderSuccessPage');
 const AccountPage = page(() => import('./pages/AccountPage'), 'AccountPage');
 const NotFoundPage = page(() => import('./pages/NotFoundPage'), 'NotFoundPage');
 const ShippingPage = page(() => import('./pages/PolicyPages'), 'ShippingPage');
@@ -69,71 +72,85 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const isCheckout = location.pathname === '/checkout';
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: isCheckout ? '#f8f9fa' : 'var(--ivory)' }}>
+      {!isCheckout && <Header />}
+      <CartDrawer />
+      <LazyAuthModal />
+
+      <main id="main" style={{ flex: 1 }}>
+        <Suspense fallback={<PageSkeleton />}>
+          <Routes>
+            {/* Core Commerce & Content */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/shop/:category" element={<CategoryPage />} />
+            <Route path="/products" element={<ShopPage />} />
+            <Route path="/products/:category" element={<CategoryPage />} />
+            <Route path="/product/:slug" element={<ProductDetailPage />} />
+
+            {/* Sports Infrastructure */}
+            <Route path="/courts" element={<CourtsPage />} />
+            <Route path="/courts/projects" element={<CourtProjectsPage />} />
+            <Route path="/courts/:slug" element={<CourtProjectDetailPage />} />
+
+            {/* Brand & Store */}
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/visit" element={<VisitPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order-success" element={<OrderSuccessPage />} />
+
+            {/* Customer Account & Authentication Subroutes */}
+            <Route path="/account" element={<AccountPage tab="overview" />} />
+            <Route path="/account/login" element={<AccountPage tab="login" />} />
+            <Route path="/account/signup" element={<AccountPage tab="signup" />} />
+            <Route path="/account/verify" element={<AccountPage tab="verify" />} />
+            <Route path="/account/orders" element={<AccountPage tab="orders" />} />
+            <Route path="/account/orders/:orderId" element={<AccountPage tab="orders" />} />
+            <Route path="/account/profile" element={<AccountPage tab="profile" />} />
+            <Route path="/account/addresses" element={<AccountPage tab="addresses" />} />
+            <Route path="/account/wishlist" element={<AccountPage tab="wishlist" />} />
+            <Route path="/wishlist" element={<AccountPage tab="wishlist" />} />
+
+            {/* Institutional Policies */}
+            <Route path="/shipping" element={<ShippingPage />} />
+            <Route path="/returns" element={<ReturnsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+
+            {/* 404 Recovery */}
+            <Route path="/404" element={<NotFoundPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      </main>
+
+      {!isCheckout && <Footer />}
+      {!isCheckout && <BottomNav />}
+    </div>
+  );
+};
+
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <ScrollToTop />
-              <BrandIntro />
-              <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--ivory)' }}>
-                <Header />
-                <CartDrawer />
-                <LazyAuthModal />
-
-              <main id="main" style={{ flex: 1 }}>
-                <Suspense fallback={<PageSkeleton />}>
-                <Routes>
-                  {/* Core Commerce & Content */}
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/shop" element={<ShopPage />} />
-                  <Route path="/shop/:category" element={<CategoryPage />} />
-                  <Route path="/product/:slug" element={<ProductDetailPage />} />
-
-                  {/* Sports Infrastructure */}
-                  <Route path="/courts" element={<CourtsPage />} />
-                  <Route path="/courts/projects" element={<CourtProjectsPage />} />
-                  <Route path="/courts/:slug" element={<CourtProjectDetailPage />} />
-
-                  {/* Brand & Store */}
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/visit" element={<VisitPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/search" element={<SearchPage />} />
-                  <Route path="/cart" element={<CartPage />} />
-
-                  {/* Customer Account & Authentication Subroutes */}
-                  <Route path="/account" element={<AccountPage tab="overview" />} />
-                  <Route path="/account/login" element={<AccountPage tab="login" />} />
-                  <Route path="/account/signup" element={<AccountPage tab="signup" />} />
-                  <Route path="/account/verify" element={<AccountPage tab="verify" />} />
-                  <Route path="/account/orders" element={<AccountPage tab="orders" />} />
-                  <Route path="/account/orders/:orderId" element={<AccountPage tab="orders" />} />
-                  <Route path="/account/profile" element={<AccountPage tab="profile" />} />
-                  <Route path="/account/addresses" element={<AccountPage tab="addresses" />} />
-                  <Route path="/account/wishlist" element={<AccountPage tab="wishlist" />} />
-                  <Route path="/wishlist" element={<AccountPage tab="wishlist" />} />
-
-                  {/* Institutional Policies */}
-                  <Route path="/shipping" element={<ShippingPage />} />
-                  <Route path="/returns" element={<ReturnsPage />} />
-                  <Route path="/privacy" element={<PrivacyPage />} />
-                  <Route path="/terms" element={<TermsPage />} />
-
-                  {/* 404 Recovery */}
-                  <Route path="/404" element={<NotFoundPage />} />
-                  <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-                </Suspense>
-              </main>
-
-              <Footer />
-            </div>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <ScrollToTop />
+            <BrandIntro />
+            <AppContent />
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
-  </BrowserRouter>
+    </BrowserRouter>
   );
 };
 

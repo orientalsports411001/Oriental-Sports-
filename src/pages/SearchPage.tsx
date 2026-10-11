@@ -14,9 +14,24 @@ export const SearchPage: React.FC = () => {
   const [filterType, setFilterType] = useState<'all' | 'products' | 'courts'>('all');
 
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  const matches = (...fields: string[]) => terms.length > 0 && terms.every((t) => fields.some((f) => f.toLowerCase().includes(t)));
+  const matches = (...fields: string[]) =>
+    terms.length === 0 || terms.every((t) => fields.some((f) => f && f.toLowerCase().includes(t)));
 
-  const matchedProducts = PRODUCTS.filter((p) => matches(p.name, p.category, p.categoryName, p.brand, p.description));
+  const matchedProducts = PRODUCTS.filter((p) => {
+    const variantNames = p.variants ? p.variants.map((v) => v.name).join(' ') : '';
+    const specValues = p.specs ? Object.values(p.specs).join(' ') : '';
+    return matches(
+      p.name,
+      p.category,
+      p.categoryName,
+      p.subcategoryName || '',
+      p.brand,
+      p.description,
+      p.productType,
+      variantNames,
+      specValues,
+    );
+  });
   const matchedCourts = COURT_SERVICES.filter((c) => matches(c.name, c.sport, c.description, 'court'));
   const total = matchedProducts.length + matchedCourts.length;
 

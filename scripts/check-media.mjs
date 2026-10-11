@@ -43,8 +43,27 @@ async function checkMedia() {
       });
     });
 
-    // Wait for all lazy images to finish loading
-    await page.waitForTimeout(1500);
+    // Trigger eager loading and decode on all images
+    await page.evaluate(async () => {
+      const imgs = Array.from(document.querySelectorAll('img'));
+      imgs.forEach((img) => {
+        img.loading = 'eager';
+      });
+
+      await Promise.all(
+        imgs.map((img) => {
+          if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+          return img.decode().catch(() => {
+            return new Promise((resolve) => {
+              img.addEventListener('load', resolve, { once: true });
+              img.addEventListener('error', resolve, { once: true });
+              setTimeout(resolve, 6000);
+            });
+          });
+        })
+      );
+    });
+    await page.waitForTimeout(1000);
 
     // Evaluate all <img> elements on the rendered page
     const imageReport = await page.evaluate(() => {

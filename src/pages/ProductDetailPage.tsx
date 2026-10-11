@@ -50,12 +50,22 @@ export const ProductDetailPage: React.FC = () => {
   const sameSport = PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id);
   const related = (sameSport.length > 0 ? sameSport : PRODUCTS.filter((p) => p.isFeatured && p.id !== product.id)).slice(0, 4);
 
+  const activeVariantObj = product?.variants?.find((v) => v.name === selectedVariant);
+  const currentPrice =
+    activeVariantObj?.price !== undefined
+      ? activeVariantObj.price
+      : (product?.price ?? 0) + (activeVariantObj?.priceDelta || 0);
+
+  const currentOriginalPrice = activeVariantObj?.originalPrice || product?.originalPrice;
   const discount =
-    product.originalPrice && product.originalPrice > product.price
-      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    currentOriginalPrice && currentOriginalPrice > currentPrice
+      ? Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100)
       : null;
 
+  const isAvailableInStock = activeVariantObj !== undefined ? activeVariantObj.inStock : (product?.inStock ?? false);
+
   const handleAddToCart = () => {
+    if (!product) return;
     addToCart(product, quantity, selectedVariant, selectedSize);
     setAddedAnimation(true);
     setTimeout(() => setAddedAnimation(false), 1600);
@@ -63,11 +73,11 @@ export const ProductDetailPage: React.FC = () => {
 
   const handleBuyNow = () => {
     addToCart(product, quantity, selectedVariant, selectedSize);
-    navigate('/cart');
+    navigate('/checkout');
   };
 
   const getWhatsAppProductInquiry = () => {
-    const text = `Hello Oriental Sports Pune, I am inquiring about the ${product.name} (Price: ₹${product.price}) from your website. Is this available at your MG Road Camp store for pickup today?`;
+    const text = `Hello Oriental Sports Pune, I am inquiring about the ${product.name} (Price: ₹${currentPrice}) from your website. Is this available at your MG Road Camp store for pickup today?`;
     return `https://wa.me/919890990022?text=${encodeURIComponent(text)}`;
   };
 
@@ -79,6 +89,9 @@ export const ProductDetailPage: React.FC = () => {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/shop">Shop</Link></li>
             <li><Link to={`/shop/${product.category}`}>{product.categoryName}</Link></li>
+            {product.subcategoryName && (
+              <li><Link to={`/shop?category=${product.category}&subcategory=${product.subcategory}`}>{product.subcategoryName}</Link></li>
+            )}
             <li><span aria-current="page">{product.name}</span></li>
           </ol>
         </nav>
@@ -114,47 +127,55 @@ export const ProductDetailPage: React.FC = () => {
 
           <div className="pdp-info">
             <div className="pdp-info-sticky">
-              <p className="eyebrow">{product.brand} · {product.categoryName}</p>
+              <p className="eyebrow">{[product.brand, product.categoryName, product.subcategoryName].filter(Boolean).join(' · ')}</p>
               <h1 className="pdp-title">{product.name}</h1>
 
               <div className="pdp-price">
-                <span className="pdp-price-now">₹{product.price.toLocaleString('en-IN')}</span>
+                <span className="pdp-price-now">₹{currentPrice.toLocaleString('en-IN')}</span>
                 {discount && (
                   <>
-                    <s className="price-was">₹{product.originalPrice!.toLocaleString('en-IN')}</s>
+                    <s className="price-was">₹{currentOriginalPrice!.toLocaleString('en-IN')}</s>
                     <span className="price-off">{discount}% off</span>
                   </>
                 )}
               </div>
-              <p className="pdp-tax">Inclusive of all taxes</p>
+              <p className="pdp-tax">{product.priceLabel ?? 'Inclusive of all taxes'}{product.quantityUnit ? ` · Unit: ${product.quantityUnit}` : ''}</p>
 
-              <p className={`pdp-stock ${product.inStock ? 'is-in' : ''}`}>
+              <p className={`pdp-stock ${isAvailableInStock ? 'is-in' : ''}`}>
                 <span className="status-dot" aria-hidden="true" />
-                {product.inStock ? 'In stock at the Camp store' : 'Currently out of stock'}
+                {product.availabilityNote ?? (isAvailableInStock ? 'In stock at the Camp store' : 'Currently out of stock')}
               </p>
 
               <p className="pdp-description">{product.description}</p>
 
               {product.variants && product.variants.length > 0 && (
                 <fieldset className="pdp-option">
-                  <legend className="field-label">Model</legend>
+                  <legend className="field-label">Select Size / Option</legend>
                   <div className="pdp-choices">
-                    {product.variants.map((v) => (
-                      <button
-                        key={v.id}
-                        type="button"
-                        className="chip"
-                        aria-pressed={selectedVariant === v.name}
-                        onClick={() => setSelectedVariant(v.name)}
-                      >
-                        {v.name}
-                      </button>
-                    ))}
+                    {product.variants.map((v) => {
+                      const vPrice = v.price !== undefined ? v.price : (product.price + (v.priceDelta || 0));
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          className="chip"
+                          aria-pressed={selectedVariant === v.name}
+                          onClick={() => setSelectedVariant(v.name)}
+                        >
+                          <span>{v.name}</span>
+                          {product.variants!.length > 1 && (
+                            <span style={{ opacity: 0.75, fontSize: '0.8125rem', marginLeft: '6px' }}>
+                              ₹{vPrice.toLocaleString('en-IN')}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </fieldset>
               )}
 
-              {product.sizes && product.sizes.length > 0 && (
+              {product.sizes && (!product.variants || product.variants.length === 0) && (
                 <fieldset className="pdp-option">
                   <legend className="field-label">Size</legend>
                   <div className="pdp-choices">
@@ -186,13 +207,13 @@ export const ProductDetailPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  disabled={!product.inStock}
+                  disabled={!isAvailableInStock}
                   className={`btn btn-primary pdp-add ${addedAnimation ? 'is-added' : ''}`}
                 >
-                  {addedAnimation ? 'Added to bag' : 'Add to bag'}
+                  {addedAnimation ? 'Added to bag' : isAvailableInStock ? 'Add to bag' : 'Out of stock'}
                 </button>
               </div>
-              <button type="button" onClick={handleBuyNow} disabled={!product.inStock} className="btn btn-outline btn-block">
+              <button type="button" onClick={handleBuyNow} disabled={!isAvailableInStock} className="btn btn-outline btn-block">
                 Buy now
               </button>
               <a href={getWhatsAppProductInquiry()} target="_blank" rel="noreferrer" className="link-arrow pdp-whatsapp">
@@ -254,7 +275,12 @@ export const ProductDetailPage: React.FC = () => {
         )}
       </div>
 
-      <StickyBuyBar product={product} onAddToCart={handleAddToCart} onBuyNow={handleBuyNow} inStock={product.inStock} />
+      <StickyBuyBar
+        product={{ ...product, price: currentPrice }}
+        onAddToCart={handleAddToCart}
+        onBuyNow={handleBuyNow}
+        inStock={isAvailableInStock}
+      />
     </div>
   );
 };

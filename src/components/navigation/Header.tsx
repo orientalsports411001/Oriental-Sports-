@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Search, ShoppingBag } from 'lucide-react';
+import { Search, ShoppingBag, User, Heart } from 'lucide-react';
 import { Logo } from '../brand/Logo';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
 import { SearchModal } from './SearchModal';
 import { MobileMenu } from './MobileMenu';
-import { STORE_INFO } from '../../data/storeInfo';
-import { useStoreStatus } from '../../utils/storeHours';
-
 export const NAV_ITEMS = [
   { to: '/shop', label: 'Shop' },
   { to: '/courts', label: 'Courts' },
@@ -17,12 +16,13 @@ export const NAV_ITEMS = [
 
 export const Header: React.FC = () => {
   const { itemCount, openCart } = useCart();
+  const { user, isAuthenticated, openAuthModal } = useAuth();
+  const { wishlist } = useWishlist();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { pathname } = useLocation();
-  const status = useStoreStatus();
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 8);
@@ -38,22 +38,6 @@ export const Header: React.FC = () => {
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
-
-      <div className="utility-bar desktop-only">
-        <div className="container utility-row">
-          <Link to="/visit" className="utility-link">
-            {STORE_INFO.addressLine1}, {STORE_INFO.locality}, {STORE_INFO.city}
-          </Link>
-          <span className={`utility-status ${status.isOpen ? 'is-open' : ''}`}>
-            <span className="status-dot" aria-hidden="true" />
-            {status.label}
-          </span>
-          <span className="utility-contacts">
-            <a href={`tel:${STORE_INFO.phone}`} className="utility-link">{STORE_INFO.displayPhone}</a>
-            <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="utility-link">WhatsApp</a>
-          </span>
-        </div>
-      </div>
 
       <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
         <div className="container header-row">
@@ -76,9 +60,41 @@ export const Header: React.FC = () => {
             >
               <Search size={20} strokeWidth={1.8} />
             </button>
+
+            <Link
+              to="/account/wishlist"
+              className="header-icon-btn desktop-only"
+              aria-label={`Wishlist, ${wishlist.length} saved items`}
+            >
+              <Heart size={20} strokeWidth={1.8} />
+              {wishlist.length > 0 && <span className="header-badge">{wishlist.length}</span>}
+            </Link>
+
+            {isAuthenticated ? (
+              <Link
+                to="/account"
+                className="header-icon-btn header-account-btn desktop-only"
+                aria-label={`Account (${user?.firstName || 'Customer'})`}
+                title={`Account (${user?.firstName || 'Customer'})`}
+              >
+                <User size={20} strokeWidth={1.8} />
+                <span className="account-status-dot" aria-hidden="true" />
+              </Link>
+            ) : (
+              <button
+                type="button"
+                className="header-icon-btn header-account-btn desktop-only"
+                onClick={() => openAuthModal('phone')}
+                aria-label="Sign in / Account"
+                title="Sign in / Account"
+              >
+                <User size={20} strokeWidth={1.8} />
+              </button>
+            )}
+
             <button
               type="button"
-              className="header-icon-btn"
+              className="header-icon-btn desktop-only"
               onClick={openCart}
               aria-label={`Shopping bag, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`}
             >

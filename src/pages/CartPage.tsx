@@ -1,112 +1,59 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Trash2, Plus, Minus } from 'lucide-react';
-import { useCart } from '../context/CartContext';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Trash2,
+  Plus,
+  Minus,
+  CheckCircle2,
+  Truck,
+  ShieldCheck,
+  ArrowRight,
+  ArrowLeft,
+  Store,
+} from 'lucide-react';
+import { useCart, getItemUnitPrice } from '../context/CartContext';
 import { STORE_INFO } from '../data/storeInfo';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Img } from '../components/ui/Img';
 
-const PAYMENT_OPTIONS = [
-  { value: 'UPI', label: 'UPI, once the store confirms' },
-  { value: 'StorePay', label: 'Pay at the Camp store on pickup' },
-  { value: 'COD', label: 'Cash on delivery (Pune)' },
-];
-
-/**
- * Bag & checkout. There is no payment or order backend, so "Place order" hands
- * the complete order to the store on WhatsApp and says so plainly. The bag is
- * kept until the customer clears it — nothing is lost if WhatsApp isn't sent.
- */
 export const CartPage: React.FC = () => {
-  const { cart, removeFromCart, updateQuantity, subtotal, shipping, discount, promoCode, applyPromoCode, clearCart } = useCart();
+  const navigate = useNavigate();
+  const {
+    cart,
+    removeFromCart,
+    updateQuantity,
+    subtotal,
+    shipping,
+    discount,
+    promoCode,
+    applyPromoCode,
+    checkoutUrl,
+    isSyncing,
+  } = useCart();
 
   const [inputCode, setInputCode] = useState('');
   const [promoMessage, setPromoMessage] = useState<{ text: string; success: boolean } | null>(null);
-  const [deliveryMethod, setDeliveryMethod] = useState<'pune-shipping' | 'camp-pickup'>('pune-shipping');
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [handedOff, setHandedOff] = useState(false);
-  const [checkoutForm, setCheckoutForm] = useState({
-    fullName: '',
-    phone: '',
-    address: '',
-    pincode: '411001',
-    paymentMethod: PAYMENT_OPTIONS[0].value,
-  });
 
-  const finalShipping = deliveryMethod === 'camp-pickup' ? 0 : shipping;
-  const grandTotal = Math.max(0, subtotal - discount + finalShipping);
+  const grandTotal = Math.max(0, subtotal - discount + shipping);
   const units = cart.reduce((s, i) => s + i.quantity, 0);
 
-  const orderLines = () =>
-    cart.map(
-      (item, idx) =>
-        `${idx + 1}. ${item.product.name}${item.selectedVariant ? ` (${item.selectedVariant})` : ''}${item.selectedSize ? ` [${item.selectedSize}]` : ''} x${item.quantity} = ₹${(item.product.price * item.quantity).toLocaleString('en-IN')}`,
-    );
-
-  const quickOrderUrl = () => {
-    const text = `Hello Oriental Sports, I would like to place an order from your website:\n\n${orderLines().join('\n')}\n\nDelivery Method: ${deliveryMethod === 'camp-pickup' ? 'Store Pickup at Camp' : 'Pune Home Delivery'}\nSubtotal: ₹${subtotal.toLocaleString('en-IN')}\nTotal: ₹${grandTotal.toLocaleString('en-IN')}\n\nPlease confirm order processing.`;
-    return `https://wa.me/919890990022?text=${encodeURIComponent(text)}`;
-  };
-
-  const fullOrderUrl = () => {
-    const payment = PAYMENT_OPTIONS.find((p) => p.value === checkoutForm.paymentMethod)?.label ?? checkoutForm.paymentMethod;
-    const text = [
-      'Hello Oriental Sports, I would like to place this order:',
-      '',
-      ...orderLines(),
-      '',
-      `Delivery: ${deliveryMethod === 'camp-pickup' ? 'Pickup at the Camp store' : 'Delivery in Pune'}`,
-      deliveryMethod === 'camp-pickup'
-        ? checkoutForm.address ? `Pickup note: ${checkoutForm.address}` : ''
-        : `Address: ${checkoutForm.address}, ${checkoutForm.pincode}`,
-      `Payment: ${payment}`,
-      discount > 0 ? `Promo: ${promoCode} (−₹${discount.toLocaleString('en-IN')})` : '',
-      `Total: ₹${grandTotal.toLocaleString('en-IN')}`,
-      '',
-      `Name: ${checkoutForm.fullName}`,
-      `Phone: ${checkoutForm.phone}`,
-    ]
-      .filter((l, i, a) => l !== '' || a[i - 1] !== '')
-      .join('\n');
-    return `https://wa.me/919890990022?text=${encodeURIComponent(text)}`;
+  const handleApplyPromo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputCode.trim()) return;
+    const res = await applyPromoCode(inputCode.trim());
+    setPromoMessage({ text: res.message, success: res.success });
   };
 
   if (cart.length === 0) {
     return (
-      <div className="cart-page">
+      <div className="cart-page" style={{ minHeight: '70vh' }}>
         <PageHeader crumbs={[{ label: 'Home', to: '/' }, { label: 'Bag' }]} title={['Nothing in', 'the bag yet.']}>
           <div className="page-header-actions">
-            <Link to="/shop" className="btn btn-primary">Shop gear <span className="btn-arrow" aria-hidden="true">→</span></Link>
+            <Link to="/shop" className="btn btn-primary">
+              Shop gear <span className="btn-arrow" aria-hidden="true">→</span>
+            </Link>
             <Link to="/courts" className="btn btn-outline">Plan a court</Link>
-          </div>
-        </PageHeader>
-      </div>
-    );
-  }
-
-  if (handedOff) {
-    return (
-      <div className="cart-page">
-        <PageHeader crumbs={[{ label: 'Home', to: '/' }, { label: 'Bag' }]} title={['Send it on', 'WhatsApp.']}>
-          <div className="handoff">
-            <p className="lead">
-              Your order is written out in WhatsApp. Press <strong>send</strong> there to place it — the store will confirm stock,
-              delivery and payment with you on {checkoutForm.phone || 'your number'}.
-            </p>
-            <div className="page-header-actions">
-              <a href={fullOrderUrl()} target="_blank" rel="noreferrer" className="btn btn-primary">Open WhatsApp again</a>
-              <button type="button" className="btn btn-outline" onClick={() => setHandedOff(false)}>Back to bag</button>
-              <button
-                type="button"
-                className="link-arrow"
-                onClick={() => {
-                  clearCart();
-                  setHandedOff(false);
-                }}
-              >
-                Sent — clear my bag
-              </button>
-            </div>
+            <Link to="/account" className="btn btn-outline">My Account</Link>
           </div>
         </PageHeader>
       </div>
@@ -114,11 +61,11 @@ export const CartPage: React.FC = () => {
   }
 
   return (
-    <div className="cart-page">
+    <div className="cart-page" style={{ minHeight: '80vh', paddingBottom: '80px' }}>
       <PageHeader
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Bag' }]}
         title={['Your bag']}
-        lead={`${units} ${units === 1 ? 'item' : 'items'} · Free delivery in Pune on orders above ₹2,000`}
+        lead={`${units} ${units === 1 ? 'item' : 'items'} · Fast delivery across Pune and pan-India with Razorpay security`}
       />
 
       <div className="container cart-grid">
@@ -129,42 +76,54 @@ export const CartPage: React.FC = () => {
                 <Img image={item.product.images[0]} alt="" sizes="112px" />
               </Link>
               <div className="cart-line-body">
-                <p className="label subtle">{item.product.categoryName}</p>
-                <Link to={`/product/${item.product.slug}`} className="cart-line-name">{item.product.name}</Link>
-                {(item.selectedVariant || item.selectedSize) && (
-                  <p className="cart-line-options">
-                    {[item.selectedVariant, item.selectedSize].filter(Boolean).join(' · ')}
-                  </p>
-                )}
-                <div className="cart-line-foot">
-                  <div className="qty qty-sm" role="group" aria-label={`Quantity of ${item.product.name}`}>
+                <div className="cart-line-head">
+                  <h2 className="cart-line-title">
+                    <Link to={`/product/${item.product.slug}`}>{item.product.name}</Link>
+                  </h2>
+                  <span className="cart-line-price">
+                    ₹{(getItemUnitPrice(item) * item.quantity).toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                <div className="cart-line-meta">
+                  <span className="badge">{item.product.categoryName}</span>
+                  {item.selectedVariant ? <span className="meta-sep">· {item.selectedVariant}</span> : null}
+                  {item.selectedSize ? <span className="meta-sep">· Size: {item.selectedSize}</span> : null}
+                  <span className="meta-sep">· ₹{getItemUnitPrice(item).toLocaleString('en-IN')} each</span>
+                </div>
+
+                <div className="cart-line-actions">
+                  <div className="qty-control" role="group" aria-label={`Quantity for ${item.product.name}`}>
                     <button
                       type="button"
+                      className="qty-btn"
                       onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.selectedVariant, item.selectedSize)}
                       aria-label="Decrease quantity"
                     >
                       <Minus size={14} />
                     </button>
-                    <output>{item.quantity}</output>
+                    <span className="qty-value" aria-live="polite">
+                      {item.quantity}
+                    </span>
                     <button
                       type="button"
+                      className="qty-btn"
                       onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.selectedVariant, item.selectedSize)}
                       aria-label="Increase quantity"
                     >
                       <Plus size={14} />
                     </button>
                   </div>
-                  <span className="price">₹{(item.product.price * item.quantity).toLocaleString('en-IN')}</span>
+
+                  <button
+                    type="button"
+                    className="cart-remove-btn"
+                    onClick={() => removeFromCart(item.product.id, item.selectedVariant, item.selectedSize)}
+                  >
+                    <Trash2 size={14} /> Remove
+                  </button>
                 </div>
               </div>
-              <button
-                type="button"
-                className="cart-line-remove"
-                onClick={() => removeFromCart(item.product.id, item.selectedVariant, item.selectedSize)}
-                aria-label={`Remove ${item.product.name}`}
-              >
-                <Trash2 size={17} strokeWidth={1.8} />
-              </button>
             </li>
           ))}
         </ul>
@@ -172,120 +131,112 @@ export const CartPage: React.FC = () => {
         <aside className="cart-summary" aria-label="Order summary">
           <h2 className="display d-3">Summary</h2>
 
-          <fieldset className="cart-field">
-            <legend className="field-label">Delivery</legend>
-            <div className="cart-toggle">
-              <button type="button" className="chip" aria-pressed={deliveryMethod === 'pune-shipping'} onClick={() => setDeliveryMethod('pune-shipping')}>
-                Deliver in Pune
-              </button>
-              <button type="button" className="chip" aria-pressed={deliveryMethod === 'camp-pickup'} onClick={() => setDeliveryMethod('camp-pickup')}>
-                Pick up at Camp
+          {/* Promo code field */}
+          <form onSubmit={handleApplyPromo} className="promo-form" style={{ marginBottom: '20px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input
+                type="text"
+                placeholder="Discount Code (e.g. ORIENTAL10)"
+                value={inputCode}
+                onChange={(e) => setInputCode(e.target.value.toUpperCase())}
+                style={{
+                  flex: 1,
+                  padding: '10px 14px',
+                  border: '1px solid var(--line)',
+                  borderRadius: '4px',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
+                }}
+              />
+              <button type="submit" className="btn btn-secondary" style={{ padding: '0 16px' }}>
+                Apply
               </button>
             </div>
-          </fieldset>
-
-          <form
-            className="cart-promo"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!inputCode) return;
-              const res = applyPromoCode(inputCode);
-              setPromoMessage({ text: res.message, success: res.success });
-            }}
-          >
-            <label htmlFor="promo" className="visually-hidden">Promo code</label>
-            <input id="promo" className="input" placeholder="Promo code" value={inputCode} onChange={(e) => setInputCode(e.target.value)} />
-            <button type="submit" className="btn btn-outline btn-sm">Apply</button>
-          </form>
-          {promoMessage && (
-            <p className={`cart-promo-msg ${promoMessage.success ? 'is-ok' : 'is-error'}`} role="status">{promoMessage.text}</p>
-          )}
-
-          <dl className="cart-totals">
-            <div><dt>Subtotal</dt><dd>₹{subtotal.toLocaleString('en-IN')}</dd></div>
-            {discount > 0 && (
-              <div><dt>Promo ({promoCode})</dt><dd>−₹{discount.toLocaleString('en-IN')}</dd></div>
+            {promoMessage && (
+              <p
+                style={{
+                  margin: '8px 0 0',
+                  fontSize: '0.8125rem',
+                  color: promoMessage.success ? '#137333' : '#c5221f',
+                  fontWeight: 500,
+                }}
+              >
+                {promoMessage.text}
+              </p>
             )}
-            <div><dt>{deliveryMethod === 'camp-pickup' ? 'Pickup' : 'Delivery'}</dt><dd>{finalShipping === 0 ? 'Free' : `₹${finalShipping}`}</dd></div>
-            <div className="cart-total"><dt>Total</dt><dd>₹{grandTotal.toLocaleString('en-IN')}</dd></div>
+          </form>
+
+          <dl className="summary-list">
+            <div className="summary-row">
+              <dt>Subtotal</dt>
+              <dd>₹{subtotal.toLocaleString('en-IN')}</dd>
+            </div>
+            {discount > 0 && (
+              <div className="summary-row" style={{ color: '#137333' }}>
+                <dt>Discount ({promoCode})</dt>
+                <dd>−₹{discount.toLocaleString('en-IN')}</dd>
+              </div>
+            )}
+            <div className="summary-row">
+              <dt>Shipping</dt>
+              <dd>
+                {shipping === 0 ? (
+                  <span className="free-shipping">FREE</span>
+                ) : (
+                  `₹${shipping.toLocaleString('en-IN')}`
+                )}
+              </dd>
+            </div>
+            <div className="summary-row">
+              <dt>GST (18%)</dt>
+              <dd>Included</dd>
+            </div>
+            <div className="summary-row summary-total">
+              <dt>Total</dt>
+              <dd>₹{grandTotal.toLocaleString('en-IN')}</dd>
+            </div>
           </dl>
 
-          <button type="button" className="btn btn-primary btn-block btn-lg" onClick={() => setIsCheckoutOpen(true)}>
-            Checkout <span className="btn-arrow" aria-hidden="true">→</span>
-          </button>
-          <a href={quickOrderUrl()} target="_blank" rel="noreferrer" className="link-arrow cart-quick">
-            Or just send the list on WhatsApp <span className="btn-arrow" aria-hidden="true">→</span>
-          </a>
-          <p className="cart-note">
-            Orders are confirmed by the store on WhatsApp — no payment is taken on this website. Questions? Call {STORE_INFO.displayPhone}.
-          </p>
+          {checkoutUrl ? (
+            <a
+              href={checkoutUrl}
+              className="btn btn-secondary btn-block"
+              style={{ textAlign: 'center', textDecoration: 'none', marginBottom: '8px' }}
+            >
+              {isSyncing ? 'Syncing Shopify...' : 'Checkout with Shopify'} <span className="btn-arrow" aria-hidden="true">→</span>
+            </a>
+          ) : null}
+
+          <Link
+            to="/checkout"
+            className="btn btn-primary btn-block btn-lg"
+            style={{ textAlign: 'center', textDecoration: 'none', marginBottom: '16px' }}
+          >
+            Proceed to Checkout <span className="btn-arrow" aria-hidden="true">→</span>
+          </Link>
+
+          <div
+            style={{
+              padding: '16px',
+              backgroundColor: '#f8f8f6',
+              borderRadius: '8px',
+              fontSize: '0.8125rem',
+              color: 'var(--muted)',
+              lineHeight: 1.5,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', color: '#111', fontWeight: 600 }}>
+              <ShieldCheck size={16} color="#137333" />
+              <span>Next Step: Address & Razorpay</span>
+            </div>
+            <p style={{ margin: 0 }}>
+              You will enter your delivery address and contact details on the next page before paying securely via Razorpay (UPI, Cards, Net Banking).
+            </p>
+          </div>
         </aside>
       </div>
-
-      {isCheckoutOpen && (
-        <div className="modal-backdrop" onClick={() => setIsCheckoutOpen(false)}>
-          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-head">
-              <h2 id="checkout-title" className="display d-3">Your details</h2>
-              <p className="muted">We’ll send your order to the store on WhatsApp.</p>
-            </div>
-            <form
-              className="modal-body contact-form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                window.open(fullOrderUrl(), '_blank', 'noopener');
-                setIsCheckoutOpen(false);
-                setHandedOff(true);
-              }}
-            >
-              <div className="field">
-                <label className="field-label" htmlFor="co-name">Full name</label>
-                <input id="co-name" className="input" required autoComplete="name" value={checkoutForm.fullName} onChange={(e) => setCheckoutForm({ ...checkoutForm, fullName: e.target.value })} />
-              </div>
-              <div className="contact-form-row">
-                <div className="field">
-                  <label className="field-label" htmlFor="co-phone">Phone</label>
-                  <input id="co-phone" className="input" type="tel" required autoComplete="tel" value={checkoutForm.phone} onChange={(e) => setCheckoutForm({ ...checkoutForm, phone: e.target.value })} />
-                </div>
-                <div className="field">
-                  <label className="field-label" htmlFor="co-pin">Pincode</label>
-                  <input id="co-pin" className="input" required inputMode="numeric" autoComplete="postal-code" value={checkoutForm.pincode} onChange={(e) => setCheckoutForm({ ...checkoutForm, pincode: e.target.value })} />
-                </div>
-              </div>
-              <div className="field">
-                <label className="field-label" htmlFor="co-address">
-                  {deliveryMethod === 'camp-pickup' ? 'Pickup note (optional)' : 'Delivery address'}
-                </label>
-                <input
-                  id="co-address"
-                  className="input"
-                  required={deliveryMethod === 'pune-shipping'}
-                  autoComplete={deliveryMethod === 'pune-shipping' ? 'street-address' : 'off'}
-                  placeholder={deliveryMethod === 'camp-pickup' ? 'e.g. Saturday around 5 PM' : 'Flat, building, street'}
-                  value={checkoutForm.address}
-                  onChange={(e) => setCheckoutForm({ ...checkoutForm, address: e.target.value })}
-                />
-              </div>
-              <div className="field">
-                <label className="field-label" htmlFor="co-pay">How would you like to pay?</label>
-                <select id="co-pay" className="select" value={checkoutForm.paymentMethod} onChange={(e) => setCheckoutForm({ ...checkoutForm, paymentMethod: e.target.value })}>
-                  {PAYMENT_OPTIONS.map((p) => (
-                    <option key={p.value} value={p.value}>{p.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="modal-total">
-                <span>Total</span>
-                <strong>₹{grandTotal.toLocaleString('en-IN')}</strong>
-              </div>
-              <div className="modal-actions">
-                <button type="button" className="btn btn-outline" onClick={() => setIsCheckoutOpen(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Send order on WhatsApp</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
+
+export default CartPage;

@@ -5,6 +5,8 @@ import { Logo } from '../brand/Logo';
 import { CATEGORIES } from '../../data/categories';
 import { STORE_INFO } from '../../data/storeInfo';
 import { useStoreStatus } from '../../utils/storeHours';
+import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
 import { EASE_OUT } from '../motion/Reveal';
 
 interface MobileMenuProps {
@@ -24,6 +26,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ open, onClose, onSearch 
   const reduced = useReducedMotion();
   const closeRef = useRef<HTMLButtonElement>(null);
   const status = useStoreStatus();
+  const { user, isAuthenticated } = useAuth();
+  const { wishlist } = useWishlist();
 
   useEffect(() => {
     if (!open) return;
@@ -76,7 +80,11 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ open, onClose, onSearch 
               <ul className="mobile-menu-primary">
                 {PRIMARY.map((link, i) => (
                   <motion.li key={link.to} {...item(i)}>
-                    <NavLink to={link.to} className={({ isActive }) => `mobile-menu-link ${isActive ? 'active' : ''}`}>
+                    <NavLink
+                      to={link.to}
+                      onClick={onClose}
+                      className={({ isActive }) => `mobile-menu-link ${isActive ? 'active' : ''}`}
+                    >
                       <span className="mobile-menu-link-label">{link.label}</span>
                       <span className="mobile-menu-link-note">{link.note}</span>
                     </NavLink>
@@ -89,7 +97,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ open, onClose, onSearch 
               <p className="label subtle">Shop by sport</p>
               <div className="mobile-menu-chips">
                 {CATEGORIES.map((c) => (
-                  <Link key={c.id} to={`/shop/${c.id}`} className="chip">
+                  <Link key={c.id} to={`/shop/${c.id}`} onClick={onClose} className="chip">
                     {c.name}
                   </Link>
                 ))}
@@ -97,9 +105,14 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ open, onClose, onSearch 
             </motion.div>
 
             <motion.div className="mobile-menu-utility" {...item(5)}>
-              <button type="button" className="link-arrow" onClick={onSearch}>Search</button>
-              <Link to="/account" className="link-arrow">Account</Link>
-              <Link to="/wishlist" className="link-arrow">Wishlist</Link>
+              <button type="button" className="link-arrow" onClick={onSearch}>Search Gear</button>
+              <Link to="/account" onClick={onClose} className="link-arrow" style={{ fontWeight: 700 }}>
+                {isAuthenticated ? `My Account (${user?.firstName || 'Athlete'})` : 'Sign In / Register'}
+              </Link>
+              <Link to="/account/orders" onClick={onClose} className="link-arrow">My Orders & Tracking</Link>
+              <Link to="/account/wishlist" onClick={onClose} className="link-arrow">
+                Wishlist {wishlist.length > 0 && `(${wishlist.length})`}
+              </Link>
             </motion.div>
 
             <motion.div className="mobile-menu-store" {...item(6)}>

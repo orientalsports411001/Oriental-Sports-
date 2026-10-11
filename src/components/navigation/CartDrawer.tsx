@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import { useCart } from '../../context/CartContext';
+import { useCart, getItemUnitPrice } from '../../context/CartContext';
 import { Img } from '../ui/Img';
 
 const FREE_DELIVERY_FROM = 2000;
 
 /** Bag drawer — light panel, delivery progress, lines, one clear next step. */
 export const CartDrawer: React.FC = () => {
-  const { cart, isCartOpen, closeCart, removeFromCart, updateQuantity, subtotal } = useCart();
+  const { cart, isCartOpen, closeCart, removeFromCart, updateQuantity, subtotal, checkoutUrl } = useCart();
   const navigate = useNavigate();
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -84,7 +84,7 @@ export const CartDrawer: React.FC = () => {
                           <Plus size={14} />
                         </button>
                       </div>
-                      <span className="price">₹{(item.product.price * item.quantity).toLocaleString('en-IN')}</span>
+                      <span className="price">₹{(getItemUnitPrice(item) * item.quantity).toLocaleString('en-IN')}</span>
                     </div>
                   </div>
                   <button
@@ -112,12 +112,22 @@ export const CartDrawer: React.FC = () => {
               className="btn btn-primary btn-block btn-lg"
               onClick={() => {
                 closeCart();
-                navigate('/cart');
+                navigate('/checkout');
               }}
             >
-              Review & checkout <span className="btn-arrow" aria-hidden="true">→</span>
+              Proceed to Checkout <span className="btn-arrow" aria-hidden="true">→</span>
             </button>
-            <button type="button" className="link-arrow drawer-continue" onClick={closeCart}>Keep shopping</button>
+            <button
+              type="button"
+              className="link-arrow drawer-continue"
+              onClick={() => {
+                closeCart();
+                navigate('/cart');
+              }}
+              style={{ marginTop: '0.5rem', width: '100%', textAlign: 'center' }}
+            >
+              View bag & apply promo code
+            </button>
           </div>
         )}
       </aside>

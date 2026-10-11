@@ -204,7 +204,13 @@ export class AuthService {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        // Clean out legacy demo user if it was saved by accident
+        if (parsed.id === 'usr_pune_0921' || parsed.email === 'arjun.deshmukh@gmail.com') {
+          localStorage.removeItem(STORAGE_KEY);
+          return null;
+        }
+        return parsed;
       }
     } catch {
       // fallback
@@ -225,8 +231,7 @@ export class AuthService {
   }
 
   static getCurrentUser(): UserProfile | null {
-    // Visitors start signed out. (Previously every first visit was signed in as
-    // the demo profile, showing a stranger's name, phone and address.)
+    // Normal visitors start signed out. No demo persona is assumed.
     return this.loadUser();
   }
 
@@ -243,16 +248,27 @@ export class AuthService {
     localStorage.removeItem('oriental_sports_logged_out');
     
     let user = this.getCurrentUser();
-    if (!user || user.phone !== phone) {
-      user = {
-        ...INITIAL_USER,
+    const formattedPhone = phone.startsWith('+91') ? phone : `+91 ${phone}`;
+
+    if (!user || user.phone !== formattedPhone) {
+      const firstName = registrationData?.firstName || 'Sports';
+      const lastName = registrationData?.lastName || 'Athlete';
+      const newUser: UserProfile = {
         id: `usr_${Date.now()}`,
-        phone: phone.startsWith('+91') ? phone : `+91 ${phone}`,
-        firstName: registrationData?.firstName || 'Sports',
-        lastName: registrationData?.lastName || 'Athlete',
-        fullName: registrationData ? `${registrationData.firstName} ${registrationData.lastName}` : 'Sports Athlete',
-        email: registrationData?.email || `athlete_${Date.now().toString().slice(-4)}@orientalsports.in`,
+        phone: formattedPhone,
+        firstName,
+        lastName,
+        fullName: registrationData ? `${firstName} ${lastName}`.trim() : 'Sports Athlete',
+        email: registrationData?.email || '',
+        sportPreferences: ['Badminton', 'Tennis'],
+        membershipTier: 'Club Athlete',
+        createdAt: new Date().toISOString().split('T')[0],
+        addresses: [],
+        orders: [],
+        courtInquiries: [],
       };
+      this.saveUser(newUser);
+      return newUser;
     }
     this.saveUser(user);
     return user;
@@ -261,13 +277,25 @@ export class AuthService {
   static async signInWithGoogle(): Promise<UserProfile> {
     await new Promise((r) => setTimeout(r, 600));
     localStorage.removeItem('oriental_sports_logged_out');
-    const user = {
-      ...INITIAL_USER,
-      firstName: 'Arjun',
-      lastName: 'Deshmukh',
-      fullName: 'Arjun Deshmukh',
-      email: 'arjun.deshmukh@gmail.com',
-    };
+    let user = this.getCurrentUser();
+    if (!user) {
+      const newUser: UserProfile = {
+        id: `usr_${Date.now()}`,
+        firstName: 'Sports',
+        lastName: 'Member',
+        fullName: 'Sports Member',
+        email: 'member@orientalsports.in',
+        phone: '',
+        sportPreferences: [],
+        membershipTier: 'Club Athlete',
+        createdAt: new Date().toISOString().split('T')[0],
+        addresses: [],
+        orders: [],
+        courtInquiries: [],
+      };
+      this.saveUser(newUser);
+      return newUser;
+    }
     this.saveUser(user);
     return user;
   }
@@ -279,13 +307,22 @@ export class AuthService {
     if (!user) {
       const namePart = email.split('@')[0];
       const capitalized = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-      user = {
-        ...INITIAL_USER,
+      const newUser: UserProfile = {
+        id: `usr_${Date.now()}`,
         email,
+        phone: '',
         firstName: capitalized,
-        lastName: 'Athlete',
-        fullName: `${capitalized} Athlete`,
+        lastName: 'Customer',
+        fullName: `${capitalized} Customer`,
+        sportPreferences: [],
+        membershipTier: 'Club Athlete',
+        createdAt: new Date().toISOString().split('T')[0],
+        addresses: [],
+        orders: [],
+        courtInquiries: [],
       };
+      this.saveUser(newUser);
+      return newUser;
     }
     this.saveUser(user);
     return user;
@@ -293,40 +330,74 @@ export class AuthService {
 
   static async updateProfile(updates: Partial<UserProfile>): Promise<UserProfile> {
     await new Promise((r) => setTimeout(r, 300));
-    const current = this.getCurrentUser() || INITIAL_USER;
-    const updated: UserProfile = {
-      ...current,
-      ...updates,
-      fullName: updates.firstName && updates.lastName 
-        ? `${updates.firstName} ${updates.lastName}` 
-        : updates.firstName 
-        ? `${updates.firstName} ${current.lastName}`
-        : current.fullName,
-    };
-    this.saveUser(updated);
-    return updated;
+    let current = this.getCurrentUser();
+    const updatedUser: UserProfile = current
+      ? {
+          ...current,
+          ...updates,
+          fullName: updates.firstName && updates.lastName 
+            ? `${updates.firstName} ${updates.lastName}` 
+            : updates.firstName 
+            ? `${updates.firstName} ${current.lastName}`
+            : current.fullName,
+        }
+      : {
+          id: `usr_${Date.now()}`,
+          firstName: updates.firstName || 'Customer',
+          lastName: updates.lastName || '',
+          fullName: `${updates.firstName || 'Customer'} ${updates.lastName || ''}`.trim(),
+          email: updates.email || '',
+          phone: updates.phone || '',
+          sportPreferences: updates.sportPreferences || [],
+          membershipTier: 'Club Athlete',
+          createdAt: new Date().toISOString().split('T')[0],
+          addresses: [],
+          orders: [],
+          courtInquiries: [],
+        };
+    this.saveUser(updatedUser);
+    return updatedUser;
   }
 
   static async addAddress(newAddr: Omit<Address, 'id'>): Promise<Address> {
     await new Promise((r) => setTimeout(r, 300));
-    const current = this.getCurrentUser() || INITIAL_USER;
+    let current = this.getCurrentUser();
     const addressWithId: Address = {
       ...newAddr,
       id: `addr_${Date.now()}`,
     };
-    let updatedAddresses = [...current.addresses];
-    if (addressWithId.isDefault) {
-      updatedAddresses = updatedAddresses.map((a) => ({ ...a, isDefault: false }));
+    if (!current) {
+      const newUser: UserProfile = {
+        id: `usr_${Date.now()}`,
+        firstName: newAddr.name.split(' ')[0] || 'Customer',
+        lastName: newAddr.name.split(' ').slice(1).join(' ') || '',
+        fullName: newAddr.name,
+        email: '',
+        phone: newAddr.phone,
+        sportPreferences: [],
+        membershipTier: 'Club Athlete',
+        createdAt: new Date().toISOString().split('T')[0],
+        addresses: [addressWithId],
+        orders: [],
+        courtInquiries: [],
+      };
+      this.saveUser(newUser);
+    } else {
+      let updatedAddresses = [...current.addresses];
+      if (addressWithId.isDefault) {
+        updatedAddresses = updatedAddresses.map((a) => ({ ...a, isDefault: false }));
+      }
+      updatedAddresses.unshift(addressWithId);
+      current = { ...current, addresses: updatedAddresses };
+      this.saveUser(current);
     }
-    updatedAddresses.unshift(addressWithId);
-    const updated = { ...current, addresses: updatedAddresses };
-    this.saveUser(updated);
     return addressWithId;
   }
 
   static async updateAddress(id: string, addrUpdate: Partial<Address>): Promise<Address> {
     await new Promise((r) => setTimeout(r, 300));
-    const current = this.getCurrentUser() || INITIAL_USER;
+    const current = this.getCurrentUser();
+    if (!current) throw new Error('No user profile found');
     let target: Address | undefined;
     let updatedAddresses = current.addresses.map((a) => {
       if (a.id === id) {
@@ -345,7 +416,8 @@ export class AuthService {
 
   static async deleteAddress(id: string): Promise<void> {
     await new Promise((r) => setTimeout(r, 300));
-    const current = this.getCurrentUser() || INITIAL_USER;
+    const current = this.getCurrentUser();
+    if (!current) return;
     const filtered = current.addresses.filter((a) => a.id !== id);
     if (filtered.length > 0 && !filtered.some((a) => a.isDefault)) {
       filtered[0].isDefault = true;
@@ -355,12 +427,46 @@ export class AuthService {
 
   static async setDefaultAddress(id: string): Promise<void> {
     await new Promise((r) => setTimeout(r, 200));
-    const current = this.getCurrentUser() || INITIAL_USER;
+    const current = this.getCurrentUser();
+    if (!current) return;
     const updated = current.addresses.map((a) => ({
       ...a,
       isDefault: a.id === id,
     }));
     this.saveUser({ ...current, addresses: updated });
+  }
+
+  static async addOrder(order: Order): Promise<Order> {
+    await new Promise((r) => setTimeout(r, 200));
+    let current = this.getCurrentUser();
+    if (!current) {
+      // Create guest customer account with their real details from the order
+      const nameParts = (order.shippingAddress.name || 'Customer').trim().split(' ');
+      const firstName = nameParts[0] || 'Customer';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      const newUser: UserProfile = {
+        id: `usr_${Date.now()}`,
+        firstName,
+        lastName,
+        fullName: order.shippingAddress.name || `${firstName} ${lastName}`.trim(),
+        email: '',
+        phone: order.shippingAddress.phone,
+        sportPreferences: [],
+        membershipTier: 'Club Athlete',
+        createdAt: new Date().toISOString().split('T')[0],
+        addresses: [order.shippingAddress],
+        orders: [order],
+        courtInquiries: [],
+      };
+      this.saveUser(newUser);
+    } else {
+      const orders = [order, ...current.orders];
+      const hasAddr = current.addresses.some((a) => a.street === order.shippingAddress.street && a.pincode === order.shippingAddress.pincode);
+      const addresses = hasAddr ? current.addresses : [order.shippingAddress, ...current.addresses];
+      current = { ...current, orders, addresses };
+      this.saveUser(current);
+    }
+    return order;
   }
 
   static async signOut(): Promise<void> {

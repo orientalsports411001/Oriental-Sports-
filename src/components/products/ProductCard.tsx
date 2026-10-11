@@ -40,15 +40,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [justAdded, setJustAdded] = useState(false);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState<number>(0);
   const saved = isInWishlist(product.id);
 
+  const hasVariants = product.variants && product.variants.length > 0;
+  const currentVariant = hasVariants ? product.variants![selectedVariantIndex] : null;
+
+  const currentPrice =
+    currentVariant?.price !== undefined
+      ? currentVariant.price
+      : product.price + (currentVariant?.priceDelta || 0);
+
+  const currentOriginalPrice = currentVariant?.originalPrice || product.originalPrice;
   const discount =
-    product.originalPrice && product.originalPrice > product.price
-      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    currentOriginalPrice && currentOriginalPrice > currentPrice
+      ? Math.round(((currentOriginalPrice - currentPrice) / currentOriginalPrice) * 100)
       : null;
 
   const handleAdd = () => {
-    addToCart(product, 1, product.variants?.[0]?.name, product.sizes?.[0]);
+    addToCart(
+      product,
+      1,
+      currentVariant?.name,
+      product.sizes?.[selectedVariantIndex] || product.sizes?.[0]
+    );
     setJustAdded(true);
     window.setTimeout(() => setJustAdded(false), 1600);
   };
@@ -58,6 +73,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <Link to={`/product/${product.slug}`} className="product-card-media" tabIndex={-1} aria-hidden="true">
         <Img image={imageFor(product.images[0], '')} alt="" sizes={sizes} />
         {!product.inStock && <span className="badge badge-dark product-card-flag">Sold out</span>}
+        {product.badge && product.inStock && (
+          <span className="badge product-card-flag" style={{ background: 'var(--ink)', color: 'var(--paper)' }}>
+            {product.badge}
+          </span>
+        )}
       </Link>
 
       <button
@@ -71,16 +91,55 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </button>
 
       <div className="product-card-body">
-        <p className="label subtle">{product.categoryName}</p>
+        <div className="product-card-meta-line" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+          <p className="label subtle">{[product.brand, product.categoryName].filter(Boolean).join(' · ')}</p>
+          {product.quantityUnit && <span style={{ fontSize: '0.6875rem', color: 'var(--subtle)' }}>{product.quantityUnit}</span>}
+        </div>
+
         <h3 className="product-card-title">
           <Link to={`/product/${product.slug}`}>{product.name}</Link>
         </h3>
+
+        {/* Variant chips if multiple sizes or models exist */}
+        {hasVariants && product.variants!.length > 1 && (
+          <div
+            className="product-card-variants"
+            style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', margin: '8px 0 10px' }}
+            role="group"
+            aria-label="Available sizes and variants"
+          >
+            {product.variants!.map((v, i) => (
+              <button
+                key={v.id}
+                type="button"
+                className={`active-pill ${selectedVariantIndex === i ? '' : 'inactive'}`}
+                style={{
+                  minHeight: '24px',
+                  padding: '0 6px',
+                  fontSize: '0.6875rem',
+                  background: selectedVariantIndex === i ? 'var(--ink)' : 'var(--paper)',
+                  color: selectedVariantIndex === i ? 'var(--paper)' : 'var(--ink)',
+                  borderColor: selectedVariantIndex === i ? 'var(--ink)' : 'var(--line-strong)',
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedVariantIndex(i);
+                }}
+                aria-pressed={selectedVariantIndex === i}
+              >
+                {v.name}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="product-card-foot">
           <p className="product-card-price">
-            <span className="price">₹{product.price.toLocaleString('en-IN')}</span>
+            {product.priceLabel && <span className="label subtle" style={{ marginRight: '6px' }}>{product.priceLabel}</span>}
+            <span className="price">₹{currentPrice.toLocaleString('en-IN')}</span>
             {discount && (
               <>
-                <s className="price-was">₹{product.originalPrice!.toLocaleString('en-IN')}</s>
+                <s className="price-was">₹{currentOriginalPrice!.toLocaleString('en-IN')}</s>
                 <span className="price-off">{discount}% off</span>
               </>
             )}
