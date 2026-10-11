@@ -6,11 +6,12 @@ import { createServiceRoleClient } from '@/lib/supabase/server';
  * Razorpay server-to-server webhook. Verifies the `X-Razorpay-Signature`
  * header against the RAW request body using RAZORPAY_WEBHOOK_SECRET (set in
  * the Razorpay dashboard webhook config), then handles `payment.captured`
- * and `payment.failed`.
- *
- * Idempotent by design: writes upsert on `orders.razorpay_order_id` (unique
- * constraint in the migration), so a replayed event updates the same row
- * instead of creating a duplicate order.
+ * and `payment.failed` via the SAME Postgres functions the verify route
+ * calls (`finalize_paid_order` / `fail_pending_order`). Whichever of the
+ * webhook or the checkout-callback verify call reaches Postgres first wins
+ * the `where status = 'pending'` race inside those functions; the other is
+ * a no-op idempotent confirmation — there's no separate webhook-side
+ * order-mutation path that could double-process the same payment.
  */
 export async function POST(req: Request) {
   const rawBody = await req.text();
@@ -61,31 +62,30 @@ export async function POST(req: Request) {
   const admin = createServiceRoleClient();
 
   if (event === 'payment.captured') {
-    const { error } = await admin
-      .from('orders')
-      .update({
-        status: 'paid',
-        razorpay_payment_id: razorpayPaymentId,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('razorpay_order_id', razorpayOrderId);
+    const { data: result, error } = await admin.rpc('finalize_paid_order', {
+      p_razorpay_order_id: razorpayOrderId,
+      p_razorpay_payment_id: razorpayPaymentId,
+    });
 
     if (error) {
-      console.error('Webhook: failed to mark order paid:', error);
+      console.error('Webhook: finalize_paid_order RPC failed:', error);
       return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
     }
+    if (!result?.ok && result?.error === 'out_of_stock') {
+      // The webhook arrived after stock ran out between create-order and
+      // capture (rare — the customer already has a confirmed Razorpay
+      // charge). Leave this for manual reconciliation rather than silently
+      // dropping it; do not throw, since Razorpay would just retry the
+      // same webhook indefinitely.
+      console.error('Webhook: payment captured but order could not be stocked:', razorpayOrderId);
+    }
   } else if (event === 'payment.failed') {
-    const { error } = await admin
-      .from('orders')
-      .update({
-        status: 'failed',
-        razorpay_payment_id: razorpayPaymentId,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('razorpay_order_id', razorpayOrderId);
+    const { error } = await admin.rpc('fail_pending_order', {
+      p_razorpay_order_id: razorpayOrderId,
+    });
 
     if (error) {
-      console.error('Webhook: failed to mark order failed:', error);
+      console.error('Webhook: fail_pending_order RPC failed:', error);
       return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
     }
   }

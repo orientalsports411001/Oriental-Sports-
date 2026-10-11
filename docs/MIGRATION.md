@@ -118,3 +118,10 @@ on `slug`. Safe to re-run after editing the static source files.
 4. `cd apps/storefront && npm install && npm run seed` to populate the
    catalog.
 5. `npm run dev` to run the new app locally.
+
+## Stage 2 Phase 1: admin app
+
+See `docs/ADMIN_SETUP.md` for the admin-foundation migration
+(`profiles.role`, product draft/publish + stock tracking,
+`inventory_adjustments`), promoting a user to admin, and running
+`apps/admin/` locally.

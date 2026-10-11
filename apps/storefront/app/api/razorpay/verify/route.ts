@@ -6,31 +6,17 @@ interface VerifyBody {
   razorpay_order_id: string;
   razorpay_payment_id: string;
   razorpay_signature: string;
-  items: Array<{
-    productId: string;
-    productSlug?: string;
-    productName: string;
-    productImage?: string;
-    price: number;
-    quantity: number;
-    selectedVariant?: string;
-    selectedSize?: string;
-  }>;
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  total: number;
-  deliveryMethod: 'doorstep' | 'camp_pickup';
-  shippingAddress: Record<string, unknown>;
 }
 
 /**
  * Verifies the Razorpay payment signature server-side (HMAC-SHA256 over
- * `order_id|payment_id` using RAZORPAY_KEY_SECRET). Only on a valid
- * signature do we write `orders` / `order_items` rows — using the
- * service-role client, since the client itself has no insert-with-status
- * privilege beyond its own `pending` rows. An invalid signature writes
- * nothing and is rejected.
+ * `order_id|payment_id` using RAZORPAY_KEY_SECRET), confirms the order
+ * belongs to the authenticated caller, then calls `finalize_paid_order` —
+ * the single atomic, concurrency-safe pending->paid transition shared with
+ * the webhook. This route no longer trusts (or even accepts) client-supplied
+ * items/amounts: those were fixed server-side at create-order time and live
+ * in `orders.items_snapshot` (see
+ * supabase/migrations/20261011094500_atomic_order_finalization.sql).
  */
 export async function POST(req: Request) {
   let body: VerifyBody;
@@ -74,72 +60,46 @@ export async function POST(req: Request) {
 
   const admin = createServiceRoleClient();
 
-  const orderNumber = `OS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-
-  // Idempotency: razorpay_order_id has a unique constraint (see migration),
-  // so upserting on it means replaying the same webhook/verify call twice
-  // never creates a duplicate order.
-  const { data: order, error: orderError } = await admin
+  // Ownership check: the pending order created at create-order time must
+  // belong to this same authenticated user. A valid signature only proves
+  // the payment matches this razorpay_order_id — it says nothing about who
+  // is calling verify, so we check order ownership explicitly rather than
+  // relying on the signature alone to authorize finalization.
+  const { data: pendingOrder } = await admin
     .from('orders')
-    .upsert(
-      {
-        user_id: user.id,
-        order_number: orderNumber,
-        razorpay_order_id,
-        razorpay_payment_id,
-        status: 'paid',
-        status_label:
-          body.deliveryMethod === 'camp_pickup'
-            ? 'Ready for Camp Store Collection'
-            : 'Confirmed · Preparing at MG Road Workshop',
-        subtotal: body.subtotal,
-        shipping: body.shipping,
-        tax: body.tax,
-        total_amount: body.total,
-        currency: 'INR',
-        payment_method: 'Razorpay',
-        delivery_method: body.deliveryMethod,
-        shipping_address: body.shippingAddress,
-        timeline: [
-          {
-            status: 'confirmed',
-            title: 'Order Confirmed',
-            description: `Payment of ₹${body.total} verified via Razorpay (${razorpay_payment_id}).`,
-            date: new Date().toISOString(),
-            completed: true,
-            current: true,
-          },
-        ],
-      },
-      { onConflict: 'razorpay_order_id' }
-    )
-    .select()
-    .single();
+    .select('id, user_id, status')
+    .eq('razorpay_order_id', razorpay_order_id)
+    .maybeSingle();
 
-  if (orderError || !order) {
-    console.error('Failed to write order:', orderError);
-    return NextResponse.json({ error: 'Payment verified but order could not be saved' }, { status: 500 });
+  if (!pendingOrder) {
+    return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+  }
+  if (pendingOrder.user_id !== user.id) {
+    return NextResponse.json({ error: 'This order does not belong to you' }, { status: 403 });
   }
 
-  if (Array.isArray(body.items) && body.items.length > 0) {
-    const orderItems = body.items.map((item) => ({
-      order_id: order.id,
-      user_id: user.id,
-      product_id: item.productId,
-      product_slug: item.productSlug,
-      product_name: item.productName,
-      product_image: item.productImage,
-      price: item.price,
-      quantity: item.quantity,
-      selected_variant: item.selectedVariant,
-      selected_size: item.selectedSize,
-    }));
+  const { data: result, error: rpcError } = await admin.rpc('finalize_paid_order', {
+    p_razorpay_order_id: razorpay_order_id,
+    p_razorpay_payment_id: razorpay_payment_id,
+  });
 
-    const { error: itemsError } = await admin.from('order_items').insert(orderItems);
-    if (itemsError) {
-      console.error('Failed to write order items:', itemsError);
+  if (rpcError) {
+    console.error('finalize_paid_order RPC failed:', rpcError);
+    return NextResponse.json({ error: 'Payment verified but order could not be finalized' }, { status: 500 });
+  }
+
+  if (!result?.ok) {
+    if (result?.error === 'out_of_stock') {
+      return NextResponse.json(
+        {
+          error: 'One or more items in your order are now out of stock.',
+          outOfStockProductId: result.out_of_stock_product_id,
+        },
+        { status: 409 }
+      );
     }
+    return NextResponse.json({ error: 'Payment verified but order could not be found' }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true, orderId: order.id, orderNumber: order.order_number });
+  return NextResponse.json({ success: true, orderId: result.order_id, orderNumber: result.order_number });
 }

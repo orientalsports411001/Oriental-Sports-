@@ -135,17 +135,6 @@ export const CheckoutPage: React.FC = () => {
         type: 'home',
       };
 
-      const orderItems = cart.map((item) => ({
-        productId: item.product.id,
-        productSlug: item.product.slug,
-        productName: item.product.name,
-        productImage: item.product.images[0],
-        price: getItemUnitPrice(item),
-        quantity: item.quantity,
-        selectedVariant: item.selectedVariant,
-        selectedSize: item.selectedSize,
-      }));
-
       const createRes = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: {
@@ -153,8 +142,14 @@ export const CheckoutPage: React.FC = () => {
           ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
         },
         body: JSON.stringify({
-          items: cart.map((item) => ({ productId: item.product.id, quantity: item.quantity })),
+          items: cart.map((item) => ({
+            productId: item.product.id,
+            quantity: item.quantity,
+            selectedVariant: item.selectedVariant,
+            selectedSize: item.selectedSize,
+          })),
           deliveryMethod,
+          shippingAddress,
         }),
       });
 
@@ -194,13 +189,6 @@ export const CheckoutPage: React.FC = () => {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                items: orderItems,
-                subtotal: createData.subtotal,
-                shipping: createData.shipping,
-                tax: createData.tax,
-                total: createData.total,
-                deliveryMethod,
-                shippingAddress,
               }),
             });
             const verifyData = await verifyRes.json();

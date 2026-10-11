@@ -136,7 +136,12 @@ export async function getProducts(filters?: { categorySlug?: string }): Promise<
       .from('products')
       .select(
         'id, slug, name, category_slug, brand, description, price, compare_at_price, images, variants, sizes, in_stock, rating, review_count, tags, metadata, created_at, updated_at'
-      );
+      )
+      // Defense in depth alongside the RLS policy from the admin_foundation
+      // migration (which already restricts anon/authenticated selects to
+      // status = 'published') — explicit here so this stays true even if a
+      // future policy change loosens RLS.
+      .eq('status', 'published');
     if (filters?.categorySlug) {
       query = query.eq('category_slug', filters.categorySlug);
     }
@@ -157,6 +162,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         'id, slug, name, category_slug, brand, description, price, compare_at_price, images, variants, sizes, in_stock, rating, review_count, tags, metadata, created_at, updated_at'
       )
       .eq('slug', slug)
+      .eq('status', 'published')
       .maybeSingle();
     if (error || !data) return null;
     return rowToProduct(data as ProductRow);
@@ -175,6 +181,7 @@ export async function getFeaturedProductsExcludingCategory(categorySlug: string,
         'id, slug, name, category_slug, brand, description, price, compare_at_price, images, variants, sizes, in_stock, rating, review_count, tags, metadata, created_at, updated_at'
       )
       .neq('category_slug', categorySlug)
+      .eq('status', 'published')
       .contains('metadata', { isFeatured: true })
       .limit(limit);
     if (error || !data) return [];
@@ -193,6 +200,7 @@ export async function getProductsBySubcategorySlug(subcategorySlug: string): Pro
       .select(
         'id, slug, name, category_slug, brand, description, price, compare_at_price, images, variants, sizes, in_stock, rating, review_count, tags, metadata, created_at, updated_at'
       )
+      .eq('status', 'published')
       .contains('metadata', { subcategory: subcategorySlug });
     if (error || !data) return [];
     return (data as ProductRow[]).map(rowToProduct);
