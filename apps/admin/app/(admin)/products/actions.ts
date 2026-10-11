@@ -38,6 +38,11 @@ function parseAltTextMap(value: string | null): Record<string, string> {
   }
 }
 
+/** The image gallery's url -> Cloudinary public_id map, submitted as a JSON object string. */
+function parsePublicIdMap(value: string | null): Record<string, string> {
+  return parseAltTextMap(value);
+}
+
 /**
  * Publish guard: name + price > 0 + category_slug + at least one image must
  * all be present before a product can be set to 'published'. If not, the
@@ -79,6 +84,7 @@ function buildProductPayload(formData: FormData) {
   const ogTitle = String(formData.get('og_title') || '').trim();
   const ogDescription = String(formData.get('og_description') || '').trim();
   const imageAltText = parseAltTextMap(String(formData.get('image_alt_text') || ''));
+  const cloudinaryPublicIds = parsePublicIdMap(String(formData.get('cloudinary_public_ids') || ''));
 
   return {
     name,
@@ -100,6 +106,7 @@ function buildProductPayload(formData: FormData) {
     ogTitle,
     ogDescription,
     imageAltText,
+    cloudinaryPublicIds,
   };
 }
 
@@ -142,6 +149,7 @@ export async function createProduct(formData: FormData) {
       og_title: fields.ogTitle || null,
       og_description: fields.ogDescription || null,
       image_alt_text: fields.imageAltText,
+      cloudinary_public_ids: fields.cloudinaryPublicIds,
     })
     .select('id')
     .single();
@@ -196,6 +204,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       og_title: fields.ogTitle || null,
       og_description: fields.ogDescription || null,
       image_alt_text: fields.imageAltText,
+      cloudinary_public_ids: fields.cloudinaryPublicIds,
       updated_at: new Date().toISOString(),
     })
     .eq('id', productId);

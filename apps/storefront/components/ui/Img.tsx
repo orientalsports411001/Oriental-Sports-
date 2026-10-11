@@ -11,6 +11,33 @@ interface ImgProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'
   position?: string;
 }
 
+const CLOUDINARY_HOST = 'res.cloudinary.com';
+/** Widths offered in the generated srcset for a Cloudinary-hosted image without one of its own. */
+const CLOUDINARY_WIDTHS = [400, 800, 1200, 1600];
+
+function isCloudinaryUrl(src: string): boolean {
+  return src.includes(CLOUDINARY_HOST);
+}
+
+/**
+ * Inserts an `f_auto,q_auto,w_<width>` transformation right after
+ * `/upload/` in a Cloudinary delivery URL, so the browser gets a
+ * format/quality-optimized asset at roughly the size it needs instead of
+ * the untransformed original. Local `/images/...` paths never pass through
+ * here — they already carry a hand-built srcSet via data/media.ts.
+ */
+function cloudinaryTransform(src: string, width?: number): string {
+  const marker = '/upload/';
+  const idx = src.indexOf(marker);
+  if (idx === -1) return src;
+  const transform = width ? `f_auto,q_auto,w_${width}/` : 'f_auto,q_auto/';
+  return src.slice(0, idx + marker.length) + transform + src.slice(idx + marker.length);
+}
+
+function cloudinarySrcSet(src: string): string {
+  return CLOUDINARY_WIDTHS.map((w) => `${cloudinaryTransform(src, w)} ${w}w`).join(', ');
+}
+
 /**
  * Responsive image with focal point, lazy loading and a local fallback.
  * Always fills its parent (object-fit: cover) — size the wrapper, not the img.
@@ -27,11 +54,18 @@ export const Img: React.FC<ImgProps> = ({
 }) => {
   const media: MediaImage = typeof image === 'string' ? { src: image, alt: alt ?? '' } : image;
 
+  // Cloudinary-hosted images (admin-uploaded product photos) get an
+  // f_auto,q_auto transformation plus a generated srcset when they don't
+  // already carry one. Local "/images/..." catalog photos are untouched.
+  const isCloudinary = isCloudinaryUrl(media.src);
+  const resolvedSrc = isCloudinary && !media.srcSet ? cloudinaryTransform(media.src) : media.src;
+  const resolvedSrcSet = media.srcSet || (isCloudinary ? cloudinarySrcSet(media.src) : undefined);
+
   return (
     <img
-      src={media.src}
-      srcSet={media.srcSet}
-      sizes={media.srcSet ? sizes : undefined}
+      src={resolvedSrc}
+      srcSet={resolvedSrcSet}
+      sizes={resolvedSrcSet ? sizes : undefined}
       alt={alt ?? media.alt}
       loading={priority ? 'eager' : 'lazy'}
       decoding={priority ? 'sync' : 'async'}

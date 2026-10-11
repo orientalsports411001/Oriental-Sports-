@@ -1,4 +1,8 @@
+'use client';
+
+import { useState } from 'react';
 import { SeoEditor } from '@/components/seo/SeoEditor';
+import { ImageGallery, type GalleryImage } from '@/components/products/ImageGallery';
 
 type ProductFormValues = {
   id?: string;
@@ -21,14 +25,16 @@ type ProductFormValues = {
   og_title: string | null;
   og_description: string | null;
   image_alt_text: Record<string, string> | null;
+  cloudinary_public_ids: Record<string, string> | null;
 };
 
 type Category = { slug: string; name: string };
 
 /**
- * Shared create/edit form. A plain Server Component — it posts to a Server
- * Action (passed in as `action`), so no client-side JS is required for the
- * core create/update path.
+ * Shared create/edit form. A Client Component (needed for the image
+ * gallery's upload/reorder/delete state and so the SEO editor's per-image
+ * alt-text list stays in sync with it) that still posts straight to a
+ * Server Action (passed in as `action`) on submit.
  */
 export function ProductForm({
   product,
@@ -41,6 +47,10 @@ export function ProductForm({
   action: (formData: FormData) => void;
   error?: string;
 }) {
+  const [images, setImages] = useState<GalleryImage[]>(
+    (product?.images || []).map((url) => ({ url, publicId: product?.cloudinary_public_ids?.[url] }))
+  );
+
   return (
     <form action={action}>
       {error && <p className="error">{error}</p>}
@@ -105,14 +115,7 @@ export function ProductForm({
         </div>
       </div>
 
-      <label htmlFor="images">Images (one URL per line)</label>
-      <textarea
-        id="images"
-        name="images"
-        defaultValue={(product?.images || []).join('\n')}
-        rows={3}
-        style={{ width: '100%' }}
-      />
+      <ImageGallery images={images} onChange={setImages} />
 
       <label htmlFor="sizes">Sizes (one per line, optional)</label>
       <textarea
@@ -177,7 +180,7 @@ export function ProductForm({
         price={product?.price ?? 0}
         sizes={Array.isArray(product?.sizes) ? (product?.sizes as string[]) : []}
         variants={Array.isArray(product?.variants) ? (product?.variants as unknown[]) : []}
-        images={product?.images || []}
+        images={images.map((i) => i.url)}
         initial={{
           seoTitle: product?.seo_title || '',
           seoDescription: product?.seo_description || '',

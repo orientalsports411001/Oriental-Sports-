@@ -141,7 +141,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signInWithMagicLink = async (email: string): Promise<{ success: boolean; message: string }> => {
-    const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/account` : undefined;
+    // Routes through /auth/callback, which exchanges the PKCE `code` the
+    // email link carries for a session (createBrowserClient defaults to
+    // `flowType: 'pkce'`) before landing on `next` — without that exchange
+    // step no session cookie is ever set and the click silently fails to
+    // sign the customer in. `next` preserves where they were trying to go
+    // (e.g. back to /checkout) rather than always dropping them on /account.
+    const next = returnToUrl || '/account';
+    const redirectTo =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`
+        : undefined;
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectTo },

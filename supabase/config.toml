@@ -161,7 +161,16 @@ site_url = "http://127.0.0.1:3000"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+# Covers both apps (storefront :3000, admin :3001) on both localhost/127.0.0.1,
+# since a mismatch here makes GoTrue silently fall back to `site_url` instead
+# of the app's real emailRedirectTo — which is what broke the admin app's
+# magic-link callback (see apps/admin/app/auth/callback/route.ts).
+additional_redirect_urls = [
+  "http://127.0.0.1:3000/**",
+  "http://localhost:3000/**",
+  "http://127.0.0.1:3001/**",
+  "http://localhost:3001/**",
+]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
