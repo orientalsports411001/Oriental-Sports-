@@ -14,6 +14,13 @@ const WISHLIST_STORAGE_KEY = 'oriental_sports_wishlist_v1';
 
 export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [wishlist, setWishlist] = useState<string[]>([]);
+  // Same hydrate/persist race as CartContext: both effects fire after the
+  // same initial render, so the persist effect's first run would otherwise
+  // write the still-default `wishlist = []` and clobber whatever was saved,
+  // before the hydrate effect's setWishlist has even applied. Skipping the
+  // persist effect's very first invocation fixes it — see CartContext.tsx
+  // for the full writeup of the race this fixes.
+  const isFirstPersist = React.useRef(true);
 
   useEffect(() => {
     try {
@@ -25,6 +32,10 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   useEffect(() => {
+    if (isFirstPersist.current) {
+      isFirstPersist.current = false;
+      return;
+    }
     try {
       localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(wishlist));
     } catch (e) {

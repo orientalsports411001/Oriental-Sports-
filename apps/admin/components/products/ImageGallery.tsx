@@ -52,6 +52,7 @@ export function ImageGallery({
   const [uploads, setUploads] = useState<UploadState[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [manualUrl, setManualUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Concurrent uploads each append to the *current* array rather than a
@@ -165,6 +166,13 @@ export function ImageGallery({
     setUploads((prev) => prev.filter((u) => u.fileName !== fileName));
   }
 
+  function addManualUrl() {
+    const url = manualUrl.trim();
+    if (!url) return;
+    onChange([...images, { url }]);
+    setManualUrl('');
+  }
+
   return (
     <div>
       <label>Images</label>
@@ -208,6 +216,33 @@ export function ImageGallery({
             e.target.value = '';
           }}
         />
+      </div>
+
+      {/* Cloudinary upload needs live credentials (NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+         etc., unset in local dev by default). Without this fallback, a
+         product with zero images can never be created or published — the
+         publish guard requires at least one image — so uploads being
+         unconfigured would silently block the whole product form. Accepts
+         any direct URL string: an existing local "/images/..." catalog path
+         or an external URL; just appended with no publicId (not deletable
+         from Cloudinary since it isn't a Cloudinary asset). */}
+      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <input
+          type="url"
+          placeholder="Or paste an image URL (e.g. /images/products/... or https://...)"
+          value={manualUrl}
+          onChange={(e) => setManualUrl(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              addManualUrl();
+            }
+          }}
+          style={{ flex: 1, minHeight: 44 }}
+        />
+        <button type="button" onClick={addManualUrl} style={{ minHeight: 44 }}>
+          Add URL
+        </button>
       </div>
 
       {uploads.length > 0 && (

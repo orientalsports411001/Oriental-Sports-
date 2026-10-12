@@ -41,6 +41,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [promoCode, setPromoCode] = useState('');
   const [discountPercent, setDiscountPercent] = useState(0);
+  // Both effects below fire after the same initial render, in declaration
+  // order. Without this guard, the persist effect's first run captures the
+  // still-default `cart = []` (the hydrate effect's `setCart` call hasn't
+  // committed a re-render yet) and immediately overwrites localStorage with
+  // an empty array — clobbering whatever was actually saved, on every
+  // single full page load, not just a rare race. Caught via a Playwright
+  // test that added an item, then did a full navigation (not a client-side
+  // route change, which never remounts this provider) to /cart and found
+  // it empty despite localStorage holding the item correctly right after
+  // the add. Skipping the persist effect's very first invocation avoids
+  // writing before hydration's own state update has had a chance to apply;
+  // its second invocation (triggered by hydrate's setCart) then persists
+  // the real value.
+  const isFirstPersist = React.useRef(true);
 
   // Hydrate from localStorage once on the client (avoids SSR/client mismatch).
   useEffect(() => {
@@ -53,6 +67,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
+    if (isFirstPersist.current) {
+      isFirstPersist.current = false;
+      return;
+    }
     try {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
     } catch (e) {
