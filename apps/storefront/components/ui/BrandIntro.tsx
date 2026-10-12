@@ -9,8 +9,12 @@ import React, { useEffect, useState } from 'react';
  * away. Tap to skip. Skipped entirely for prefers-reduced-motion.
  */
 export const BrandIntro: React.FC = () => {
-  const [phase, setPhase] = useState<'hidden' | 'in' | 'out'>(() => {
-    if (typeof window === 'undefined') return 'hidden';
+  // Always starts as 'hidden' so the client's first render matches the
+  // server-rendered markup (server has no sessionStorage/matchMedia access).
+  // The real decision is made after mount, in the effect below.
+  const [phase, setPhase] = useState<'hidden' | 'in' | 'out'>('hidden');
+
+  useEffect(() => {
     let seen = false;
     try {
       seen = sessionStorage.getItem('oriental_intro_shown') === 'true';
@@ -18,8 +22,9 @@ export const BrandIntro: React.FC = () => {
       seen = true;
     }
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    return seen || reduced ? 'hidden' : 'in';
-  });
+    if (seen || reduced) return;
+    setPhase('in');
+  }, []);
 
   useEffect(() => {
     if (phase === 'hidden') return;

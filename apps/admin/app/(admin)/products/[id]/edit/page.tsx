@@ -63,24 +63,26 @@ export default async function EditProductPage({
         {adjustments && adjustments.length > 0 && (
           <>
             <h3 style={{ marginTop: 24 }}>Recent adjustments</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Delta</th>
-                  <th>Reason</th>
-                  <th>When</th>
-                </tr>
-              </thead>
-              <tbody>
-                {adjustments.map((a) => (
-                  <tr key={a.id}>
-                    <td>{a.delta > 0 ? `+${a.delta}` : a.delta}</td>
-                    <td>{a.reason || '—'}</td>
-                    <td>{new Date(a.created_at).toLocaleString()}</td>
+            <div className="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Delta</th>
+                    <th>Reason</th>
+                    <th>When</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {adjustments.map((a) => (
+                    <tr key={a.id}>
+                      <td>{a.delta > 0 ? `+${a.delta}` : a.delta}</td>
+                      <td>{a.reason || '—'}</td>
+                      <td>{new Date(a.created_at).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </>
         )}
       </div>

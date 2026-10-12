@@ -226,7 +226,7 @@ export const CheckoutPage: React.FC = () => {
       <header className="checkout-header">
         <div className="checkout-header-inner">
           <Link to="/" style={{ textDecoration: 'none' }}>
-            <Logo size="md" />
+            <Logo size="md" linkToHome={false} />
           </Link>
 
           {/* Stepper Indicator */}

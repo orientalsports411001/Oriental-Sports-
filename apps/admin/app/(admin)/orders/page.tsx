@@ -73,37 +73,39 @@ export default async function OrdersPage({
         <button type="submit">Filter</button>
       </form>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Order #</th>
-            <th>Customer</th>
-            <th>Status</th>
-            <th>Total</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(orders || []).map((o) => (
-            <tr key={o.id}>
-              <td>
-                <a href={`/orders/${o.id}`}>{o.order_number}</a>
-              </td>
-              <td>{(o.user_id && emailByUserId.get(o.user_id)) || '—'}</td>
-              <td>
-                <span className="badge">{o.status}</span>
-              </td>
-              <td>₹{Number(o.total_amount).toFixed(2)}</td>
-              <td>{new Date(o.created_at).toLocaleString()}</td>
-            </tr>
-          ))}
-          {(!orders || orders.length === 0) && (
+      <div className="table-scroll">
+        <table>
+          <thead>
             <tr>
-              <td colSpan={5}>No orders match these filters.</td>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Status</th>
+              <th>Total</th>
+              <th>Date</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {(orders || []).map((o) => (
+              <tr key={o.id}>
+                <td>
+                  <a href={`/orders/${o.id}`}>{o.order_number}</a>
+                </td>
+                <td>{(o.user_id && emailByUserId.get(o.user_id)) || '—'}</td>
+                <td>
+                  <span className="badge">{o.status}</span>
+                </td>
+                <td>₹{Number(o.total_amount).toFixed(2)}</td>
+                <td>{new Date(o.created_at).toLocaleString()}</td>
+              </tr>
+            ))}
+            {(!orders || orders.length === 0) && (
+              <tr>
+                <td colSpan={5}>No orders match these filters.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

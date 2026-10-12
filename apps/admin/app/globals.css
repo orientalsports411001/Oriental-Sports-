@@ -26,6 +26,16 @@ th, td {
   font-size: 14px;
 }
 
+/* Row-name links (products/categories/orders lists) are the primary way to
+   open a record from these tables — give them a real 44px tap target
+   instead of just the text's line height. */
+td a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+}
+
 th {
   background: #f0f0f0;
   font-weight: 600;
@@ -56,6 +66,7 @@ button {
   background: #1a1a1a;
   color: #fff;
   cursor: pointer;
+  min-height: 44px;
 }
 
 button.secondary {
@@ -98,6 +109,8 @@ button.danger {
   color: #ddd;
   text-decoration: none;
   padding: 8px 0;
+  min-height: 44px;
+  line-height: 28px;
 }
 
 .admin-nav a:hover {
@@ -106,8 +119,58 @@ button.danger {
 
 .admin-main {
   flex: 1;
+  min-width: 0; /* let this column shrink below its content's intrinsic width in the flex row */
   padding: 24px 32px;
   max-width: 1100px;
+}
+
+/* Below tablet width the fixed 200px sidebar doesn't leave enough room for
+   any real content (forms, data tables) without the page scrolling
+   horizontally. Stack nav above content and let the nav links scroll
+   horizontally instead — the page itself never does. */
+@media (max-width: 767px) {
+  .admin-shell {
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .admin-nav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 4px 16px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-nav strong {
+    margin-bottom: 0 !important;
+    white-space: nowrap;
+  }
+
+  .admin-nav a {
+    padding: 8px 4px;
+    white-space: nowrap;
+  }
+
+  .admin-nav > div {
+    display: none; /* "Signed in as ..." — not worth the nav-bar space on a phone */
+  }
+
+  .admin-main {
+    max-width: 100%;
+    padding: 16px;
+  }
+}
+
+/* A data table is usually wider than a phone screen; scope the horizontal
+   scroll to the table itself (inside this wrapper) instead of letting it
+   push out the whole page. */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .card {
@@ -162,6 +225,16 @@ button.danger {
 
 .form-row > * {
   flex: 1;
+  min-width: 0; /* let a long value/placeholder shrink instead of forcing the row wider than its container */
+}
+
+/* Two fields side by side get too narrow to use below ~480px (e.g. a
+   currency input next to its label on a 320-390px phone) — stack them. */
+@media (max-width: 480px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
 .toolbar {

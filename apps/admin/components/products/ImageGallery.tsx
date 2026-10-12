@@ -5,6 +5,15 @@ import { deleteCloudinaryAssetAction } from '@/app/(admin)/products/cloudinary-a
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_TYPE_PREFIX = 'image/';
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://orientalsports.in').replace(/\/+$/, '');
+
+/** Cloudinary URLs are already absolute; legacy/local paths like
+ * "/images/products/..." only exist in the storefront's public folder, not
+ * this app's, so they 404 against the admin's own origin — resolve them
+ * against the storefront instead. */
+function resolveImageUrl(url: string): string {
+  return url.startsWith('/') ? `${SITE_URL}${url}` : url;
+}
 
 export type GalleryImage = {
   /** The delivery URL stored in products.images — local "/images/..." path or a Cloudinary secure_url. */
@@ -208,7 +217,11 @@ export function ImageGallery({
               {u.error ? (
                 <span className="error">
                   {u.fileName}: {u.error}{' '}
-                  <button type="button" onClick={() => dismissUpload(u.fileName)} style={{ minHeight: 24 }}>
+                  <button
+                    type="button"
+                    onClick={() => dismissUpload(u.fileName)}
+                    style={{ minHeight: 44, minWidth: 44 }}
+                  >
                     Dismiss
                   </button>
                 </span>
@@ -246,7 +259,7 @@ export function ImageGallery({
               <div style={{ position: 'relative', height: 100, background: '#f3f4f6' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={img.url}
+                  src={resolveImageUrl(img.url)}
                   alt=""
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => {

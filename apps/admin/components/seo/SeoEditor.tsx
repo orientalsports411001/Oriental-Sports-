@@ -267,7 +267,7 @@ export function SeoEditor({
                   type="button"
                   onClick={() => removeSecondaryKeyword(k)}
                   aria-label={`Remove ${k}`}
-                  style={{ minWidth: 20, minHeight: 20, lineHeight: 1 }}
+                  style={{ minWidth: 44, minHeight: 44, lineHeight: 1 }}
                 >
                   ×
                 </button>
@@ -335,7 +335,11 @@ export function SeoEditor({
           <div style={{ background: '#eee', height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
             {images[0] ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={images[0]} alt="" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'cover' }} />
+              <img
+                src={images[0].startsWith('/') ? `${SITE_URL}${images[0]}` : images[0]}
+                alt=""
+                style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'cover' }}
+              />
             ) : (
               'No image'
             )}

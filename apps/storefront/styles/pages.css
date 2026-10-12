@@ -813,6 +813,19 @@
   display: grid;
   gap: 28px;
   scroll-margin-top: calc(var(--header-h) + 24px);
+  /* Grid items default to a min-width of their max-content size. Longer
+     service titles (e.g. "Tennis Court Surfacing & Construction") can then
+     force the implicit single-column track wider than the viewport, even
+     though the heading would wrap fine — `text-wrap: balance` makes this
+     worse by sizing headings toward their balanced max-content width. The
+     min-width: 0 below on each item lets the track shrink to the container
+     instead of to its widest child's intrinsic content width. */
+  min-width: 0;
+}
+
+.court-service-media,
+.court-service-body {
+  min-width: 0;
 }
 
 .court-service-media {
@@ -1255,7 +1268,58 @@
 .cart-line-remove { width: 44px; height: 44px; display: grid; place-items: center; color: var(--muted); border-radius: var(--r-pill); }
 .cart-line-remove:hover { color: var(--ink); background: rgba(17, 17, 17, 0.06); }
 
-.qty-sm button { width: 40px; height: 42px; }
+.qty-sm button { width: 44px; height: 44px; }
+
+/* Current CartPage.tsx markup uses this class set (cart-line-head/-title/
+   -price/-meta/-actions, qty-control/-btn/-value, cart-remove-btn) rather
+   than the names above; both are kept since either can be the live markup. */
+.cart-line-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.cart-line-title { font-weight: 600; line-height: 1.35; margin: 0; }
+.cart-line-title a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.cart-line-price { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cart-line-meta { font-size: 0.875rem; color: var(--muted); }
+.cart-line-meta .meta-sep { margin-left: 4px; }
+.cart-line-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--r-1);
+  background: var(--paper);
+}
+.qty-btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+}
+.qty-value {
+  min-width: 32px;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.cart-remove-btn:hover { color: var(--ink); }
 
 .cart-summary { display: flex; flex-direction: column; gap: 20px; }
 .cart-field { border: 0; display: flex; flex-direction: column; gap: 10px; }

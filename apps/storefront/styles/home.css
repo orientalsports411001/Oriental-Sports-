@@ -290,7 +290,7 @@
    ========================================================================== */
 .sport-rail { list-style: none; }
 
-.sport-panel { border-top: 1px solid var(--line); }
+.sport-panel { border-top: 1px solid var(--line); min-width: 0; }
 .sport-panel:last-child { border-bottom: 1px solid var(--line); }
 
 .sport-panel-link {
@@ -316,6 +316,15 @@
 
 .sport-panel-name {
   align-self: end;
+  /* Grid items default to a min-width based on their content's min-content
+     size. A long one-word sport name (e.g. "Badminton", "Pickleball") in the
+     narrow 2-up tablet grid (640–1023px) can then force its column — and the
+     whole page — wider than the viewport. min-width: 0 lets the column
+     shrink to the space actually available; the wrap properties let a name
+     that still doesn't fit break onto a second line instead of overflowing. */
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
   font-stretch: var(--stretch-display);
   font-weight: 800;
   font-size: clamp(1.9rem, 8vw, 2.6rem);

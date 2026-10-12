@@ -180,7 +180,16 @@ export const Hero: React.FC = () => {
             aria-roledescription="slide"
             aria-label={`${s.tab}`}
             aria-hidden={!active}
-            {...(!active ? { inert: true } : {})}
+            ref={(el) => {
+              // Set the `inert` DOM property directly rather than as a JSX
+              // attribute: React 18's HTMLAttributes types `inert` as a
+              // boolean, but passing a boolean through JSX produces an
+              // invalid-attribute warning (React only special-cases this in
+              // React 19+). Setting the property imperatively avoids both
+              // the type conflict and the warning while keeping inert slides
+              // genuinely non-interactive/non-focusable for assistive tech.
+              if (el) (el as HTMLDivElement & { inert: boolean }).inert = !active;
+            }}
           >
             <div className="hero-media">
               <div className="hero-media-inner">

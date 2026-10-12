@@ -59,28 +59,30 @@ export default async function OrderDetailPage({
 
       <div className="card">
         <h2>Line items (immutable)</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Variant / Size</th>
-              <th>Price</th>
-              <th>Qty</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(items || []).map((it) => (
-              <tr key={it.id}>
-                <td>{it.product_name}</td>
-                <td>
-                  {[it.selected_variant, it.selected_size].filter(Boolean).join(' / ') || '—'}
-                </td>
-                <td>₹{Number(it.price).toFixed(2)}</td>
-                <td>{it.quantity}</td>
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Variant / Size</th>
+                <th>Price</th>
+                <th>Qty</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(items || []).map((it) => (
+                <tr key={it.id}>
+                  <td>{it.product_name}</td>
+                  <td>
+                    {[it.selected_variant, it.selected_size].filter(Boolean).join(' / ') || '—'}
+                  </td>
+                  <td>₹{Number(it.price).toFixed(2)}</td>
+                  <td>{it.quantity}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="card">

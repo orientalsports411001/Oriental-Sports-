@@ -75,44 +75,46 @@ export default async function ProductsPage({
         <button type="submit">Filter</button>
       </form>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Price</th>
-            <th>Stock</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(products || []).map((p) => (
-            <tr key={p.id}>
-              <td>
-                <a href={`/products/${p.id}/edit`}>{p.name}</a>
-              </td>
-              <td>{p.category_slug}</td>
-              <td>
-                <span className={`badge ${p.status}`}>{p.status}</span>
-              </td>
-              <td>₹{Number(p.price).toFixed(2)}</td>
-              <td>
-                {p.stock_quantity}
-                {p.stock_quantity <= p.low_stock_threshold && (
-                  <span className="badge draft" style={{ marginLeft: 6 }}>
-                    low
-                  </span>
-                )}
-              </td>
-            </tr>
-          ))}
-          {(!products || products.length === 0) && (
+      <div className="table-scroll">
+        <table>
+          <thead>
             <tr>
-              <td colSpan={5}>No products match these filters.</td>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Price</th>
+              <th>Stock</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {(products || []).map((p) => (
+              <tr key={p.id}>
+                <td>
+                  <a href={`/products/${p.id}/edit`}>{p.name}</a>
+                </td>
+                <td>{p.category_slug}</td>
+                <td>
+                  <span className={`badge ${p.status}`}>{p.status}</span>
+                </td>
+                <td>₹{Number(p.price).toFixed(2)}</td>
+                <td>
+                  {p.stock_quantity}
+                  {p.stock_quantity <= p.low_stock_threshold && (
+                    <span className="badge draft" style={{ marginLeft: 6 }}>
+                      low
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {(!products || products.length === 0) && (
+              <tr>
+                <td colSpan={5}>No products match these filters.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <div className="toolbar" style={{ marginTop: 16 }}>
         <span>

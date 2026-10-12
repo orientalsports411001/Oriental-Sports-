@@ -60,26 +60,28 @@ export default async function DashboardPage() {
         {lowStock.length === 0 ? (
           <p>No products at or below their low-stock threshold.</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Stock</th>
-                <th>Threshold</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lowStock.slice(0, 10).map((p) => (
-                <tr key={p.id}>
-                  <td>
-                    <a href={`/products/${p.id}/edit`}>{p.name}</a>
-                  </td>
-                  <td>{p.stock_quantity}</td>
-                  <td>{p.low_stock_threshold}</td>
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Stock</th>
+                  <th>Threshold</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {lowStock.slice(0, 10).map((p) => (
+                  <tr key={p.id}>
+                    <td>
+                      <a href={`/products/${p.id}/edit`}>{p.name}</a>
+                    </td>
+                    <td>{p.stock_quantity}</td>
+                    <td>{p.low_stock_threshold}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -88,30 +90,32 @@ export default async function DashboardPage() {
         {!recentOrders || recentOrders.length === 0 ? (
           <p>No orders yet.</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Order #</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentOrders.map((o) => (
-                <tr key={o.id}>
-                  <td>
-                    <a href={`/orders/${o.id}`}>{o.order_number}</a>
-                  </td>
-                  <td>
-                    <span className="badge">{o.status}</span>
-                  </td>
-                  <td>₹{Number(o.total_amount).toFixed(2)}</td>
-                  <td>{new Date(o.created_at).toLocaleString()}</td>
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentOrders.map((o) => (
+                  <tr key={o.id}>
+                    <td>
+                      <a href={`/orders/${o.id}`}>{o.order_number}</a>
+                    </td>
+                    <td>
+                      <span className="badge">{o.status}</span>
+                    </td>
+                    <td>₹{Number(o.total_amount).toFixed(2)}</td>
+                    <td>{new Date(o.created_at).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
