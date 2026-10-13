@@ -12,7 +12,7 @@ import { Reveal, RevealLines, Stagger, StaggerItem } from '../motion/Reveal';
  */
 
 // The four pieces photographed in the studio — consistent staging, real prices.
-const EDIT_IDS = ['prod-crick-01', 'prod-bad-01', 'prod-ten-01', 'prod-pb-01'];
+const EDIT_IDS = ['prod-crick-01', 'prod-ten-01', 'prod-pb-01', 'prod-bad-01'];
 const EDIT = EDIT_IDS.map((id) => PRODUCTS.find((p) => p.id === id)).filter((p): p is Product => Boolean(p));
 
 const SERVICES = [

@@ -949,9 +949,24 @@
 
 .estimator-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 
-.chip-dark { color: var(--on-dark); border-color: rgba(246, 243, 234, 0.3); }
-.chip-dark:hover { border-color: var(--on-dark); }
-.chip-dark[aria-pressed='true'] { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.chip-dark {
+  background: rgba(246, 243, 234, 0.08);
+  color: var(--on-dark);
+  border: 1px solid rgba(246, 243, 234, 0.28);
+  box-shadow: none;
+}
+.chip-dark:hover {
+  background: rgba(246, 243, 234, 0.16);
+  border-color: rgba(246, 243, 234, 0.6);
+  color: #ffffff;
+}
+.chip-dark[aria-pressed='true'],
+.chip-dark.is-active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
+}
 
 .estimator-options { display: grid; gap: 8px; }
 .estimator-option,

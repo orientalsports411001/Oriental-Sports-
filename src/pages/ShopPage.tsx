@@ -137,6 +137,35 @@ export const ShopPage: React.FC = () => {
     return map;
   }, []);
 
+  const subcategoryCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    relevantProducts.forEach((p) => {
+      if (p.subcategory) map.set(p.subcategory, (map.get(p.subcategory) ?? 0) + 1);
+    });
+    return map;
+  }, [relevantProducts]);
+
+  const brandCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    relevantProducts.forEach((p) => {
+      if (p.brand) map.set(p.brand, (map.get(p.brand) ?? 0) + 1);
+    });
+    return map;
+  }, [relevantProducts]);
+
+  const priceCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    PRICE_RANGES.forEach((r) => {
+      if (r.id === 'all') {
+        map.set('all', relevantProducts.length);
+      } else {
+        const count = relevantProducts.filter((p) => p.price >= r.min && p.price < r.max).length;
+        map.set(r.id, count);
+      }
+    });
+    return map;
+  }, [relevantProducts]);
+
   const priceRange = useMemo(
     () => PRICE_RANGES.find((r) => r.id === selectedPrice) ?? PRICE_RANGES[0],
     [selectedPrice],
@@ -254,6 +283,7 @@ export const ShopPage: React.FC = () => {
                 onChange={() => update('subcategory', null)}
               />
               <span>All Subcategories</span>
+              <span className="filter-count">{relevantProducts.length}</span>
             </label>
             {availableSubcategories.map((sub) => (
               <label key={sub.id} className={`filter-radio ${selectedSubcategory === sub.id ? 'is-checked' : ''}`}>
@@ -265,6 +295,7 @@ export const ShopPage: React.FC = () => {
                   onChange={() => update('subcategory', sub.id)}
                 />
                 <span>{sub.name}</span>
+                <span className="filter-count">{subcategoryCounts.get(sub.id) ?? 0}</span>
               </label>
             ))}
           </div>
@@ -284,6 +315,7 @@ export const ShopPage: React.FC = () => {
                 onChange={() => update('brand', null)}
               />
               <span>All Brands</span>
+              <span className="filter-count">{relevantProducts.length}</span>
             </label>
             {availableBrands.map((b) => (
               <label key={b} className={`filter-radio ${selectedBrand === b ? 'is-checked' : ''}`}>
@@ -295,6 +327,7 @@ export const ShopPage: React.FC = () => {
                   onChange={() => update('brand', b)}
                 />
                 <span>{b}</span>
+                <span className="filter-count">{brandCounts.get(b) ?? 0}</span>
               </label>
             ))}
           </div>
@@ -315,18 +348,24 @@ export const ShopPage: React.FC = () => {
               />
               <span>All Sizes</span>
             </label>
-            {CRICKET_BAT_SIZES.map((sz) => (
-              <label key={sz} className={`filter-radio ${selectedBatSize === sz ? 'is-checked' : ''}`}>
-                <input
-                  type="radio"
-                  name="batSize"
-                  value={sz}
-                  checked={selectedBatSize === sz}
-                  onChange={() => update('batSize', sz)}
-                />
-                <span>{sz}</span>
-              </label>
-            ))}
+            {CRICKET_BAT_SIZES.map((sz) => {
+              const count = relevantProducts.filter(
+                (p) => p.sizes?.includes(sz) || p.variants?.some((v) => v.name.includes(sz))
+              ).length;
+              return (
+                <label key={sz} className={`filter-radio ${selectedBatSize === sz ? 'is-checked' : ''}`}>
+                  <input
+                    type="radio"
+                    name="batSize"
+                    value={sz}
+                    checked={selectedBatSize === sz}
+                    onChange={() => update('batSize', sz)}
+                  />
+                  <span>{sz}</span>
+                  <span className="filter-count">{count}</span>
+                </label>
+              );
+            })}
           </div>
         </FilterSection>
       )}
@@ -344,6 +383,7 @@ export const ShopPage: React.FC = () => {
                 onChange={() => update('price', r.id === 'all' ? null : r.id)}
               />
               <span>{r.label}</span>
+              <span className="filter-count">{priceCounts.get(r.id) ?? 0}</span>
             </label>
           ))}
         </div>

@@ -86,7 +86,6 @@ const ActionLink: React.FC<{ action: Action; className: string; tabIndex?: numbe
 export const Hero: React.FC = () => {
   const reduced = useReducedMotion();
   const [index, setIndex] = useState(0);
-  const [userPaused, setUserPaused] = useState(false);
   const [hoverPaused, setHoverPaused] = useState(false);
   const [focusPaused, setFocusPaused] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -94,7 +93,7 @@ export const Hero: React.FC = () => {
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
   const status = useStoreStatus();
 
-  const autoplay = !reduced && !userPaused;
+  const autoplay = !reduced;
   const paused = !autoplay || hoverPaused || focusPaused;
   const slide = SLIDES[index];
 
@@ -242,6 +241,7 @@ export const Hero: React.FC = () => {
                 onClick={() => go(i)}
                 onKeyDown={(e) => onTabKey(e, i)}
               >
+                <span className="hero-tab-label">{s.tab}</span>
                 <span className="hero-tab-track" aria-hidden="true">
                   <span
                     key={`${s.id}-${index}`}
@@ -254,26 +254,10 @@ export const Hero: React.FC = () => {
                     onAnimationEnd={() => active && autoplay && go(index + 1)}
                   />
                 </span>
-                <span className="hero-tab-label">{s.tab}</span>
-                <span className="hero-tab-note">{s.tabNote}</span>
               </button>
             );
           })}
         </div>
-        {!reduced && (
-          <button
-            type="button"
-            className="hero-pause"
-            onClick={() => setUserPaused((p) => !p)}
-            aria-label={userPaused ? 'Play slideshow' : 'Pause slideshow'}
-          >
-            {userPaused ? (
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z" fill="currentColor" /></svg>
-            ) : (
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1h3v10H2zM7 1h3v10H7z" fill="currentColor" /></svg>
-            )}
-          </button>
-        )}
       </div>
     </section>
   );
