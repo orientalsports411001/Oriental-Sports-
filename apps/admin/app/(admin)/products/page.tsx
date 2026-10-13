@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
 
@@ -51,9 +52,9 @@ export default async function ProductsPage({
     <div>
       <div className="toolbar">
         <h1 style={{ margin: 0, flex: 1 }}>Products</h1>
-        <a href="/products/new">
+        <Link href="/products/new">
           <button>New product</button>
-        </a>
+        </Link>
       </div>
 
       <form className="toolbar card" method="get">
@@ -90,7 +91,7 @@ export default async function ProductsPage({
             {(products || []).map((p) => (
               <tr key={p.id}>
                 <td>
-                  <a href={`/products/${p.id}/edit`}>{p.name}</a>
+                  <Link href={`/products/${p.id}/edit`}>{p.name}</Link>
                 </td>
                 <td>{p.category_slug}</td>
                 <td>
@@ -121,14 +122,14 @@ export default async function ProductsPage({
           Page {page} of {totalPages} ({count ?? 0} products)
         </span>
         {page > 1 && (
-          <a href={buildPageHref(page - 1)}>
+          <Link href={buildPageHref(page - 1)}>
             <button className="secondary">Previous</button>
-          </a>
+          </Link>
         )}
         {page < totalPages && (
-          <a href={buildPageHref(page + 1)}>
+          <Link href={buildPageHref(page + 1)}>
             <button className="secondary">Next</button>
-          </a>
+          </Link>
         )}
       </div>
     </div>

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function NotAuthorizedPage() {
   return (
     <div style={{ maxWidth: 480, margin: '80px auto', textAlign: 'center' }}>
@@ -7,7 +9,7 @@ export default function NotAuthorizedPage() {
         existing admin to promote your profile (see docs/ADMIN_SETUP.md).
       </p>
       <p>
-        <a href="/login">Back to login</a>
+        <Link href="/login">Back to login</Link>
       </p>
     </div>
   );

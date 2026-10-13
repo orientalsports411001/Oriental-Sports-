@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
 
@@ -15,9 +16,9 @@ export default async function CategoriesPage() {
     <div>
       <div className="toolbar">
         <h1 style={{ margin: 0, flex: 1 }}>Categories</h1>
-        <a href="/categories/new">
+        <Link href="/categories/new">
           <button>New category</button>
-        </a>
+        </Link>
       </div>
 
       <div className="table-scroll">
@@ -33,7 +34,7 @@ export default async function CategoriesPage() {
             {(categories || []).map((c) => (
               <tr key={c.id}>
                 <td>
-                  <a href={`/categories/${c.id}/edit`}>{c.name}</a>
+                  <Link href={`/categories/${c.id}/edit`}>{c.name}</Link>
                 </td>
                 <td>{c.slug}</td>
                 <td>{c.sort_order}</td>

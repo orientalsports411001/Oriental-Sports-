@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
 
@@ -88,7 +89,7 @@ export default async function OrdersPage({
             {(orders || []).map((o) => (
               <tr key={o.id}>
                 <td>
-                  <a href={`/orders/${o.id}`}>{o.order_number}</a>
+                  <Link href={`/orders/${o.id}`}>{o.order_number}</Link>
                 </td>
                 <td>{(o.user_id && emailByUserId.get(o.user_id)) || '—'}</td>
                 <td>

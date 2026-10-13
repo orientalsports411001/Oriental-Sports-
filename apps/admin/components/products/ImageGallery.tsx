@@ -86,7 +86,7 @@ export function ImageGallery({
     setUploads((prev) => [...prev, { fileName: file.name, progress: 5 }]);
 
     try {
-      const signRes = await fetch('/api/cloudinary/sign', { method: 'POST' });
+      const signRes = await fetch('/admin/api/cloudinary/sign', { method: 'POST' });
       if (!signRes.ok) {
         const body = await signRes.json().catch(() => ({}));
         throw new Error(body.error || `Could not sign upload (${signRes.status}).`);

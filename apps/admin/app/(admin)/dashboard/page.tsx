@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -73,7 +74,7 @@ export default async function DashboardPage() {
                 {lowStock.slice(0, 10).map((p) => (
                   <tr key={p.id}>
                     <td>
-                      <a href={`/products/${p.id}/edit`}>{p.name}</a>
+                      <Link href={`/products/${p.id}/edit`}>{p.name}</Link>
                     </td>
                     <td>{p.stock_quantity}</td>
                     <td>{p.low_stock_threshold}</td>
@@ -104,7 +105,7 @@ export default async function DashboardPage() {
                 {recentOrders.map((o) => (
                   <tr key={o.id}>
                     <td>
-                      <a href={`/orders/${o.id}`}>{o.order_number}</a>
+                      <Link href={`/orders/${o.id}`}>{o.order_number}</Link>
                     </td>
                     <td>
                       <span className="badge">{o.status}</span>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { requireAdmin } from '@/lib/require-admin';
 
 /**
@@ -16,10 +17,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="admin-shell">
       <nav className="admin-nav">
         <strong style={{ display: 'block', marginBottom: 16, color: '#fff' }}>Oriental Sports Admin</strong>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/products">Products</a>
-        <a href="/categories">Categories</a>
-        <a href="/orders">Orders</a>
+        <Link href="/dashboard">Dashboard</Link>
+        <Link href="/products">Products</Link>
+        <Link href="/categories">Categories</Link>
+        <Link href="/orders">Orders</Link>
         <div style={{ marginTop: 24, fontSize: 12, color: '#999' }}>
           Signed in as {profile.email}
         </div>
