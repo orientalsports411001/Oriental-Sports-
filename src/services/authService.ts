@@ -1,4 +1,11 @@
 import { UserProfile, Address, Order, CourtInquiry } from '../types/auth';
+import {
+  supabase,
+  isSupabaseConfigured,
+  mapDbProfileToUser,
+  syncProfileToSupabase,
+  fetchUserOrdersFromSupabase,
+} from '../lib/supabase';
 
 const STORAGE_KEY = 'oriental_sports_auth_user_v1';
 
@@ -38,165 +45,8 @@ export const INITIAL_USER: UserProfile = {
       type: 'work',
     },
   ],
-  orders: [
-    {
-      id: 'ord-8831',
-      orderNumber: 'OS-2024-8831',
-      date: '2024-11-18',
-      status: 'delivered',
-      statusLabel: 'Delivered to Camp, Pune',
-      totalAmount: 18499,
-      subtotal: 18499,
-      shipping: 0,
-      tax: 2821,
-      paymentMethod: 'UPI (Google Pay)',
-      shippingAddress: {
-        id: 'addr_1',
-        name: 'Arjun Deshmukh',
-        phone: '+91 98230 45812',
-        street: 'Bungalow No. 7, Silver Oak Lane, Off MG Road',
-        locality: 'Camp',
-        city: 'Pune',
-        state: 'Maharashtra',
-        pincode: '411001',
-        isDefault: true,
-        type: 'home',
-      },
-      trackingNumber: 'DTDC-PN-9920141',
-      carrier: 'DTDC Express',
-      estimatedDelivery: '19 Nov 2024',
-      items: [
-        {
-          productId: 'prod-bad-01',
-          productSlug: 'victor-thruster-k-ryuga-ii-pro',
-          productName: 'Victor Thruster K Ryuga II Pro Badminton Racquet',
-          productImage: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=800&q=80',
-          price: 18499,
-          quantity: 1,
-          selectedVariant: '4U (83g) / G5',
-        },
-      ],
-      timeline: [
-        {
-          status: 'confirmed',
-          title: 'Order Confirmed',
-          description: 'Payment verified via UPI. Order sent to Camp flagship store fulfillment depot.',
-          date: '18 Nov 2024, 10:15 AM',
-          completed: true,
-          current: false,
-        },
-        {
-          status: 'processing',
-          title: 'Custom Restringing & Quality Check',
-          description: 'Strung at 27 lbs electronic tension using Yonex BG80 by master technician in Camp workshop.',
-          date: '18 Nov 2024, 02:30 PM',
-          completed: true,
-          current: false,
-        },
-        {
-          status: 'shipped',
-          title: 'Dispatched via DTDC Local Courier',
-          description: 'Package picked up from Oriental Sports MG Road warehouse.',
-          date: '19 Nov 2024, 09:00 AM',
-          completed: true,
-          current: false,
-        },
-        {
-          status: 'delivered',
-          title: 'Delivered Successfully',
-          description: 'Received by Arjun Deshmukh at Camp bungalow.',
-          date: '19 Nov 2024, 01:45 PM',
-          completed: true,
-          current: true,
-        },
-      ],
-    },
-    {
-      id: 'ord-8714',
-      orderNumber: 'OS-2024-8714',
-      date: '2024-10-04',
-      status: 'delivered',
-      statusLabel: 'Delivered to Baner, Pune',
-      totalAmount: 3799,
-      subtotal: 3799,
-      shipping: 0,
-      tax: 579,
-      paymentMethod: 'Credit Card (HDFC Visa)',
-      shippingAddress: {
-        id: 'addr_2',
-        name: 'Arjun Deshmukh (Office)',
-        phone: '+91 98230 45812',
-        street: 'Level 4, Quadra IT Park, West Avenue',
-        locality: 'Baner',
-        city: 'Pune',
-        state: 'Maharashtra',
-        pincode: '411045',
-        isDefault: false,
-        type: 'work',
-      },
-      trackingNumber: 'DELHIVERY-OS-44812',
-      carrier: 'Delhivery Surface',
-      items: [
-        {
-          productId: 'prod-ten-02',
-          productSlug: 'wilson-us-open-extra-duty-balls-case',
-          productName: 'Wilson US Open Extra Duty Tennis Balls (Can of 3)',
-          productImage: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80',
-          price: 899,
-          quantity: 2,
-        },
-        {
-          productId: 'prod-acc-01',
-          productSlug: 'oriental-pro-tour-6-racquet-thermal-bag',
-          productName: 'Oriental Pro Tour 6-Racquet Thermal Gear Bag',
-          productImage: 'https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=800&q=80',
-          price: 2001,
-          quantity: 1,
-        },
-      ],
-      timeline: [
-        {
-          status: 'confirmed',
-          title: 'Order Confirmed',
-          description: 'Payment received.',
-          date: '04 Oct 2024, 11:30 AM',
-          completed: true,
-          current: false,
-        },
-        {
-          status: 'shipped',
-          title: 'Dispatched',
-          description: 'Handed over to Delhivery.',
-          date: '04 Oct 2024, 04:00 PM',
-          completed: true,
-          current: false,
-        },
-        {
-          status: 'delivered',
-          title: 'Delivered',
-          description: 'Delivered to office reception desk.',
-          date: '05 Oct 2024, 03:20 PM',
-          completed: true,
-          current: true,
-        },
-      ],
-    },
-  ],
-  courtInquiries: [
-    {
-      id: 'inq-902',
-      inquiryNumber: 'CRT-2024-902',
-      date: '2024-10-22',
-      sport: 'Pickleball',
-      surface: 'Cushioned 8-Layer Acrylic',
-      location: 'Koregaon Park, Pune',
-      status: 'proposal_ready',
-      statusLabel: 'Detailed BOQ Proposal Ready',
-      contactPerson: 'Arjun Deshmukh',
-      phone: '+91 98230 45812',
-      notes: 'Private rooftop court 20m x 10m with LED perimeter floodlighting and chainlink fence.',
-    },
-  ],
+  orders: [],
+  courtInquiries: [],
 };
 
 export class AuthService {
@@ -205,7 +55,6 @@ export class AuthService {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        // Clean out legacy demo user if it was saved by accident
         if (parsed.id === 'usr_pune_0921' || parsed.email === 'arjun.deshmukh@gmail.com') {
           localStorage.removeItem(STORAGE_KEY);
           return null;
@@ -213,12 +62,12 @@ export class AuthService {
         return parsed;
       }
     } catch {
-      // fallback
+      // ignore
     }
     return null;
   }
 
-  private static saveUser(user: UserProfile | null) {
+  static saveUser(user: UserProfile | null) {
     try {
       if (user) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
@@ -226,16 +75,111 @@ export class AuthService {
         localStorage.removeItem(STORAGE_KEY);
       }
     } catch {
-      // fallback
+      // ignore
     }
   }
 
   static getCurrentUser(): UserProfile | null {
-    // Normal visitors start signed out. No demo persona is assumed.
     return this.loadUser();
   }
 
+  /**
+   * Initializes Supabase session listeners and syncs profiles table with current auth state.
+   */
+  static initAuthListener(onUserChange: (user: UserProfile | null) => void): () => void {
+    if (!isSupabaseConfigured()) {
+      // Local demo mode: emit existing local user
+      onUserChange(this.getCurrentUser());
+      return () => {};
+    }
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        try {
+          const authUser = session.user;
+          // 1. Fetch profile from Supabase database
+          const { data: profileRow, error: profileErr } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', authUser.id)
+            .maybeSingle();
+
+          let activeProfile = profileRow;
+
+          // 2. If new user, create profile row in database
+          if (!activeProfile && !profileErr) {
+            const rawMeta = authUser.user_metadata || {};
+            const fullName =
+              rawMeta.full_name ||
+              rawMeta.name ||
+              (authUser.email ? authUser.email.split('@')[0] : 'Sports Member');
+            const firstName = rawMeta.given_name || fullName.split(' ')[0] || 'Sports';
+            const lastName = rawMeta.family_name || fullName.split(' ').slice(1).join(' ') || '';
+
+            const newRow = {
+              id: authUser.id,
+              email: authUser.email || '',
+              full_name: fullName,
+              first_name: firstName,
+              last_name: lastName,
+              addresses: [],
+              sport_preferences: ['Badminton', 'Tennis'],
+              membership_tier: 'Club Athlete',
+            };
+
+            const { data: createdRow } = await supabase
+              .from('profiles')
+              .insert(newRow)
+              .select('*')
+              .maybeSingle();
+
+            activeProfile = createdRow || newRow;
+          }
+
+          // 3. Fetch user orders from database
+          const orders = await fetchUserOrdersFromSupabase(authUser.id);
+
+          // 4. Map and store
+          const mapped = mapDbProfileToUser(authUser, activeProfile, orders);
+          this.saveUser(mapped);
+          onUserChange(mapped);
+        } catch (err) {
+          console.error('Error fetching Supabase profile:', err);
+          onUserChange(this.getCurrentUser());
+        }
+      } else {
+        if (event === 'SIGNED_OUT') {
+          this.saveUser(null);
+          onUserChange(null);
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }
+
   static async requestOtp(phone: string): Promise<{ success: boolean; devOtp: string }> {
+    const formattedPhone = phone.startsWith('+91') ? phone : `+91${phone.replace(/\D/g, '')}`;
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.auth.signInWithOtp({
+          phone: formattedPhone,
+        });
+        if (!error) {
+          return { success: true, devOtp: 'SMS sent to your device' };
+        }
+        console.warn('Supabase Phone OTP note:', error.message);
+      } catch (e) {
+        console.warn('Phone OTP fallback:', e);
+      }
+    }
+
+    // Dev/fallback mode when SMS gateway is not active
     await new Promise((r) => setTimeout(r, 450));
     return {
       success: true,
@@ -243,13 +187,41 @@ export class AuthService {
     };
   }
 
-  static async verifyOtp(phone: string, otp: string, registrationData?: { firstName: string; lastName: string; email?: string }): Promise<UserProfile> {
-    await new Promise((r) => setTimeout(r, 550));
-    localStorage.removeItem('oriental_sports_logged_out');
-    
-    let user = this.getCurrentUser();
+  static async verifyOtp(
+    phone: string,
+    otp: string,
+    registrationData?: { firstName: string; lastName: string; email?: string }
+  ): Promise<UserProfile> {
     const formattedPhone = phone.startsWith('+91') ? phone : `+91 ${phone}`;
 
+    // 1. Try real Supabase OTP if configured and not demo test code
+    if (isSupabaseConfigured() && otp !== '123456') {
+      try {
+        const cleanPhone = phone.startsWith('+91') ? phone : `+91${phone.replace(/\D/g, '')}`;
+        const { data, error } = await supabase.auth.verifyOtp({
+          phone: cleanPhone,
+          token: otp,
+          type: 'sms',
+        });
+        if (!error && data.user) {
+          const profile = mapDbProfileToUser(data.user, null, []);
+          if (registrationData?.firstName) profile.firstName = registrationData.firstName;
+          if (registrationData?.lastName) profile.lastName = registrationData.lastName;
+          if (registrationData) profile.fullName = `${profile.firstName} ${profile.lastName}`.trim();
+          await syncProfileToSupabase(profile);
+          this.saveUser(profile);
+          return profile;
+        }
+      } catch (err) {
+        console.warn('Supabase verifyOtp fallback:', err);
+      }
+    }
+
+    // 2. Dev / fallback verification
+    await new Promise((r) => setTimeout(r, 450));
+    localStorage.removeItem('oriental_sports_logged_out');
+
+    let user = this.getCurrentUser();
     if (!user || user.phone !== formattedPhone) {
       const firstName = registrationData?.firstName || 'Sports';
       const lastName = registrationData?.lastName || 'Athlete';
@@ -268,15 +240,41 @@ export class AuthService {
         courtInquiries: [],
       };
       this.saveUser(newUser);
+      if (isSupabaseConfigured()) {
+        syncProfileToSupabase(newUser).catch(() => {});
+      }
       return newUser;
     }
     this.saveUser(user);
     return user;
   }
 
-  static async signInWithGoogle(): Promise<UserProfile> {
-    await new Promise((r) => setTimeout(r, 600));
+  static async signInWithGoogle(): Promise<UserProfile | null> {
     localStorage.removeItem('oriental_sports_logged_out');
+
+    // 1. Use real Supabase Google OAuth if configured
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+
+      if (error) {
+        console.error('Supabase Google OAuth error:', error.message);
+        throw error;
+      }
+      // Browser redirects to Google OAuth endpoint
+      return null;
+    }
+
+    // 2. Dev mode instant simulated login
+    await new Promise((r) => setTimeout(r, 400));
     let user = this.getCurrentUser();
     if (!user) {
       const newUser: UserProfile = {
@@ -285,8 +283,8 @@ export class AuthService {
         lastName: 'Member',
         fullName: 'Sports Member',
         email: 'member@orientalsports.in',
-        phone: '',
-        sportPreferences: [],
+        phone: '+91 98230 45812',
+        sportPreferences: ['Badminton', 'Cricket'],
         membershipTier: 'Club Athlete',
         createdAt: new Date().toISOString().split('T')[0],
         addresses: [],
@@ -296,13 +294,27 @@ export class AuthService {
       this.saveUser(newUser);
       return newUser;
     }
-    this.saveUser(user);
     return user;
   }
 
   static async signInWithEmail(email: string): Promise<UserProfile> {
-    await new Promise((r) => setTimeout(r, 500));
     localStorage.removeItem('oriental_sports_logged_out');
+
+    // 1. If Supabase configured, trigger magic link / OTP
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
+        });
+      } catch (err) {
+        console.warn('Supabase signInWithOtp notice:', err);
+      }
+    }
+
+    await new Promise((r) => setTimeout(r, 350));
     let user = this.getCurrentUser();
     if (!user) {
       const namePart = email.split('@')[0];
@@ -314,7 +326,7 @@ export class AuthService {
         firstName: capitalized,
         lastName: 'Customer',
         fullName: `${capitalized} Customer`,
-        sportPreferences: [],
+        sportPreferences: ['Badminton'],
         membershipTier: 'Club Athlete',
         createdAt: new Date().toISOString().split('T')[0],
         addresses: [],
@@ -322,24 +334,27 @@ export class AuthService {
         courtInquiries: [],
       };
       this.saveUser(newUser);
+      if (isSupabaseConfigured()) {
+        syncProfileToSupabase(newUser).catch(() => {});
+      }
       return newUser;
     }
-    this.saveUser(user);
     return user;
   }
 
   static async updateProfile(updates: Partial<UserProfile>): Promise<UserProfile> {
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 200));
     let current = this.getCurrentUser();
     const updatedUser: UserProfile = current
       ? {
           ...current,
           ...updates,
-          fullName: updates.firstName && updates.lastName 
-            ? `${updates.firstName} ${updates.lastName}` 
-            : updates.firstName 
-            ? `${updates.firstName} ${current.lastName}`
-            : current.fullName,
+          fullName:
+            updates.firstName && updates.lastName
+              ? `${updates.firstName} ${updates.lastName}`
+              : updates.firstName
+              ? `${updates.firstName} ${current.lastName}`
+              : current.fullName,
         }
       : {
           id: `usr_${Date.now()}`,
@@ -355,17 +370,19 @@ export class AuthService {
           orders: [],
           courtInquiries: [],
         };
+
     this.saveUser(updatedUser);
+    syncProfileToSupabase(updatedUser).catch(() => {});
     return updatedUser;
   }
 
   static async addAddress(newAddr: Omit<Address, 'id'>): Promise<Address> {
-    await new Promise((r) => setTimeout(r, 300));
-    let current = this.getCurrentUser();
     const addressWithId: Address = {
       ...newAddr,
       id: `addr_${Date.now()}`,
     };
+    let current = this.getCurrentUser();
+
     if (!current) {
       const newUser: UserProfile = {
         id: `usr_${Date.now()}`,
@@ -382,6 +399,7 @@ export class AuthService {
         courtInquiries: [],
       };
       this.saveUser(newUser);
+      syncProfileToSupabase(newUser).catch(() => {});
     } else {
       let updatedAddresses = [...current.addresses];
       if (addressWithId.isDefault) {
@@ -390,16 +408,16 @@ export class AuthService {
       updatedAddresses.unshift(addressWithId);
       current = { ...current, addresses: updatedAddresses };
       this.saveUser(current);
+      syncProfileToSupabase(current).catch(() => {});
     }
     return addressWithId;
   }
 
   static async updateAddress(id: string, addrUpdate: Partial<Address>): Promise<Address> {
-    await new Promise((r) => setTimeout(r, 300));
     const current = this.getCurrentUser();
     if (!current) throw new Error('No user profile found');
     let target: Address | undefined;
-    let updatedAddresses = current.addresses.map((a) => {
+    const updatedAddresses = current.addresses.map((a) => {
       if (a.id === id) {
         target = { ...a, ...addrUpdate };
         return target;
@@ -410,37 +428,39 @@ export class AuthService {
       return a;
     });
     if (!target) throw new Error('Address not found');
-    this.saveUser({ ...current, addresses: updatedAddresses });
+    const updated = { ...current, addresses: updatedAddresses };
+    this.saveUser(updated);
+    syncProfileToSupabase(updated).catch(() => {});
     return target;
   }
 
   static async deleteAddress(id: string): Promise<void> {
-    await new Promise((r) => setTimeout(r, 300));
     const current = this.getCurrentUser();
     if (!current) return;
     const filtered = current.addresses.filter((a) => a.id !== id);
     if (filtered.length > 0 && !filtered.some((a) => a.isDefault)) {
       filtered[0].isDefault = true;
     }
-    this.saveUser({ ...current, addresses: filtered });
+    const updated = { ...current, addresses: filtered };
+    this.saveUser(updated);
+    syncProfileToSupabase(updated).catch(() => {});
   }
 
   static async setDefaultAddress(id: string): Promise<void> {
-    await new Promise((r) => setTimeout(r, 200));
     const current = this.getCurrentUser();
     if (!current) return;
     const updated = current.addresses.map((a) => ({
       ...a,
       isDefault: a.id === id,
     }));
-    this.saveUser({ ...current, addresses: updated });
+    const updatedUser = { ...current, addresses: updated };
+    this.saveUser(updatedUser);
+    syncProfileToSupabase(updatedUser).catch(() => {});
   }
 
   static async addOrder(order: Order): Promise<Order> {
-    await new Promise((r) => setTimeout(r, 200));
     let current = this.getCurrentUser();
     if (!current) {
-      // Create guest customer account with their real details from the order
       const nameParts = (order.shippingAddress.name || 'Customer').trim().split(' ');
       const firstName = nameParts[0] || 'Customer';
       const lastName = nameParts.slice(1).join(' ') || '';
@@ -459,18 +479,73 @@ export class AuthService {
         courtInquiries: [],
       };
       this.saveUser(newUser);
+      syncProfileToSupabase(newUser).catch(() => {});
     } else {
       const orders = [order, ...current.orders];
-      const hasAddr = current.addresses.some((a) => a.street === order.shippingAddress.street && a.pincode === order.shippingAddress.pincode);
-      const addresses = hasAddr ? current.addresses : [order.shippingAddress, ...current.addresses];
+      const hasAddr = current.addresses.some(
+        (a) =>
+          a.street === order.shippingAddress.street &&
+          a.pincode === order.shippingAddress.pincode
+      );
+      const addresses = hasAddr
+        ? current.addresses
+        : [order.shippingAddress, ...current.addresses];
       current = { ...current, orders, addresses };
       this.saveUser(current);
+      syncProfileToSupabase(current).catch(() => {});
     }
+
+    // If Supabase is configured and authenticated, save to database
+    if (isSupabaseConfigured() && current?.id && !current.id.startsWith('usr_')) {
+      try {
+        await supabase.from('orders').insert({
+          id: order.id,
+          user_id: current.id,
+          order_number: order.orderNumber,
+          status: order.status,
+          status_label: order.statusLabel,
+          total_amount: order.totalAmount,
+          subtotal: order.subtotal,
+          shipping: order.shipping,
+          tax: order.tax,
+          payment_method: order.paymentMethod,
+          shipping_address: order.shippingAddress,
+          tracking_number: order.trackingNumber,
+          carrier: order.carrier,
+          estimated_delivery: order.estimatedDelivery,
+          timeline: order.timeline,
+        });
+
+        if (order.items && order.items.length > 0) {
+          const itemRows = order.items.map((it) => ({
+            order_id: order.id,
+            product_id: it.productId,
+            product_slug: it.productSlug,
+            product_name: it.productName,
+            product_image: it.productImage,
+            price: it.price,
+            quantity: it.quantity,
+            selected_variant: it.selectedVariant,
+            selected_size: it.selectedSize,
+          }));
+          await supabase.from('order_items').insert(itemRows);
+        }
+      } catch (err) {
+        console.warn('Error saving order to Supabase:', err);
+      }
+    }
+
     return order;
   }
 
   static async signOut(): Promise<void> {
-    await new Promise((r) => setTimeout(r, 200));
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.warn('Supabase sign out error:', err);
+      }
+    }
     localStorage.setItem('oriental_sports_logged_out', 'true');
     this.saveUser(null);
   }

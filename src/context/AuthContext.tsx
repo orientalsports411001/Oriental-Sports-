@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserProfile, Address, Order } from '../types/auth';
 import { AuthService } from '../services/authService';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isSupabaseLive: boolean;
   isAuthModalOpen: boolean;
   authModalView: 'phone' | 'otp' | 'register' | 'email';
   openAuthModal: (view?: 'phone' | 'otp' | 'register' | 'email', returnTo?: string) => void;
@@ -38,17 +40,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [pendingPhone, setPendingPhone] = useState<string>('');
   const [devOtpCode, setDevOtpCode] = useState<string | null>(null);
   const [returnToUrl, setReturnToUrl] = useState<string | null>(null);
+  const isSupabaseLive = isSupabaseConfigured();
 
   useEffect(() => {
-    // Check initial user from storage or demo seed
+    // 1. Initial cached user
     try {
       const currentUser = AuthService.getCurrentUser();
-      setUser(currentUser);
+      if (currentUser) setUser(currentUser);
     } catch (e) {
       console.error('Error loading current user:', e);
-    } finally {
-      setIsLoading(false);
     }
+
+    // 2. Subscribe to Supabase Auth and database profile sync
+    const unsubscribe = AuthService.initAuthListener((activeUser) => {
+      setUser(activeUser);
+      setIsLoading(false);
+    });
+
+    setIsLoading(false);
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const openAuthModal = (view: 'phone' | 'otp' | 'register' | 'email' = 'phone', returnTo?: string) => {
@@ -93,8 +106,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signInWithGoogle = async (): Promise<boolean> => {
     try {
       const loggedInUser = await AuthService.signInWithGoogle();
-      setUser(loggedInUser);
-      closeAuthModal();
+      if (loggedInUser) {
+        setUser(loggedInUser);
+        closeAuthModal();
+      }
       return true;
     } catch {
       return false;
@@ -164,6 +179,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         isAuthenticated: !!user,
         isLoading,
+        isSupabaseLive,
         isAuthModalOpen,
         authModalView,
         openAuthModal,
