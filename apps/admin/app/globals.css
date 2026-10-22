@@ -6,27 +6,29 @@
    ========================================================================== */
 
 :root {
-  --ink: #111111;
-  --black: #000000;
+  /* Eye-friendly text tones (Gentle charcoal / slate graphite instead of blinding pitch black) */
+  --ink: #26292E;
+  --ink-heading: #1D1F23;
+  --black: #1D1F23;
   --gold: #C9A227;
   --gold-hi: #E0C56A;
-  --gold-ink: #7A5F0E;
-  --ivory: #F6F3EA;
-  --paper: #FBF9F4;
-  --stone: #ECE7DB;
-  --stage: #E9E2D3;
-  --stone-deep: #DCD4C3;
-  --muted: #56524A;
-  --subtle: #6B665C;
+  --gold-ink: #856A15;
+  --ivory: #F5F2EB;
+  --paper: #FFFFFF;
+  --stone: #EAE6DC;
+  --stage: #E6E1D5;
+  --stone-deep: #DDD8CB;
+  --muted: #646974;
+  --subtle: #848A95;
 
-  --line: rgba(17, 17, 17, 0.12);
-  --line-strong: rgba(17, 17, 17, 0.28);
-  --line-dark: rgba(246, 243, 234, 0.16);
+  --line: rgba(38, 41, 46, 0.08);
+  --line-strong: rgba(38, 41, 46, 0.16);
+  --line-dark: rgba(245, 242, 235, 0.16);
 
   --success: #2E6B3C;
   --error: #B3261E;
 
-  --font: 'Archivo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font: inherit, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --r-sm: 8px;
   --r-md: 14px;
   --r-lg: 20px;

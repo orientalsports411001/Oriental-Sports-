@@ -48,13 +48,13 @@ export default async function CategoriesPage() {
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 900, letterSpacing: '-0.02em' }}>
+            <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.015em', color: 'var(--ink-heading)' }}>
               Sport Disciplines & Categories
             </h1>
             <span
               style={{
                 fontSize: 11,
-                fontWeight: 700,
+                fontWeight: 600,
                 letterSpacing: '0.04em',
                 padding: '2px 8px',
                 borderRadius: 9999,
@@ -65,7 +65,7 @@ export default async function CategoriesPage() {
               {categories.length} Disciplines
             </span>
           </div>
-          <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)' }}>
+          <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)', fontWeight: 400 }}>
             Storefront sports hierarchy (Cricket, Tennis, Badminton, Football, Gym, Turnkey Courts).
           </p>
         </div>
@@ -75,14 +75,14 @@ export default async function CategoriesPage() {
             style={{
               padding: '10px 22px',
               fontSize: 13,
-              fontWeight: 800,
-              letterSpacing: '0.02em',
+              fontWeight: 600,
+              letterSpacing: '0.01em',
               borderRadius: 9999,
-              background: 'var(--ink)',
-              color: 'var(--ivory)',
+              background: 'var(--ink-heading)',
+              color: '#FFFFFF',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(17,17,17,0.12)',
+              boxShadow: '0 4px 14px rgba(38,41,46,0.10)',
             }}
           >
             + Create Discipline

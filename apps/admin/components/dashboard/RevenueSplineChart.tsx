@@ -97,9 +97,9 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
             <span
               style={{
                 fontSize: 11,
-                fontWeight: 800,
+                fontWeight: 600,
                 textTransform: 'uppercase',
-                letterSpacing: '0.1em',
+                letterSpacing: '0.06em',
                 color: 'var(--subtle)',
               }}
             >
@@ -111,10 +111,10 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
                 alignItems: 'center',
                 padding: '2px 8px',
                 borderRadius: 9999,
-                background: 'rgba(46, 107, 60, 0.12)',
+                background: 'rgba(46, 107, 60, 0.10)',
                 color: 'var(--success)',
                 fontSize: 11,
-                fontWeight: 800,
+                fontWeight: 600,
               }}
             >
               +18.4%
@@ -124,28 +124,28 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
             <span
               style={{
-                fontSize: 32,
-                fontWeight: 900,
-                color: 'var(--ink)',
-                letterSpacing: '-0.02em',
+                fontSize: 28,
+                fontWeight: 700,
+                color: 'var(--ink-heading)',
+                letterSpacing: '-0.015em',
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
               ₹{totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
-            <span style={{ fontSize: 12.5, color: 'var(--muted)', fontWeight: 600 }}>
+            <span style={{ fontSize: 12.5, color: 'var(--muted)', fontWeight: 500 }}>
               Gross intake (Camp Pune)
             </span>
           </div>
         </div>
 
-        {/* Time Filter Pills */}
+        {/* Time Filter Pills (Calm White Segmented Control) */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 4,
-            padding: 4,
+            gap: 2,
+            padding: 3,
             background: 'var(--stone)',
             borderRadius: 9999,
           }}
@@ -157,16 +157,16 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
               setActivePointIndex(5);
             }}
             style={{
-              padding: '6px 14px',
+              padding: '5px 14px',
               borderRadius: 9999,
               fontSize: 12,
-              fontWeight: 700,
+              fontWeight: 600,
               border: 'none',
-              background: timeRange === '6m' ? 'var(--ink)' : 'transparent',
-              color: timeRange === '6m' ? 'var(--ivory)' : 'var(--muted)',
+              background: timeRange === '6m' ? '#FFFFFF' : 'transparent',
+              color: timeRange === '6m' ? 'var(--ink-heading)' : 'var(--muted)',
               cursor: 'pointer',
               minHeight: 28,
-              boxShadow: timeRange === '6m' ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
+              boxShadow: timeRange === '6m' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
               transition: 'all 0.15s ease',
             }}
           >
@@ -179,16 +179,16 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
               setActivePointIndex(3);
             }}
             style={{
-              padding: '6px 14px',
+              padding: '5px 14px',
               borderRadius: 9999,
               fontSize: 12,
-              fontWeight: 700,
+              fontWeight: 600,
               border: 'none',
-              background: timeRange === '30d' ? 'var(--ink)' : 'transparent',
-              color: timeRange === '30d' ? 'var(--ivory)' : 'var(--muted)',
+              background: timeRange === '30d' ? '#FFFFFF' : 'transparent',
+              color: timeRange === '30d' ? 'var(--ink-heading)' : 'var(--muted)',
               cursor: 'pointer',
               minHeight: 28,
-              boxShadow: timeRange === '30d' ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
+              boxShadow: timeRange === '30d' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
               transition: 'all 0.15s ease',
             }}
           >

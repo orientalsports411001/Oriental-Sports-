@@ -147,9 +147,9 @@ export function MiniCalendarWidget() {
                 height: 32,
                 borderRadius: '50%',
                 border: 'none',
-                background: isSelected ? 'var(--ink)' : 'transparent',
+                background: isSelected ? 'var(--ink-heading)' : 'transparent',
                 color: isSelected ? '#FFFFFF' : 'var(--ink)',
-                fontWeight: isSelected ? 900 : hasEvent ? 700 : 500,
+                fontWeight: isSelected ? 600 : hasEvent ? 600 : 500,
                 fontSize: 12,
                 cursor: 'pointer',
                 display: 'flex',
@@ -170,7 +170,7 @@ export function MiniCalendarWidget() {
                     width: 3.5,
                     height: 3.5,
                     borderRadius: '50%',
-                    background: 'var(--ink)',
+                    background: 'var(--subtle)',
                   }}
                 />
               )}
@@ -185,7 +185,7 @@ export function MiniCalendarWidget() {
           padding: '14px 16px',
           borderRadius: 18,
           background: 'var(--stone)',
-          border: '1px solid rgba(17, 17, 17, 0.05)',
+          border: '1px solid var(--line)',
         }}
       >
         <div
@@ -196,17 +196,17 @@ export function MiniCalendarWidget() {
             marginBottom: 8,
           }}
         >
-          <span style={{ fontSize: 11.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--ink)' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--muted)' }}>
             Dispatches on Oct {selectedDay}
           </span>
           <span
             style={{
               fontSize: 10,
-              fontWeight: 800,
+              fontWeight: 600,
               padding: '2px 7px',
               borderRadius: 9999,
-              background: 'var(--ink)',
-              color: 'var(--ivory)',
+              background: 'rgba(38, 41, 46, 0.08)',
+              color: 'var(--ink-heading)',
             }}
           >
             2 Active
@@ -219,10 +219,10 @@ export function MiniCalendarWidget() {
               fontSize: 12,
               color: 'var(--ink)',
               padding: '6px 0',
-              borderBottom: '1px solid rgba(17,17,17,0.06)',
+              borderBottom: '1px solid rgba(38, 41, 46, 0.06)',
             }}
           >
-            <div style={{ fontWeight: 800, lineHeight: 1.2 }}>Shivajinagar District Club</div>
+            <div style={{ fontWeight: 600, lineHeight: 1.2, color: 'var(--ink-heading)' }}>Shivajinagar District Club</div>
             <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>OS-9281 · Acrylic Court System · ₹15,490</div>
           </div>
 
@@ -233,7 +233,7 @@ export function MiniCalendarWidget() {
               paddingTop: 2,
             }}
           >
-            <div style={{ fontWeight: 800, lineHeight: 1.2 }}>Kothrud Arena Academy</div>
+            <div style={{ fontWeight: 600, lineHeight: 1.2, color: 'var(--ink-heading)' }}>Kothrud Arena Academy</div>
             <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>OS-9282 · Li-Ning Windstorm · ₹6,349</div>
           </div>
         </div>

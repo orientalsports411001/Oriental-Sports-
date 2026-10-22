@@ -132,25 +132,25 @@ export default async function DashboardPage() {
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 900, letterSpacing: '-0.02em' }}>
+            <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.015em', color: 'var(--ink-heading)' }}>
               Operations Dashboard
             </h1>
             <span
               style={{
                 fontSize: 11,
-                fontWeight: 800,
-                letterSpacing: '0.08em',
+                fontWeight: 600,
+                letterSpacing: '0.06em',
                 padding: '3px 10px',
                 borderRadius: 9999,
-                background: 'rgba(46,107,60,0.12)',
+                background: 'rgba(46,107,60,0.10)',
                 color: 'var(--success)',
-                border: '1px solid rgba(46,107,60,0.22)',
+                border: '1px solid rgba(46,107,60,0.18)',
               }}
             >
               ● Store Live
             </span>
           </div>
-          <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)', fontWeight: 500 }}>
+          <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)', fontWeight: 400 }}>
             Welcome back, Oriental Sports Pune · Camp Store order intake & live court fulfillment.
           </p>
         </div>
@@ -161,14 +161,14 @@ export default async function DashboardPage() {
               style={{
                 padding: '10px 22px',
                 fontSize: 13,
-                fontWeight: 800,
-                letterSpacing: '0.02em',
+                fontWeight: 600,
+                letterSpacing: '0.01em',
                 borderRadius: 9999,
-                background: 'var(--ink)',
-                color: 'var(--ivory)',
+                background: 'var(--ink-heading)',
+                color: '#FFFFFF',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(17,17,17,0.12)',
+                boxShadow: '0 4px 14px rgba(38,41,46,0.10)',
               }}
             >
               + New Product
@@ -177,7 +177,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Floating White KPI Stat Cards (Minimalist, Zero sloppy icons) */}
+      {/* Floating White KPI Stat Cards (Minimalist, Calm Typography) */}
       <div
         style={{
           display: 'grid',
@@ -192,29 +192,30 @@ export default async function DashboardPage() {
             padding: '24px 26px',
             background: '#FFFFFF',
             borderRadius: 24,
-            boxShadow: '0 8px 30px -4px rgba(17, 17, 17, 0.04)',
+            boxShadow: '0 4px 20px -2px rgba(38, 41, 46, 0.04)',
+            border: '1px solid var(--line)',
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.09em', marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.06em', marginBottom: 10 }}>
             Gross Revenue
           </div>
           <div
             style={{
-              fontSize: 32,
-              fontWeight: 900,
-              color: 'var(--ink)',
+              fontSize: 28,
+              fontWeight: 700,
+              color: 'var(--ink-heading)',
               fontVariantNumeric: 'tabular-nums',
-              letterSpacing: '-0.02em',
+              letterSpacing: '-0.015em',
               marginBottom: 8,
-              lineHeight: 1.1,
+              lineHeight: 1.15,
             }}
           >
             ₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ color: 'var(--success)', fontWeight: 800 }}>+{paidOrdersCount} completed</span>
+            <span style={{ color: 'var(--success)', fontWeight: 600 }}>+{paidOrdersCount} completed</span>
             <span>· Pune online orders</span>
           </div>
         </div>
@@ -225,28 +226,29 @@ export default async function DashboardPage() {
             padding: '24px 26px',
             background: '#FFFFFF',
             borderRadius: 24,
-            boxShadow: '0 8px 30px -4px rgba(17, 17, 17, 0.04)',
+            boxShadow: '0 4px 20px -2px rgba(38, 41, 46, 0.04)',
+            border: '1px solid var(--line)',
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.09em', marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.06em', marginBottom: 10 }}>
             Total Orders
           </div>
           <div
             style={{
-              fontSize: 32,
-              fontWeight: 900,
-              color: 'var(--ink)',
-              letterSpacing: '-0.02em',
+              fontSize: 28,
+              fontWeight: 700,
+              color: 'var(--ink-heading)',
+              letterSpacing: '-0.015em',
               marginBottom: 8,
-              lineHeight: 1.1,
+              lineHeight: 1.15,
             }}
           >
             {totalOrdersCount} Carts
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-            <span style={{ fontWeight: 800, color: 'var(--ink)' }}>{(paidCount ?? 0) + (processingCount ?? 0)} in active</span> fulfillment pipeline
+            <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{(paidCount ?? 0) + (processingCount ?? 0)} in active</span> fulfillment pipeline
           </div>
         </div>
 
@@ -256,23 +258,24 @@ export default async function DashboardPage() {
             padding: '24px 26px',
             background: '#FFFFFF',
             borderRadius: 24,
-            boxShadow: '0 8px 30px -4px rgba(17, 17, 17, 0.04)',
+            boxShadow: '0 4px 20px -2px rgba(38, 41, 46, 0.04)',
+            border: '1px solid var(--line)',
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.09em', marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.06em', marginBottom: 10 }}>
             Average Basket
           </div>
           <div
             style={{
-              fontSize: 32,
-              fontWeight: 900,
-              color: 'var(--ink)',
+              fontSize: 28,
+              fontWeight: 700,
+              color: 'var(--ink-heading)',
               fontVariantNumeric: 'tabular-nums',
-              letterSpacing: '-0.02em',
+              letterSpacing: '-0.015em',
               marginBottom: 8,
-              lineHeight: 1.1,
+              lineHeight: 1.15,
             }}
           >
             ₹{averageOrderValue.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
@@ -288,28 +291,29 @@ export default async function DashboardPage() {
             padding: '24px 26px',
             background: '#FFFFFF',
             borderRadius: 24,
-            boxShadow: '0 8px 30px -4px rgba(17, 17, 17, 0.04)',
+            boxShadow: '0 4px 20px -2px rgba(38, 41, 46, 0.04)',
+            border: '1px solid var(--line)',
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.09em', marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.06em', marginBottom: 10 }}>
             Catalog Disciplines
           </div>
           <div
             style={{
-              fontSize: 32,
-              fontWeight: 900,
-              color: 'var(--ink)',
-              letterSpacing: '-0.02em',
+              fontSize: 28,
+              fontWeight: 700,
+              color: 'var(--ink-heading)',
+              letterSpacing: '-0.015em',
               marginBottom: 8,
-              lineHeight: 1.1,
+              lineHeight: 1.15,
             }}
           >
             {publishedCount} SKUs
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-            <span>{draftCount} review drafts</span> · <span style={{ color: 'var(--ink)', fontWeight: 700 }}>{lowStock.length} low threshold</span>
+            <span>{draftCount} review drafts</span> · <span style={{ color: 'var(--ink)', fontWeight: 600 }}>{lowStock.length} low threshold</span>
           </div>
         </div>
       </div>

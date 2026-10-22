@@ -102,9 +102,9 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                   justifyContent: 'space-between',
                   padding: '10px 16px',
                   borderRadius: 9999,
-                  background: isActive ? 'var(--ink)' : 'transparent',
-                  color: isActive ? 'var(--ivory)' : 'var(--muted)',
-                  fontWeight: isActive ? 800 : 600,
+                  background: isActive ? 'var(--stone)' : 'transparent',
+                  color: isActive ? 'var(--ink-heading)' : 'var(--muted)',
+                  fontWeight: isActive ? 600 : 500,
                   fontSize: 13.5,
                   textDecoration: 'none',
                   minHeight: 42,
@@ -117,11 +117,11 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                   <span
                     style={{
                       fontSize: 11,
-                      fontWeight: 800,
+                      fontWeight: 600,
                       padding: '2px 8px',
                       borderRadius: 9999,
-                      background: isActive ? 'rgba(255,255,255,0.18)' : 'var(--stone)',
-                      color: isActive ? '#FFFFFF' : 'var(--subtle)',
+                      background: isActive ? 'rgba(38, 41, 46, 0.08)' : 'var(--stone)',
+                      color: isActive ? 'var(--ink-heading)' : 'var(--subtle)',
                     }}
                   >
                     {item.badge}
