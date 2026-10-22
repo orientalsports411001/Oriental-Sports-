@@ -35,3 +35,9 @@ courts_audit_screens/
 courts_screenshots/
 courts_screenshots2/
 
+# Temporary root audits and build artifacts
+/*.png
+/*.webp
+/buyur-images.json
+*.tsbuildinfo
+

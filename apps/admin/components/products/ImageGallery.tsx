@@ -1,47 +1,24 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { deleteCloudinaryAssetAction } from '@/app/(admin)/products/cloudinary-actions';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_TYPE_PREFIX = 'image/';
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://orientalsports.in').replace(/\/+$/, '');
 
-/** Cloudinary URLs are already absolute; legacy/local paths like
- * "/images/products/..." only exist in the storefront's public folder, not
- * this app's, so they 404 against the admin's own origin — resolve them
- * against the storefront instead. */
 function resolveImageUrl(url: string): string {
   return url.startsWith('/') ? `${SITE_URL}${url}` : url;
 }
 
 export type GalleryImage = {
-  /** The delivery URL stored in products.images — local "/images/..." path or a Cloudinary secure_url. */
   url: string;
-  /** Only set for Cloudinary-uploaded images; used to delete the remote asset. */
   publicId?: string;
 };
 
 type UploadState = { fileName: string; progress: number; error?: string };
 
-/**
- * Product image gallery: thumbnails of every current image (existing local
- * paths and Cloudinary uploads alike), drag-and-drop/click upload straight
- * to Cloudinary via a server-signed request, reordering, per-image delete
- * (which also deletes the Cloudinary asset when there is one), and upload
- * progress/error state.
- *
- * `images` is controlled by the parent form (product-form.tsx) so the SEO
- * editor's per-image alt-text list — which keys off the same URL strings —
- * stays in sync with uploads/deletes/reorders made here, rather than each
- * component tracking its own stale copy of the array.
- *
- * Keeps the same contract the rest of the form and the SEO editor rely on:
- * the `images` hidden input is still a newline-joined list of URL strings,
- * first = primary. `cloudinary_public_ids` is a second hidden input
- * (JSON map of url -> public_id) so edits can delete the right Cloudinary
- * asset later.
- */
 export function ImageGallery({
   images,
   onChange,
@@ -55,9 +32,6 @@ export function ImageGallery({
   const [manualUrl, setManualUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Concurrent uploads each append to the *current* array rather than a
-  // snapshot captured when the upload started, so two files finishing close
-  // together don't clobber one another.
   const imagesRef = useRef(images);
   useEffect(() => {
     imagesRef.current = images;
@@ -72,14 +46,12 @@ export function ImageGallery({
   );
 
   const uploadFile = useCallback(async (file: File) => {
-    const uploadKey = `${file.name}-${file.size}-${Date.now()}`;
-
     if (!file.type.startsWith(ACCEPTED_TYPE_PREFIX)) {
       setUploads((prev) => [...prev, { fileName: file.name, progress: 0, error: 'Not an image file.' }]);
       return;
     }
     if (file.size > MAX_FILE_BYTES) {
-      setUploads((prev) => [...prev, { fileName: file.name, progress: 0, error: 'File is larger than 10MB.' }]);
+      setUploads((prev) => [...prev, { fileName: file.name, progress: 0, error: 'File exceeds 10MB limit.' }]);
       return;
     }
 
@@ -91,14 +63,7 @@ export function ImageGallery({
         const body = await signRes.json().catch(() => ({}));
         throw new Error(body.error || `Could not sign upload (${signRes.status}).`);
       }
-      const signed: {
-        cloudName: string;
-        apiKey: string;
-        timestamp: number;
-        folder: string;
-        allowedFormats: string;
-        signature: string;
-      } = await signRes.json();
+      const signed = await signRes.json();
 
       setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 25 } : u)));
 
@@ -122,16 +87,12 @@ export function ImageGallery({
         throw new Error(body?.error?.message || `Cloudinary upload failed (${uploadRes.status}).`);
       }
 
-      const result: { secure_url: string; public_id: string } = await uploadRes.json();
-
+      const result = await uploadRes.json();
       onChange([...imagesRef.current, { url: result.secure_url, publicId: result.public_id }]);
       setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Upload failed.';
-      setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 0, error: message } : u)));
+    } catch (err: any) {
+      setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 0, error: err.message } : u)));
     }
-    void uploadKey;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onChange]);
 
   function handleFiles(fileList: FileList | null) {
@@ -146,7 +107,7 @@ export function ImageGallery({
     if (target.publicId) {
       const result = await deleteCloudinaryAssetAction(target.publicId);
       if (!result.ok) {
-        setDeleteError(`Could not delete image from Cloudinary: ${result.error || 'unknown error'}`);
+        setDeleteError(`Could not delete from Cloudinary: ${result.error || 'unknown error'}`);
         return;
       }
     }
@@ -162,10 +123,6 @@ export function ImageGallery({
     onChange(next);
   }
 
-  function dismissUpload(fileName: string) {
-    setUploads((prev) => prev.filter((u) => u.fileName !== fileName));
-  }
-
   function addManualUrl() {
     const url = manualUrl.trim();
     if (!url) return;
@@ -175,9 +132,10 @@ export function ImageGallery({
 
   return (
     <div>
-      <label>Images</label>
-
-      <div
+      {/* Tactile Dropzone */}
+      <motion.div
+        whileHover={{ scale: 1.006, borderColor: 'var(--ink)' }}
+        whileTap={{ scale: 0.995 }}
         onDragOver={(e) => {
           e.preventDefault();
           setDragOver(true);
@@ -191,20 +149,43 @@ export function ImageGallery({
         onClick={() => fileInputRef.current?.click()}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click();
-        }}
         style={{
-          border: `2px dashed ${dragOver ? '#4b5563' : '#ccc'}`,
-          borderRadius: 8,
-          padding: 20,
+          border: `1.5px dashed ${dragOver ? 'var(--ink)' : 'rgba(17,17,17,0.14)'}`,
+          borderRadius: 20,
+          padding: '32px 24px',
           textAlign: 'center',
           cursor: 'pointer',
-          background: dragOver ? '#f3f4f6' : 'transparent',
-          minHeight: 44,
+          background: dragOver ? 'var(--stone)' : 'var(--paper)',
+          boxShadow: '0 4px 20px -2px rgba(17,17,17,0.03)',
+          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
-        <p style={{ margin: 0, fontSize: 14 }}>Click or drag images here to upload (JPG, PNG, WebP — max 10MB each)</p>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: 'var(--stone)',
+              display: 'grid',
+              placeItems: 'center',
+              color: 'var(--ink)',
+              fontWeight: 800,
+              fontSize: 20,
+            }}
+          >
+            +
+          </div>
+          <div>
+            <div style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--ink)', marginBottom: 4, letterSpacing: '-0.01em' }}>
+              Drag and drop product photos, or click to browse
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--subtle)' }}>
+              WebP, high-res JPG, and transparent PNG supported (up to 10MB per file)
+            </div>
+          </div>
+        </div>
+
         <input
           ref={fileInputRef}
           type="file"
@@ -216,165 +197,262 @@ export function ImageGallery({
             e.target.value = '';
           }}
         />
-      </div>
+      </motion.div>
 
-      {/* Cloudinary upload needs live credentials (NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-         etc., unset in local dev by default). Without this fallback, a
-         product with zero images can never be created or published — the
-         publish guard requires at least one image — so uploads being
-         unconfigured would silently block the whole product form. Accepts
-         any direct URL string: an existing local "/images/..." catalog path
-         or an external URL; just appended with no publicId (not deletable
-         from Cloudinary since it isn't a Cloudinary asset). */}
-      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-        <input
-          type="url"
-          placeholder="Or paste an image URL (e.g. /images/products/... or https://...)"
-          value={manualUrl}
-          onChange={(e) => setManualUrl(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              addManualUrl();
-            }
+      {/* Manual URL Input Bar (Watermelon Pill Bar) */}
+      <div style={{ marginTop: 14 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            background: 'var(--paper)',
+            border: '1px solid rgba(17,17,17,0.1)',
+            borderRadius: 9999,
+            padding: '4px 6px 4px 16px',
+            boxShadow: '0 2px 10px rgba(17,17,17,0.03)',
+            transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
           }}
-          style={{ flex: 1, minHeight: 44 }}
-        />
-        <button type="button" onClick={addManualUrl} style={{ minHeight: 44 }}>
-          Add URL
-        </button>
+        >
+          <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--subtle)', marginRight: 10 }}>
+            URL
+          </span>
+          <input
+            type="url"
+            placeholder="Or paste an image URL (/images/products/... or CDN)"
+            value={manualUrl}
+            onChange={(e) => setManualUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addManualUrl();
+              }
+            }}
+            style={{
+              flex: 1,
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              fontSize: 13,
+              color: 'var(--ink)',
+              padding: '8px 0',
+            }}
+          />
+          <button
+            type="button"
+            onClick={addManualUrl}
+            style={{
+              borderRadius: 9999,
+              padding: '8px 16px',
+              fontSize: 12,
+              fontWeight: 800,
+              minHeight: 34,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'var(--ink)',
+              color: 'var(--ivory)',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            + Attach
+          </button>
+        </div>
       </div>
 
       {uploads.length > 0 && (
-        <ul style={{ marginTop: 8, padding: 0, listStyle: 'none' }}>
+        <ul style={{ marginTop: 12, padding: 0, listStyle: 'none' }}>
           {uploads.map((u) => (
-            <li key={u.fileName} style={{ fontSize: 13, marginBottom: 4 }}>
-              {u.error ? (
-                <span className="error">
-                  {u.fileName}: {u.error}{' '}
-                  <button
-                    type="button"
-                    onClick={() => dismissUpload(u.fileName)}
-                    style={{ minHeight: 44, minWidth: 44 }}
-                  >
-                    Dismiss
-                  </button>
-                </span>
-              ) : (
-                <span>
-                  {u.fileName} — uploading… {u.progress}%
-                </span>
-              )}
+            <li
+              key={u.fileName}
+              style={{
+                fontSize: 13,
+                marginBottom: 6,
+                padding: '8px 12px',
+                background: 'var(--stone)',
+                borderRadius: 2,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <span>{u.fileName} — uploading {u.progress}%</span>
+              {u.error && <span className="error" style={{ margin: 0, padding: '2px 8px' }}>{u.error}</span>}
             </li>
           ))}
         </ul>
       )}
 
-      {deleteError && <p className="error">{deleteError}</p>}
+      {deleteError && <p className="error" style={{ marginTop: 12 }}>{deleteError}</p>}
 
+      {/* Gallery Cards Grid */}
       {images.length > 0 && (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-            gap: 12,
-            marginTop: 12,
-          }}
-        >
-          {images.map((img, i) => (
-            <div
-              key={img.url}
-              style={{
-                border: '1px solid #ddd',
-                borderRadius: 8,
-                overflow: 'hidden',
-                position: 'relative',
-              }}
-            >
-              <div style={{ position: 'relative', height: 100, background: '#f3f4f6' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={resolveImageUrl(img.url)}
-                  alt=""
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => {
-                    e.currentTarget.style.opacity = '0.3';
+        <div style={{ marginTop: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--subtle)', marginBottom: 12 }}>
+            Current Media Assets (First card is primary storefront photo)
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+              gap: 14,
+            }}
+          >
+            <AnimatePresence>
+              {images.map((img, i) => (
+                <motion.div
+                  key={img.url}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  style={{
+                    border: i === 0 ? '2px solid var(--ink)' : '1px solid rgba(17,17,17,0.08)',
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    background: 'var(--paper)',
+                    boxShadow: i === 0 ? '0 8px 24px -4px rgba(17,17,17,0.1)' : '0 2px 8px rgba(17,17,17,0.03)',
+                    position: 'relative',
+                    transition: 'all 0.2s ease',
                   }}
-                />
-                {i === 0 && (
-                  <span
+                >
+                  <div style={{ position: 'relative', height: 130, background: 'var(--stone)' }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={resolveImageUrl(img.url)}
+                      alt=""
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/products/cricket_bat_willow.webp';
+                      }}
+                    />
+                    {i === 0 && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: 8,
+                          left: 8,
+                          background: 'var(--ink)',
+                          color: 'var(--ivory)',
+                          fontSize: 10,
+                          fontWeight: 800,
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          padding: '3px 9px',
+                          borderRadius: 9999,
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+                        }}
+                      >
+                        Primary
+                      </span>
+                    )}
+                  </div>
+
+                  <div
                     style={{
-                      position: 'absolute',
-                      top: 4,
-                      left: 4,
-                      background: '#111',
-                      color: '#fff',
-                      fontSize: 11,
-                      padding: '2px 6px',
-                      borderRadius: 4,
+                      padding: '8px 10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      borderTop: '1px solid rgba(17,17,17,0.06)',
+                      background: 'var(--paper)',
                     }}
                   >
-                    Primary
-                  </span>
-                )}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: 4,
-                  gap: 4,
-                }}
-              >
-                <div style={{ display: 'flex', gap: 2 }}>
-                  <button
-                    type="button"
-                    onClick={() => moveImage(i, -1)}
-                    disabled={i === 0}
-                    aria-label="Move earlier"
-                    style={{ minWidth: 44, minHeight: 44 }}
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button
+                        type="button"
+                        onClick={() => moveImage(i, -1)}
+                        disabled={i === 0}
+                        aria-label="Move left"
+                        style={{
+                          width: 28,
+                          height: 28,
+                          padding: 0,
+                          borderRadius: '50%',
+                          border: '1px solid rgba(17,17,17,0.1)',
+                          background: 'var(--stone)',
+                          color: 'var(--ink)',
+                          display: 'grid',
+                          placeItems: 'center',
+                          cursor: i === 0 ? 'not-allowed' : 'pointer',
+                          opacity: i === 0 ? 0.4 : 1,
+                          fontSize: 14,
+                          fontWeight: 700,
+                        }}
+                      >
+                        ‹
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveImage(i, 1)}
+                        disabled={i === images.length - 1}
+                        aria-label="Move right"
+                        style={{
+                          width: 28,
+                          height: 28,
+                          padding: 0,
+                          borderRadius: '50%',
+                          border: '1px solid rgba(17,17,17,0.1)',
+                          background: 'var(--stone)',
+                          color: 'var(--ink)',
+                          display: 'grid',
+                          placeItems: 'center',
+                          cursor: i === images.length - 1 ? 'not-allowed' : 'pointer',
+                          opacity: i === images.length - 1 ? 0.4 : 1,
+                          fontSize: 14,
+                          fontWeight: 700,
+                        }}
+                      >
+                        ›
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(i)}
+                      aria-label="Delete image"
+                      style={{
+                        width: 28,
+                        height: 28,
+                        padding: 0,
+                        borderRadius: '50%',
+                        border: '1px solid rgba(192,57,43,0.2)',
+                        background: 'rgba(192,57,43,0.08)',
+                        color: 'var(--error)',
+                        display: 'grid',
+                        placeItems: 'center',
+                        cursor: 'pointer',
+                        fontSize: 15,
+                        fontWeight: 700,
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <div
+                    title={img.url}
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: 10,
+                      color: 'var(--subtle)',
+                      background: 'var(--stone)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
                   >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => moveImage(i, 1)}
-                    disabled={i === images.length - 1}
-                    aria-label="Move later"
-                    style={{ minWidth: 44, minHeight: 44 }}
-                  >
-                    ↓
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(i)}
-                  aria-label="Delete image"
-                  style={{ minWidth: 44, minHeight: 44, color: '#b91c1c' }}
-                >
-                  Delete
-                </button>
-              </div>
-              <p
-                title={img.url}
-                style={{
-                  fontSize: 11,
-                  color: '#666',
-                  margin: 4,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
-              >
-                {img.url}
-              </p>
-            </div>
-          ))}
+                    {img.url}
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
         </div>
       )}
 
-      {/* Submitted as part of the enclosing product form's FormData. */}
       <input type="hidden" name="images" value={imagesValue} />
       <input type="hidden" name="cloudinary_public_ids" value={publicIdsValue} />
     </div>

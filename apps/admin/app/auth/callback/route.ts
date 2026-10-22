@@ -13,8 +13,10 @@ import { createClient } from '@/lib/supabase/server';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const nextParam = searchParams.get('next') ?? '/admin/dashboard';
-  const target = nextParam.startsWith('/admin') ? nextParam : `/admin${nextParam}`;
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const defaultNext = `${basePath}/dashboard` || '/dashboard';
+  const nextParam = searchParams.get('next') ?? defaultNext;
+  const target = nextParam.startsWith('/') ? nextParam : `/${nextParam}`;
 
   if (code) {
     const supabase = await createClient();
@@ -24,5 +26,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/admin/login?error=auth_callback_failed`);
+  return NextResponse.redirect(`${origin}${basePath}/login?error=auth_callback_failed`);
 }

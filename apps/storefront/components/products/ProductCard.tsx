@@ -93,9 +93,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </button>
 
       <div className="product-card-body">
-        <div className="product-card-meta-line" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+        <div className="product-card-meta-line">
           <p className="label subtle">{[product.brand, product.categoryName].filter(Boolean).join(' · ')}</p>
-          {product.quantityUnit && <span style={{ fontSize: '0.6875rem', color: 'var(--subtle)' }}>{product.quantityUnit}</span>}
+          {product.quantityUnit && <span className="product-card-meta-unit">{product.quantityUnit}</span>}
         </div>
 
         <h3 className="product-card-title">

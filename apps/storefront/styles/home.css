@@ -502,20 +502,18 @@
 
 @media (max-width: 767px) {
   .gear-products {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    margin-inline: calc(var(--gutter) * -1);
-    padding-inline: var(--gutter);
-    scroll-padding-inline: var(--gutter);
-    padding-bottom: 8px;
-    scrollbar-width: none;
-    overscroll-behavior-x: contain;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 12px;
   }
-  .gear-products::-webkit-scrollbar { display: none; }
-  .gear-product { flex: 0 0 78%; scroll-snap-align: start; }
+  .gear-product {
+    width: 100%;
+    display: flex;
+  }
   .gear-cta { width: 100%; }
+  .gear-edit {
+    padding-bottom: calc(var(--section-y) + 48px);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -848,13 +846,14 @@
   position: relative;
   display: block;
   /* Set from the field's height in OrbitalGallery so the front card fits. */
-  width: var(--orbit-card-w, 200px);
-  aspect-ratio: var(--aspect, 4 / 5);
+  width: var(--orbit-card-w, 280px);
+  aspect-ratio: var(--aspect, 9 / 11);
   padding: 0;
   border: 0;
   overflow: hidden;
   background: var(--ink);
   cursor: zoom-in;
+  border-radius: var(--r-2, 4px);
 }
 .orbit-anchor .orbit-card { transform: translate(-50%, -50%); }
 
@@ -867,14 +866,14 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(17, 17, 17, 0) 55%, rgba(17, 17, 17, 0.7) 100%);
+  background: linear-gradient(180deg, rgba(17, 17, 17, 0) 50%, rgba(17, 17, 17, 0.72) 100%);
   pointer-events: none;
 }
 .orbit-card-label {
   position: absolute;
   z-index: 1;
-  left: 12px;
-  bottom: 10px;
+  left: 16px;
+  bottom: 14px;
   font-size: var(--fs-label);
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -891,7 +890,7 @@
   gap: 12px;
   margin-top: clamp(28px, 4vw, 48px);
 }
-.orbit-grid .orbit-card { width: 100%; aspect-ratio: 4 / 5; }
+.orbit-grid .orbit-card { width: 100%; aspect-ratio: 9 / 11; }
 @media (min-width: 768px) {
   .orbit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 }

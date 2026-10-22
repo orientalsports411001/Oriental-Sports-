@@ -1,6 +1,8 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, Globe, Share2, Check, X, AlertCircle } from 'lucide-react';
 import { generateSeoSuggestionsAction } from '@/app/(admin)/products/seo-actions';
 import type { SeoSuggestions } from '@/lib/ai/seo-provider';
 
@@ -87,9 +89,6 @@ export function SeoEditor({
     if (apply('ogTitle')) setOgTitle(suggestions.ogTitle);
     if (apply('ogDescription')) setOgDescription(suggestions.ogDescription);
 
-    // Keywords and alt text are additive/empty-only — they don't carry the
-    // same "silently overwrite custom work" risk as the free-text fields
-    // above, but still only fill empty slots.
     if (!primaryKeyword && suggestions.primaryKeyword) {
       setPrimaryKeyword(suggestions.primaryKeyword);
     }
@@ -132,9 +131,6 @@ export function SeoEditor({
       const existing = allFields.filter((f) => currentValues[f].trim());
       const empty = allFields.filter((f) => !currentValues[f].trim());
 
-      // Empty fields apply immediately; fields with a value already wait for
-      // an explicit per-field confirmation below so AI output never silently
-      // overwrites something the admin typed.
       if (empty.length > 0) {
         applySuggestions(result.suggestions, empty);
       }
@@ -156,82 +152,186 @@ export function SeoEditor({
     }
   }
 
-  const warnings: string[] = [];
-  if (!seoTitle.trim()) warnings.push('SEO title is empty.');
-  else if (seoTitle.length > TITLE_MAX) warnings.push(`SEO title is ${seoTitle.length} characters — over the ~${TITLE_MAX} guidance.`);
-  if (!seoDescription.trim()) warnings.push('Meta description is empty.');
-  else if (seoDescription.length > DESC_MAX) warnings.push(`Meta description is ${seoDescription.length} characters — over the ~${DESC_MAX} guidance.`);
-  images.forEach((url, i) => {
-    if (!imageAltText[url]?.trim()) warnings.push(`Image ${i + 1} has no alt text.`);
-  });
-
   const previewUrl = `${SITE_URL}/products/${slug || 'your-product-slug'}`;
 
   return (
-    <div className="card" style={{ marginTop: 24 }}>
-      <h2>SEO</h2>
+    <div>
+      {/* Top AI Action Header (Cult UI Squircle Banner) */}
+      <div
+        style={{
+          padding: '18px 22px',
+          background: 'var(--stone)',
+          border: '1px solid rgba(17,17,17,0.06)',
+          borderRadius: 20,
+          marginBottom: 24,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 14,
+          boxShadow: '0 2px 10px rgba(17,17,17,0.02)',
+        }}
+      >
+        <div>
+          <div style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--ink)', marginBottom: 2, letterSpacing: '-0.01em' }}>
+            AI Search Engine Copywriter
+          </div>
+          <div style={{ fontSize: 12.5, color: 'var(--subtle)' }}>
+            Calibrate Google SERP snippet and social cards for athletic intent in Pune
+          </div>
+        </div>
 
-      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <button type="button" onClick={handleGenerateClick} disabled={pending}>
-          {pending ? 'Generating…' : 'Generate SEO with AI'}
-        </button>
-        {genError && <span className="error">{genError}</span>}
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          type="button"
+          onClick={handleGenerateClick}
+          disabled={pending}
+          style={{
+            padding: '10px 22px',
+            fontSize: 12.5,
+            fontWeight: 800,
+            borderRadius: 9999,
+            background: 'var(--ink)',
+            color: 'var(--ivory)',
+            border: 'none',
+            cursor: pending ? 'not-allowed' : 'pointer',
+            boxShadow: '0 4px 14px rgba(17,17,17,0.12)',
+          }}
+        >
+          <span>{pending ? 'Synthesizing SEO Suggestions…' : 'Generate SEO'}</span>
+        </motion.button>
       </div>
 
+      {genError && <p className="error" style={{ marginBottom: 16 }}>{genError}</p>}
+
+      {/* Confirmation Drawer for Existing Fields */}
       {confirmFields.length > 0 && pendingSuggestions && (
-        <div className="card" style={{ background: '#fff8e1', marginBottom: 16 }}>
+        <div
+          style={{
+            background: 'var(--paper)',
+            border: '1px solid var(--stone)',
+            borderRadius: 20,
+            padding: '18px 22px',
+            marginBottom: 24,
+            boxShadow: '0 4px 20px -2px rgba(17,17,17,0.04)',
+          }}
+        >
+          <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--ink)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Review AI Content Suggestions
+          </div>
           {confirmFields.map((field) => (
-            <div key={field} style={{ marginBottom: 8 }}>
-              <p>
-                Replace existing {fieldLabel(field)}?
-                <br />
-                <em>Current:</em> {currentValue(field, { seoTitle, seoDescription, ogTitle, ogDescription }) || '(empty)'}
-                <br />
-                <em>Suggested:</em> {pendingSuggestions[field]}
-              </p>
-              <button type="button" onClick={() => confirmReplace(field, true)}>
-                Replace
-              </button>{' '}
-              <button type="button" onClick={() => confirmReplace(field, false)}>
-                Keep existing
-              </button>
+            <div key={field} style={{ marginBottom: 14, paddingBottom: 12, borderBottom: '1px solid var(--stone)' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', marginBottom: 4 }}>
+                Target: {fieldLabel(field)}
+              </div>
+              <div style={{ fontSize: 13.5, color: 'var(--ink)', marginBottom: 6 }}>
+                <strong>Suggested:</strong> {pendingSuggestions[field]}
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => confirmReplace(field, true)}
+                  style={{
+                    minHeight: 32,
+                    padding: '4px 14px',
+                    fontSize: 12,
+                    borderRadius: 9999,
+                    background: 'var(--ink)',
+                    color: 'var(--ivory)',
+                    border: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Check size={12} /> Apply Suggestion
+                </button>
+                <button
+                  type="button"
+                  onClick={() => confirmReplace(field, false)}
+                  style={{
+                    minHeight: 32,
+                    padding: '4px 14px',
+                    fontSize: 12,
+                    borderRadius: 9999,
+                    background: 'var(--paper)',
+                    color: 'var(--ink)',
+                    border: '1px solid rgba(17,17,17,0.12)',
+                  }}
+                >
+                  Keep Current
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      <label htmlFor="seo_title_input">SEO page title ({seoTitle.length} chars — aim for {TITLE_MIN}-{TITLE_MAX})</label>
-      <input
-        id="seo_title_input"
-        value={seoTitle}
-        onChange={(e) => setSeoTitle(e.target.value)}
-        style={{ width: '100%' }}
-      />
+      {/* Title Field with Character Health Gauge */}
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <label htmlFor="seo_title_input" style={{ margin: 0 }}>Google Title Tag</label>
+          <span style={{ fontSize: 11, fontWeight: 700, color: seoTitle.length > TITLE_MAX ? 'var(--error)' : 'var(--gold-ink)' }}>
+            {seoTitle.length} / 60 Chars (Target: 50–60)
+          </span>
+        </div>
+        <input
+          id="seo_title_input"
+          className="cult-input"
+          value={seoTitle}
+          onChange={(e) => setSeoTitle(e.target.value)}
+          placeholder="e.g. SG Scorer Classic Cricket Bat | Oriental Sports Pune"
+          style={{ width: '100%', fontSize: 14, fontWeight: 600 }}
+        />
+      </div>
 
-      <label htmlFor="seo_description_input" style={{ marginTop: 12, display: 'block' }}>
-        Meta description ({seoDescription.length} chars — aim for {DESC_MIN}-{DESC_MAX})
-      </label>
-      <textarea
-        id="seo_description_input"
-        value={seoDescription}
-        onChange={(e) => setSeoDescription(e.target.value)}
-        rows={3}
-        style={{ width: '100%' }}
-      />
+      {/* Meta Description Field with Character Health Gauge */}
+      <div style={{ marginTop: 18 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <label htmlFor="seo_description_input" style={{ margin: 0 }}>Meta Snippet Description</label>
+          <span style={{ fontSize: 11, fontWeight: 700, color: seoDescription.length > DESC_MAX ? 'var(--error)' : 'var(--gold-ink)' }}>
+            {seoDescription.length} / 160 Chars (Target: 150–160)
+          </span>
+        </div>
+        <textarea
+          id="seo_description_input"
+          className="cult-input"
+          value={seoDescription}
+          onChange={(e) => setSeoDescription(e.target.value)}
+          rows={3}
+          placeholder="Buy genuine Kashmir Willow cricket bat at Oriental Sports Camp Pune. Engineered for match power with Sarawak cane shock absorption handle."
+          style={{ width: '100%', fontSize: 13.5, lineHeight: 1.5, resize: 'vertical' }}
+        />
+      </div>
 
-      <div className="form-row" style={{ marginTop: 12 }}>
+      {/* Keywords Management */}
+      <div className="form-row" style={{ marginTop: 18 }}>
         <div>
-          <label htmlFor="primary_keyword_input">Primary keyword</label>
+          <label htmlFor="primary_keyword_input">Primary Focus Keyword</label>
           <input
             id="primary_keyword_input"
+            className="cult-input"
             value={primaryKeyword}
             onChange={(e) => setPrimaryKeyword(e.target.value)}
-            style={{ width: '100%' }}
+            placeholder="e.g. cricket bat pune"
+            style={{ width: '100%', fontSize: 13.5 }}
           />
         </div>
+
         <div>
-          <label htmlFor="secondary_keyword_input">Secondary keywords</label>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <label htmlFor="secondary_keyword_input">Secondary Intent Keywords</label>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              background: 'var(--paper)',
+              border: '1px solid rgba(17,17,17,0.1)',
+              borderRadius: 9999,
+              padding: '3px 4px 3px 14px',
+              boxShadow: '0 2px 8px rgba(17,17,17,0.02)',
+            }}
+          >
             <input
               id="secondary_keyword_input"
               value={keywordDraft}
@@ -242,118 +342,157 @@ export function SeoEditor({
                   addSecondaryKeyword();
                 }
               }}
-              style={{ flex: 1 }}
+              placeholder="Type keyword and press Enter..."
+              style={{
+                flex: 1,
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                fontSize: 13,
+                color: 'var(--ink)',
+                padding: '8px 0',
+              }}
             />
-            <button type="button" onClick={addSecondaryKeyword}>
+            <button
+              type="button"
+              onClick={addSecondaryKeyword}
+              style={{
+                borderRadius: 9999,
+                padding: '6px 14px',
+                fontSize: 12,
+                fontWeight: 700,
+                background: 'var(--ink)',
+                color: 'var(--ivory)',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
               Add
             </button>
-          </div>
-          <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {secondaryKeywords.map((k) => (
-              <span
-                key={k}
-                style={{
-                  border: '1px solid #ccc',
-                  borderRadius: 4,
-                  padding: '4px 8px',
-                  fontSize: 13,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
-              >
-                {k}
-                <button
-                  type="button"
-                  onClick={() => removeSecondaryKeyword(k)}
-                  aria-label={`Remove ${k}`}
-                  style={{ minWidth: 44, minHeight: 44, lineHeight: 1 }}
-                >
-                  ×
-                </button>
-              </span>
-            ))}
           </div>
         </div>
       </div>
 
-      <div className="form-row" style={{ marginTop: 12 }}>
+      {/* Keywords Chips */}
+      {secondaryKeywords.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+          {secondaryKeywords.map((k) => (
+            <span
+              key={k}
+              style={{
+                background: 'var(--stone)',
+                border: '1px solid rgba(17,17,17,0.08)',
+                borderRadius: 9999,
+                padding: '4px 12px',
+                fontSize: 12,
+                fontWeight: 600,
+                color: 'var(--ink)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                boxShadow: '0 1px 4px rgba(17,17,17,0.02)',
+              }}
+            >
+              <span>{k}</span>
+              <button
+                type="button"
+                onClick={() => removeSecondaryKeyword(k)}
+                style={{
+                  minHeight: 18,
+                  width: 18,
+                  padding: 0,
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--subtle)',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '50%',
+                }}
+              >
+                <X size={12} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* OpenGraph Titles */}
+      <div className="form-row" style={{ marginTop: 20 }}>
         <div>
-          <label htmlFor="og_title_input">Open Graph title</label>
-          <input id="og_title_input" value={ogTitle} onChange={(e) => setOgTitle(e.target.value)} style={{ width: '100%' }} />
+          <label htmlFor="og_title_input">OpenGraph Social Title</label>
+          <input
+            id="og_title_input"
+            className="cult-input"
+            value={ogTitle}
+            onChange={(e) => setOgTitle(e.target.value)}
+            placeholder="Defaults to SEO Title if empty"
+            style={{ width: '100%', fontSize: 13.5 }}
+          />
         </div>
         <div>
-          <label htmlFor="og_description_input">Open Graph description</label>
+          <label htmlFor="og_description_input">OpenGraph Social Description</label>
           <input
             id="og_description_input"
+            className="cult-input"
             value={ogDescription}
             onChange={(e) => setOgDescription(e.target.value)}
-            style={{ width: '100%' }}
+            placeholder="Defaults to Meta Description if empty"
+            style={{ width: '100%', fontSize: 13.5 }}
           />
         </div>
       </div>
 
-      {images.length > 0 && (
-        <div style={{ marginTop: 16 }}>
-          <h3>Image alt text</h3>
-          {images.map((url, i) => (
-            <div key={url} style={{ marginBottom: 8 }}>
-              <label htmlFor={`alt_text_${i}`} style={{ fontSize: 13, wordBreak: 'break-all' }}>
-                {url}
-              </label>
-              <input
-                id={`alt_text_${i}`}
-                value={imageAltText[url] || ''}
-                onChange={(e) => setImageAltText((prev) => ({ ...prev, [url]: e.target.value }))}
-                style={{ width: '100%' }}
-              />
+      {/* Interactive Google SERP & Social Preview Card (Skiper / Cult style) */}
+      <div style={{ marginTop: 28, paddingTop: 22, borderTop: '1px solid rgba(17,17,17,0.06)' }}>
+        <div style={{ marginBottom: 14 }}>
+          <h4 style={{ margin: 0, fontSize: 14.5, fontWeight: 800 }}>Search Engine Result Preview (Google SERP)</h4>
+        </div>
+
+        <div
+          style={{
+            background: '#ffffff',
+            border: '1px solid rgba(0,0,0,0.08)',
+            borderRadius: 16,
+            padding: '18px 22px',
+            maxWidth: 620,
+            boxShadow: '0 4px 18px rgba(32, 33, 36, 0.06)',
+            fontFamily: 'arial, sans-serif',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <div
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: '50%',
+                background: '#111111',
+                color: '#ffffff',
+                display: 'grid',
+                placeItems: 'center',
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              O
             </div>
-          ))}
-        </div>
-      )}
-
-      {warnings.length > 0 && (
-        <ul style={{ color: '#b45309', marginTop: 16 }}>
-          {warnings.map((w) => (
-            <li key={w}>{w}</li>
-          ))}
-        </ul>
-      )}
-
-      <div style={{ marginTop: 20 }}>
-        <h3>Search result preview</h3>
-        <div style={{ border: '1px solid #ddd', borderRadius: 6, padding: 12, maxWidth: 560, fontFamily: 'arial, sans-serif' }}>
-          <div style={{ color: '#202124', fontSize: 14 }}>{previewUrl}</div>
-          <div style={{ color: '#1a0dab', fontSize: 18, lineHeight: 1.3 }}>{seoTitle || name || 'Product title'}</div>
-          <div style={{ color: '#4d5156', fontSize: 13, lineHeight: 1.4 }}>
-            {seoDescription || description || 'Meta description will appear here.'}
+            <div>
+              <div style={{ fontSize: 13, color: '#202124', fontWeight: 600, lineHeight: 1.2 }}>Oriental Sports Pune</div>
+              <div style={{ fontSize: 11.5, color: '#5f6368', lineHeight: 1.2 }}>{previewUrl}</div>
+            </div>
           </div>
-        </div>
 
-        <h3 style={{ marginTop: 16 }}>Social share preview</h3>
-        <div style={{ border: '1px solid #ddd', borderRadius: 8, maxWidth: 400, overflow: 'hidden' }}>
-          <div style={{ background: '#eee', height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
-            {images[0] ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={images[0].startsWith('/') ? `${SITE_URL}${images[0]}` : images[0]}
-                alt=""
-                style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              'No image'
-            )}
+          <div style={{ fontSize: 18, color: '#1a0dab', fontWeight: 500, lineHeight: 1.3, marginBottom: 6, cursor: 'pointer' }}>
+            {seoTitle || `${name} | Oriental Sports Pune`}
           </div>
-          <div style={{ padding: 10 }}>
-            <div style={{ fontSize: 12, color: '#65676b', textTransform: 'uppercase' }}>{SITE_URL.replace(/^https?:\/\//, '')}</div>
-            <div style={{ fontSize: 15, fontWeight: 600 }}>{ogTitle || seoTitle || name || 'Product title'}</div>
-            <div style={{ fontSize: 13, color: '#65676b' }}>{ogDescription || seoDescription || 'Social description will appear here.'}</div>
+
+          <div style={{ fontSize: 13.5, color: '#4d5156', lineHeight: 1.5 }}>
+            {seoDescription || description || 'Authentic sports equipment, verified match gear, and turnkey sports infrastructure in Camp Pune.'}
           </div>
         </div>
       </div>
 
-      {/* Hidden inputs — submitted as part of the enclosing product form's
-          FormData alongside the plain fields in product-form.tsx. */}
       <input type="hidden" name="seo_title" value={seoTitle} />
       <input type="hidden" name="seo_description" value={seoDescription} />
       <input type="hidden" name="seo_keywords" value={allKeywords.join('\n')} />
@@ -367,19 +506,12 @@ export function SeoEditor({
 function fieldLabel(field: FieldKey): string {
   switch (field) {
     case 'seoTitle':
-      return 'SEO title';
+      return 'SEO Title Tag';
     case 'seoDescription':
-      return 'meta description';
+      return 'Meta Description';
     case 'ogTitle':
-      return 'Open Graph title';
+      return 'OpenGraph Title';
     case 'ogDescription':
-      return 'Open Graph description';
+      return 'OpenGraph Description';
   }
-}
-
-function currentValue(
-  field: FieldKey,
-  values: { seoTitle: string; seoDescription: string; ogTitle: string; ogDescription: string }
-): string {
-  return values[field];
 }

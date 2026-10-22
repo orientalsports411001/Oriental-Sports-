@@ -35,20 +35,20 @@ interface OrbitItem {
 }
 
 const ORBIT_ITEMS: OrbitItem[] = [
-  { id: 'badminton', sport: 'Badminton', image: IMAGES.badmintonSmash, link: { to: '/shop/badminton', label: 'Shop badminton' }, aspect: '4 / 5', yOffset: -12 },
-  { id: 'pickleball', sport: 'Pickleball', image: IMAGES.pickleballNet, link: { to: '/shop/pickleball', label: 'Shop pickleball' }, aspect: '16 / 11', yOffset: 24 },
-  { id: 'cricket', sport: 'Cricket', image: IMAGES.cricketStadium, link: { to: '/shop/cricket', label: 'Shop cricket' }, aspect: '16 / 10', yOffset: -28 },
-  { id: 'tennis', sport: 'Tennis', image: IMAGES.tennisClay, link: { to: '/shop/tennis', label: 'Shop tennis' }, aspect: '4 / 5', yOffset: 16 },
-  { id: 'squash', sport: 'Squash', image: IMAGES.squashCourts, link: { to: '/shop/squash', label: 'Shop squash' }, aspect: '1 / 1', yOffset: -16 },
-  { id: 'courts', sport: 'Courts', image: IMAGES.courtDusk, link: { to: '/courts', label: 'See court construction' }, aspect: '16 / 9', yOffset: 28 },
+  { id: 'badminton', sport: 'Badminton', image: IMAGES.badmintonSmash, link: { to: '/shop/badminton', label: 'Shop badminton' }, aspect: '9 / 11', yOffset: -10 },
+  { id: 'pickleball', sport: 'Pickleball', image: IMAGES.pickleballNet, link: { to: '/shop/pickleball', label: 'Shop pickleball' }, aspect: '9 / 11', yOffset: 14 },
+  { id: 'cricket', sport: 'Cricket', image: IMAGES.cricketStadium, link: { to: '/shop/cricket', label: 'Shop cricket' }, aspect: '9 / 11', yOffset: -14 },
+  { id: 'tennis', sport: 'Tennis', image: IMAGES.tennisClay, link: { to: '/shop/tennis', label: 'Shop tennis' }, aspect: '9 / 11', yOffset: 12 },
+  { id: 'squash', sport: 'Squash', image: IMAGES.squashCourts, link: { to: '/shop/squash', label: 'Shop squash' }, aspect: '9 / 11', yOffset: -8 },
+  { id: 'courts', sport: 'Courts', image: IMAGES.courtDusk, link: { to: '/courts', label: 'See court construction' }, aspect: '9 / 11', yOffset: 16 },
 ];
 
 /** Radians the orbit turns across the whole scroll track (~1.1 revolutions). */
 const TURN = Math.PI * 2.2;
 /** CSS perspective of the orbit field, in px. */
 const PERSPECTIVE = 1200;
-/** Tallest card aspect (4:5) as height / width. */
-const TALLEST = 1.25;
+/** Card aspect ratio (9:11 story) as height / width (11 / 9 ≈ 1.222). */
+const TALLEST = 11 / 9;
 
 export const OrbitalGallery: React.FC = () => {
   const reduced = useReducedMotion();
@@ -91,17 +91,34 @@ export const OrbitalGallery: React.FC = () => {
     tiltY.set(0);
   };
 
-  const xRadius = width <= 480 ? width * 0.28 : width <= 900 ? 240 : 420;
-  const zRadius = width <= 480 ? 180 : width <= 900 ? 240 : 320;
+  const xRadius = width <= 480
+    ? Math.round(width * 0.28)
+    : width <= 768
+      ? Math.round(width * 0.3)
+      : width <= 1024
+        ? 320
+        : width <= 1440
+          ? 440
+          : 490;
 
-  // Size the cards so the front one — scaled 1.32x and brought forward by
-  // the perspective — never leaves the field and never reaches the heading.
-  const yAmp = Math.min(60, fieldH * 0.07);
-  const swing = (28 / 60) * yAmp + yAmp;
-  const frontScale = 1.32 * (PERSPECTIVE / (PERSPECTIVE - zRadius));
-  const heightCap = ((fieldH / 2 - swing - 8) * 2) / (TALLEST * frontScale);
-  const widthCap = Math.min(Math.max(150, width * 0.19), 300);
-  const cardW = Math.round(Math.max(110, Math.min(widthCap, heightCap)));
+  const zRadius = width <= 480 ? 140 : width <= 900 ? 200 : 260;
+
+  // Size cards generously in 9:11 story proportion so they feel bold and editorial
+  // while ensuring the front card fits gracefully inside the stage.
+  const yAmp = Math.min(26, fieldH * 0.045);
+  const swing = (18 / 60) * yAmp + yAmp;
+  const frontScale = 1.16 * (PERSPECTIVE / (PERSPECTIVE - zRadius));
+  const heightCap = ((fieldH / 2 - swing - 14) * 2) / (TALLEST * frontScale);
+  const widthCap = width <= 480
+    ? Math.min(Math.max(160, width * 0.44), 190)
+    : width <= 768
+      ? Math.min(Math.max(200, width * 0.32), 250)
+      : width <= 1024
+        ? Math.min(Math.max(250, width * 0.28), 290)
+        : width <= 1440
+          ? Math.min(Math.max(290, width * 0.22), 330)
+          : 350;
+  const cardW = Math.round(Math.max(140, Math.min(widthCap, heightCap)));
 
   const head = (
     <header className="orbit-head">
@@ -171,7 +188,7 @@ const OrbitCardFace: React.FC<{ item: OrbitItem; onOpen: () => void }> = ({ item
     aria-label={`Open photo: ${item.sport}`}
     data-orbit-id={item.id}
   >
-    <Img image={item.image} alt="" sizes="(min-width: 900px) 320px, 240px" />
+    <Img image={item.image} alt="" sizes="(min-width: 1200px) 480px, (min-width: 768px) 360px, 260px" />
     <span className="orbit-card-label">{item.sport}</span>
   </button>
 );
@@ -193,12 +210,12 @@ const OrbitCard: React.FC<OrbitCardProps> = ({ item, baseAngle, progress, xRadiu
   const z = useTransform(angle, (a) => Math.sin(a) * zRadius);
   const y = useTransform(angle, (a) => (item.yOffset / 60) * yAmp + Math.sin(a * 1.5) * yAmp);
 
-  // Depth: front cards grow to ~1.32, back cards recede to 0.72 and soften.
-  const scale = useTransform(z, (d) => 0.72 + ((d + zRadius) / (zRadius * 2)) * 0.6);
-  const filter = useTransform(z, (d) => (d >= 0 ? 'blur(0px)' : `blur(${(Math.abs(d / zRadius) * 2.5).toFixed(1)}px)`));
+  // Depth: front cards grow to ~1.16, back cards recede gracefully to ~0.84 and soften.
+  const scale = useTransform(z, (d) => 0.84 + ((d + zRadius) / (zRadius * 2)) * 0.32);
+  const filter = useTransform(z, (d) => (d >= 0 ? 'blur(0px)' : `blur(${(Math.abs(d / zRadius) * 2).toFixed(1)}px)`));
   const zIndex = useTransform(z, (d) => Math.round(10 + (d / zRadius) * 10));
-  const rotateY = useTransform(x, (v) => -(v / xRadius) * 14);
-  const rotateZ = useTransform(x, (v) => (v / xRadius) * 4);
+  const rotateY = useTransform(x, (v) => -(v / xRadius) * 12);
+  const rotateZ = useTransform(x, (v) => (v / xRadius) * 3);
 
   return (
     <motion.li className="orbit-anchor" style={{ x, y, z, zIndex, scale, filter, rotateY, rotateZ }}>
