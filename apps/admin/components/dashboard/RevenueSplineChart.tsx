@@ -73,12 +73,12 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
 
   return (
     <div
+      className="admin-card"
       style={{
-        background: '#FFFFFF',
-        borderRadius: 24,
-        padding: '24px 28px',
         boxShadow: '0 8px 30px -4px rgba(17, 17, 17, 0.04)',
         position: 'relative',
+        overflow: 'hidden',
+        minWidth: 0,
       }}
     >
       {/* Top Header of Chart */}
@@ -328,9 +328,14 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
           <div
             style={{
               position: 'absolute',
-              left: `${(points[activePointIndex].x / width) * 100}%`,
+              left: `${Math.min(90, Math.max(10, (points[activePointIndex].x / width) * 100))}%`,
               top: `${(points[activePointIndex].y / height) * 100}%`,
-              transform: 'translate(-50%, -130%)',
+              transform:
+                activePointIndex >= points.length - 2
+                  ? 'translate(-88%, -130%)'
+                  : activePointIndex <= 1
+                  ? 'translate(-12%, -130%)'
+                  : 'translate(-50%, -130%)',
               background: '#111111',
               color: '#FFFFFF',
               padding: '6px 12px',
@@ -344,6 +349,7 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
               alignItems: 'center',
               gap: 6,
               zIndex: 10,
+              maxWidth: 'calc(100% - 20px)',
             }}
           >
             <span style={{ color: 'var(--gold-hi)' }}>●</span>

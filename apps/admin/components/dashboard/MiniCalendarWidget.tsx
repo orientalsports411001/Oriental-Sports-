@@ -26,11 +26,10 @@ export function MiniCalendarWidget() {
 
   return (
     <div
+      className="admin-card"
       style={{
-        background: '#FFFFFF',
-        borderRadius: 24,
-        padding: '24px',
         boxShadow: '0 8px 30px -4px rgba(17, 17, 17, 0.04)',
+        minWidth: 0,
       }}
     >
       {/* Month Header */}

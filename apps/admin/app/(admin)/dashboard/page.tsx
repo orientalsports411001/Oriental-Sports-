@@ -118,7 +118,7 @@ export default async function DashboardPage() {
   );
 
   return (
-    <div style={{ paddingBottom: 60, maxWidth: 1420, margin: '0 auto' }}>
+    <div style={{ maxWidth: 1420, margin: '0 auto' }}>
       {/* Top Operations Header */}
       <div
         style={{
@@ -127,11 +127,11 @@ export default async function DashboardPage() {
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 16,
-          marginBottom: 28,
+          marginBottom: 24,
         }}
       >
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
             <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: '-0.015em', color: 'var(--ink-heading)' }}>
               Operations Dashboard
             </h1>
@@ -183,17 +183,13 @@ export default async function DashboardPage() {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
           gap: 18,
-          marginBottom: 28,
+          marginBottom: 24,
         }}
       >
         {/* KPI 1: Total Revenue */}
         <div
+          className="admin-card"
           style={{
-            padding: '24px 26px',
-            background: '#FFFFFF',
-            borderRadius: 24,
-            boxShadow: '0 4px 20px -2px rgba(38, 41, 46, 0.04)',
-            border: '1px solid var(--line)',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -222,12 +218,8 @@ export default async function DashboardPage() {
 
         {/* KPI 2: Total Orders */}
         <div
+          className="admin-card"
           style={{
-            padding: '24px 26px',
-            background: '#FFFFFF',
-            borderRadius: 24,
-            boxShadow: '0 4px 20px -2px rgba(38, 41, 46, 0.04)',
-            border: '1px solid var(--line)',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -254,12 +246,8 @@ export default async function DashboardPage() {
 
         {/* KPI 3: Average Order Value */}
         <div
+          className="admin-card"
           style={{
-            padding: '24px 26px',
-            background: '#FFFFFF',
-            borderRadius: 24,
-            boxShadow: '0 4px 20px -2px rgba(38, 41, 46, 0.04)',
-            border: '1px solid var(--line)',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -287,12 +275,8 @@ export default async function DashboardPage() {
 
         {/* KPI 4: Active SKUs */}
         <div
+          className="admin-card"
           style={{
-            padding: '24px 26px',
-            background: '#FFFFFF',
-            borderRadius: 24,
-            boxShadow: '0 4px 20px -2px rgba(38, 41, 46, 0.04)',
-            border: '1px solid var(--line)',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -335,11 +319,10 @@ export default async function DashboardPage() {
 
           {/* 2. Recent Customer Orders Card */}
           <div
+            className="admin-card"
             style={{
-              background: '#FFFFFF',
-              borderRadius: 24,
-              padding: '24px 28px',
               boxShadow: '0 8px 30px -4px rgba(17, 17, 17, 0.04)',
+              minWidth: 0,
             }}
           >
             <div
@@ -347,6 +330,8 @@ export default async function DashboardPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 12,
                 marginBottom: 20,
               }}
             >
@@ -369,14 +354,15 @@ export default async function DashboardPage() {
                   borderRadius: 9999,
                   background: 'var(--stone)',
                   textDecoration: 'none',
+                  flexShrink: 0,
                 }}
               >
                 View all orders →
               </Link>
             </div>
 
-            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', minWidth: 0 }}>
+              <table style={{ width: '100%', minWidth: 500, borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(17,17,17,0.06)' }}>
                     <th style={{ padding: '10px 14px', fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--subtle)', background: 'transparent' }}>
@@ -497,17 +483,16 @@ export default async function DashboardPage() {
         </div>
 
         {/* Right Column (Mini Calendar + Inventory Health Alert) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
           {/* 1. Interactive Mini Calendar Widget */}
           <MiniCalendarWidget />
 
           {/* 2. Low Stock Warnings Card */}
           <div
+            className="admin-card"
             style={{
-              background: '#FFFFFF',
-              borderRadius: 24,
-              padding: '24px',
               boxShadow: '0 8px 30px -4px rgba(17, 17, 17, 0.04)',
+              minWidth: 0,
             }}
           >
             <div

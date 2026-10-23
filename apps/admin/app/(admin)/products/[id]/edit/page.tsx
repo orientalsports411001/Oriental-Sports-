@@ -53,7 +53,7 @@ export default async function EditProductPage({
   const boundDelete = deleteProduct.bind(null, params.id);
 
   return (
-    <div style={{ paddingBottom: 60 }}>
+    <div>
       {/* Header Bar */}
       <div className="toolbar" style={{ justifyContent: 'space-between', marginBottom: 24 }}>
         <div>

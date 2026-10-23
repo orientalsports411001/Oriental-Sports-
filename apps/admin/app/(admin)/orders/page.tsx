@@ -91,7 +91,7 @@ export default async function OrdersPage({
   }
 
   return (
-    <div style={{ paddingBottom: 60, maxWidth: 1420, margin: '0 auto' }}>
+    <div style={{ maxWidth: 1420, margin: '0 auto' }}>
       {/* Clean Minimalist Header */}
       <div
         style={{
