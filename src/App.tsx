@@ -97,6 +97,7 @@ const AppContent: React.FC = () => {
 
             {/* Sports Infrastructure */}
             <Route path="/courts" element={<CourtsPage />} />
+            <Route path="/installations" element={<CourtsPage />} />
             <Route path="/courts/projects" element={<CourtProjectsPage />} />
             <Route path="/courts/:slug" element={<CourtProjectDetailPage />} />
 

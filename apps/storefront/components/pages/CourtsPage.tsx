@@ -5,6 +5,7 @@ import { COURT_SERVICES } from '@/data/courts';
 import { IMAGES, MediaImage } from '@/data/media';
 import { STORE_INFO } from '@/data/storeInfo';
 import { CourtServiceInquiry } from '@/components/courts/CourtServiceInquiry';
+import { InstallationsShowcase } from '@/components/courts/InstallationsShowcase';
 import { BuildSteps } from '@/components/courts/BuildSteps';
 import { ProjectGallery } from '@/components/home/ProjectGallery';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -23,15 +24,15 @@ const COURT_ART: Record<string, MediaImage> = {
 export const CourtsPage: React.FC = () => (
   <div className="courts-page">
     <PageHeader
-      crumbs={[{ label: 'Home', to: '/' }, { label: 'Courts' }]}
-      eyebrow="Court construction · Pune & Maharashtra"
-      title={['We build', 'courts.']}
-      lead="Turnkey court construction, surface systems, fencing, lighting and line marking — for clubs, schools, residential societies and homes."
+      crumbs={[{ label: 'Home', to: '/' }, { label: 'Installations' }]}
+      eyebrow="Sports & Wellness Infrastructure · Pune & Maharashtra"
+      title={['Turnkey', 'Installations.']}
+      lead="Complete sports and wellness infrastructure partner — court construction, multi-sport turfs, gym fit-outs, and professional maintenance across Maharashtra."
       image={IMAGES.courtDusk}
     >
       <Reveal className="page-header-actions" delay={0.25}>
         <a href="#court-inquiry" className="btn btn-light">
-          Inquire about a court <span className="btn-arrow" aria-hidden="true">→</span>
+          Inquire about a project <span className="btn-arrow" aria-hidden="true">→</span>
         </a>
         <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-outline-light">
           WhatsApp us
@@ -39,7 +40,18 @@ export const CourtsPage: React.FC = () => (
       </Reveal>
     </PageHeader>
 
-    <section className="container section court-services" aria-label="Courts we build">
+    {/* SCS Sports Inspired Installations Showcase */}
+    <InstallationsShowcase />
+
+    <section className="container section court-services" aria-label="Detailed technical specifications">
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <p style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#C8102E', margin: '0 0 8px' }}>
+          Technical Specifications
+        </p>
+        <h2 className="display" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.25rem)', color: '#FFFFFF', margin: 0 }}>
+          Individual Sport Disciplines & Surface Systems
+        </h2>
+      </div>
       {COURT_SERVICES.map((service, i) => (
         <article key={service.id} id={service.slug} className={`court-service ${i % 2 ? 'is-flipped' : ''}`}>
           <ImageReveal className="court-service-media">

@@ -25,7 +25,7 @@ export const BottomNav: React.FC = () => {
     !isCartActive &&
     !isOrdersActive &&
     !isAccountActive &&
-    (pathname.startsWith('/shop') || pathname.startsWith('/product') || pathname.startsWith('/courts'));
+    (pathname.startsWith('/shop') || pathname.startsWith('/product') || pathname.startsWith('/courts') || pathname.startsWith('/installations'));
   const isHomeActive = !isProductsActive && !isOrdersActive && !isCartActive && !isAccountActive;
 
   let activeIndex = 0;

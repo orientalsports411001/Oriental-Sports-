@@ -9,7 +9,7 @@ import { SearchModal } from './SearchModal';
 import { MobileMenu } from './MobileMenu';
 export const NAV_ITEMS = [
   { to: '/shop', label: 'Shop' },
-  { to: '/courts', label: 'Courts' },
+  { to: '/installations', label: 'Installations' },
   { to: '/about', label: 'About' },
   { to: '/visit', label: 'Visit' },
 ];
@@ -44,11 +44,21 @@ export const Header: React.FC = () => {
           <Logo variant="dark" size="md" className="header-logo" />
 
           <nav className="header-nav desktop-only" aria-label="Primary">
-            {NAV_ITEMS.map((item) => (
-              <NavLink key={item.to} to={item.to} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                {item.label}
-              </NavLink>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const isActive =
+                item.to === '/installations'
+                  ? pathname === '/installations' || pathname.startsWith('/courts')
+                  : pathname === item.to || pathname.startsWith(item.to + '/');
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`nav-link ${isActive ? 'active' : ''}`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="header-actions">

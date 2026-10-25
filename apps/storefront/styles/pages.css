@@ -2202,3 +2202,153 @@
 .ecom-account-logged-in [style*="color: 'var(--color-ink)'"] {
   color: #FFFFFF !important;
 }
+
+/* Installations Showcase (SCS Sports style) */
+.installations-showcase-section {
+  padding-block: clamp(40px, 6vw, 72px);
+}
+.installations-showcase-header {
+  max-width: 860px;
+  margin: 0 auto clamp(36px, 5vw, 56px);
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: clamp(32px, 4vw, 48px);
+}
+.installations-pillars-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 28px;
+  text-align: left;
+}
+@media (min-width: 600px) {
+  .installations-pillars-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .installations-pillars-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.installations-pillar-card {
+  background: #121212;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  padding: clamp(16px, 3vw, 20px);
+}
+.installations-pillar-card h3 {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 8px;
+}
+.installations-pillar-card p {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.installations-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(32px, 5vw, 56px);
+}
+.installations-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(20px, 3vw, 36px);
+  align-items: center;
+  background: #0D0D0D;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: clamp(16px, 3vw, 28px);
+}
+@media (min-width: 900px) {
+  .installations-card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .installations-card.is-flipped .installations-card-media {
+    order: 2;
+  }
+  .installations-card.is-flipped .installations-card-body {
+    order: 1;
+  }
+}
+.installations-card-media {
+  aspect-ratio: 4 / 3;
+  background: #181818;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+.installations-card-body {
+  min-width: 0;
+}
+.installations-card-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.installations-card-title {
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  margin: 0 0 14px;
+  color: #FFFFFF;
+  line-height: 1.15;
+}
+.installations-card-desc {
+  font-size: 0.9375rem;
+  color: #D1D5DB;
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+.installations-disciplines-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.installations-discipline-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+  color: #FFFFFF;
+  font-weight: 500;
+  line-height: 1.35;
+}
+.installations-discipline-item .lightning-icon {
+  color: #C8102E;
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.installations-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #C8102E;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border-radius: 4px;
+  min-height: 44px;
+  transition: background-color 0.18s ease, transform 0.18s ease;
+}
+.installations-cta-btn:hover {
+  background-color: #A00C24;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+

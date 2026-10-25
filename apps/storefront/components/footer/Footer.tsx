@@ -16,10 +16,11 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
     ],
   },
   {
-    title: 'Courts',
+    title: 'Installations & Courts',
     links: [
+      { label: 'Turnkey Installations', to: '/installations' },
       { label: 'Court construction', to: '/courts' },
-      { label: 'Court inquiry', to: '/courts#court-inquiry' },
+      { label: 'Project inquiry', to: '/courts#court-inquiry' },
       { label: 'Court projects', to: '/courts/projects' },
     ],
   },

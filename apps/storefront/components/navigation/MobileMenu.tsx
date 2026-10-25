@@ -19,7 +19,7 @@ interface MobileMenuProps {
 
 const PRIMARY = [
   { to: '/shop', label: 'Shop', note: `Gear across ${CATEGORIES.length} sports` },
-  { to: '/courts', label: 'Courts', note: 'Court construction across Pune' },
+  { to: '/installations', label: 'Installations', note: 'Turnkey courts, turfs & gym fit-outs' },
   { to: '/about', label: 'About', note: 'The sports house in Camp' },
   { to: '/visit', label: 'Visit', note: `${STORE_INFO.addressLine1}, ${STORE_INFO.locality}` },
 ];
