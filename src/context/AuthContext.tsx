@@ -19,6 +19,7 @@ interface AuthContextType {
   verifyOtp: (otp: string, registrationData?: { firstName: string; lastName: string; email?: string }) => Promise<boolean>;
   signInWithGoogle: () => Promise<boolean>;
   signInWithEmail: (email: string) => Promise<boolean>;
+  signInWithDemo: () => Promise<boolean>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
   addAddress: (addr: Omit<Address, 'id'>) => Promise<Address>;
@@ -127,6 +128,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInWithDemo = async (): Promise<boolean> => {
+    try {
+      const demoUser = await AuthService.verifyOtp('+91 98230 45812', '123456', {
+        firstName: 'Arjun',
+        lastName: 'Deshmukh',
+        email: 'arjun.deshmukh@gmail.com',
+      });
+      setUser(demoUser);
+      closeAuthModal();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const signOut = async (): Promise<void> => {
     await AuthService.signOut();
     setUser(null);
@@ -191,6 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         verifyOtp,
         signInWithGoogle,
         signInWithEmail,
+        signInWithDemo,
         signOut,
         updateProfile,
         addAddress,

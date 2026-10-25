@@ -86,10 +86,12 @@
   --t-4: 900ms;
 
   /* ---- Layers ----------------------------------------------------------- */
-  --z-header: 60;
   --z-sticky: 50;
-  --z-overlay: 80;
-  --z-dialog: 90;
+  --z-header: 60;
+  --z-bottom-nav: 950;
+  --z-overlay: 1100;
+  --z-dialog: 1150;
+  --z-modal: 1200;
 
   /* ======================================================================
      Legacy aliases — older pages reference these names. They resolve to the

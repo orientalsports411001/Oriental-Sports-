@@ -1,36 +1,43 @@
 import fs from 'fs';
 import path from 'path';
 
-// Let's transpile src/data/products.ts and src/data/gymProducts.ts into temporary JS files
+// Transpile data modules
 import ts from 'typescript';
 
-const productsTsPath = path.resolve('src/data/products.ts');
-const gymTsPath = path.resolve('src/data/gymProducts.ts');
+const transpile = (tsPath) => {
+  const code = fs.readFileSync(path.resolve(tsPath), 'utf-8');
+  return ts.transpileModule(code, {
+    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 }
+  }).outputText.replace(/import\s+\{[^}]*\}\s+from\s+['"][^'"]*types['"];?/g, '');
+};
 
-const gymCode = fs.readFileSync(gymTsPath, 'utf-8');
-const gymJs = ts.transpileModule(gymCode, {
-  compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 }
-}).outputText;
-fs.writeFileSync('scripts/temp-gym.mjs', gymJs.replace("import { Product } from '../types';", ''));
+fs.writeFileSync('scripts/temp-gym.mjs', transpile('src/data/gymProducts.ts'));
+fs.writeFileSync('scripts/temp-bikes.mjs', transpile('src/data/exerciseBikes.ts'));
+fs.writeFileSync('scripts/temp-tables.mjs', transpile('src/data/tablesProducts.ts'));
+fs.writeFileSync('scripts/temp-cougar.mjs', transpile('src/data/cougarProducts.ts'));
 
-let prodCode = fs.readFileSync(productsTsPath, 'utf-8');
-prodCode = prodCode.replace("import { Product } from '../types';", '');
-prodCode = prodCode.replace("import { GYM_PRODUCTS } from './gymProducts';", "import { GYM_PRODUCTS } from './temp-gym.mjs';");
+let prodCode = fs.readFileSync(path.resolve('src/data/products.ts'), 'utf-8');
+prodCode = prodCode.replace(/import\s+\{[^}]*\}\s+from\s+['"][^'"]*types['"];?/g, '');
+prodCode = prodCode.replace("from './gymProducts';", "from './temp-gym.mjs';");
+prodCode = prodCode.replace("from './exerciseBikes';", "from './temp-bikes.mjs';");
+prodCode = prodCode.replace("from './tablesProducts';", "from './temp-tables.mjs';");
+prodCode = prodCode.replace("from './cougarProducts';", "from './temp-cougar.mjs';");
 
 const prodJs = ts.transpileModule(prodCode, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 }
 }).outputText;
 fs.writeFileSync('scripts/temp-prod.mjs', prodJs);
 
-console.log('Transpiled successfully! Now importing...');
+console.log('Transpiled all modules successfully! Now importing...');
 
 import('./temp-prod.mjs').then((mod) => {
   const products = mod.PRODUCTS;
   console.log('Total PRODUCTS loaded:', products.length);
   
   // Clean up temp files
-  fs.unlinkSync('scripts/temp-gym.mjs');
-  fs.unlinkSync('scripts/temp-prod.mjs');
+  ['scripts/temp-gym.mjs', 'scripts/temp-bikes.mjs', 'scripts/temp-tables.mjs', 'scripts/temp-cougar.mjs', 'scripts/temp-prod.mjs'].forEach((f) => {
+    if (fs.existsSync(f)) fs.unlinkSync(f);
+  });
 
   // Let's write all products into apps/admin/lib/all-products.json
   const adminProducts = products.map((p, idx) => {

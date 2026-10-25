@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { STORE_INFO } from '../../data/storeInfo';
 import { useStoreStatus } from '../../utils/storeHours';
 import { Reveal, RevealLines } from '../motion/Reveal';
+import { MagneticButton } from '../ui/MagneticButton';
 
 /**
  * STORE — the address set like a shop sign. Deliberately typographic: there is
@@ -54,10 +55,12 @@ export const StoreChapter: React.FC = () => {
           </dl>
 
           <div className="store-actions">
-            <a href={STORE_INFO.mapsUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
-              Get directions <span className="btn-arrow" aria-hidden="true">→</span>
-            </a>
-            <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-outline">
+            <MagneticButton strength={10}>
+              <a href={STORE_INFO.mapsUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
+                Get directions <span className="btn-arrow" aria-hidden="true">→</span>
+              </a>
+            </MagneticButton>
+            <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-outline-light">
               WhatsApp the store
             </a>
           </div>

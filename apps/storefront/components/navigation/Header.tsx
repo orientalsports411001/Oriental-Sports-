@@ -43,7 +43,7 @@ export const Header: React.FC = () => {
 
       <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
         <div className="container header-row">
-          <Logo variant="light" size="md" className="header-logo" />
+          <Logo variant="dark" size="md" className="header-logo" />
 
           <nav className="header-nav desktop-only" aria-label="Primary">
             {NAV_ITEMS.map((item) => (

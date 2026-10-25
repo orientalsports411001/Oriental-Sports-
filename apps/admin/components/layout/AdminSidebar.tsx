@@ -43,7 +43,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
             <img
               src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/brand/oriental-sports-wordmark.png`}
               alt="Oriental Sports Pune"
-              style={{ height: 32, width: 'auto', objectFit: 'contain', alignSelf: 'flex-start' }}
+              style={{ height: 36, width: 'auto', objectFit: 'contain', alignSelf: 'flex-start', display: 'block' }}
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = '/brand/oriental-sports-wordmark.png';

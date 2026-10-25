@@ -1,5 +1,8 @@
 import { Product } from '../types';
 import { GYM_PRODUCTS } from './gymProducts';
+import { EXERCISE_BIKES } from './exerciseBikes';
+import { TABLES_PRODUCTS } from './tablesProducts';
+import { COUGAR_PRODUCTS } from './cougarProducts';
 
 const CORE_PRODUCTS: Product[] = [
   // ==========================================================================
@@ -1652,4 +1655,10 @@ const CORE_PRODUCTS: Product[] = [
   },
 ];
 
-export const PRODUCTS: Product[] = [...CORE_PRODUCTS, ...GYM_PRODUCTS];
+export const PRODUCTS: Product[] = [
+  ...CORE_PRODUCTS,
+  ...GYM_PRODUCTS,
+  ...EXERCISE_BIKES,
+  ...TABLES_PRODUCTS,
+  ...COUGAR_PRODUCTS,
+];

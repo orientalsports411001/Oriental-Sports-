@@ -7,6 +7,7 @@ import { STORE_INFO } from '../../data/storeInfo';
 import { Img } from '../ui/Img';
 import { Reveal, RevealLines, Stagger, StaggerItem } from '../motion/Reveal';
 import { BuildSteps } from '../courts/BuildSteps';
+import { MagneticButton } from '../ui/MagneticButton';
 
 /**
  * COURTS — the night-court chapter.
@@ -58,9 +59,11 @@ export const CourtsChapter: React.FC = () => {
               come and look.
             </Reveal>
             <Reveal className="courts-actions" delay={0.15}>
-              <Link to="/courts" className="btn btn-gold">
-                Plan your court <span className="btn-arrow" aria-hidden="true">→</span>
-              </Link>
+              <MagneticButton strength={12}>
+                <Link to="/courts" className="btn btn-primary">
+                  Plan your court <span className="btn-arrow" aria-hidden="true">→</span>
+                </Link>
+              </MagneticButton>
               <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-outline-light">
                 WhatsApp us
               </a>

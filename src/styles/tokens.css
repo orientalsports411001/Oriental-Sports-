@@ -4,12 +4,35 @@
    ========================================================================== */
 
 :root {
-  /* ---- Official brand palette (Branding Map) ---------------------------- */
-  --ink: #111111;          /* Ink Black — text, primary actions, dark chapters */
-  --black: #000000;        /* True Black — night-court chapter, deepest surfaces */
-  --gold: #C9A227;         /* Plate Gold — accents on dark, rules, one CTA per chapter */
-  --gold-hi: #E0C56A;      /* Highlight Gold — hover/active on dark */
-  --ivory: #F6F3EA;        /* Ivory Court — page canvas */
+  /* ---- Official brand palette & Blood-Red Identity (Section 3) ---------- */
+  --blood-primary: #8B0000;      /* Primary Blood Red */
+  --blood-deep: #5C0000;         /* Deep Blood Red */
+  --blood-crimson: #C8102E;      /* Crimson Accent */
+  --blood-highlight: #F20D18;    /* Luminous Red Highlight */
+  --obsidian: #050505;           /* Obsidian Black */
+  --surface-black: #0A0A0A;      /* Primary Black Surface */
+  --charcoal: #171717;           /* Elevated Charcoal */
+  --surface-card: #202020;       /* Card Surface */
+  --surface-card-hover: #262626; /* Card Hover */
+  --text-primary: #FFFFFF;       /* Primary Text */
+  --text-secondary: #A3A3A3;     /* Secondary Text */
+  --text-muted: #737373;         /* Muted Text */
+  --border-color: #2A2A2A;       /* Border Color */
+  --border-crimson: rgba(200, 16, 46, 0.4);
+  --glow-crimson: 0 0 24px rgba(200, 16, 46, 0.35);
+  --glow-blood: 0 0 44px rgba(139, 0, 0, 0.5);
+
+  /* Core Palette */
+  --ink: #111111;          /* Ink Black */
+  --black: #050505;        /* Obsidian True Black */
+  --gold: #C8102E;         /* Crimson Accent as primary athletic signature */
+  --gold-hi: #F20D18;      /* Luminous Red Highlight for hover/active */
+  --ivory: #F6F3EA;        /* Ivory Court — strictly preserved for Client-Approved Galleries */
+
+  /* Surface canvas aliases */
+  --bg-canvas: var(--obsidian);
+  --bg-surface: var(--surface-black);
+  --bg-card: var(--surface-card);
 
   /* ---- Derived neutrals (warm, mixed from ivory + ink) ------------------ */
   --paper: #FBF9F4;        /* lifted surface: inputs, dialogs, drawers */
@@ -17,11 +40,11 @@
   --stage: #E9E2D3;        /* product photo staging (matches studio backdrops) */
   --stone-deep: #DCD4C3;   /* hover staging, strong dividers on stone */
   --ink-2: #2A2926;        /* hover of ink surfaces */
-  --muted: #56524A;        /* secondary text — 7.0:1 on ivory */
-  --subtle: #6B665C;       /* tertiary text / meta — 5.1:1 on ivory */
-  --gold-ink: #7A5F0E;     /* gold-toned text on light surfaces — 5.4:1 */
-  --line: rgba(17, 17, 17, 0.12);
-  --line-strong: rgba(17, 17, 17, 0.28);
+  --muted: #A3A3A3;        /* secondary text on dark surfaces */
+  --subtle: #737373;       /* tertiary text on dark surfaces */
+  --gold-ink: #F20D18;     /* gold-toned text on dark surfaces */
+  --line: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.24);
 
   /* On dark (ink / black) */
   --on-dark: #F6F3EA;
@@ -86,10 +109,12 @@
   --t-4: 900ms;
 
   /* ---- Layers ----------------------------------------------------------- */
-  --z-header: 60;
   --z-sticky: 50;
-  --z-overlay: 80;
-  --z-dialog: 90;
+  --z-header: 60;
+  --z-bottom-nav: 950;
+  --z-overlay: 1100;
+  --z-dialog: 1150;
+  --z-modal: 1200;
 
   /* ======================================================================
      Legacy aliases — older pages reference these names. They resolve to the

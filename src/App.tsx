@@ -30,6 +30,7 @@ const CartPage = page(() => import('./pages/CartPage'), 'CartPage');
 const CheckoutPage = page(() => import('./pages/CheckoutPage'), 'CheckoutPage');
 const OrderSuccessPage = page(() => import('./pages/OrderSuccessPage'), 'OrderSuccessPage');
 const AccountPage = page(() => import('./pages/AccountPage'), 'AccountPage');
+const WishlistPage = page(() => import('./pages/WishlistPage'), 'WishlistPage');
 const NotFoundPage = page(() => import('./pages/NotFoundPage'), 'NotFoundPage');
 const ShippingPage = page(() => import('./pages/PolicyPages'), 'ShippingPage');
 const ReturnsPage = page(() => import('./pages/PolicyPages'), 'ReturnsPage');
@@ -77,7 +78,7 @@ const AppContent: React.FC = () => {
   const isCheckout = location.pathname === '/checkout';
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: isCheckout ? '#f8f9fa' : 'var(--ivory)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: isCheckout ? 'var(--charcoal)' : 'var(--obsidian)' }}>
       {!isCheckout && <Header />}
       <CartDrawer />
       <LazyAuthModal />
@@ -116,8 +117,8 @@ const AppContent: React.FC = () => {
             <Route path="/account/orders/:orderId" element={<AccountPage tab="orders" />} />
             <Route path="/account/profile" element={<AccountPage tab="profile" />} />
             <Route path="/account/addresses" element={<AccountPage tab="addresses" />} />
-            <Route path="/account/wishlist" element={<AccountPage tab="wishlist" />} />
-            <Route path="/wishlist" element={<AccountPage tab="wishlist" />} />
+            <Route path="/account/wishlist" element={<WishlistPage />} />
+            <Route path="/wishlist" element={<WishlistPage />} />
 
             {/* Institutional Policies */}
             <Route path="/shipping" element={<ShippingPage />} />

@@ -106,11 +106,12 @@ export const AddressModal: React.FC<AddressModalProps> = ({
     >
       <div
         style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '4px',
+          backgroundColor: '#161616',
+          borderRadius: '6px',
           maxWidth: '520px',
           width: '100%',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.7)',
           overflow: 'hidden',
           animation: 'fadeIn 0.2s ease-out',
         }}
@@ -118,7 +119,8 @@ export const AddressModal: React.FC<AddressModalProps> = ({
         <div
           style={{
             padding: '20px 24px',
-            backgroundColor: 'var(--color-ink)',
+            backgroundColor: '#1E1E1E',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
             color: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
@@ -126,7 +128,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <MapPin size={18} color="var(--color-plate-gold)" />
+            <MapPin size={18} color="#C8102E" />
             <h3 className="font-display" style={{ margin: 0, fontSize: '1.25rem', color: '#FFFFFF' }}>
               {initialData ? 'EDIT ADDRESS' : 'ADD NEW ADDRESS'}
             </h3>
@@ -151,11 +153,11 @@ export const AddressModal: React.FC<AddressModalProps> = ({
           {error && (
             <div
               style={{
-                backgroundColor: '#FEE2E2',
-                border: '1px solid #F87171',
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
                 borderRadius: '4px',
                 padding: '10px 14px',
-                color: '#991B1B',
+                color: '#F87171',
                 fontSize: '0.8125rem',
                 marginBottom: '16px',
               }}
@@ -173,7 +175,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   fontSize: '0.75rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  color: '#374151',
+                  color: '#D1D5DB',
                   marginBottom: '4px',
                 }}
               >
@@ -191,7 +193,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   height: '40px',
                   padding: '0 12px',
                   fontSize: '0.875rem',
-                  border: '1px solid #D1D5DB',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backgroundColor: '#202020',
+                  color: '#FFFFFF',
                   borderRadius: '4px',
                   boxSizing: 'border-box',
                 }}
@@ -206,7 +210,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   fontSize: '0.75rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  color: '#374151',
+                  color: '#D1D5DB',
                   marginBottom: '4px',
                 }}
               >
@@ -224,7 +228,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   height: '40px',
                   padding: '0 12px',
                   fontSize: '0.875rem',
-                  border: '1px solid #D1D5DB',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backgroundColor: '#202020',
+                  color: '#FFFFFF',
                   borderRadius: '4px',
                   boxSizing: 'border-box',
                 }}
@@ -240,7 +246,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                 fontSize: '0.75rem',
                 fontWeight: 700,
                 textTransform: 'uppercase',
-                color: '#374151',
+                color: '#D1D5DB',
                 marginBottom: '4px',
               }}
             >
@@ -258,7 +264,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                 height: '40px',
                 padding: '0 12px',
                 fontSize: '0.875rem',
-                border: '1px solid #D1D5DB',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                backgroundColor: '#202020',
+                color: '#FFFFFF',
                 borderRadius: '4px',
                 boxSizing: 'border-box',
               }}
@@ -274,7 +282,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   fontSize: '0.75rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  color: '#374151',
+                  color: '#D1D5DB',
                   marginBottom: '4px',
                 }}
               >
@@ -291,7 +299,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   height: '40px',
                   padding: '0 12px',
                   fontSize: '0.875rem',
-                  border: '1px solid #D1D5DB',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backgroundColor: '#202020',
+                  color: '#FFFFFF',
                   borderRadius: '4px',
                   boxSizing: 'border-box',
                 }}
@@ -306,7 +316,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   fontSize: '0.75rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  color: '#374151',
+                  color: '#D1D5DB',
                   marginBottom: '4px',
                 }}
               >
@@ -325,7 +335,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   height: '40px',
                   padding: '0 12px',
                   fontSize: '0.875rem',
-                  border: '1px solid #D1D5DB',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backgroundColor: '#202020',
+                  color: '#FFFFFF',
                   borderRadius: '4px',
                   boxSizing: 'border-box',
                 }}
@@ -342,7 +354,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   fontSize: '0.75rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  color: '#374151',
+                  color: '#D1D5DB',
                   marginBottom: '4px',
                 }}
               >
@@ -358,7 +370,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   height: '40px',
                   padding: '0 12px',
                   fontSize: '0.875rem',
-                  border: '1px solid #D1D5DB',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backgroundColor: '#202020',
+                  color: '#FFFFFF',
                   borderRadius: '4px',
                   boxSizing: 'border-box',
                 }}
@@ -373,7 +387,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   fontSize: '0.75rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  color: '#374151',
+                  color: '#D1D5DB',
                   marginBottom: '4px',
                 }}
               >
@@ -389,7 +403,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                   height: '40px',
                   padding: '0 12px',
                   fontSize: '0.875rem',
-                  border: '1px solid #D1D5DB',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backgroundColor: '#202020',
+                  color: '#FFFFFF',
                   borderRadius: '4px',
                   boxSizing: 'border-box',
                 }}
@@ -405,7 +421,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                 fontSize: '0.75rem',
                 fontWeight: 700,
                 textTransform: 'uppercase',
-                color: '#374151',
+                color: '#D1D5DB',
                 marginBottom: '6px',
               }}
             >
@@ -421,9 +437,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                     flex: 1,
                     padding: '8px 12px',
                     borderRadius: '4px',
-                    border: formData.type === type ? '2px solid var(--color-ink)' : '1px solid #D1D5DB',
-                    backgroundColor: formData.type === type ? 'rgba(201, 162, 39, 0.08)' : '#FFFFFF',
-                    color: formData.type === type ? 'var(--color-ink)' : '#4B5563',
+                    border: formData.type === type ? '2px solid #C8102E' : '1px solid rgba(255, 255, 255, 0.15)',
+                    backgroundColor: formData.type === type ? 'rgba(200, 16, 46, 0.15)' : '#202020',
+                    color: formData.type === type ? '#FFFFFF' : '#9CA3AF',
                     fontWeight: 700,
                     fontSize: '0.8125rem',
                     cursor: 'pointer',
@@ -442,9 +458,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
               type="checkbox"
               checked={formData.isDefault}
               onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-              style={{ width: '16px', height: '16px', accentColor: 'var(--color-ink)' }}
+              style={{ width: '16px', height: '16px', accentColor: '#C8102E' }}
             />
-            <span style={{ fontSize: '0.8125rem', color: '#374151' }}>
+            <span style={{ fontSize: '0.8125rem', color: '#D1D5DB' }}>
               Make this my default shipping address for gear checkout
             </span>
           </label>
@@ -453,7 +469,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="btn btn-outline-dark btn-sm"
+              className="btn btn-outline-light btn-sm"
               disabled={isSubmitting}
             >
               CANCEL

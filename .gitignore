@@ -40,4 +40,5 @@ courts_screenshots2/
 /*.webp
 /buyur-images.json
 *.tsbuildinfo
+artifacts/
 

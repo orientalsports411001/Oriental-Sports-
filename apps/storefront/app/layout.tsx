@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     template: '%s | Oriental Sports Pune',
   },
   description: 'Turnkey court construction, surface systems, fencing, lighting and line marking, plus a Camp flagship sports store in Pune.',
+  icons: { icon: '/favicon.png' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

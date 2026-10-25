@@ -23,8 +23,9 @@
   grid-template: 1fr / minmax(0, 1fr);
   min-height: clamp(560px, calc(100svh - var(--header-h) - var(--utility-h)), 980px);
   overflow: hidden;
-  background: var(--ink);
-  color: var(--on-dark);
+  contain: paint;
+  background: var(--obsidian);
+  color: var(--text-primary);
   touch-action: pan-y;
   isolation: isolate;
 }
@@ -35,6 +36,9 @@
 .hero-slide {
   grid-area: 1 / 1;
   position: relative;
+  overflow: clip;
+  clip-path: inset(0);
+  contain: paint;
   opacity: 0;
   visibility: hidden;
   transition: opacity 900ms var(--ease-out), visibility 0s linear 900ms;
@@ -49,7 +53,9 @@
 .hero-media {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  overflow: clip;
+  clip-path: inset(0);
+  contain: paint;
 }
 
 .hero-media-inner {
@@ -73,16 +79,25 @@
   pointer-events: none;
 }
 
-/* Scrims are functional (legibility), shaped per composition. */
+/* Scrims: cinematic blood-red atmosphere + dramatic contrast */
 .hero-slide--gear .hero-media::after {
   background:
-    linear-gradient(90deg, rgba(17, 17, 17, 0.84) 0%, rgba(17, 17, 17, 0.52) 34%, rgba(17, 17, 17, 0) 64%),
-    linear-gradient(0deg, rgba(17, 17, 17, 0.78) 0%, rgba(17, 17, 17, 0) 42%);
+    radial-gradient(ellipse at 80% 25%, rgba(200, 16, 46, 0.32) 0%, transparent 60%),
+    linear-gradient(90deg, rgba(5, 5, 5, 0.94) 0%, rgba(5, 5, 5, 0.6) 42%, rgba(5, 5, 5, 0.1) 75%),
+    linear-gradient(0deg, rgba(5, 5, 5, 0.88) 0%, rgba(5, 5, 5, 0) 45%);
 }
 .hero-slide--courts .hero-media::after {
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0) 46%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0) 44%);
+    radial-gradient(ellipse at 75% 30%, rgba(139, 0, 0, 0.45) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.8) 0%, rgba(5, 5, 5, 0.1) 48%),
+    linear-gradient(0deg, rgba(5, 5, 5, 0.92) 0%, rgba(5, 5, 5, 0) 48%);
+}
+.hero-slide--store .hero-media::after {
+  display: block;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(200, 16, 46, 0.25) 0%, transparent 70%),
+    linear-gradient(90deg, rgba(5, 5, 5, 0.88) 0%, transparent 60%),
+    linear-gradient(0deg, rgba(5, 5, 5, 0.85) 0%, transparent 40%);
 }
 
 .hero-content {
@@ -135,14 +150,13 @@
 .hero-slide--courts .hero-title { margin-bottom: 0; }
 .hero-slide--courts .hero-foot { max-width: 560px; }
 
-/* Camp store: a light editorial split — the address is the image. */
-.hero-slide--store { background: var(--ivory); color: var(--ink); }
+/* Camp store slide: obsidian athletic editorial */
+.hero-slide--store { background: var(--obsidian); color: #FFFFFF; }
 .hero-slide--store .hero-media { left: auto; width: 50%; bottom: var(--tabs-h); }
-.hero-slide--store .hero-media::after { display: none; }
 .hero-slide--store .hero-content { justify-content: center; padding-top: 24px; }
 .hero-slide--store .hero-copy { max-width: calc(50% - 32px); }
-.hero-slide--store .eyebrow { color: var(--muted); }
-.hero-slide--store .hero-lead { color: var(--muted); }
+.hero-slide--store .eyebrow { color: var(--blood-highlight); }
+.hero-slide--store .hero-lead { color: var(--text-secondary); }
 .hero-slide--store .hero-title { font-size: clamp(3.2rem, min(8.4vw, 12svh), 8.5rem); }
 
 /* Tabs — editorial slide navigation with active progress timer. */
@@ -197,7 +211,7 @@
   position: relative;
   width: 100%;
   height: 2px;
-  background: rgba(246, 243, 234, 0.28);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 1px;
   overflow: hidden;
 }
@@ -205,7 +219,8 @@
 .hero-tab-fill {
   position: absolute;
   inset: 0;
-  background: var(--gold);
+  background: var(--blood-crimson);
+  box-shadow: 0 0 10px var(--blood-crimson);
   transform: scaleX(0);
   transform-origin: left;
 }
@@ -220,8 +235,8 @@
   to { transform: scaleX(1); }
 }
 
-.hero--store .hero-tabs { color: var(--ink); }
-.hero--store .hero-tab-track { background: var(--line-strong); }
+.hero--store .hero-tabs { color: var(--text-primary); }
+.hero--store .hero-tab-track { background: rgba(255, 255, 255, 0.2); }
 
 @media (max-width: 767px) {
   .hero {
@@ -264,12 +279,44 @@
 }
 
 /* ==========================================================================
-   SPORT INDEX — tap list (mobile/tablet) → expanding rail (desktop)
+   SPORT INDEX — "Pick your game" Expanding Rail (Blood-Red Athletic Palette)
+   Functionality strictly preserved: 46% expansion desktop, tap-list mobile, active panels
    ========================================================================== */
+.sport-index {
+  position: relative;
+  background: var(--obsidian);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sport-index .eyebrow {
+  color: var(--blood-highlight);
+}
+
+.sport-index .chapter-title {
+  color: #FFFFFF;
+}
+
+.sport-index .lead {
+  color: var(--text-secondary);
+}
+
+.sport-index .link-arrow {
+  color: #FFFFFF;
+}
+.sport-index .link-arrow:hover {
+  color: var(--blood-highlight);
+}
+
 .sport-rail { list-style: none; }
 
-.sport-panel { border-top: 1px solid var(--line); }
-.sport-panel:last-child { border-bottom: 1px solid var(--line); }
+.sport-panel {
+  border-top: 1px solid var(--border-color);
+}
+.sport-panel:last-child {
+  border-bottom: 1px solid var(--border-color);
+}
 
 .sport-panel-link {
   display: grid;
@@ -281,6 +328,7 @@
   width: 100%;
   min-height: 104px;
   padding: 10px 0;
+  color: var(--text-primary);
 }
 
 .sport-panel-media {
@@ -288,9 +336,13 @@
   width: 84px;
   aspect-ratio: 1;
   overflow: hidden;
-  background: var(--stone);
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--r-1);
 }
-.sport-panel-media img { transition: transform var(--t-3) var(--ease-out); }
+.sport-panel-media img {
+  transition: transform var(--t-3) var(--ease-out);
+}
 
 .sport-panel-name {
   align-self: end;
@@ -299,6 +351,7 @@
   font-size: clamp(1.9rem, 8vw, 2.6rem);
   line-height: 0.92;
   text-transform: uppercase;
+  color: #FFFFFF;
 }
 
 .sport-row-note {
@@ -306,7 +359,7 @@
   align-self: start;
   font-size: 0.875rem;
   line-height: 1.35;
-  color: var(--muted);
+  color: var(--text-secondary);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -317,10 +370,16 @@
   grid-column: 3;
   grid-row: 1 / span 2;
   font-size: 1.25rem;
-  transition: transform var(--t-2) var(--ease-out);
+  color: var(--blood-crimson);
+  transition: transform var(--t-2) var(--ease-out), color var(--t-2) ease;
 }
-.sport-panel-link:hover .sport-row-arrow { transform: translateX(4px); }
-.sport-panel-link:hover .sport-panel-media img { transform: scale(1.06); }
+.sport-panel-link:hover .sport-row-arrow {
+  transform: translateX(4px);
+  color: var(--blood-highlight);
+}
+.sport-panel-link:hover .sport-panel-media img {
+  transform: scale(1.06);
+}
 
 .sport-panel-detail { display: none; }
 
@@ -329,29 +388,40 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 32px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--border-color);
   }
   .sport-panel:last-child { border-bottom: 0; }
+  .sport-panel-name {
+    font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+  }
 }
 
 @media (min-width: 1024px) {
   .sport-rail {
     display: flex;
-    gap: 6px;
-    height: clamp(500px, 70vh, 700px);
+    gap: 8px;
+    height: clamp(520px, 72vh, 720px);
   }
 
   .sport-panel {
     position: relative;
     flex: 1 1 0;
     min-width: 0;
-    border: 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--r-1);
     overflow: hidden;
-    transition: flex-grow var(--t-4) var(--ease-out);
+    transition: flex-grow var(--t-4) var(--ease-out), border-color var(--t-3) ease;
   }
-  .sport-panel:last-child { border: 0; }
-  /* 5.2 : 6×1 → the open sport holds ~46% of the rail */
-  .sport-panel.is-active { flex-grow: 5.2; }
+  .sport-panel:hover {
+    border-color: rgba(200, 16, 46, 0.4);
+  }
+  .sport-panel.is-active {
+    flex-grow: 5.2;
+    border-color: var(--border-crimson);
+    box-shadow: 0 0 30px rgba(200, 16, 46, 0.2);
+  }
+  .sport-panel:last-child { border: 1px solid rgba(255, 255, 255, 0.08); }
+  .sport-panel.is-active:last-child { border-color: var(--border-crimson); }
 
   .sport-panel-link {
     position: absolute;
@@ -359,29 +429,43 @@
     display: block;
     min-height: 0;
     padding: 0;
-    color: var(--on-dark);
+    color: #FFFFFF;
   }
-  .sport-panel-link:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
+  .sport-panel-link:focus-visible { outline: 3px solid var(--blood-crimson); outline-offset: -3px; }
 
   .sport-panel-media {
     position: absolute;
     inset: 0;
     width: auto;
     aspect-ratio: auto;
-    background: var(--ink);
+    background: var(--obsidian);
+    border: none;
+    border-radius: 0;
   }
   .sport-panel-media img {
-    filter: grayscale(0.6) brightness(0.72);
+    filter: grayscale(0.5) brightness(0.65);
     transition: filter var(--t-3) var(--ease-out), transform 1.2s var(--ease-out);
   }
-  .sport-panel.is-active .sport-panel-media img { filter: none; }
-  .sport-panel-link:hover .sport-panel-media img { transform: scale(1.03); }
+  .sport-panel.is-active .sport-panel-media img {
+    filter: brightness(0.9);
+  }
+  .sport-panel-link:hover .sport-panel-media img {
+    transform: scale(1.03);
+  }
 
   .sport-panel-media::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(0deg, rgba(17, 17, 17, 0.8) 0%, rgba(17, 17, 17, 0.1) 52%, rgba(17, 17, 17, 0) 100%);
+    background:
+      linear-gradient(180deg, rgba(5, 5, 5, 0.5) 0%, transparent 35%),
+      linear-gradient(0deg, rgba(5, 5, 5, 0.95) 0%, rgba(5, 5, 5, 0.5) 45%, rgba(5, 5, 5, 0.1) 75%);
+  }
+  .sport-panel.is-active .sport-panel-media::after {
+    background:
+      radial-gradient(ellipse at 30% 90%, rgba(200, 16, 46, 0.28) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(5, 5, 5, 0.4) 0%, transparent 35%),
+      linear-gradient(0deg, rgba(5, 5, 5, 0.95) 0%, rgba(5, 5, 5, 0.6) 45%, rgba(5, 5, 5, 0.15) 75%);
   }
 
   .sport-panel-name {
@@ -392,7 +476,12 @@
     transform: translateX(-50%) rotate(180deg);
     font-size: clamp(1.75rem, 2.4vw, 2.25rem);
     white-space: nowrap;
-    transition: opacity var(--t-2) ease;
+    color: #FFFFFF;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    transition: opacity var(--t-2) ease, color var(--t-2) ease;
+  }
+  .sport-panel:hover .sport-panel-name {
+    color: var(--blood-highlight);
   }
   .sport-panel.is-active .sport-panel-name { opacity: 0; }
 
@@ -421,6 +510,7 @@
     font-size: clamp(3.5rem, 6vw, 6.5rem);
     line-height: 0.84;
     text-transform: uppercase;
+    color: #FFFFFF;
   }
 
   .sport-panel-stock {
@@ -428,12 +518,12 @@
     flex-wrap: wrap;
     gap: 6px 0;
     font-size: 0.9375rem;
-    color: rgba(246, 243, 234, 0.86);
+    color: #D4D4D4;
   }
   .sport-panel-stock span:not(:last-child)::after {
     content: '·';
     margin: 0 10px;
-    color: var(--gold);
+    color: var(--blood-crimson);
   }
 
   .sport-panel-cta {
@@ -444,6 +534,11 @@
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    color: var(--blood-highlight);
+    transition: transform var(--t-2) var(--ease-out);
+  }
+  .sport-panel.is-active:hover .sport-panel-cta {
+    transform: translateX(4px);
   }
 
   .sport-row-note,
@@ -451,19 +546,28 @@
 }
 
 /* ==========================================================================
-   GEAR — sticky intro + studio products
+   GEAR — sticky intro + studio products (Blood-Red & Charcoal Editorial)
    ========================================================================== */
+.gear-edit {
+  background: var(--charcoal);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
 .gear-grid {
   display: grid;
   gap: 40px;
 }
 
-.gear-intro .lead { margin-top: 22px; }
+.gear-intro .eyebrow { color: var(--blood-highlight); }
+.gear-intro .chapter-title { color: #FFFFFF; }
+.gear-intro .lead { margin-top: 22px; color: var(--text-secondary); }
 
 .service-list {
   list-style: none;
   margin: 28px 0 28px;
-  border-top: 1px solid var(--line-strong);
+  border-top: 1px solid var(--border-color);
 }
 /* Stacked by default (narrow sticky column, small phones); side by side only
    where the intro spans the full width. */
@@ -472,10 +576,10 @@
   flex-direction: column;
   gap: 2px;
   padding: 13px 0;
-  border-bottom: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--border-color);
 }
-.service-name { font-weight: 600; }
-.service-note { color: var(--muted); font-size: 0.875rem; }
+.service-name { font-weight: 700; color: #FFFFFF; }
+.service-note { color: var(--text-secondary); font-size: 0.875rem; }
 
 @media (min-width: 480px) and (max-width: 1023px) {
   .service-list li { flex-direction: row; justify-content: space-between; align-items: baseline; gap: 16px; }
@@ -488,8 +592,10 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 40px 24px;
 }
-.gear-product { display: flex; }
-.gear-product > .product-card { width: 100%; }
+.gear-product { display: flex; width: 100%; }
+.gear-product > .spotlight-card,
+.gear-product > .product-card,
+.gear-product .product-card { width: 100%; }
 
 @media (max-width: 767px) {
   .gear-products {
@@ -521,10 +627,14 @@
 }
 
 /* ==========================================================================
-   COURTS — night-court chapter
+   COURTS — night-court chapter (Blood-Red Architectural Identity)
    ========================================================================== */
-.courts-chapter { background: var(--black); }
-.courts-chapter .eyebrow { color: var(--on-dark-muted); }
+.courts-chapter {
+  background: var(--obsidian);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-color);
+}
+.courts-chapter .eyebrow { color: var(--blood-highlight); }
 
 .courts-hero {
   position: relative;
@@ -532,6 +642,7 @@
   display: flex;
   align-items: flex-end;
   overflow: hidden;
+  contain: paint;
 }
 
 .courts-hero-media { position: absolute; inset: 0; }
@@ -541,8 +652,9 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0.6) 34%, rgba(0, 0, 0, 0.08) 70%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 60%);
+    radial-gradient(ellipse at 70% 30%, rgba(200, 16, 46, 0.28) 0%, transparent 60%),
+    linear-gradient(0deg, var(--obsidian) 0%, rgba(5, 5, 5, 0.72) 40%, rgba(5, 5, 5, 0.2) 75%),
+    linear-gradient(90deg, rgba(5, 5, 5, 0.8) 0%, rgba(5, 5, 5, 0) 65%);
 }
 
 .courts-hero-copy {
@@ -552,13 +664,13 @@
   padding-bottom: clamp(40px, 6vw, 88px);
 }
 
-.courts-title { margin: 18px 0 26px; }
+.courts-title { margin: 18px 0 26px; color: #FFFFFF; }
 
 .courts-lead {
   font-size: var(--fs-lead);
   line-height: 1.5;
   max-width: 31.8em;
-  color: rgba(246, 243, 234, 0.86);
+  color: var(--text-secondary);
 }
 
 .courts-body {
@@ -573,14 +685,14 @@
   max-width: 24.7em;
   font-size: var(--fs-lead);
   line-height: 1.5;
-  color: rgba(246, 243, 234, 0.8);
+  color: var(--text-secondary);
 }
 
 .courts-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
 .court-types {
   list-style: none;
-  border-top: 1px solid var(--line-dark);
+  border-top: 1px solid var(--border-color);
 }
 
 .court-type {
@@ -590,17 +702,23 @@
   gap: 16px;
   width: 100%;
   padding: 16px 0;
-  border-bottom: 1px solid var(--line-dark);
-  color: var(--on-dark);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  transition: background-color var(--t-2) ease, border-color var(--t-2) ease;
+}
+.court-type:hover {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom-color: var(--border-crimson);
 }
 
 .court-type-media {
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: #1A1A1A;
+  background: #141414;
+  border-radius: var(--r-1);
 }
 .court-type-media img {
-  filter: grayscale(0.25) brightness(0.86);
+  filter: grayscale(0.2) brightness(0.88);
   transition: transform 900ms var(--ease-out), filter var(--t-3) ease;
 }
 .court-type:hover .court-type-media img { transform: scale(1.05); filter: none; }
@@ -613,24 +731,26 @@
   font-size: var(--fs-d3);
   line-height: 0.95;
   text-transform: uppercase;
+  color: #FFFFFF;
 }
 
-.court-type-surfaces { font-size: 0.875rem; line-height: 1.4; color: rgba(246, 243, 234, 0.74); }
+.court-type-surfaces { font-size: 0.875rem; line-height: 1.4; color: var(--text-secondary); }
 
 .court-type-time {
   font-size: var(--fs-label);
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--blood-highlight);
 }
 
 .court-type-arrow {
   display: none;
   font-size: 1.375rem;
   transition: transform var(--t-2) var(--ease-out), color var(--t-2) ease;
+  color: var(--blood-crimson);
 }
-.court-type:hover .court-type-arrow { transform: translateX(6px); color: var(--gold); }
+.court-type:hover .court-type-arrow { transform: translateX(6px); color: var(--blood-highlight); }
 
 @media (min-width: 640px) {
   .court-type {
@@ -697,8 +817,15 @@
 }
 
 /* ==========================================================================
-   STORE — the address as a sign
+   STORE — the address as a sign (Blood-Red & Obsidian Editorial)
    ========================================================================== */
+.store-chapter {
+  background: var(--obsidian);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-color);
+}
+.store-chapter .eyebrow { color: var(--blood-highlight); }
+
 .store-grid {
   display: grid;
   gap: 48px;
@@ -708,9 +835,10 @@
   margin-top: 18px;
   font-size: clamp(3.25rem, 11vw, 9rem);
   line-height: 0.86;
+  color: #FFFFFF;
 }
 
-/* Broken gold underline, after the official wordmark. */
+/* Broken blood-red underline, after the official wordmark. */
 .store-underline {
   position: relative;
   display: inline-block;
@@ -722,37 +850,39 @@
   right: 0.3em;
   bottom: 0.04em;
   height: 0.055em;
-  background: linear-gradient(90deg, var(--gold) 0 64%, transparent 64% 69%, var(--gold) 69% 100%);
+  background: linear-gradient(90deg, var(--blood-crimson) 0 64%, transparent 64% 69%, var(--blood-crimson) 69% 100%);
+  box-shadow: 0 0 10px rgba(200, 16, 46, 0.5);
 }
 
 .store-sub {
   margin-top: 22px;
   font-size: var(--fs-lead);
-  color: var(--muted);
+  color: var(--text-secondary);
 }
 
 .store-info { display: flex; flex-direction: column; gap: 24px; }
 
-.store-status-lg { font-size: 1.125rem; font-weight: 600; }
+.store-status-lg { font-size: 1.125rem; font-weight: 600; color: #FFFFFF; }
 
-.store-hours { border-top: 1px solid var(--line-strong); }
+.store-hours { border-top: 1px solid var(--border-color); }
 .store-hours > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
   min-height: 52px;
-  border-bottom: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--border-color);
 }
-.store-hours dt { color: var(--muted); }
+.store-hours dt { color: var(--text-secondary); }
 .store-hours dd {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   text-align: right;
+  color: #FFFFFF;
 }
 
 .store-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-.store-note { color: var(--muted); font-size: 0.9375rem; line-height: 1.5; }
+.store-note { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.5; }
 
 @media (max-width: 479px) {
   .store-actions .btn { flex: 1 1 100%; }
@@ -767,18 +897,17 @@
 }
 
 /* ==========================================================================
-   ORBITAL GALLERY — "The game in motion"
-   A 220svh scroll track pins a stage; six photos orbit in 3D as it scrolls.
-   Depth is carried by scale and focus blur (no shadows). Reduced motion
-   gets a still grid of the same photos.
+   ORBITAL GALLERY — "The Game in Motion" (Blood-Red & Obsidian Palette)
+   Functionality strictly preserved: 3D orbit scroll, tilt physics, responsive cards, lightbox
    ========================================================================== */
 .orbit {
   position: relative;
   height: 220svh;
-  background: var(--ivory);
+  background: var(--obsidian);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-color);
 }
 
-/* Heading row on top; the orbit centres in the field beneath it. */
 .orbit-stage {
   position: sticky;
   top: var(--header-h);
@@ -786,6 +915,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  background: radial-gradient(circle at 50% 55%, rgba(139, 0, 0, 0.16) 0%, transparent 65%);
 }
 
 .orbit-field {
@@ -810,10 +940,13 @@
   justify-content: space-between;
   gap: 12px 32px;
 }
+.orbit-head .display {
+  color: #FFFFFF;
+}
 .orbit-hint {
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--muted);
+  color: var(--text-secondary);
   max-width: 22em;
 }
 
@@ -840,24 +973,32 @@
   width: var(--orbit-card-w, 280px);
   aspect-ratio: var(--aspect, 9 / 11);
   padding: 0;
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
-  background: var(--ink);
+  background: var(--surface-card);
   cursor: zoom-in;
-  border-radius: var(--r-2, 4px);
+  border-radius: var(--r-2, 6px);
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
+  transition: border-color var(--t-2) ease, box-shadow var(--t-2) ease;
+}
+.orbit-card:hover {
+  border-color: var(--border-crimson);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.9), 0 0 25px rgba(200, 16, 46, 0.25);
 }
 .orbit-anchor .orbit-card { transform: translate(-50%, -50%); }
 
 .orbit-card img { transition: transform 600ms var(--ease-out); }
 .orbit-card:hover img { transform: scale(1.05); }
-.orbit-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.orbit-card:focus-visible { outline: 2px solid var(--blood-highlight); outline-offset: 4px; }
 
-/* Scrim exists only so the sport name reads on any photo. */
+/* Scrim: deep black gradient with subtle crimson glow undertone so white label is 100% readable */
 .orbit-card::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(17, 17, 17, 0) 50%, rgba(17, 17, 17, 0.72) 100%);
+  background:
+    linear-gradient(180deg, transparent 45%, rgba(5, 5, 5, 0.85) 100%),
+    radial-gradient(ellipse at 50% 100%, rgba(200, 16, 46, 0.18) 0%, transparent 60%);
   pointer-events: none;
 }
 .orbit-card-label {
@@ -869,7 +1010,8 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--on-dark);
+  color: #FFFFFF;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 /* Reduced motion: a still grid. */
@@ -886,7 +1028,7 @@
   .orbit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 }
 
-/* Lightbox */
+/* Lightbox Modal */
 .orbit-lightbox {
   position: fixed;
   inset: 0;
@@ -894,25 +1036,31 @@
   display: grid;
   place-items: center;
   padding: clamp(16px, 4vw, 60px);
-  background: rgba(17, 17, 17, 0.92);
+  background: rgba(5, 5, 5, 0.94);
   cursor: zoom-out;
+  backdrop-filter: blur(8px);
 }
 .orbit-lightbox-panel {
   width: min(100%, 880px);
   margin: 0;
-  background: var(--ink);
-  color: var(--on-dark);
+  background: var(--surface-black);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(200, 16, 46, 0.25);
+  color: var(--text-primary);
   cursor: default;
+  border-radius: var(--r-2, 6px);
+  overflow: hidden;
 }
-.orbit-lightbox-media { height: min(68svh, 620px); background: #0a0a0a; }
+.orbit-lightbox-media { height: min(68svh, 620px); background: #000000; }
 .orbit-lightbox-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 8px 24px;
-  padding: 12px 20px;
-  border-top: 1px solid var(--line-dark);
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  background: var(--surface-black);
 }
 .orbit-lightbox-text { min-width: 0; }
 .orbit-lightbox-sport {
@@ -921,18 +1069,23 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--blood-highlight);
 }
-.orbit-lightbox-alt { display: block; margin-top: 2px; font-size: 0.875rem; color: var(--on-dark-muted); }
-.orbit-lightbox-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; }
+.orbit-lightbox-alt { display: block; margin-top: 2px; font-size: 0.875rem; color: var(--text-secondary); }
+.orbit-lightbox-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
 .orbit-lightbox-close {
   min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid rgba(246, 243, 234, 0.3);
-  color: inherit;
+  padding: 0 18px;
+  background: var(--charcoal);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: var(--r-1);
   font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-2) ease;
 }
-.orbit-lightbox-close:hover { border-color: currentColor; }
+.orbit-lightbox-close:hover {
+  border-color: var(--blood-crimson);
+  color: var(--blood-highlight);
+}

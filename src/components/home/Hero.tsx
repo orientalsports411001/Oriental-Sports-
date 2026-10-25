@@ -7,6 +7,7 @@ import { CATEGORIES } from '../../data/categories';
 import { Img } from '../ui/Img';
 import { RevealLines, EASE_OUT } from '../motion/Reveal';
 import { useStoreStatus } from '../../utils/storeHours';
+import { MagneticButton } from '../ui/MagneticButton';
 
 /**
  * HERO — three slides, each with its own composition.
@@ -213,7 +214,9 @@ export const Hero: React.FC = () => {
                     </p>
                   )}
                   <div className="hero-actions">
-                    <ActionLink action={s.primary} className={`btn ${s.id === 'store' ? 'btn-primary' : 'btn-light'}`} />
+                    <MagneticButton strength={12}>
+                      <ActionLink action={s.primary} className="btn btn-primary" />
+                    </MagneticButton>
                     <ActionLink action={s.secondary} className="link-arrow" />
                   </div>
                 </motion.div>

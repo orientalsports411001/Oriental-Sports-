@@ -3,22 +3,27 @@
 import React from 'react';
 import { Link } from '@/lib/router-shim';
 
-interface LogoProps {
-  // 'light' is for light backgrounds. 'dark' needs the official reverse wordmark,
-  // which has not been supplied yet, so it currently renders the standard wordmark.
-  variant?: 'light' | 'dark';
+export interface LogoProps {
+  /**
+   * 'dark' (default): crisp reverse white text for dark/obsidian backgrounds.
+   * 'light': authentic original black & red artwork for light surfaces.
+   * 'badge': original artwork housed in a crisp white rounded badge container.
+   */
+  variant?: 'light' | 'dark' | 'badge';
   size?: 'sm' | 'md' | 'lg';
   showText?: boolean;
   className?: string;
   linkToHome?: boolean;
 }
 
-// Official Oriental Sports artwork (extracted from the owner-supplied stacked master).
-// Intrinsic pixel sizes keep the rendered aspect ratio exact.
-const WORDMARK = { src: '/brand/oriental-sports-wordmark.png', width: 451, height: 90 };
-const MONOGRAM = { src: '/brand/oriental-sports-monogram.png', width: 186, height: 147 };
+// Official Oriental Sports artwork.
+const WORDMARK_LIGHT = { src: '/brand/oriental-sports-wordmark.png', width: 921, height: 274 };
+const WORDMARK_DARK = { src: '/brand/oriental-sports-wordmark-white.png', width: 921, height: 274 };
+const MONOGRAM_LIGHT = { src: '/brand/oriental-sports-monogram.png', width: 921, height: 274 };
+const MONOGRAM_DARK = { src: '/brand/oriental-sports-monogram-white.png', width: 921, height: 274 };
 
 export const Logo: React.FC<LogoProps> = ({
+  variant = 'dark',
   size = 'md',
   showText = true,
   className = '',
@@ -32,11 +37,16 @@ export const Logo: React.FC<LogoProps> = ({
   };
 
   const h = heights[size];
-  // Wordmark by default; monogram alone when text is not shown
-  const asset = showText ? WORDMARK : MONOGRAM;
+  const isDark = variant === 'dark';
+  const isBadge = variant === 'badge';
+
+  const asset = showText
+    ? (isDark ? WORDMARK_DARK : WORDMARK_LIGHT)
+    : (isDark ? MONOGRAM_DARK : MONOGRAM_LIGHT);
+
   const aspectWidth = Math.round(h * (asset.width / asset.height));
 
-  const logoImg = (
+  const imgElement = (
     <img
       src={asset.src}
       height={h}
@@ -46,6 +56,14 @@ export const Logo: React.FC<LogoProps> = ({
     />
   );
 
+  const content = isBadge ? (
+    <span className="logo-badge">
+      {imgElement}
+    </span>
+  ) : (
+    imgElement
+  );
+
   if (linkToHome) {
     return (
       <Link
@@ -53,10 +71,10 @@ export const Logo: React.FC<LogoProps> = ({
         className="inline-flex items-center text-decoration-none focus-visible-ring"
         title="Oriental Sports - Home"
       >
-        {logoImg}
+        {content}
       </Link>
     );
   }
 
-  return logoImg;
+  return content;
 };

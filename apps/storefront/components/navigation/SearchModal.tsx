@@ -13,7 +13,7 @@ interface SearchModalProps {
   onClose: () => void;
 }
 
-const SHORTCUTS = ['Cricket bat', 'Pickleball paddle', 'Badminton', 'Tennis court', 'Carrom'];
+const SHORTCUTS = ['Cricket bat', 'Exercise bike', 'Hex dumbbells', 'TT table', 'Pickleball'];
 
 /** Search overlay — instant results for gear, sports and court types. */
 export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {

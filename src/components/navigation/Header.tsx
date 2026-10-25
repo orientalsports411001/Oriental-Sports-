@@ -41,7 +41,7 @@ export const Header: React.FC = () => {
 
       <header className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}>
         <div className="container header-row">
-          <Logo variant="light" size="md" className="header-logo" />
+          <Logo variant="dark" size="md" className="header-logo" />
 
           <nav className="header-nav desktop-only" aria-label="Primary">
             {NAV_ITEMS.map((item) => (
@@ -62,7 +62,7 @@ export const Header: React.FC = () => {
             </button>
 
             <Link
-              to="/account/wishlist"
+              to="/wishlist"
               className="header-icon-btn desktop-only"
               aria-label={`Wishlist, ${wishlist.length} saved items`}
             >

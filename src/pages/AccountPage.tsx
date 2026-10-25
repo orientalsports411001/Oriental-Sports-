@@ -45,6 +45,10 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     user,
     isAuthenticated,
     openAuthModal,
+    setPendingPhone,
+    requestOtp,
+    verifyOtp,
+    signInWithGoogle,
     signOut,
     updateProfile,
     addAddress,
@@ -129,44 +133,268 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     setTimeout(() => setProfileSaveSuccess(false), 3000);
   };
 
-  // Signed out: say plainly what an account is for, one clear action.
+  // Signed out: Authentic, Commercial Indian E-Commerce Member Portal
   if (!isAuthenticated || !user) {
     return (
-      <div className="account-page">
-        <PageHeader
-          crumbs={[{ label: 'Home', to: '/' }, { label: 'Account' }]}
-          title={['Your', 'account.']}
-          lead="Sign in with your phone number to see your orders and keep your delivery addresses in one place."
-        >
-          <div className="page-header-actions">
-            <button type="button" className="btn btn-primary" onClick={() => openAuthModal('phone')}>
-              Sign in with phone <span className="btn-arrow" aria-hidden="true">→</span>
-            </button>
-            <Link to="/shop" className="link-arrow">Keep shopping <span className="btn-arrow" aria-hidden="true">→</span></Link>
-          </div>
-        </PageHeader>
+      <div className="account-page ecom-account-page">
+        {/* Breadcrumb & Portal Header */}
+        <div className="ecom-account-hero">
+          <div className="container">
+            <nav aria-label="Breadcrumb" className="crumbs ecom-account-crumbs">
+              <ol>
+                <li><Link to="/">Home</Link></li>
+                <li><span aria-current="page">Account & Orders</span></li>
+              </ol>
+            </nav>
 
-        <section className="container account-intro" aria-label="What your account holds">
-          <ul className="counter-list">
-            <li><span className="counter-name">Orders</span><span className="counter-note">What you’ve ordered and where it is.</span></li>
-            <li><span className="counter-name">Addresses</span><span className="counter-note">Home, office or club — ready at checkout.</span></li>
-            <li><span className="counter-name">Wishlist</span><span className="counter-note">Gear you’ve saved to come back to.</span></li>
-          </ul>
-
-          {favoritedProducts.length > 0 && (
-            <div className="account-saved">
-              <div className="section-bar">
-                <h2 className="display d-3">Saved on this device</h2>
-                <span className="results-count">{favoritedProducts.length}</span>
+            <div className="ecom-account-hero-content">
+              <div className="ecom-hero-badge">
+                <Shield size={13} color="#C8102E" />
+                <span>MEMBER PORTAL</span>
               </div>
-              <ul className="product-grid">
-                {favoritedProducts.map((p) => (
-                  <li key={p.id}><ProductCard product={p} /></li>
-                ))}
-              </ul>
+              <h1 className="ecom-account-headline">Account, Orders & Wishlist</h1>
+              <p className="ecom-account-sub">
+                Sign in with your mobile number to track live dispatches, access saved delivery locations, and view your shortlisted sports gear.
+              </p>
             </div>
-          )}
-        </section>
+          </div>
+        </div>
+
+        <div className="container ecom-account-body">
+          {/* Main 2-Column E-Commerce Hub */}
+          <div className="ecom-account-grid">
+            {/* Left Card: Direct Fast Phone Sign-in */}
+            <div className="ecom-auth-card">
+              <div className="ecom-auth-card-head">
+                <div className="ecom-auth-icon-wrap">
+                  <Phone size={20} color="#FFFFFF" />
+                </div>
+                <div>
+                  <h2 className="ecom-auth-card-title">Fast Sign-In with Mobile</h2>
+                  <p className="ecom-auth-card-sub">Instant OTP access. No password required.</p>
+                </div>
+              </div>
+
+              <form
+                className="ecom-phone-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const target = e.currentTarget;
+                  const input = target.elements.namedItem('phone') as HTMLInputElement;
+                  const rawVal = input?.value?.trim() || '';
+                  if (rawVal) {
+                    setPendingPhone(rawVal);
+                    requestOtp(rawVal);
+                  } else {
+                    openAuthModal('phone');
+                  }
+                }}
+              >
+                <div className="ecom-phone-field-group">
+                  <span className="ecom-phone-prefix">
+                    <span className="ecom-flag">🇮🇳</span> +91
+                  </span>
+                  <input
+                    type="tel"
+                    name="phone"
+                    defaultValue="98230 45812"
+                    placeholder="Enter 10-digit mobile"
+                    pattern="[0-9\s]{10,14}"
+                    className="ecom-phone-input"
+                    aria-label="Mobile Number"
+                  />
+                  <button type="submit" className="ecom-phone-submit-btn">
+                    <span>Send OTP</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '16px 0 14px' }}>
+                  <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
+                  <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.06em' }}>
+                    OR
+                  </span>
+                  <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => signInWithGoogle()}
+                  style={{
+                    width: '100%',
+                    height: '42px',
+                    backgroundColor: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '4px',
+                    color: '#1F2937',
+                    fontWeight: 700,
+                    fontSize: '0.875rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.4)',
+                    transition: 'opacity 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.92'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.14z"/>
+                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.36 7.33 24 12 24z"/>
+                    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.94 0 12s.46 3.84 1.26 5.42l4.02-3.15z"/>
+                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.25 2.64 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                  </svg>
+                  <span>Continue with Google</span>
+                </button>
+
+                <p className="ecom-auth-disclaimer">
+                  By signing in, you agree to Oriental Sports’ <Link to="/terms">Terms of Service</Link> & <Link to="/privacy">Privacy Policy</Link>.
+                </p>
+              </form>
+
+              {/* Trust Pillars */}
+              <div className="ecom-trust-pillars">
+                <div className="ecom-pillar-item">
+                  <Package size={16} className="ecom-pillar-icon" />
+                  <div>
+                    <strong>Live Dispatch Tracking</strong>
+                    <span>Real-time SMS & WhatsApp alerts for bats, rackets & equipment.</span>
+                  </div>
+                </div>
+                <div className="ecom-pillar-item">
+                  <MapPin size={16} className="ecom-pillar-icon" />
+                  <div>
+                    <strong>Express Checkout</strong>
+                    <span>Save home, academy, and sports club delivery destinations.</span>
+                  </div>
+                </div>
+                <div className="ecom-pillar-item">
+                  <Award size={16} className="ecom-pillar-icon" />
+                  <div>
+                    <strong>100% Genuine Gear Guarantee</strong>
+                    <span>Direct manufacturer warranty and official GST tax invoices.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: E-Commerce Quick Bento Hub */}
+            <div className="ecom-hub-bento">
+              {/* Order Tracking Tile */}
+              <div className="ecom-bento-tile ecom-tile-orders">
+                <div className="ecom-tile-head">
+                  <Package size={20} color="#C8102E" />
+                  <span className="ecom-tile-tag">SELF-SERVICE</span>
+                </div>
+                <h3 className="ecom-tile-title">Orders & Deliveries</h3>
+                <p className="ecom-tile-desc">
+                  Track live shipments, download tax invoices, or request returns for bats, balls, and gear.
+                </p>
+                <button
+                  type="button"
+                  className="ecom-tile-btn"
+                  onClick={() => openAuthModal('phone')}
+                >
+                  <span>Track Orders</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+
+              {/* Wishlist Tile */}
+              <div className="ecom-bento-tile ecom-tile-wishlist">
+                <div className="ecom-tile-head">
+                  <Heart size={20} color="#C8102E" fill={wishlist.length > 0 ? '#C8102E' : 'none'} />
+                  <span className="ecom-tile-count">{wishlist.length} SAVED</span>
+                </div>
+                <h3 className="ecom-tile-title">Saved Wishlist</h3>
+                <p className="ecom-tile-desc">
+                  Your bookmarked cricket bats, footwear, strings, and machines saved on this device.
+                </p>
+                <Link to="/wishlist" className="ecom-tile-link">
+                  <span>View Wishlist</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              {/* Addresses Tile */}
+              <div className="ecom-bento-tile ecom-tile-addresses">
+                <div className="ecom-tile-head">
+                  <MapPin size={20} color="#C8102E" />
+                </div>
+                <h3 className="ecom-tile-title">Delivery Addresses</h3>
+                <p className="ecom-tile-desc">
+                  Save doorstep delivery addresses for your residential address, sports academy, or school club.
+                </p>
+                <button
+                  type="button"
+                  className="ecom-tile-btn ecom-tile-btn-subtle"
+                  onClick={() => openAuthModal('phone')}
+                >
+                  <span>Manage Locations</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+
+              {/* Flagship Store Concierge Tile */}
+              <div className="ecom-bento-tile ecom-tile-concierge">
+                <div className="ecom-tile-head">
+                  <Phone size={20} color="#C8102E" />
+                  <span className="ecom-tile-tag ecom-tag-live">PUNE FLAGSHIP</span>
+                </div>
+                <h3 className="ecom-tile-title">Expert Sports Concierge</h3>
+                <p className="ecom-tile-desc">
+                  Need bat knocking, racket stringing, or court consultation? Talk directly with our master technicians.
+                </p>
+                <div className="ecom-concierge-actions">
+                  <a
+                    href="https://wa.me/919822030000?text=Hi%20Oriental%20Sports%20team,%20I%20need%20assistance%20with%20sports%20gear."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ecom-concierge-wa"
+                  >
+                    <MessageCircle size={15} />
+                    <span>WhatsApp Concierge</span>
+                  </a>
+                  <a href="tel:+919822030000" className="ecom-concierge-phone">
+                    +91 98220 30000
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Saved Products or Trending Showcase */}
+          <div className="ecom-account-showcase">
+            <div className="ecom-showcase-header">
+              <div>
+                <h2 className="ecom-showcase-title">
+                  {favoritedProducts.length > 0
+                    ? `Saved to Wishlist (${favoritedProducts.length})`
+                    : 'Trending Gear at Oriental Sports'}
+                </h2>
+                <p className="ecom-showcase-sub">
+                  {favoritedProducts.length > 0
+                    ? 'Shortlisted items saved to your browser session.'
+                    : 'Popular cricket bats, footballs, and racket gear ready for dispatch.'}
+                </p>
+              </div>
+              <Link to="/shop" className="ecom-showcase-all">
+                <span>View Full Catalog</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            <ul className="product-grid">
+              {(favoritedProducts.length > 0 ? favoritedProducts : PRODUCTS.slice(0, 4)).map((p) => (
+                <li key={p.id}>
+                  <ProductCard product={p} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     );
   }
@@ -179,7 +407,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
   });
 
   return (
-    <div className="bg-ivory" style={{ minHeight: '85vh', paddingBottom: 'var(--space-4xl)' }}>
+    <div className="ecom-account-page ecom-account-logged-in" style={{ minHeight: '85vh', paddingBottom: 'var(--space-4xl)' }}>
       {/* Top Athlete Banner */}
       <div style={{ backgroundColor: 'var(--color-ink)', color: '#FFFFFF', padding: '36px 0' }}>
         <div className="container">
@@ -285,8 +513,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
       {/* Navigation Tabs Bar */}
       <div
         style={{
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid var(--color-ivory-border)',
+          backgroundColor: '#0A0A0A',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           position: 'sticky',
           top: '64px',
           zIndex: 40,
@@ -307,8 +535,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'overview' ? 'var(--color-ink)' : '#4B5563',
-                borderBottom: activeTab === 'overview' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
+                color: activeTab === 'overview' ? '#FFFFFF' : '#9CA3AF',
+                borderBottom: activeTab === 'overview' ? '3px solid #C8102E' : '3px solid transparent',
               }}
             >
               <Activity size={16} />
@@ -328,8 +556,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'orders' ? 'var(--color-ink)' : '#4B5563',
-                borderBottom: activeTab === 'orders' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
+                color: activeTab === 'orders' ? '#FFFFFF' : '#9CA3AF',
+                borderBottom: activeTab === 'orders' ? '3px solid #C8102E' : '3px solid transparent',
               }}
             >
               <Package size={16} />
@@ -349,8 +577,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'addresses' ? 'var(--color-ink)' : '#4B5563',
-                borderBottom: activeTab === 'addresses' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
+                color: activeTab === 'addresses' ? '#FFFFFF' : '#9CA3AF',
+                borderBottom: activeTab === 'addresses' ? '3px solid #C8102E' : '3px solid transparent',
               }}
             >
               <MapPin size={16} />
@@ -370,8 +598,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'courts' ? 'var(--color-ink)' : '#4B5563',
-                borderBottom: activeTab === 'courts' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
+                color: activeTab === 'courts' ? '#FFFFFF' : '#9CA3AF',
+                borderBottom: activeTab === 'courts' ? '3px solid #C8102E' : '3px solid transparent',
               }}
             >
               <Layers size={16} />
@@ -391,8 +619,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'wishlist' ? 'var(--color-ink)' : '#4B5563',
-                borderBottom: activeTab === 'wishlist' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
+                color: activeTab === 'wishlist' ? '#FFFFFF' : '#9CA3AF',
+                borderBottom: activeTab === 'wishlist' ? '3px solid #C8102E' : '3px solid transparent',
               }}
             >
               <Heart size={16} />
@@ -412,8 +640,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                color: activeTab === 'profile' ? 'var(--color-ink)' : '#4B5563',
-                borderBottom: activeTab === 'profile' ? '3px solid var(--color-brand-gold)' : '3px solid transparent',
+                color: activeTab === 'profile' ? '#FFFFFF' : '#9CA3AF',
+                borderBottom: activeTab === 'profile' ? '3px solid #C8102E' : '3px solid transparent',
               }}
             >
               <User size={16} />
@@ -439,19 +667,19 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
             >
               <div
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#121212',
                   padding: '20px',
                   borderRadius: '6px',
-                  border: '1px solid var(--color-ivory-border)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6B7280' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#9CA3AF' }}>
                     Total Orders
                   </span>
-                  <Package size={18} color="var(--color-brand-gold)" />
+                  <Package size={18} color="#C8102E" />
                 </div>
-                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--color-ink)' }}>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#FFFFFF' }}>
                   {user.orders.length}
                 </div>
                 <div style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 600, marginTop: '4px' }}>
@@ -461,63 +689,63 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
               <div
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#121212',
                   padding: '20px',
                   borderRadius: '6px',
-                  border: '1px solid var(--color-ivory-border)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6B7280' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#9CA3AF' }}>
                     Turnkey Court Inquiries
                   </span>
-                  <Layers size={18} color="var(--color-plate-gold)" />
+                  <Layers size={18} color="#3B82F6" />
                 </div>
-                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--color-ink)' }}>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#FFFFFF' }}>
                   {user.courtProjects?.length || 0}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '4px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '4px' }}>
                   Deccan Gymkhana & Kalyani Nagar
                 </div>
               </div>
 
               <div
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#121212',
                   padding: '20px',
                   borderRadius: '6px',
-                  border: '1px solid var(--color-ivory-border)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6B7280' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#9CA3AF' }}>
                     Saved Equipment
                   </span>
                   <Heart size={18} color="#EF4444" />
                 </div>
-                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--color-ink)' }}>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#FFFFFF' }}>
                   {wishlist.length}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '4px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '4px' }}>
                   Equipment in your bag wishlist
                 </div>
               </div>
 
               <div
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#121212',
                   padding: '20px',
                   borderRadius: '6px',
-                  border: '1px solid var(--color-ivory-border)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6B7280' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#9CA3AF' }}>
                     Stringing Points
                   </span>
-                  <Award size={18} color="var(--color-plate-gold)" />
+                  <Award size={18} color="#F59E0B" />
                 </div>
-                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--color-plate-gold)' }}>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#F59E0B' }}>
                   {user.stringingLoyaltyPoints}
                 </div>
                 <div style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 600, marginTop: '4px' }}>
@@ -530,7 +758,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
             {user.orders.length > 0 && (
               <div style={{ marginBottom: '32px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                  <h2 className="font-display" style={{ fontSize: '1.25rem', margin: 0 }}>
+                  <h2 className="font-display" style={{ fontSize: '1.25rem', margin: 0, color: '#FFFFFF' }}>
                     ACTIVE / LATEST DISPATCH
                   </h2>
                   <button
@@ -539,7 +767,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: 'var(--color-ink)',
+                      color: '#C8102E',
                       fontWeight: 700,
                       cursor: 'pointer',
                       fontSize: '0.8125rem',
@@ -563,22 +791,22 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               {/* Flagship Store Connection */}
               <div
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#121212',
                   padding: '24px',
                   borderRadius: '6px',
-                  border: '1px solid var(--color-ivory-border)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <MapPin size={18} color="var(--color-plate-gold)" />
-                  <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--color-plate-gold)' }}>
+                  <MapPin size={18} color="#C8102E" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#C8102E' }}>
                     YOUR HOME FLAGSHIP
                   </span>
                 </div>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 800, margin: '0 0 6px 0' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 800, margin: '0 0 6px 0', color: '#FFFFFF' }}>
                   Oriental Sports Camp Store
                 </h3>
-                <p style={{ fontSize: '0.875rem', color: '#666', lineHeight: 1.5, margin: '0 0 16px 0' }}>
+                <p style={{ fontSize: '0.875rem', color: '#A3A3A3', lineHeight: 1.5, margin: '0 0 16px 0' }}>
                   Shop 247, MG Road, New Modikhana, Camp, Pune - 411001.<br />
                   Walk-in racket stringing tension checks & court consultant available 7 days a week.
                 </p>
@@ -588,7 +816,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     href={STORE_INFO.mapsUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="btn btn-outline-dark btn-sm"
+                    className="btn btn-outline-light btn-sm"
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem' }}
                   >
                     <ExternalLink size={14} />
@@ -598,7 +826,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     href={STORE_INFO.whatsappUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="btn btn-gold btn-sm"
+                    className="btn btn-primary btn-sm"
                     style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem' }}
                   >
                     <MessageCircle size={14} />
@@ -610,16 +838,16 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               {/* Default Address Snapshot */}
               <div
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#121212',
                   padding: '24px',
                   borderRadius: '6px',
-                  border: '1px solid var(--color-ivory-border)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Shield size={18} color="var(--color-brand-gold)" />
-                    <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--color-ink)' }}>
+                    <Shield size={18} color="#C8102E" />
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#FFFFFF' }}>
                       DEFAULT SHIPPING DESTINATION
                     </span>
                   </div>
@@ -629,7 +857,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#6B7280',
+                      color: '#9CA3AF',
                       cursor: 'pointer',
                       fontSize: '0.75rem',
                       fontWeight: 600,
@@ -641,10 +869,10 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
                 {user.addresses[0] ? (
                   <div>
-                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 800 }}>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 800, color: '#FFFFFF' }}>
                       {user.addresses[0].name}
                     </h4>
-                    <p style={{ margin: '0 0 12px 0', fontSize: '0.875rem', color: '#4B5563', lineHeight: 1.5 }}>
+                    <p style={{ margin: '0 0 12px 0', fontSize: '0.875rem', color: '#A3A3A3', lineHeight: 1.5 }}>
                       {user.addresses[0].street}<br />
                       {user.addresses[0].locality}, {user.addresses[0].city} - {user.addresses[0].pincode}<br />
                       Phone: +91 {user.addresses[0].phone}
@@ -652,7 +880,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     <button
                       type="button"
                       onClick={() => handleOpenEditAddress(user.addresses[0])}
-                      className="btn btn-outline-dark btn-sm"
+                      className="btn btn-outline-light btn-sm"
                       style={{ fontSize: '0.75rem' }}
                     >
                       EDIT ADDRESS
@@ -660,7 +888,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                   </div>
                 ) : (
                   <div>
-                    <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '12px' }}>
+                    <p style={{ fontSize: '0.875rem', color: '#A3A3A3', marginBottom: '12px' }}>
                       No saved addresses yet. Add your home or club address for faster checkout.
                     </p>
                     <button
@@ -692,10 +920,10 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               }}
             >
               <div>
-                <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0 }}>
+                <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0, color: '#FFFFFF' }}>
                   PURCHASE & RESTRINGING ORDERS
                 </h2>
-                <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>
+                <span style={{ fontSize: '0.8125rem', color: '#9CA3AF' }}>
                   Showing {filteredOrders.length} order{filteredOrders.length === 1 ? '' : 's'} dispatched from Camp Flagship
                 </span>
               </div>
@@ -714,9 +942,9 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       fontWeight: 700,
                       textTransform: 'uppercase',
                       cursor: 'pointer',
-                      border: orderFilter === filter ? '1px solid var(--color-ink)' : '1px solid #D1D5DB',
-                      backgroundColor: orderFilter === filter ? 'var(--color-ink)' : '#FFFFFF',
-                      color: orderFilter === filter ? '#FFFFFF' : '#4B5563',
+                      border: orderFilter === filter ? '1px solid #C8102E' : '1px solid rgba(255, 255, 255, 0.15)',
+                      backgroundColor: orderFilter === filter ? '#C8102E' : '#141414',
+                      color: orderFilter === filter ? '#FFFFFF' : '#9CA3AF',
                     }}
                   >
                     {filter === 'all' ? 'All Orders' : filter === 'active' ? 'Active Dispatches' : 'Delivered'}
@@ -734,18 +962,18 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
             ) : (
               <div
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#121212',
                   padding: '48px 24px',
                   borderRadius: '6px',
                   textAlign: 'center',
-                  border: '1px solid var(--color-ivory-border)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
               >
                 <Package size={36} color="#9CA3AF" style={{ margin: '0 auto 16px' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 800, marginBottom: '8px' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 800, marginBottom: '8px', color: '#FFFFFF' }}>
                   No orders match this filter
                 </h3>
-                <p style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '20px' }}>
+                <p style={{ fontSize: '0.875rem', color: '#9CA3AF', marginBottom: '20px' }}>
                   Explore authentic badminton, tennis, and pickleball equipment ready for express delivery in Pune.
                 </p>
                 <Link to="/shop" className="btn btn-primary btn-sm">
@@ -770,10 +998,10 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               }}
             >
               <div>
-                <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0 }}>
+                <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0, color: '#FFFFFF' }}>
                   SAVED ADDRESSES ({user.addresses.length})
                 </h2>
-                <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>
+                <span style={{ fontSize: '0.8125rem', color: '#9CA3AF' }}>
                   Manage delivery destinations for homes, sports clubs, and school academies.
                 </span>
               </div>
@@ -800,9 +1028,9 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 <div
                   key={addr.id}
                   style={{
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: '#121212',
                     borderRadius: '6px',
-                    border: addr.isDefault ? '2px solid var(--color-brand-gold)' : '1px solid var(--color-ivory-border)',
+                    border: addr.isDefault ? '2px solid #C8102E' : '1px solid rgba(255, 255, 255, 0.1)',
                     padding: '20px',
                     position: 'relative',
                     display: 'flex',
@@ -814,8 +1042,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                       <span
                         style={{
-                          backgroundColor: '#F3F4F6',
-                          color: '#374151',
+                          backgroundColor: '#1F2937',
+                          color: '#F3F4F6',
                           fontSize: '0.6875rem',
                           fontWeight: 800,
                           padding: '2px 8px',
@@ -829,8 +1057,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       {addr.isDefault && (
                         <span
                           style={{
-                            backgroundColor: 'var(--color-ink)',
-                            color: 'var(--color-brand-gold)',
+                            backgroundColor: '#C8102E',
+                            color: '#FFFFFF',
                             fontSize: '0.6875rem',
                             fontWeight: 800,
                             padding: '2px 8px',
@@ -846,10 +1074,10 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       )}
                     </div>
 
-                    <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: 800 }}>
+                    <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: 800, color: '#FFFFFF' }}>
                       {addr.name}
                     </h4>
-                    <p style={{ margin: 0, fontSize: '0.875rem', color: '#4B5563', lineHeight: 1.5 }}>
+                    <p style={{ margin: 0, fontSize: '0.875rem', color: '#A3A3A3', lineHeight: 1.5 }}>
                       {addr.street}<br />
                       {addr.locality && `${addr.locality}, `}{addr.city} - {addr.pincode}<br />
                       {addr.state}, India<br />
@@ -864,7 +1092,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       justifyContent: 'space-between',
                       marginTop: '20px',
                       paddingTop: '14px',
-                      borderTop: '1px solid #F3F4F6',
+                      borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                     }}
                   >
                     {!addr.isDefault ? (
@@ -874,7 +1102,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: 'var(--color-ink)',
+                          color: '#C8102E',
                           fontSize: '0.75rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -894,7 +1122,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#4B5563',
+                          color: '#9CA3AF',
                           cursor: 'pointer',
                           padding: '4px',
                           display: 'flex',
@@ -915,7 +1143,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                           style={{
                             background: 'none',
                             border: 'none',
-                            color: '#DC2626',
+                            color: '#EF4444',
                             cursor: 'pointer',
                             padding: '4px',
                             display: 'flex',
@@ -951,17 +1179,17 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               }}
             >
               <div>
-                <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0 }}>
+                <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0, color: '#FFFFFF' }}>
                   TURNKEY COURT CONSTRUCTION PROJECTS ({user.courtProjects?.length || 0})
                 </h2>
-                <span style={{ fontSize: '0.8125rem', color: '#6B7280' }}>
+                <span style={{ fontSize: '0.8125rem', color: '#9CA3AF' }}>
                   Track your institutional, school, and club court civil engineering proposals & BOQ documents.
                 </span>
               </div>
 
               <Link
                 to="/courts"
-                className="btn btn-gold btn-sm"
+                className="btn btn-primary btn-sm"
                 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
               >
                 <span>REQUEST NEW COURT CONSULTATION</span>
@@ -974,10 +1202,10 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 <div
                   key={project.id}
                   style={{
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: '#121212',
                     borderRadius: '6px',
-                    border: '1px solid var(--color-ivory-border)',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                     padding: '24px',
                   }}
                 >
@@ -988,26 +1216,26 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       alignItems: 'flex-start',
                       justifyContent: 'space-between',
                       gap: '12px',
-                      borderBottom: '1px solid #F3F4F6',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                       paddingBottom: '16px',
                       marginBottom: '16px',
                     }}
                   >
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                        <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase' }}>
+                        <span style={{ fontSize: '0.6875rem', fontWeight: 800, color: '#9CA3AF', textTransform: 'uppercase' }}>
                           Inquiry Reference: {project.id}
                         </span>
-                        <span>•</span>
-                        <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>
+                        <span style={{ color: '#4B5563' }}>•</span>
+                        <span style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>
                           Date: {project.inquiryDate}
                         </span>
                       </div>
-                      <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-ink)' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF' }}>
                         {project.title}
                       </h3>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', fontSize: '0.8125rem', color: '#4B5563' }}>
-                        <MapPin size={14} color="var(--color-plate-gold)" />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', fontSize: '0.8125rem', color: '#D1D5DB' }}>
+                        <MapPin size={14} color="#C8102E" />
                         <span>{project.location}</span>
                       </div>
                     </div>
@@ -1018,16 +1246,22 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                         borderRadius: '9999px',
                         backgroundColor:
                           project.status === 'proposal_ready'
-                            ? '#FEF3C7'
+                            ? 'rgba(245, 158, 11, 0.15)'
                             : project.status === 'site_survey_completed'
-                            ? '#EFF6FF'
-                            : '#ECFDF5',
+                            ? 'rgba(59, 130, 246, 0.15)'
+                            : 'rgba(16, 185, 129, 0.15)',
                         color:
                           project.status === 'proposal_ready'
-                            ? '#B45309'
+                            ? '#FBBF24'
                             : project.status === 'site_survey_completed'
-                            ? '#1D4ED8'
-                            : '#047857',
+                            ? '#60A5FA'
+                            : '#34D399',
+                        border:
+                          project.status === 'proposal_ready'
+                            ? '1px solid rgba(245, 158, 11, 0.3)'
+                            : project.status === 'site_survey_completed'
+                            ? '1px solid rgba(59, 130, 246, 0.3)'
+                            : '1px solid rgba(16, 185, 129, 0.3)',
                         fontSize: '0.75rem',
                         fontWeight: 800,
                         textTransform: 'uppercase',
@@ -1044,7 +1278,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       display: 'grid',
                       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                       gap: '16px',
-                      backgroundColor: '#F9FAFB',
+                      backgroundColor: '#181818',
                       padding: '16px',
                       borderRadius: '4px',
                       marginBottom: '20px',
@@ -1052,38 +1286,38 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     }}
                   >
                     <div>
-                      <span style={{ color: '#6B7280', display: 'block', fontSize: '0.6875rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                      <span style={{ color: '#9CA3AF', display: 'block', fontSize: '0.6875rem', textTransform: 'uppercase', fontWeight: 700 }}>
                         Sport Category
                       </span>
-                      <strong style={{ color: '#111827' }}>{project.sport}</strong>
+                      <strong style={{ color: '#FFFFFF' }}>{project.sport}</strong>
                     </div>
 
                     <div>
-                      <span style={{ color: '#6B7280', display: 'block', fontSize: '0.6875rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                      <span style={{ color: '#9CA3AF', display: 'block', fontSize: '0.6875rem', textTransform: 'uppercase', fontWeight: 700 }}>
                         Surface Specification
                       </span>
-                      <strong style={{ color: '#111827' }}>{project.surfaceType}</strong>
+                      <strong style={{ color: '#FFFFFF' }}>{project.surfaceType}</strong>
                     </div>
 
                     <div>
-                      <span style={{ color: '#6B7280', display: 'block', fontSize: '0.6875rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                      <span style={{ color: '#9CA3AF', display: 'block', fontSize: '0.6875rem', textTransform: 'uppercase', fontWeight: 700 }}>
                         Dimensions / Courts
                       </span>
-                      <strong style={{ color: '#111827' }}>{project.dimensions}</strong>
+                      <strong style={{ color: '#FFFFFF' }}>{project.dimensions}</strong>
                     </div>
 
                     <div>
-                      <span style={{ color: '#6B7280', display: 'block', fontSize: '0.6875rem', textTransform: 'uppercase', fontWeight: 700 }}>
+                      <span style={{ color: '#9CA3AF', display: 'block', fontSize: '0.6875rem', textTransform: 'uppercase', fontWeight: 700 }}>
                         Estimated Turnkey BOQ
                       </span>
-                      <strong style={{ color: 'var(--color-brand-gold)' }}>{project.estimatedBudget}</strong>
+                      <strong style={{ color: '#FF4D6D' }}>{project.estimatedBudget}</strong>
                     </div>
                   </div>
 
                   {/* Actions */}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ fontSize: '0.8125rem', color: '#4B5563' }}>
-                      Chief Civil Consultant: <strong>Oriental Sports Pune Engineering Cell</strong>
+                    <div style={{ fontSize: '0.8125rem', color: '#9CA3AF' }}>
+                      Chief Civil Consultant: <strong style={{ color: '#FFFFFF' }}>Oriental Sports Pune Engineering Cell</strong>
                     </div>
 
                     <div style={{ display: 'flex', gap: '10px' }}>
@@ -1093,7 +1327,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                         )}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="btn btn-gold btn-sm"
+                        className="btn btn-primary btn-sm"
                         style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem' }}
                       >
                         <MessageCircle size={14} />
@@ -1102,7 +1336,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
                       <Link
                         to="/courts"
-                        className="btn btn-outline-dark btn-sm"
+                        className="btn btn-outline-light btn-sm"
                         style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem' }}
                       >
                         <FileCheck size={14} />
@@ -1121,12 +1355,12 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Heart size={22} color="#C9A227" fill="#C9A227" />
-                <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0 }}>
+                <Heart size={22} color="#EF4444" fill="#EF4444" />
+                <h2 className="font-display" style={{ fontSize: '1.5rem', margin: 0, color: '#FFFFFF' }}>
                   SAVED EQUIPMENT ({favoritedProducts.length})
                 </h2>
               </div>
-              <Link to="/shop" className="btn btn-outline-dark btn-sm">
+              <Link to="/shop" className="btn btn-outline-light btn-sm">
                 <span>EXPLORE CATALOGUE</span>
               </Link>
             </div>
@@ -1140,18 +1374,18 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
             ) : (
               <div
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#121212',
                   padding: '48px 24px',
                   borderRadius: '6px',
                   textAlign: 'center',
-                  border: '1px solid var(--color-ivory-border)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                 }}
               >
                 <Heart size={40} color="#9CA3AF" style={{ margin: '0 auto 16px' }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 800, marginBottom: '8px' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 800, marginBottom: '8px', color: '#FFFFFF' }}>
                   Your wishlist is empty
                 </h3>
-                <p style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '20px' }}>
+                <p style={{ fontSize: '0.875rem', color: '#9CA3AF', marginBottom: '20px' }}>
                   Tap the heart on rackets, shuttlecocks, or court footwear to save them to your athlete account.
                 </p>
                 <Link to="/shop" className="btn btn-primary btn-sm">
@@ -1165,10 +1399,10 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
         {/* ================= PROFILE & PREFERENCES TAB ================= */}
         {activeTab === 'profile' && (
           <div style={{ maxWidth: '640px' }}>
-            <div style={{ backgroundColor: '#FFFFFF', padding: '28px', borderRadius: '6px', border: '1px solid var(--color-ivory-border)' }}>
+            <div style={{ backgroundColor: '#121212', padding: '28px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-                <User size={20} color="var(--color-plate-gold)" />
-                <h2 className="font-display" style={{ fontSize: '1.375rem', margin: 0 }}>
+                <User size={20} color="#C8102E" />
+                <h2 className="font-display" style={{ fontSize: '1.375rem', margin: 0, color: '#FFFFFF' }}>
                   ATHLETE PROFILE & GEAR PREFERENCES
                 </h2>
               </div>
@@ -1176,11 +1410,11 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               {profileSaveSuccess && (
                 <div
                   style={{
-                    backgroundColor: '#ECFDF5',
-                    border: '1px solid #6EE7B7',
+                    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
                     borderRadius: '4px',
                     padding: '10px 14px',
-                    color: '#065F46',
+                    color: '#34D399',
                     fontSize: '0.8125rem',
                     marginBottom: '16px',
                     display: 'flex',
@@ -1203,7 +1437,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                         fontSize: '0.75rem',
                         fontWeight: 700,
                         textTransform: 'uppercase',
-                        color: '#374151',
+                        color: '#D1D5DB',
                         marginBottom: '4px',
                       }}
                     >
@@ -1220,7 +1454,9 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                         height: '42px',
                         padding: '0 12px',
                         fontSize: '0.875rem',
-                        border: '1px solid #D1D5DB',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        backgroundColor: '#181818',
+                        color: '#FFFFFF',
                         borderRadius: '4px',
                         boxSizing: 'border-box',
                       }}
@@ -1235,7 +1471,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                         fontSize: '0.75rem',
                         fontWeight: 700,
                         textTransform: 'uppercase',
-                        color: '#374151',
+                        color: '#D1D5DB',
                         marginBottom: '4px',
                       }}
                     >
@@ -1251,7 +1487,9 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                         height: '42px',
                         padding: '0 12px',
                         fontSize: '0.875rem',
-                        border: '1px solid #D1D5DB',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        backgroundColor: '#181818',
+                        color: '#FFFFFF',
                         borderRadius: '4px',
                         boxSizing: 'border-box',
                       }}
@@ -1267,7 +1505,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       fontSize: '0.75rem',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      color: '#374151',
+                      color: '#D1D5DB',
                       marginBottom: '4px',
                     }}
                   >
@@ -1283,7 +1521,9 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       height: '42px',
                       padding: '0 12px',
                       fontSize: '0.875rem',
-                      border: '1px solid #D1D5DB',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      backgroundColor: '#181818',
+                      color: '#FFFFFF',
                       borderRadius: '4px',
                       boxSizing: 'border-box',
                     }}
@@ -1298,7 +1538,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       fontSize: '0.75rem',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      color: '#374151',
+                      color: '#D1D5DB',
                       marginBottom: '4px',
                     }}
                   >
@@ -1314,9 +1554,9 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       height: '42px',
                       padding: '0 12px',
                       fontSize: '0.875rem',
-                      border: '1px solid #E5E7EB',
-                      backgroundColor: '#F9FAFB',
-                      color: '#6B7280',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      backgroundColor: '#141414',
+                      color: '#9CA3AF',
                       borderRadius: '4px',
                       boxSizing: 'border-box',
                     }}
@@ -1334,7 +1574,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       fontSize: '0.75rem',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      color: '#374151',
+                      color: '#D1D5DB',
                       marginBottom: '6px',
                     }}
                   >
@@ -1349,7 +1589,9 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                       height: '42px',
                       padding: '0 12px',
                       fontSize: '0.875rem',
-                      border: '1px solid #D1D5DB',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      backgroundColor: '#181818',
+                      color: '#FFFFFF',
                       borderRadius: '4px',
                       boxSizing: 'border-box',
                     }}

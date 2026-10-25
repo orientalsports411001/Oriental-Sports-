@@ -459,26 +459,16 @@ export const ShopPage: React.FC = () => {
             </button>
 
             {/* Live Search Form */}
-            <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', position: 'relative', minWidth: '160px', maxWidth: '280px', flex: 1 }}>
+            <form onSubmit={handleSearchSubmit} className="shop-search-form">
               <input
                 type="search"
                 placeholder="Search gear, brand..."
                 value={localSearch}
                 onChange={(e) => setLocalSearch(e.target.value)}
                 onBlur={() => update('q', localSearch.trim())}
-                style={{
-                  width: '100%',
-                  height: '36px',
-                  padding: '0 30px 0 32px',
-                  fontSize: '0.8125rem',
-                  border: '1.5px solid var(--line-strong)',
-                  borderRadius: '9999px',
-                  background: 'var(--paper)',
-                  color: 'var(--ink)',
-                  outline: 'none',
-                }}
+                className="shop-search-input"
               />
-              <Search size={14} style={{ position: 'absolute', left: '11px', color: 'var(--muted)', pointerEvents: 'none' }} />
+              <Search size={14} className="shop-search-icon" />
               {localSearch && (
                 <button
                   type="button"
@@ -486,17 +476,7 @@ export const ShopPage: React.FC = () => {
                     setLocalSearch('');
                     update('q', null);
                   }}
-                  style={{
-                    position: 'absolute',
-                    right: '8px',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--muted)',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
+                  className="shop-search-clear"
                   aria-label="Clear search"
                 >
                   <X size={14} />

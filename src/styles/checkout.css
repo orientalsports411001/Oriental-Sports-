@@ -966,3 +966,222 @@
   color: #9ca3af;
 }
 
+/* ==========================================================================
+   Oriental Sports — Blood-Red & Obsidian Checkout Overrides
+   Ensures seamless athletic immersion while preserving trustworthy contrast
+   ========================================================================== */
+.checkout-page {
+  background-color: var(--obsidian, #050505);
+  color: var(--text-primary, #ffffff);
+}
+
+.checkout-header {
+  background: var(--surface-black, #0a0a0a);
+  border-bottom: 1px solid var(--border, #2a2a2a);
+}
+
+.checkout-header-badge {
+  color: var(--text-secondary, #a3a3a3);
+}
+
+.checkout-progress {
+  color: var(--text-muted, #737373);
+}
+
+.checkout-progress-item.is-active {
+  color: var(--text-primary, #ffffff);
+}
+
+.checkout-progress-dot {
+  background: var(--surface-card, #202020);
+  color: var(--text-secondary, #a3a3a3);
+}
+
+.checkout-progress-item.is-active .checkout-progress-dot {
+  background: var(--blood-crimson, #c8102e);
+  color: #ffffff;
+}
+
+.checkout-progress-sep {
+  color: var(--border, #2a2a2a);
+}
+
+.checkout-back-link {
+  color: var(--text-secondary, #a3a3a3);
+}
+
+.checkout-back-link:hover {
+  color: var(--blood-highlight, #f20d18);
+}
+
+.checkout-card,
+.payment-section-box,
+.checkout-summary-card {
+  background: var(--surface-black, #0a0a0a);
+  border: 1px solid var(--border, #2a2a2a);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.checkout-card-header {
+  border-bottom-color: var(--border, #2a2a2a);
+}
+
+.checkout-card-title,
+.summary-heading {
+  color: var(--text-primary, #ffffff) !important;
+}
+
+.checkout-step-number {
+  background: var(--blood-crimson, #c8102e);
+  color: #ffffff;
+}
+
+.checkout-card-meta {
+  color: var(--text-muted, #737373);
+}
+
+.form-label {
+  color: var(--text-secondary, #d4d4d4);
+}
+
+.form-input {
+  background: var(--surface-card, #202020);
+  border-color: var(--border, #2a2a2a);
+  color: var(--text-primary, #ffffff);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted, #737373);
+}
+
+.form-input:focus {
+  border-color: var(--blood-crimson, #c8102e);
+  box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.2);
+}
+
+.phone-prefix {
+  background: var(--charcoal, #171717);
+  border-color: var(--border, #2a2a2a);
+  color: var(--text-secondary, #d4d4d4);
+}
+
+.delivery-option-card {
+  background: var(--surface-card, #202020);
+  border-color: var(--border, #2a2a2a);
+}
+
+.delivery-option-card:hover {
+  border-color: var(--border-subtle, #333333);
+}
+
+.delivery-option-card.is-selected {
+  border-color: var(--blood-crimson, #c8102e);
+  background: rgba(200, 16, 46, 0.08);
+  box-shadow: 0 0 0 1px var(--blood-crimson, #c8102e);
+}
+
+.delivery-option-card.is-selected .delivery-radio {
+  border-color: var(--blood-crimson, #c8102e);
+}
+
+.delivery-radio-inner {
+  background: var(--blood-crimson, #c8102e);
+}
+
+.delivery-option-title {
+  color: var(--text-primary, #ffffff);
+}
+
+.delivery-option-desc {
+  color: var(--text-muted, #737373);
+}
+
+.store-pickup-panel {
+  background: var(--surface-card, #202020);
+  border-color: var(--border, #2a2a2a);
+  color: var(--text-secondary, #d4d4d4);
+}
+
+.payment-gateways-strip {
+  background: var(--charcoal, #171717);
+  border-color: var(--border, #2a2a2a);
+}
+
+.gateway-chip {
+  background: var(--surface-card, #202020);
+  border-color: var(--border, #2a2a2a);
+  color: var(--text-secondary, #d4d4d4);
+}
+
+.pay-cta-btn {
+  background: var(--blood-crimson, #c8102e);
+  color: #ffffff;
+  box-shadow: 0 4px 18px rgba(200, 16, 46, 0.35);
+}
+
+.pay-cta-btn:hover {
+  background: var(--blood-primary, #8b0000);
+  box-shadow: 0 6px 24px rgba(242, 13, 24, 0.45);
+}
+
+.summary-item-row {
+  border-bottom-color: var(--border, #2a2a2a);
+}
+
+.summary-item-img {
+  background: var(--surface-card, #202020);
+  border-color: var(--border, #2a2a2a);
+}
+
+.summary-item-name {
+  color: var(--text-primary, #ffffff);
+}
+
+.summary-item-price {
+  color: var(--text-primary, #ffffff);
+}
+
+.promo-input {
+  background: var(--surface-card, #202020);
+  border-color: var(--border, #2a2a2a);
+  color: var(--text-primary, #ffffff);
+}
+
+.promo-input:focus {
+  border-color: var(--blood-crimson, #c8102e);
+}
+
+.promo-apply-btn {
+  background: var(--charcoal, #171717);
+  border-color: var(--border, #2a2a2a);
+  color: var(--text-primary, #ffffff);
+}
+
+.promo-apply-btn:hover {
+  background: var(--blood-crimson, #c8102e);
+  border-color: var(--blood-crimson, #c8102e);
+}
+
+.summary-breakdown {
+  border-top-color: var(--border, #2a2a2a);
+  color: var(--text-secondary, #a3a3a3);
+}
+
+.summary-row-total {
+  border-top-color: var(--border, #2a2a2a);
+  color: var(--text-primary, #ffffff);
+}
+
+.checkout-footer {
+  background: var(--obsidian, #050505);
+  border-top-color: var(--border, #2a2a2a);
+}
+
+.checkout-footer-links a {
+  color: var(--text-muted, #737373);
+}
+
+.checkout-footer-links a:hover {
+  color: var(--blood-highlight, #f20d18);
+}
+

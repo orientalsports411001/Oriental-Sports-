@@ -93,14 +93,12 @@ export default function LoginPage() {
       >
         {/* Authentic Oriental Sports Brandmark */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
-            <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontWeight: 700, fontSize: 30, color: 'var(--ink)' }}>
-              Oriental
-            </span>
-            <span style={{ fontWeight: 900, fontSize: 24, letterSpacing: '0.08em', color: 'var(--gold-ink)' }}>
-              SPORTS
-            </span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${basePath}/brand/oriental-sports-wordmark.png`}
+            alt="Oriental Sports"
+            style={{ height: 48, width: 'auto', objectFit: 'contain', margin: '0 auto 10px', display: 'block' }}
+          />
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--subtle)' }}>
             Camp Store Operations · Pune
           </div>

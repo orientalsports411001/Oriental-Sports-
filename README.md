@@ -9,7 +9,7 @@ A production-grade, responsive, mobile-first ecommerce and sports infrastructure
 
 ## ⚡ Highlights
 
-- **Official Brand Mark**: Concentric black rings, brushed gold italic `S`, bold geometric `ORIENTAL`, italic gold `SPORTS`, and gold underline bar.
+- **Official Brand Mark**: Dynamic speed-line `O`, athletic script `Oriental`, slanted bold crimson `SPORTS`, and aerodynamic velocity streak underline.
 - **Two Core Pillars**:
   - **SHOP**: Equipment across Cricket, Tennis, Pickleball, Badminton, Table Tennis, Squash, Fitness, and Recreation.
   - **BUILD**: Turnkey sports infrastructure for Pickleball, Tennis, Badminton, Squash, and Synthetic Turf sports arenas.

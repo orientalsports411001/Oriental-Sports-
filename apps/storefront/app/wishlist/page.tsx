@@ -1,5 +1,5 @@
-import { AccountPage } from '@/components/pages/AccountPage';
+import { WishlistPage } from '@/components/pages/WishlistPage';
 
 export default function Page() {
-  return <AccountPage tab="wishlist" />;
+  return <WishlistPage />;
 }

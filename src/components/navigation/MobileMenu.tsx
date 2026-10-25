@@ -110,7 +110,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ open, onClose, onSearch 
                 {isAuthenticated ? `My Account (${user?.firstName || 'Athlete'})` : 'Sign In / Register'}
               </Link>
               <Link to="/account/orders" onClick={onClose} className="link-arrow">My Orders & Tracking</Link>
-              <Link to="/account/wishlist" onClick={onClose} className="link-arrow">
+              <Link to="/wishlist" onClick={onClose} className="link-arrow">
                 Wishlist {wishlist.length > 0 && `(${wishlist.length})`}
               </Link>
             </motion.div>

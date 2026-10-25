@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { PRODUCTS } from '../../data/products';
 import { Product } from '../../types';
 import { ProductCard } from '../products/ProductCard';
+import { SpotlightCard } from '../ui/SpotlightCard';
+import { MagneticButton } from '../ui/MagneticButton';
 import { Reveal, RevealLines, Stagger, StaggerItem } from '../motion/Reveal';
 
 /**
@@ -22,7 +24,7 @@ const SERVICES = [
 ];
 
 export const GearEdit: React.FC = () => (
-  <section className="gear-edit section bg-stone" aria-labelledby="gear-edit-title">
+  <section className="gear-edit section" aria-labelledby="gear-edit-title">
     <div className="container gear-grid">
       <div className="gear-intro">
         <div className="gear-intro-sticky">
@@ -41,9 +43,11 @@ export const GearEdit: React.FC = () => (
                 </li>
               ))}
             </ul>
-            <Link to="/shop" className="btn btn-primary gear-cta">
-              Shop all gear <span className="btn-arrow" aria-hidden="true">→</span>
-            </Link>
+            <MagneticButton strength={10}>
+              <Link to="/shop" className="btn btn-primary gear-cta">
+                Shop all gear <span className="btn-arrow" aria-hidden="true">→</span>
+              </Link>
+            </MagneticButton>
           </Reveal>
         </div>
       </div>
@@ -51,7 +55,9 @@ export const GearEdit: React.FC = () => (
       <Stagger as="ul" className="gear-products" stagger={0.08} amount={0.1}>
         {EDIT.map((product) => (
           <StaggerItem as="li" key={product.id} className="gear-product">
-            <ProductCard product={product} sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 78vw" />
+            <SpotlightCard className="w-full h-full">
+              <ProductCard product={product} sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 78vw" />
+            </SpotlightCard>
           </StaggerItem>
         ))}
       </Stagger>

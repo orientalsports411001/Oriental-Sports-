@@ -11,6 +11,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: 'Oriental Sports Admin',
   description: 'Internal admin tool for Oriental Sports Pune — products, inventory, and order management.',
+  icons: { icon: '/favicon.png' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

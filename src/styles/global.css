@@ -14,15 +14,15 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-h) + 16px);
-  background-color: var(--ivory);
-  color: var(--ink);
+  background-color: var(--obsidian);
+  color: var(--text-primary);
   font-family: var(--font);
 }
 
 body {
   min-height: 100vh;
-  background-color: var(--ivory);
-  color: var(--ink);
+  background-color: var(--obsidian);
+  color: var(--text-primary);
   font-family: var(--font);
   font-size: var(--fs-body);
   line-height: 1.55;
@@ -257,8 +257,29 @@ p {
 }
 .btn:hover .btn-arrow { transform: translateX(4px); }
 
-.btn-primary { --btn-bg: var(--ink); --btn-fg: var(--ivory); --btn-bd: var(--ink); }
-.btn-primary:hover { --btn-bg: var(--ink-2); --btn-bd: var(--ink-2); }
+.btn-primary {
+  --btn-bg: var(--blood-primary);
+  --btn-fg: #FFFFFF;
+  --btn-bd: var(--blood-crimson);
+  box-shadow: 0 4px 18px rgba(139, 0, 0, 0.35);
+}
+.btn-primary:hover {
+  --btn-bg: var(--blood-crimson);
+  --btn-bd: var(--blood-highlight);
+  box-shadow: 0 4px 26px rgba(200, 16, 46, 0.55);
+}
+
+.btn-blood {
+  --btn-bg: var(--blood-primary);
+  --btn-fg: #FFFFFF;
+  --btn-bd: var(--blood-crimson);
+  box-shadow: 0 4px 18px rgba(139, 0, 0, 0.35);
+}
+.btn-blood:hover {
+  --btn-bg: var(--blood-crimson);
+  --btn-bd: var(--blood-highlight);
+  box-shadow: 0 4px 26px rgba(200, 16, 46, 0.55);
+}
 
 .btn-outline,
 .btn-outline-dark,
@@ -473,6 +494,25 @@ p {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .animate-spin { animation: spin 0.9s linear infinite; }
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-33.333%); }
+}
+
+/* Spotlight Card Base */
+.spotlight-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.spotlight-card > * {
+  width: 100%;
+}
+.spotlight-card:hover {
+  border-color: var(--border-crimson) !important;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.7), 0 0 24px rgba(200, 16, 46, 0.12);
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
