@@ -19,7 +19,7 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
     title: 'Courts',
     links: [
       { label: 'Court construction', to: '/courts' },
-      { label: 'Cost estimate', to: '/courts#court-estimator' },
+      { label: 'Court inquiry', to: '/courts#court-inquiry' },
       { label: 'Court projects', to: '/courts/projects' },
     ],
   },
@@ -85,15 +85,38 @@ export const Footer: React.FC = () => {
             </div>
             <div>
               <dt>Phone</dt>
-              <dd><a href={`tel:${STORE_INFO.phone}`}>{STORE_INFO.displayPhone}</a></dd>
+              <dd>
+                <a
+                  href={`tel:${STORE_INFO.phone}`}
+                  style={{ color: '#FFFFFF', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '3px' }}
+                >
+                  {STORE_INFO.displayPhone}
+                </a>
+              </dd>
             </div>
             <div>
               <dt>WhatsApp</dt>
-              <dd><a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer">Message the store</a></dd>
+              <dd>
+                <a
+                  href={STORE_INFO.whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#FFFFFF', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '3px' }}
+                >
+                  Message the store ({STORE_INFO.displayPhone})
+                </a>
+              </dd>
             </div>
             <div>
               <dt>Email</dt>
-              <dd><a href={`mailto:${STORE_INFO.email}`}>{STORE_INFO.email}</a></dd>
+              <dd>
+                <a
+                  href={`mailto:${STORE_INFO.email}`}
+                  style={{ color: '#FFFFFF', fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '3px' }}
+                >
+                  {STORE_INFO.email}
+                </a>
+              </dd>
             </div>
           </dl>
         </div>

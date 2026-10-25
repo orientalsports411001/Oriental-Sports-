@@ -2,7 +2,7 @@ import React from 'react';
 import { COURT_SERVICES } from '../data/courts';
 import { IMAGES, MediaImage } from '../data/media';
 import { STORE_INFO } from '../data/storeInfo';
-import { CourtCostEstimator } from '../components/courts/CourtCostEstimator';
+import { CourtServiceInquiry } from '../components/courts/CourtServiceInquiry';
 import { BuildSteps } from '../components/courts/BuildSteps';
 import { ProjectGallery } from '../components/home/ProjectGallery';
 import { PageHeader } from '../components/ui/PageHeader';
@@ -11,6 +11,7 @@ import { ImageReveal, Reveal } from '../components/motion/Reveal';
 
 const COURT_ART: Record<string, MediaImage> = {
   Pickleball: IMAGES.pickleballNet,
+  Padel: IMAGES.surfaceBlueLines,
   Tennis: IMAGES.surfaceNet,
   Badminton: IMAGES.badmintonHall,
   'Turf & Multi-sport': IMAGES.turfFootball,
@@ -27,8 +28,8 @@ export const CourtsPage: React.FC = () => (
       image={IMAGES.courtDusk}
     >
       <Reveal className="page-header-actions" delay={0.25}>
-        <a href="#court-estimator" className="btn btn-light">
-          Estimate your court <span className="btn-arrow" aria-hidden="true">→</span>
+        <a href="#court-inquiry" className="btn btn-light">
+          Inquire about a court <span className="btn-arrow" aria-hidden="true">→</span>
         </a>
         <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-outline-light">
           WhatsApp us
@@ -65,8 +66,13 @@ export const CourtsPage: React.FC = () => (
                 <li key={f}>{f}</li>
               ))}
             </ul>
-            <a href="#court-estimator" className="link-arrow">
-              Estimate a {service.sport.toLowerCase()} court <span className="btn-arrow" aria-hidden="true">→</span>
+            <a
+              href={`https://wa.me/919890990022?text=${encodeURIComponent(`Hi Oriental Sports, I want to install a ${service.sport === 'Padel' ? 'Padel Court' : service.sport === 'Turf & Multi-sport' ? 'Football Turf' : `${service.sport} Court`}.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-arrow"
+            >
+              Inquire about {service.sport.toLowerCase()} installation <span className="btn-arrow" aria-hidden="true">→</span>
             </a>
           </Reveal>
         </article>
@@ -79,8 +85,8 @@ export const CourtsPage: React.FC = () => (
       </div>
     </section>
 
-    <section id="court-estimator" className="container section estimator-section" aria-label="Court cost estimate">
-      <CourtCostEstimator />
+    <section id="court-inquiry" className="container section inquiry-section" aria-label="Court installation inquiry">
+      <CourtServiceInquiry />
     </section>
 
     <ProjectGallery />

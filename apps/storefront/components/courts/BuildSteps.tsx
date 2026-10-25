@@ -5,11 +5,11 @@ import { Reveal, Stagger, StaggerItem } from '../motion/Reveal';
 
 /** The stages of a court build — a real sequence, so the numbers carry meaning. */
 export const BUILD_STEPS = [
-  { name: 'Site visit', note: 'We measure the site, check levels and drainage, and agree the layout with you.' },
-  { name: 'Sub-base', note: 'Ground preparation and a stable base laid to a drainage slope.' },
-  { name: 'Surface', note: 'Acrylic, cushioned acrylic, modular tiles, timber or turf — chosen by sport.' },
-  { name: 'Fencing, nets & lights', note: 'Perimeter fencing, posts and nets, and floodlighting for evening play.' },
-  { name: 'Lines & handover', note: 'Regulation line marking, a final walk-through, and the court is yours.' },
+  { name: 'Site Survey & Feasibility', note: 'On-site technical evaluation to assess ground contours, soil conditions, laser levels, and playing orientation.' },
+  { name: 'Sub-Base & Drainage', note: 'Excavation, precision grading, and asphalt or PCC sub-base engineering with dual-plane drainage gradient.' },
+  { name: 'Surface System Application', note: 'Application of multi-layer acrylic cushion coats, synthetic turf, sprung timber, or modular sports tiles.' },
+  { name: 'Fencing, Lighting & Enclosures', note: 'Erection of perimeter fencing, structural glass cages, tournament-grade LED floodlights, and in-ground posts.' },
+  { name: 'Line Marking & Handover', note: 'Regulation boundary line application, net installation, joint inspection walk-through, and client handover.' },
 ];
 
 export const BuildSteps: React.FC<{ title?: string }> = ({ title = 'What a build covers' }) => (

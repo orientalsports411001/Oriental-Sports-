@@ -9,6 +9,7 @@ import { CartDrawer } from './components/navigation/CartDrawer';
 import { BottomNav } from './components/navigation/BottomNav';
 import { Footer } from './components/footer/Footer';
 import { BrandIntro } from './components/ui/BrandIntro';
+import { Analytics } from './components/analytics/Analytics';
 
 // Pages — the homepage ships in the main bundle; every other route loads on demand.
 import { HomePage } from './pages/HomePage';
@@ -145,6 +146,7 @@ export const App: React.FC = () => {
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
+            <Analytics />
             <ScrollToTop />
             <BrandIntro />
             <AppContent />

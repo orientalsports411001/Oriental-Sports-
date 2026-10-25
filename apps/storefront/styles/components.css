@@ -383,8 +383,17 @@
 /* Same fact table as the Visit page, one step tighter. */
 .footer-facts { font-size: 0.9375rem; }
 .store-hours.footer-facts > div { min-height: 44px; }
-.footer-facts dd { min-width: 0; overflow-wrap: anywhere; }
-.footer-facts a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.footer-facts dt { color: var(--text-secondary, #9CA3AF); }
+.footer-facts dd { min-width: 0; overflow-wrap: anywhere; color: #FFFFFF; }
+.footer-facts dd a {
+  color: #FFFFFF !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 600;
+}
+.footer-facts dd a:hover {
+  color: var(--blood-highlight, #C8102E) !important;
+}
 
 .footer-nav {
   display: grid;

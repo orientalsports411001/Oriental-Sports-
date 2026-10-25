@@ -387,7 +387,15 @@
 .store-hours.footer-facts > div { min-height: 44px; border-bottom: 1px solid var(--border-color); }
 .footer-facts dt { color: var(--text-secondary); }
 .footer-facts dd { min-width: 0; overflow-wrap: anywhere; color: #FFFFFF; }
-.footer-facts a:hover { color: var(--blood-highlight); text-decoration: underline; text-underline-offset: 3px; }
+.footer-facts dd a {
+  color: #FFFFFF !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 600;
+}
+.footer-facts dd a:hover {
+  color: var(--blood-highlight) !important;
+}
 
 .footer-nav {
   display: grid;

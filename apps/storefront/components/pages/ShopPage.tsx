@@ -83,10 +83,17 @@ export const ShopPage: React.FC<ShopPageProps> = ({ products: PRODUCTS, categori
   }, [searchQuery]);
 
   const update = useCallback(
-    (key: string, value: string | null) => {
+    (keyOrUpdates: string | Record<string, string | null>, value?: string | null) => {
       const next = new URLSearchParams(searchParams);
-      if (value === null || value === 'all' || value === '') next.delete(key);
-      else next.set(key, value);
+      if (typeof keyOrUpdates === 'string') {
+        if (value === null || value === 'all' || value === '' || value === undefined) next.delete(keyOrUpdates);
+        else next.set(keyOrUpdates, value);
+      } else {
+        Object.entries(keyOrUpdates).forEach(([k, v]) => {
+          if (v === null || v === 'all' || v === '') next.delete(k);
+          else next.set(k, v);
+        });
+      }
       setSearchParams(next, { replace: true });
     },
     [searchParams, setSearchParams],
@@ -218,10 +225,12 @@ export const ShopPage: React.FC<ShopPageProps> = ({ products: PRODUCTS, categori
               value="all"
               checked={selectedCategory === 'all'}
               onChange={() => {
-                update('category', null);
-                update('subcategory', null);
-                update('brand', null);
-                update('batSize', null);
+                update({
+                  category: null,
+                  subcategory: null,
+                  brand: null,
+                  batSize: null,
+                });
               }}
             />
             <span>All Sports</span>
@@ -235,10 +244,12 @@ export const ShopPage: React.FC<ShopPageProps> = ({ products: PRODUCTS, categori
                 value={c.id}
                 checked={selectedCategory === c.id}
                 onChange={() => {
-                  update('category', c.id);
-                  update('subcategory', null);
-                  update('brand', null);
-                  update('batSize', null);
+                  update({
+                    category: c.id,
+                    subcategory: null,
+                    brand: null,
+                    batSize: null,
+                  });
                 }}
               />
               <span>{c.name}</span>

@@ -35,7 +35,15 @@ Oriental Sports operates an integrated turnkey sports engineering division backe
 * **Lighting Systems**: Asymmetric, indirect glare-free sports fixtures (300 to 500 Lux) positioned to eliminate blinding during high overhead clears.
 * **Lead Time**: 2 to 3 Weeks.
 
-### 4. Box Cricket & 5-a-Side Football Synthetic Turfs
+### 4. Padel Courts & Panoramic Arenas
+* **Cage Architecture**: High-grade electro-welded steel mesh frame with anti-corrosion electrostatic coating.
+* **Structural Glass**: 12mm toughened structural panoramic safety glass backwalls with flush countersunk fittings.
+* **Surface System**: Sand-dressed texturized monofilament synthetic padel turf with kiln-dried silica infill.
+* **Lighting Columns**: Integrated corner pillars with 300+ Lux tournament-uniform asymmetric LED floodlights.
+* **Regulation Standards**: Official FIP (International Padel Federation) 10m × 20m arena layout.
+* **Lead Time**: 4 to 6 Weeks.
+
+### 5. Box Cricket & 5-a-Side Football Synthetic Turfs
 * **Turf Construction**: High-density 40mm – 50mm non-directional monofilament synthetic grass.
 * **Infill Composition**: Calibrated silica sand base layer topped with cryogenic SBR rubber granules for realistic bounce, ball roll, and sliding safety.
 * **Enclosure Architecture**: Heavy-duty galvanized tubular steel truss frame, UV-stabilized braided nylon perimeter netting, and top ceiling net to retain balls during high shots.
@@ -43,24 +51,28 @@ Oriental Sports operates an integrated turnkey sports engineering division backe
 
 ---
 
-## 3. Four-Phase Engineering Workflow
+## 3. Five-Phase Engineering Workflow
 
 ```
-[Phase 1: Site Audit & Laser Grading]
-  ├── Soil compaction test & topography mapping
-  └── Laser-leveled sub-base preparation (concrete or asphalt) with integrated drainage
+[Phase 1: Site Survey & Feasibility]
+  ├── Soil compaction test, topography mapping & orientation analysis
+  └── Boundary audit and site drainage evaluation
 
-[Phase 2: Base Preparation & Cushion Acrylics]
-  ├── Acrylic resurfacer application to seal pores
-  └── Multi-coat elastomer cushion layer application for joint shock absorption
+[Phase 2: Sub-Base Engineering & Drainage]
+  ├── Excavation and laser grading to 1:100 dual-plane drainage slope
+  └── Reinforced concrete (PCC) or compacted aggregate asphalt sub-base
 
-[Phase 3: Color Coating & Precision Line Marking]
-  ├── UV-stable non-glare concentrated color wear layers
-  └── 100% acrylic white regulation boundary lines masking and painting
+[Phase 3: Sports Surface System Application]
+  ├── Surface preparation and primer/resurfacer application
+  └── Multi-layer acrylic cushion, FIP padel turf, sprung teak wood, or modular tiles
 
-[Phase 4: Hardware, Lighting & Commissioning]
-  ├── In-ground post sleeves, tournament nets, and chainlink enclosure
-  └── Floodlight aiming, photometrics lux testing, and formal client handover
+[Phase 4: Fencing, Enclosures & Sports Lighting]
+  ├── Perimeter chainlink or panoramic toughened glass structural assemblies
+  └── In-ground posts, net tension systems, and asymmetric sports floodlights
+
+[Phase 5: Regulation Line Marking, Audit & Handover]
+  ├── Precision federation boundary line application
+  └── Joint quality walk-through, play testing, and formal handover
 ```
 
 ---
@@ -82,6 +94,8 @@ Beyond civic court engineering, Oriental Sports operates a specialized in-store 
 
 ---
 
-## 5. Client Lead Generation & Consultation Pipeline
-* **Direct RFP Form**: Integrated inquiry modal capturing site location, sport discipline, court dimensions, surface preference, and estimated budget.
-* **Instant WhatsApp Desk**: Direct link (`+91 98220 30000`) pre-populated with court inquiry parameters for rapid technician dispatch.
+## 5. Client Lead Generation & Direct WhatsApp Inquiry
+* **Service Selection**: Users select their target installation service (Pickleball Court, Padel Court, Badminton Court, Tennis Court, Football Turf, Sports Ground).
+* **Instant WhatsApp Desk**: Direct official wa.me link (`+91 98909 90022` / `wa.me/919890990022`) pre-populated with:
+  `Hi Oriental Sports, I want to install a [SELECTED SERVICE].`
+* **Direct Studio Call**: Immediate telephone consultation with the Camp engineering desk via `+91 98909 90022`.

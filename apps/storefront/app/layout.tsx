@@ -9,6 +9,7 @@ import '../styles/checkout.css';
 import '../styles/auth-modal.css';
 import { Providers } from './providers';
 import { AppShell } from './app-shell';
+import { Analytics } from '@/components/analytics/Analytics';
 import { SITE_URL } from '@/lib/seo/constants';
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <Analytics />
         <Providers>
           <AppShell>{children}</AppShell>
         </Providers>
