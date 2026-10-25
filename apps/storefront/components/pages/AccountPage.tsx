@@ -47,9 +47,6 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     user,
     isAuthenticated,
     openAuthModal,
-    setPendingPhone,
-    requestOtp,
-    verifyOtp,
     signInWithGoogle,
     signOut,
     updateProfile,
@@ -206,15 +203,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 className="ecom-phone-form"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  const target = e.currentTarget;
-                  const input = target.elements.namedItem('phone') as HTMLInputElement;
-                  const rawVal = input?.value?.trim() || '';
-                  if (rawVal) {
-                    setPendingPhone(rawVal);
-                    requestOtp(rawVal);
-                  } else {
-                    openAuthModal('phone');
-                  }
+                  openAuthModal();
                 }}
               >
                 <div className="ecom-phone-field-group">

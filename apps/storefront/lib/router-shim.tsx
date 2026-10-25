@@ -20,9 +20,15 @@ import {
   useSearchParams as useNextSearchParams,
 } from 'next/navigation';
 
-type LinkProps = Omit<React.ComponentProps<typeof NextLink>, 'href'> & { to: string };
+type LinkProps = Omit<React.ComponentProps<typeof NextLink>, 'href'> & {
+  to?: string;
+  href?: any;
+};
 
-export const Link: React.FC<LinkProps> = ({ to, ...props }) => <NextLink href={to} {...props} />;
+export const Link: React.FC<LinkProps> = ({ to, href, ...props }) => {
+  const destination = to || href || '/';
+  return <NextLink href={destination} {...props} />;
+};
 
 type NavLinkClassName = string | ((args: { isActive: boolean }) => string);
 

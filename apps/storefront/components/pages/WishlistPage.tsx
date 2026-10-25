@@ -87,7 +87,7 @@ export const WishlistPage: React.FC = () => {
           <nav aria-label="Breadcrumb" style={{ marginBottom: '16px' }}>
             <ol style={{ display: 'flex', gap: '8px', alignItems: 'center', margin: 0, padding: 0, listStyle: 'none', fontSize: '0.8125rem', color: '#9CA3AF' }}>
               <li>
-                <Link href="/" style={{ color: '#9CA3AF', textDecoration: 'none' }}>Home</Link>
+                <Link to="/" style={{ color: '#9CA3AF', textDecoration: 'none' }}>Home</Link>
               </li>
               <li>/</li>
               <li style={{ color: '#FFFFFF', fontWeight: 600 }}>My Wishlist</li>
@@ -385,7 +385,7 @@ export const WishlistPage: React.FC = () => {
 
                   {/* Product Media */}
                   <Link
-                    href={`/product/${product.slug}`}
+                    to={`/product/${product.slug}`}
                     style={{
                       display: 'block',
                       aspectRatio: '1 / 1',
@@ -435,7 +435,7 @@ export const WishlistPage: React.FC = () => {
                       }}
                     >
                       <Link
-                        href={`/product/${product.slug}`}
+                        to={`/product/${product.slug}`}
                         style={{ color: '#FFFFFF', textDecoration: 'none' }}
                       >
                         {product.name}
@@ -539,7 +539,7 @@ export const WishlistPage: React.FC = () => {
             </p>
 
             <Link
-              href="/shop"
+              to="/shop"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -577,7 +577,7 @@ export const WishlistPage: React.FC = () => {
             </div>
 
             <Link
-              href="/shop"
+              to="/shop"
               style={{
                 fontSize: '0.8125rem',
                 fontWeight: 700,

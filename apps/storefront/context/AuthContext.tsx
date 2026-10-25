@@ -16,6 +16,7 @@ interface AuthContextType {
   closeAuthModal: () => void;
   /** Sends a Supabase magic-link email. This is the one real sign-in method. */
   signInWithMagicLink: (email: string) => Promise<{ success: boolean; message: string }>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
   addAddress: (addr: Omit<Address, 'id'>) => Promise<Address>;
@@ -164,6 +165,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: true, message: `Magic link sent to ${email}. Check your inbox to finish signing in.` };
   };
 
+  const signInWithGoogle = async (): Promise<void> => {
+    const next = returnToUrl || '/account';
+    const redirectTo =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`
+        : undefined;
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    });
+  };
+
   const signOut = async (): Promise<void> => {
     await supabase.auth.signOut();
     setUser(null);
@@ -235,6 +254,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         openAuthModal,
         closeAuthModal,
         signInWithMagicLink,
+        signInWithGoogle,
         signOut,
         updateProfile,
         addAddress,

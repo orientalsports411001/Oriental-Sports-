@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/lib/router-shim';
 import { Heart, Star, Check, Plus } from 'lucide-react';
 import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
