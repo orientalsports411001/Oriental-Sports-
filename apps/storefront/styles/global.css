@@ -238,13 +238,14 @@ p {
   color: var(--btn-fg);
   background: var(--btn-bg);
   border: 1.5px solid var(--btn-bd);
-  border-radius: var(--r-1);
+  border-radius: 9999px; /* Curified pill shape */
   cursor: pointer;
   user-select: none;
   transition:
     background-color var(--t-2) var(--ease-out),
     color var(--t-2) var(--ease-out),
     border-color var(--t-2) var(--ease-out),
+    box-shadow var(--t-2) var(--ease-out),
     transform var(--t-1) ease;
 }
 
@@ -257,36 +258,59 @@ p {
 }
 .btn:hover .btn-arrow { transform: translateX(4px); }
 
-.btn-primary { --btn-bg: var(--ink); --btn-fg: var(--ivory); --btn-bd: var(--ink); }
-.btn-primary:hover { --btn-bg: var(--ink-2); --btn-bd: var(--ink-2); }
+.btn-primary {
+  --btn-bg: linear-gradient(180deg, #8B0000 0%, #5C0000 100%);
+  --btn-fg: #FFFFFF;
+  --btn-bd: rgba(200, 16, 46, 0.6);
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(139, 0, 0, 0.45);
+}
+.btn-primary:hover {
+  --btn-bg: linear-gradient(180deg, #A30000 0%, #6E0000 100%);
+  --btn-bd: rgba(255, 30, 60, 0.85);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85), 0 0 24px rgba(200, 16, 46, 0.7);
+}
+
+.btn-blood {
+  --btn-bg: linear-gradient(180deg, #8B0000 0%, #5C0000 100%);
+  --btn-fg: #FFFFFF;
+  --btn-bd: rgba(200, 16, 46, 0.6);
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(139, 0, 0, 0.45);
+}
+.btn-blood:hover {
+  --btn-bg: linear-gradient(180deg, #A30000 0%, #6E0000 100%);
+  --btn-bd: rgba(255, 30, 60, 0.85);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85), 0 0 24px rgba(200, 16, 46, 0.7);
+}
 
 .btn-outline,
 .btn-outline-dark,
-.btn-secondary { --btn-bg: transparent; --btn-fg: var(--ink); --btn-bd: var(--ink); }
+.btn-secondary { --btn-bg: transparent; --btn-fg: var(--ink); --btn-bd: var(--ink); border-radius: 9999px; }
 .btn-outline:hover,
 .btn-outline-dark:hover,
 .btn-secondary:hover { --btn-bg: var(--ink); --btn-fg: var(--ivory); }
 
 .btn-light,
-.btn-white { --btn-bg: var(--ivory); --btn-fg: var(--ink); --btn-bd: var(--ivory); }
+.btn-white { --btn-bg: var(--ivory); --btn-fg: var(--ink); --btn-bd: var(--ivory); border-radius: 9999px; }
 .btn-light:hover,
 .btn-white:hover { --btn-bg: #FFFFFF; --btn-bd: #FFFFFF; }
 
 .btn-outline-light,
-.btn-outline-white { --btn-bg: transparent; --btn-fg: var(--on-dark); --btn-bd: rgba(246, 243, 234, 0.55); }
+.btn-outline-white { --btn-bg: transparent; --btn-fg: var(--on-dark); --btn-bd: rgba(246, 243, 234, 0.55); border-radius: 9999px; }
 .btn-outline-light:hover,
 .btn-outline-white:hover { --btn-bd: var(--on-dark); --btn-bg: rgba(246, 243, 234, 0.08); }
 
-.btn-gold { --btn-bg: var(--gold); --btn-fg: var(--ink); --btn-bd: var(--gold); }
+.btn-gold { --btn-bg: var(--gold); --btn-fg: var(--ink); --btn-bd: var(--gold); border-radius: 9999px; }
 .btn-gold:hover { --btn-bg: var(--gold-hi); --btn-bd: var(--gold-hi); }
 
-.btn-outline-gold { --btn-bg: transparent; --btn-fg: var(--gold); --btn-bd: var(--gold); }
+.btn-outline-gold { --btn-bg: transparent; --btn-fg: var(--gold); --btn-bd: var(--gold); border-radius: 9999px; }
 .btn-outline-gold:hover { --btn-bg: var(--gold); --btn-fg: var(--ink); }
 
-.btn-sm { min-height: 44px; padding: 0 16px; font-size: 0.75rem; }
-.btn-lg { min-height: 56px; padding: 0 32px; font-size: 0.875rem; }
+.btn-sm { min-height: 44px; padding: 0 20px; font-size: 0.75rem; border-radius: 9999px; }
+.btn-lg { min-height: 56px; padding: 0 36px; font-size: 0.875rem; border-radius: 9999px; }
 .btn-block { width: 100%; }
-.btn-pill { border-radius: var(--r-1); }
+.btn-pill { border-radius: 9999px; }
 
 /* Text link with a directional arrow — used for secondary navigation. */
 .btn-text,

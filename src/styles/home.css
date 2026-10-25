@@ -134,8 +134,45 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px 28px;
+  gap: 14px 24px;
   margin-top: 28px;
+}
+
+.hero-actions .btn {
+  border-radius: 9999px;
+  min-height: 52px;
+  padding: 0 34px;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+}
+
+.hero-actions .link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 24px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hero-actions .link-arrow::after {
+  display: none;
+}
+.hero-actions .link-arrow:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.55);
+  transform: translateY(-2px);
+  color: #FFFFFF;
 }
 
 /* Courts: headline hangs from the top over the sky; actions sit at the foot. */
