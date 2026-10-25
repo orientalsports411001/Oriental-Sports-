@@ -44,14 +44,33 @@ export const CourtsPage: React.FC = () => (
     <InstallationsShowcase />
 
     <section className="container section court-services" aria-label="Detailed technical specifications">
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <p style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#C8102E', margin: '0 0 8px' }}>
+      <Reveal style={{ textAlign: 'center', marginBottom: 'clamp(48px, 6vw, 72px)' }}>
+        <p style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '12px',
+          fontSize: 'clamp(0.875rem, 1.1vw, 1.0625rem)',
+          fontWeight: 800,
+          textTransform: 'uppercase',
+          letterSpacing: '0.2em',
+          color: '#C8102E',
+          margin: '0 0 16px',
+        }}>
           Technical Specifications
         </p>
-        <h2 className="display" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.25rem)', color: '#FFFFFF', margin: 0 }}>
-          Individual Sport Disciplines & Surface Systems
+        <h2 className="display" style={{
+          fontSize: 'clamp(2.4rem, 5.5vw, 4.25rem)',
+          lineHeight: 0.95,
+          fontWeight: 900,
+          letterSpacing: '-0.01em',
+          color: '#FFFFFF',
+          margin: '0 auto',
+          maxWidth: '24ch',
+          textWrap: 'balance',
+        }}>
+          Individual Sport Disciplines &amp; Surface Systems
         </h2>
-      </div>
+      </Reveal>
       {COURT_SERVICES.map((service, i) => (
         <article key={service.id} id={service.slug} className={`court-service ${i % 2 ? 'is-flipped' : ''}`}>
           <ImageReveal className="court-service-media">
