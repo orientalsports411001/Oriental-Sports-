@@ -168,7 +168,7 @@ export const InstallationsShowcase: React.FC = () => {
                     rel="noopener noreferrer"
                     className="installations-cta-btn"
                   >
-                    <span>Discuss {cat.titlePrefix} Project</span>
+                    <span>{cat.id === 'maintenance' ? 'Discuss Maintenance Project' : `Discuss ${cat.titlePrefix} Project`}</span>
                     <span className="btn-arrow" aria-hidden="true">→</span>
                   </a>
                 </div>

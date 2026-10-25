@@ -2375,12 +2375,12 @@
   font-weight: 900;
 }
 .installations-card-title .title-prefix {
-  color: #C8102E;
+  color: #8B0000;
   transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 .installations-card:hover .installations-card-title .title-prefix {
-  color: #F20D18;
-  text-shadow: 0 0 20px rgba(242, 13, 24, 0.4);
+  color: #A30000;
+  text-shadow: 0 0 20px rgba(139, 0, 0, 0.6);
 }
 
 .installations-card-desc {
@@ -2415,8 +2415,8 @@
   transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .installations-discipline-item:hover {
-  background: rgba(200, 16, 46, 0.1);
-  border-color: rgba(200, 16, 46, 0.35);
+  background: rgba(139, 0, 0, 0.16);
+  border-color: rgba(139, 0, 0, 0.45);
   transform: translateX(6px);
 }
 
@@ -2427,8 +2427,9 @@
   width: 26px;
   height: 26px;
   border-radius: 4px;
-  background: rgba(200, 16, 46, 0.18);
-  color: #F20D18;
+  background: rgba(139, 0, 0, 0.3);
+  border: 1px solid rgba(200, 16, 46, 0.35);
+  color: #E61E38;
   font-size: 1rem;
   line-height: 1;
   flex-shrink: 0;
@@ -2436,7 +2437,7 @@
 }
 .installations-discipline-item:hover .lightning-icon {
   transform: scale(1.15);
-  filter: drop-shadow(0 0 10px #F20D18);
+  filter: drop-shadow(0 0 10px rgba(200, 16, 46, 0.7));
 }
 
 .installations-cta-btn {
@@ -2444,7 +2445,8 @@
   align-items: center;
   gap: 12px;
   padding: 16px 36px;
-  background: linear-gradient(135deg, #C8102E 0%, #8B0000 100%);
+  background: linear-gradient(180deg, #8B0000 0%, #5C0000 100%);
+  border: 1px solid rgba(200, 16, 46, 0.5);
   color: #FFFFFF;
   font-weight: 800;
   font-size: 1.0625rem;
@@ -2453,7 +2455,7 @@
   text-decoration: none;
   border-radius: 4px;
   min-height: 52px;
-  box-shadow: 0 6px 24px rgba(200, 16, 46, 0.4);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.65), 0 0 16px rgba(139, 0, 0, 0.45);
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -2465,15 +2467,16 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
   transition: left 0.6s ease;
 }
 .installations-cta-btn:hover::before {
   left: 100%;
 }
 .installations-cta-btn:hover {
-  background: linear-gradient(135deg, #F20D18 0%, #A00C24 100%);
-  box-shadow: 0 10px 36px rgba(242, 13, 24, 0.6);
+  background: linear-gradient(180deg, #9E0000 0%, #6B0000 100%);
+  border-color: rgba(200, 16, 46, 0.8);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.8), 0 0 24px rgba(139, 0, 0, 0.65);
   transform: translateY(-2px);
   color: #FFFFFF;
 }
