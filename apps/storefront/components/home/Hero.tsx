@@ -32,6 +32,7 @@ interface Slide {
   lines: string[];
   lead: string;
   image: MediaImage;
+  video?: string;
   primary: Action;
   secondary: Action;
 }
@@ -56,6 +57,7 @@ const SLIDES: Slide[] = [
     lines: ['Courts for', 'the city.'],
     lead: 'Turnkey court construction — surface, fencing, lighting and line marking — for clubs, schools, societies and homes.',
     image: IMAGES.courtDusk,
+    video: '/videos/courts-hero.webm',
     primary: { label: 'Plan a court', to: '/courts' },
     secondary: { label: 'WhatsApp us', href: STORE_INFO.whatsappUrl },
   },
@@ -193,6 +195,20 @@ export const Hero: React.FC = () => {
             <div className="hero-media">
               <div className="hero-media-inner">
                 <Img image={s.image} priority={i === 0} sizes={s.id === 'store' ? '(min-width: 1024px) 55vw, 100vw' : '100vw'} />
+                {s.video && !reduced && (
+                  <video
+                    className="hero-video"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    poster={s.image.src}
+                    preload="auto"
+                    aria-hidden="true"
+                  >
+                    <source src={s.video} type="video/webm" />
+                  </video>
+                )}
               </div>
             </div>
 

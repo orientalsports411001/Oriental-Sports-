@@ -27,6 +27,7 @@ export const CourtsPage: React.FC = () => (
       title={['Turnkey', 'Installations.']}
       lead="Complete sports and wellness infrastructure partner — court construction, multi-sport turfs, gym fit-outs, and professional maintenance across Maharashtra."
       image={IMAGES.courtDusk}
+      video="/videos/courts-hero.webm"
     >
       <Reveal className="page-header-actions" delay={0.25}>
         <a href="#court-inquiry" className="btn btn-light">

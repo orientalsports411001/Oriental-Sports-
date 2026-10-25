@@ -17,6 +17,7 @@ interface PageHeaderProps {
   crumbs?: Crumb[];
   /** With an image the header becomes a full-bleed photographic band. */
   image?: MediaImage;
+  video?: string;
   aside?: React.ReactNode;
   children?: React.ReactNode;
 }
@@ -26,7 +27,7 @@ interface PageHeaderProps {
  * breadcrumbs, a condensed display title and a lead. Pass `eyebrow` only
  * when it states a fact the breadcrumb and title don't (sport · location).
  */
-export const PageHeader: React.FC<PageHeaderProps> = ({ eyebrow, title, lead, crumbs, image, aside, children }) => {
+export const PageHeader: React.FC<PageHeaderProps> = ({ eyebrow, title, lead, crumbs, image, video, aside, children }) => {
   const crumbTrail = crumbs && crumbs.length > 0 && (
     <nav aria-label="Breadcrumb" className="crumbs">
       <ol>
@@ -44,6 +45,20 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ eyebrow, title, lead, cr
       <header className="page-header page-header--image on-dark">
         <div className="page-header-media" aria-hidden="true">
           <Img image={image} alt="" priority sizes="100vw" />
+          {video && (
+            <video
+              className="page-header-video"
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster={image.src}
+              preload="auto"
+              aria-hidden="true"
+            >
+              <source src={video} type="video/webm" />
+            </video>
+          )}
         </div>
         <div className="container page-header-inner">
           {crumbTrail}
