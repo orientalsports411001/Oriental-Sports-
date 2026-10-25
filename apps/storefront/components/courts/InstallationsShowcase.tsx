@@ -3,6 +3,7 @@
 import React from 'react';
 import { IMAGES } from '@/data/media';
 import { Img } from '@/components/ui/Img';
+import { Reveal, ImageReveal } from '@/components/motion/Reveal';
 
 interface InstallationCategory {
   id: string;
@@ -89,61 +90,39 @@ export const InstallationsShowcase: React.FC = () => {
     <section className="installations-showcase-section" aria-label="Turnkey sports installations">
       {/* Overview & Value Pillars (SCS Sports style) */}
       <div className="container installations-showcase-header">
-        <p
-          style={{
-            fontSize: '0.75rem',
-            fontWeight: 800,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: '#C8102E',
-            margin: '0 0 12px',
-          }}
-        >
-          Maharashtra Infrastructure Partner
-        </p>
-        <h2
-          className="display"
-          style={{
-            fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-            color: '#FFFFFF',
-            margin: '0 0 16px',
-            lineHeight: 1.15,
-          }}
-        >
-          Turnkey Sports & Wellness Infrastructure
-        </h2>
-        <p
-          style={{
-            fontSize: '1rem',
-            lineHeight: 1.6,
-            color: '#D1D5DB',
-            margin: '0 0 24px',
-          }}
-        >
-          <strong style={{ color: '#FFFFFF' }}>Oriental Sports</strong> is a complete sports and wellness infrastructure partner, specializing in the design and execution of world-class tennis courts, pickleball courts, padel arenas, indoor badminton halls, football turfs, and modern gym facilities. With a rigorous focus on surface longevity and international federation standards, we build play spaces engineered for intensive real-world use.
-        </p>
+        <Reveal>
+          <p className="installations-showcase-eyebrow">
+            Maharashtra Infrastructure Partner
+          </p>
+          <h2 className="display installations-showcase-title">
+            Turnkey Sports &amp; Wellness Infrastructure
+          </h2>
+          <p className="installations-showcase-lead">
+            <strong style={{ color: '#FFFFFF' }}>Oriental Sports</strong> is a complete sports and wellness infrastructure partner, specializing in the design and execution of world-class tennis courts, pickleball courts, padel arenas, indoor badminton halls, football turfs, and modern gym facilities.
+          </p>
+        </Reveal>
 
-        {/* 4 Pillars Grid */}
+        {/* 4 Pillars Grid with Entrance Motion */}
         <div className="installations-pillars-grid">
-          <div className="installations-pillar-card">
+          <Reveal delay={0.05} className="installations-pillar-card">
             <h3>All-In-One Execution</h3>
             <p>From initial topographical survey and civil earthwork to certified line markings and lighting handover.</p>
-          </div>
+          </Reveal>
 
-          <div className="installations-pillar-card">
+          <Reveal delay={0.1} className="installations-pillar-card">
             <h3>Multi-Sport Mastery</h3>
             <p>Specialized in-house teams across acrylic courts, padel cages, synthetic turfs, and commercial gym fit-outs.</p>
-          </div>
+          </Reveal>
 
-          <div className="installations-pillar-card">
+          <Reveal delay={0.15} className="installations-pillar-card">
             <h3>International Standards</h3>
             <p>Surfaces and dimensional layouts strictly aligned with USAPA, FIP, ITF, BWF, and FIFA playing geometry.</p>
-          </div>
+          </Reveal>
 
-          <div className="installations-pillar-card">
+          <Reveal delay={0.2} className="installations-pillar-card">
             <h3>Built for Longevity</h3>
             <p>Engineered with dual-plane drainage gradients and UV-stable polymers to withstand intensive Indian climates.</p>
-          </div>
+          </Reveal>
         </div>
       </div>
 
@@ -159,17 +138,17 @@ export const InstallationsShowcase: React.FC = () => {
               id={cat.id}
               className={`installations-card ${isFlipped ? 'is-flipped' : ''}`}
             >
-              {/* Media Column */}
-              <div className="installations-card-media">
+              {/* Media Column with Scroll Reveal Wipe & Settle Effect */}
+              <ImageReveal className="installations-card-media" delay={0.1}>
                 <Img image={cat.image} alt={cat.titleMain} sizes="(min-width: 1024px) 50vw, 100vw" />
-              </div>
+              </ImageReveal>
 
-              {/* Content Column */}
-              <div className="installations-card-body">
+              {/* Content Column with Fade Up Reveal */}
+              <Reveal className="installations-card-body" delay={0.18}>
                 <p className="installations-card-badge">{cat.badge}</p>
                 <h3 className="display installations-card-title">
-                  <span style={{ color: '#C8102E' }}>{cat.titlePrefix} </span>
-                  {cat.titleMain}
+                  <span className="title-prefix">{cat.titlePrefix} </span>
+                  <span>{cat.titleMain}</span>
                 </h3>
                 <p className="installations-card-desc">{cat.description}</p>
 
@@ -183,7 +162,7 @@ export const InstallationsShowcase: React.FC = () => {
                   ))}
                 </ul>
 
-                {/* Direct Action */}
+                {/* Direct Action with Arrow Motion & Hover Glow */}
                 <div>
                   <a
                     href={whatsappUrl}
@@ -192,10 +171,10 @@ export const InstallationsShowcase: React.FC = () => {
                     className="installations-cta-btn"
                   >
                     <span>Discuss {cat.titlePrefix} Project</span>
-                    <span aria-hidden="true">→</span>
+                    <span className="btn-arrow" aria-hidden="true">→</span>
                   </a>
                 </div>
-              </div>
+              </Reveal>
             </article>
           );
         })}

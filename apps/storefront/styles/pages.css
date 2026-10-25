@@ -2203,22 +2203,66 @@
   color: #FFFFFF !important;
 }
 
-/* Installations Showcase (SCS Sports style) */
+/* ==========================================================================
+   Installations Showcase (Raw Sports Editorial & Commercial Athletic)
+   ========================================================================== */
 .installations-showcase-section {
-  padding-block: clamp(40px, 6vw, 72px);
+  padding-block: clamp(48px, 8vw, 96px);
+  position: relative;
 }
+
 .installations-showcase-header {
-  max-width: 860px;
-  margin: 0 auto clamp(36px, 5vw, 56px);
+  max-width: 960px;
+  margin: 0 auto clamp(48px, 6vw, 72px);
   text-align: center;
   border-bottom: 1px solid var(--line);
-  padding-bottom: clamp(32px, 4vw, 48px);
+  padding-bottom: clamp(40px, 5vw, 56px);
 }
+
+.installations-showcase-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(0.8125rem, 1vw, 0.9375rem);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #C8102E;
+  margin-bottom: 14px;
+}
+
+.installations-showcase-eyebrow::before,
+.installations-showcase-eyebrow::after {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 2px;
+  background: #C8102E;
+}
+
+.installations-showcase-title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  color: #FFFFFF;
+  margin: 0 0 20px;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  font-weight: 900;
+}
+
+.installations-showcase-lead {
+  font-size: clamp(1.125rem, 1.5vw, 1.35rem);
+  line-height: 1.65;
+  color: #E5E7EB;
+  margin: 0 0 36px;
+  max-width: 48ch;
+  margin-inline: auto;
+}
+
 .installations-pillars-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
-  margin-top: 28px;
+  gap: 18px;
+  margin-top: 36px;
   text-align: left;
 }
 @media (min-width: 600px) {
@@ -2231,44 +2275,83 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
 .installations-pillar-card {
-  background: #121212;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 6px;
-  padding: clamp(16px, 3vw, 20px);
+  background: linear-gradient(180deg, #161616 0%, #0E0E0E 100%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  padding: clamp(20px, 3vw, 26px);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.installations-pillar-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: #C8102E;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.installations-pillar-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(200, 16, 46, 0.4);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(200, 16, 46, 0.15);
+}
+.installations-pillar-card:hover::before {
+  opacity: 1;
 }
 .installations-pillar-card h3 {
-  font-size: 0.9375rem;
-  font-weight: 700;
+  font-size: 1.0625rem;
+  font-weight: 800;
   color: #FFFFFF;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
 }
 .installations-pillar-card p {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   color: var(--muted);
   margin: 0;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
+/* 4 Main Vertical Blocks */
 .installations-cards-list {
   display: flex;
   flex-direction: column;
-  gap: clamp(32px, 5vw, 56px);
+  gap: clamp(48px, 7vw, 84px);
 }
+
 .installations-card {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(20px, 3vw, 36px);
+  gap: clamp(28px, 4vw, 56px);
   align-items: center;
-  background: #0D0D0D;
+  background: linear-gradient(180deg, #131313 0%, #090909 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  padding: clamp(16px, 3vw, 28px);
+  padding: clamp(20px, 4vw, 44px);
+  position: relative;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-@media (min-width: 900px) {
+
+.installations-card:hover {
+  border-color: rgba(200, 16, 46, 0.45);
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.85), 0 0 36px rgba(200, 16, 46, 0.2);
+  transform: translateY(-4px);
+}
+
+@media (min-width: 960px) {
   .installations-card {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(40px, 5vw, 64px);
+  }
+  .installations-card.is-flipped {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
   }
   .installations-card.is-flipped .installations-card-media {
     order: 2;
@@ -2277,78 +2360,167 @@
     order: 1;
   }
 }
+
 .installations-card-media {
-  aspect-ratio: 4 / 3;
-  background: #181818;
-  border-radius: 6px;
+  aspect-ratio: 16 / 11;
+  background: #141414;
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
   width: 100%;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
 }
+.installations-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.installations-card:hover .installations-card-media img {
+  transform: scale(1.06);
+}
+
 .installations-card-body {
   min-width: 0;
 }
+
 .installations-card-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-.installations-card-title {
-  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
-  margin: 0 0 14px;
-  color: #FFFFFF;
-  line-height: 1.15;
-}
-.installations-card-desc {
-  font-size: 0.9375rem;
-  color: #D1D5DB;
-  line-height: 1.55;
-  margin-bottom: 20px;
-}
-.installations-disciplines-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.installations-discipline-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.875rem;
-  color: #FFFFFF;
-  font-weight: 500;
-  line-height: 1.35;
-}
-.installations-discipline-item .lightning-icon {
-  color: #C8102E;
-  font-size: 1rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-.installations-cta-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
-  background-color: #C8102E;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #C8102E;
+  margin-bottom: 14px;
+}
+.installations-card-badge::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 2px;
+  background: #C8102E;
+}
+
+.installations-card-title {
+  font-size: clamp(2.4rem, 5.2vw, 4.25rem);
+  line-height: 0.95;
+  margin: 0 0 20px;
   color: #FFFFFF;
-  font-weight: 700;
-  font-size: 0.875rem;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.01em;
+  font-weight: 900;
+}
+.installations-card-title .title-prefix {
+  color: #C8102E;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+.installations-card:hover .installations-card-title .title-prefix {
+  color: #F20D18;
+  text-shadow: 0 0 20px rgba(242, 13, 24, 0.4);
+}
+
+.installations-card-desc {
+  font-size: clamp(1.0625rem, 1.35vw, 1.25rem);
+  color: #D1D5DB;
+  line-height: 1.65;
+  margin-bottom: 28px;
+  max-width: 44ch;
+}
+
+.installations-disciplines-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.installations-discipline-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  color: #FFFFFF;
+  font-weight: 600;
+  line-height: 1.35;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.installations-discipline-item:hover {
+  background: rgba(200, 16, 46, 0.1);
+  border-color: rgba(200, 16, 46, 0.35);
+  transform: translateX(6px);
+}
+
+.installations-discipline-item .lightning-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  background: rgba(200, 16, 46, 0.18);
+  color: #F20D18;
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+.installations-discipline-item:hover .lightning-icon {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 10px #F20D18);
+}
+
+.installations-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #C8102E 0%, #8B0000 100%);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 1.0625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   text-decoration: none;
   border-radius: 4px;
-  min-height: 44px;
-  transition: background-color 0.18s ease, transform 0.18s ease;
+  min-height: 52px;
+  box-shadow: 0 6px 24px rgba(200, 16, 46, 0.4);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.installations-cta-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  transition: left 0.6s ease;
+}
+.installations-cta-btn:hover::before {
+  left: 100%;
 }
 .installations-cta-btn:hover {
-  background-color: #A00C24;
+  background: linear-gradient(135deg, #F20D18 0%, #A00C24 100%);
+  box-shadow: 0 10px 36px rgba(242, 13, 24, 0.6);
+  transform: translateY(-2px);
   color: #FFFFFF;
-  transform: translateY(-1px);
 }
+.installations-cta-btn .btn-arrow {
+  display: inline-block;
+  font-size: 1.15rem;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.installations-cta-btn:hover .btn-arrow {
+  transform: translateX(6px);
+}
+
 
