@@ -24,7 +24,7 @@ const CATEGORIES: InstallationCategory[] = [
     titleMain: 'Installations',
     description:
       'Turnkey court construction engineered to international regulation standards. We design, grade, surface, fence, and light tournament-grade playing surfaces with high shock absorption and all-weather resilience.',
-    image: IMAGES.surfaceNet,
+    image: IMAGES.courtInstallHero,
     disciplines: [
       'Pickleball Courts (USAPA Layout)',
       'Padel Courts (10m × 20m FIP Panoramic)',
@@ -42,7 +42,7 @@ const CATEGORIES: InstallationCategory[] = [
     titleMain: 'Installations',
     description:
       'High-performance monofilament sports turf systems for outdoor grounds, rooftop arenas, and enclosed multi-sport play zones with heavy-duty ball containment netting.',
-    image: IMAGES.turfFootball,
+    image: IMAGES.turfInstallHero,
     disciplines: [
       '5-a-Side & 7-a-Side Football Turfs',
       'Box Cricket Arenas & Pitch Turf',
@@ -58,7 +58,7 @@ const CATEGORIES: InstallationCategory[] = [
     titleMain: 'Installations',
     description:
       'End-to-end commercial gymnasium planning and fit-out for residential societies, athletic clubs, universities, and corporate campuses. Complete equipment supply, layout planning, and high-density flooring.',
-    image: IMAGES.fitnessDumbbells,
+    image: IMAGES.gymInstallHero,
     disciplines: [
       'Commercial Fitness Centers & Gym Layouts',
       'Residential Society & Club Gymnasiums',
@@ -74,7 +74,7 @@ const CATEGORIES: InstallationCategory[] = [
     titleMain: 'Maintenance',
     description:
       'Comprehensive restoration of existing sports facilities. We repair sub-base cracks, apply fresh acrylic color wear coats, repaint regulation line markings, and upgrade obsolete fixtures to tournament LED floodlights.',
-    image: IMAGES.surfaceBlueLines,
+    image: IMAGES.maintenanceInstallHero,
     disciplines: [
       'Acrylic Court Crack Repair & Resurfacing',
       'Precision Federation Line Re-marking',

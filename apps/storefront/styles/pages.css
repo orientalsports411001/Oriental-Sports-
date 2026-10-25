@@ -2329,7 +2329,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: clamp(28px, 4vw, 56px);
-  align-items: center;
+  align-items: stretch;
   background: linear-gradient(180deg, #131313 0%, #090909 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
@@ -2349,6 +2349,7 @@
   .installations-card {
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
     gap: clamp(40px, 5vw, 64px);
+    align-items: stretch;
   }
   .installations-card.is-flipped {
     grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
@@ -2362,18 +2363,26 @@
 }
 
 .installations-card-media {
-  aspect-ratio: 16 / 11;
   background: #141414;
   border-radius: 8px;
   overflow: hidden;
   position: relative;
   width: 100%;
+  min-height: 400px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
 }
+@media (min-width: 960px) {
+  .installations-card-media {
+    height: 100%;
+    min-height: 480px;
+  }
+}
+.installations-card-media > div,
 .installations-card-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .installations-card:hover .installations-card-media img {
@@ -2382,6 +2391,9 @@
 
 .installations-card-body {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .installations-card-badge {

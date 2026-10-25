@@ -66,6 +66,28 @@ export const IMAGES = {
   surfaceNet: unsplash('1622669253059-e345500cf0e9', 'Tennis net across a blue and green hard court'),
   surfaceClay: unsplash('1465125672495-63cdc2fa22ed', 'White line on a red clay court surface'),
   surfaceCorner: unsplash('1622668459907-f1fa3113bbcf', 'Corner of a blue court with green run-off'),
+
+  // ---- Turnkey Installation Photography ------------------------------------
+  courtInstallHero: {
+    src: '/images/installations/court-installations.jpg',
+    alt: 'Panoramic tournament padel and acrylic tennis court installation under dusk floodlights',
+    position: 'center',
+  },
+  turfInstallHero: {
+    src: '/images/installations/turf-installations.jpg',
+    alt: 'Premier floodlit 5-a-side football turf and box cricket arena with high-tensile containment netting',
+    position: 'center',
+  },
+  gymInstallHero: {
+    src: '/images/installations/gym-installations.jpg',
+    alt: 'Commercial athletic gym fit-out with high-density vulcanized rubber flooring, Olympic racks, and sled turf track',
+    position: 'center',
+  },
+  maintenanceInstallHero: {
+    src: '/images/installations/maintenance-installations.jpg',
+    alt: 'Professional court acrylic resurfacing and precision line marking in progress in Pune',
+    position: 'center',
+  },
 } satisfies Record<string, MediaImage>;
 
 /** Fallback when a remote image fails — a local photo, never a remote placeholder. */
