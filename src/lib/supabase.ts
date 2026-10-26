@@ -18,9 +18,12 @@ export const isSupabaseConfigured = (): boolean => {
     typeof supabaseUrl === 'string' &&
     supabaseUrl.trim().length > 0 &&
     !supabaseUrl.includes('your_supabase') &&
+    !supabaseUrl.includes('placeholder') &&
+    !supabaseUrl.includes('tvfzfvurqewgvnnhhhad') &&
     typeof supabaseAnonKey === 'string' &&
     supabaseAnonKey.trim().length > 0 &&
-    !supabaseAnonKey.includes('your_supabase')
+    !supabaseAnonKey.includes('your_supabase') &&
+    !supabaseAnonKey.includes('placeholder')
   );
 };
 

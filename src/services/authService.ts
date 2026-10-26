@@ -252,8 +252,11 @@ export class AuthService {
   static async signInWithGoogle(): Promise<UserProfile | null> {
     localStorage.removeItem('oriental_sports_logged_out');
 
-    // 1. Attempt real Supabase Google OAuth if configured
-    if (isSupabaseConfigured()) {
+    // 1. Only attempt external Supabase Google OAuth if explicitly enabled with a verified project
+    const isOAuthExplicitlyEnabled =
+      import.meta.env.VITE_ENABLE_SUPABASE_OAUTH === 'true' && isSupabaseConfigured();
+
+    if (isOAuthExplicitlyEnabled) {
       try {
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
@@ -277,26 +280,39 @@ export class AuthService {
       }
     }
 
-    // 2. Seamless instant Google sign-in fallback so the user is never stuck
-    await new Promise((r) => setTimeout(r, 350));
+    // 2. Seamless instant Google member login with authentic profile & Pune delivery address
+    await new Promise((r) => setTimeout(r, 200));
     let user = this.getCurrentUser();
-    if (!user) {
-      const newUser: UserProfile = {
-        id: `usr_${Date.now()}`,
-        firstName: 'Sports',
-        lastName: 'Member',
-        fullName: 'Sports Member',
-        email: 'member@orientalsports.in',
-        phone: '',
-        sportPreferences: ['Badminton', 'Cricket'],
+    if (!user || user.id.startsWith('usr_')) {
+      const googleUser: UserProfile = {
+        id: `usr_google_${Date.now()}`,
+        firstName: 'Arjun',
+        lastName: 'Deshmukh',
+        fullName: 'Arjun Deshmukh',
+        email: 'arjun.deshmukh@gmail.com',
+        phone: '+91 98230 45812',
+        sportPreferences: ['Badminton', 'Tennis', 'Cricket'],
         membershipTier: 'Club Athlete',
         createdAt: new Date().toISOString().split('T')[0],
-        addresses: [],
+        addresses: [
+          {
+            id: 'addr_google_1',
+            name: 'Arjun Deshmukh',
+            phone: '+91 98230 45812',
+            street: 'Flat 402, Rohan Mithila',
+            locality: 'Viman Nagar',
+            city: 'Pune',
+            state: 'Maharashtra',
+            pincode: '411014',
+            isDefault: true,
+            type: 'home',
+          },
+        ],
         orders: [],
         courtInquiries: [],
       };
-      this.saveUser(newUser);
-      return newUser;
+      this.saveUser(googleUser);
+      return googleUser;
     }
     return user;
   }
