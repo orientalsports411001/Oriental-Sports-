@@ -1810,8 +1810,8 @@
   align-items: center;
   background: #0A0A0A;
   border: 1.5px solid var(--border-color);
-  border-radius: 8px;
-  padding: 4px 6px 4px 12px;
+  border-radius: 9999px;
+  padding: 4px 6px 4px 16px;
   margin-bottom: 14px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -1859,8 +1859,8 @@
   font-size: 0.8125rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 9px 16px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 9999px;
   border: none;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.15s ease;
@@ -1876,11 +1876,13 @@
   .ecom-phone-field-group {
     flex-wrap: wrap;
     gap: 8px;
-    padding: 8px 10px;
+    padding: 8px 12px;
+    border-radius: 14px;
   }
   .ecom-phone-submit-btn {
     width: 100%;
     justify-content: center;
+    border-radius: 9999px;
   }
 }
 

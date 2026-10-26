@@ -197,11 +197,11 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                   <input
                     type="tel"
                     name="phone"
-                    defaultValue="98230 45812"
                     placeholder="Enter 10-digit mobile"
                     pattern="[0-9\s]{10,14}"
                     className="ecom-phone-input"
                     aria-label="Mobile Number"
+                    autoComplete="tel"
                   />
                   <button type="submit" className="ecom-phone-submit-btn">
                     <span>Send OTP</span>
@@ -219,13 +219,15 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
                 <button
                   type="button"
-                  onClick={() => signInWithGoogle()}
+                  onClick={async () => {
+                    await signInWithGoogle();
+                  }}
                   style={{
                     width: '100%',
-                    height: '42px',
+                    height: '46px',
                     backgroundColor: '#FFFFFF',
                     border: 'none',
-                    borderRadius: '4px',
+                    borderRadius: '9999px',
                     color: '#1F2937',
                     fontWeight: 700,
                     fontSize: '0.875rem',
@@ -235,7 +237,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     justifyContent: 'center',
                     gap: '10px',
                     boxShadow: '0 2px 6px rgba(0, 0, 0, 0.4)',
-                    transition: 'opacity 0.2s ease',
+                    transition: 'all 0.2s ease',
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.92'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
