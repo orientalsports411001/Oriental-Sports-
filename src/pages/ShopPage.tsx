@@ -77,19 +77,30 @@ export const ShopPage: React.FC = () => {
 
   const update = useCallback(
     (keyOrUpdates: string | Record<string, string | null>, value?: string | null) => {
-      const next = new URLSearchParams(searchParams);
-      if (typeof keyOrUpdates === 'string') {
-        if (value === null || value === 'all' || value === '' || value === undefined) next.delete(keyOrUpdates);
-        else next.set(keyOrUpdates, value);
-      } else {
-        Object.entries(keyOrUpdates).forEach(([k, v]) => {
-          if (v === null || v === 'all' || v === '') next.delete(k);
-          else next.set(k, v);
-        });
-      }
-      setSearchParams(next, { replace: true });
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          if (typeof keyOrUpdates === 'string') {
+            if (value === null || value === 'all' || value === '' || value === undefined) {
+              next.delete(keyOrUpdates);
+            } else {
+              next.set(keyOrUpdates, value);
+            }
+          } else {
+            Object.entries(keyOrUpdates).forEach(([k, v]) => {
+              if (v === null || v === 'all' || v === '' || v === undefined) {
+                next.delete(k);
+              } else {
+                next.set(k, v);
+              }
+            });
+          }
+          return next;
+        },
+        { replace: true },
+      );
     },
-    [searchParams, setSearchParams],
+    [setSearchParams],
   );
 
   const clearAll = useCallback(() => {
@@ -423,10 +434,12 @@ export const ShopPage: React.FC = () => {
             className="chip"
             aria-pressed={selectedCategory === 'all'}
             onClick={() => {
-              update('category', null);
-              update('subcategory', null);
-              update('brand', null);
-              update('batSize', null);
+              update({
+                category: null,
+                subcategory: null,
+                brand: null,
+                batSize: null,
+              });
             }}
           >
             All Sports ({PRODUCTS.length})
@@ -438,10 +451,12 @@ export const ShopPage: React.FC = () => {
               className="chip"
               aria-pressed={selectedCategory === c.id}
               onClick={() => {
-                update('category', selectedCategory === c.id ? null : c.id);
-                update('subcategory', null);
-                update('brand', null);
-                update('batSize', null);
+                update({
+                  category: selectedCategory === c.id ? null : c.id,
+                  subcategory: null,
+                  brand: null,
+                  batSize: null,
+                });
               }}
             >
               {c.name} ({categoryCounts.get(c.id) ?? 0})
@@ -498,7 +513,7 @@ export const ShopPage: React.FC = () => {
             {/* Active filter pills */}
             <div className="shop-active-pills">
               {selectedCategory !== 'all' && (
-                <button type="button" className="active-pill" onClick={() => { update('category', null); update('subcategory', null); }}>
+                <button type="button" className="active-pill" onClick={() => update({ category: null, subcategory: null })}>
                   {CATEGORIES.find((c) => c.id === selectedCategory)?.name}
                   <X size={11} />
                 </button>
