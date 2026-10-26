@@ -139,7 +139,7 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
           </div>
         </div>
 
-        {/* Time Filter Pills (Calm White Segmented Control) */}
+        {/* Time Filter Pills */}
         <div
           style={{
             display: 'flex',
@@ -160,13 +160,13 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
               padding: '5px 14px',
               borderRadius: 9999,
               fontSize: 12,
-              fontWeight: 600,
+              fontWeight: 700,
               border: 'none',
-              background: timeRange === '6m' ? '#FFFFFF' : 'transparent',
-              color: timeRange === '6m' ? 'var(--ink-heading)' : 'var(--muted)',
+              background: timeRange === '6m' ? 'var(--blood-crimson)' : 'transparent',
+              color: timeRange === '6m' ? '#FFFFFF' : 'var(--muted)',
               cursor: 'pointer',
               minHeight: 28,
-              boxShadow: timeRange === '6m' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+              boxShadow: timeRange === '6m' ? '0 2px 10px rgba(200, 16, 46, 0.4)' : 'none',
               transition: 'all 0.15s ease',
             }}
           >
@@ -182,17 +182,17 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
               padding: '5px 14px',
               borderRadius: 9999,
               fontSize: 12,
-              fontWeight: 600,
+              fontWeight: 700,
               border: 'none',
-              background: timeRange === '30d' ? '#FFFFFF' : 'transparent',
-              color: timeRange === '30d' ? 'var(--ink-heading)' : 'var(--muted)',
+              background: timeRange === '30d' ? 'var(--blood-crimson)' : 'transparent',
+              color: timeRange === '30d' ? '#FFFFFF' : 'var(--muted)',
               cursor: 'pointer',
               minHeight: 28,
-              boxShadow: timeRange === '30d' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+              boxShadow: timeRange === '30d' ? '0 2px 10px rgba(200, 16, 46, 0.4)' : 'none',
               transition: 'all 0.15s ease',
             }}
           >
-            30 Days
+            Last 30 Days
           </button>
         </div>
       </div>
@@ -205,12 +205,12 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
         >
           <defs>
             <linearGradient id="buyurRevenueGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#C9A227" stopOpacity="0.45" />
-              <stop offset="60%" stopColor="#C9A227" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="#C9A227" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#C8102E" stopOpacity="0.5" />
+              <stop offset="60%" stopColor="#C8102E" stopOpacity="0.12" />
+              <stop offset="100%" stopColor="#C8102E" stopOpacity="0.0" />
             </linearGradient>
             <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#C9A227" floodOpacity="0.35" />
+              <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#C8102E" floodOpacity="0.45" />
             </filter>
           </defs>
 
@@ -224,7 +224,7 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
                   y1={y}
                   x2={width - paddingX}
                   y2={y}
-                  stroke="rgba(17, 17, 17, 0.06)"
+                  stroke="rgba(255, 255, 255, 0.08)"
                   strokeDasharray="4 4"
                 />
                 <text
@@ -233,7 +233,7 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
                   textAnchor="end"
                   fontSize="9.5"
                   fontWeight="700"
-                  fill="rgba(17, 17, 17, 0.35)"
+                  fill="rgba(255, 255, 255, 0.35)"
                   fontFamily="system-ui, sans-serif"
                 >
                   ₹{val / 1000}k
@@ -245,18 +245,18 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
           {/* Spline Area Fill */}
           <path d={areaPath} fill="url(#buyurRevenueGrad)" />
 
-          {/* Spline Golden Line Stroke */}
+          {/* Spline Crimson Line Stroke */}
           <path
             d={linePath}
             fill="none"
-            stroke="#C9A227"
+            stroke="#C8102E"
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
             filter="url(#goldGlow)"
           />
 
-          {/* Interactive Interactive Dots & Month Labels */}
+          {/* Interactive Dots & Month Labels */}
           {points.map((pt, idx) => {
             const isSelected = idx === activePointIndex;
             return (
@@ -282,7 +282,7 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
                   textAnchor="middle"
                   fontSize="11"
                   fontWeight={isSelected ? '800' : '600'}
-                  fill={isSelected ? '#111111' : 'rgba(17, 17, 17, 0.45)'}
+                  fill={isSelected ? '#FFFFFF' : 'rgba(255, 255, 255, 0.45)'}
                   fontFamily="system-ui, sans-serif"
                 >
                   {pt.month}
@@ -296,15 +296,15 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
                       cx={pt.x}
                       cy={pt.y}
                       r="12"
-                      fill="#C9A227"
-                      fillOpacity="0.25"
+                      fill="#C8102E"
+                      fillOpacity="0.3"
                     />
                     <circle
                       cx={pt.x}
                       cy={pt.y}
                       r="6"
-                      fill="#111111"
-                      stroke="#C9A227"
+                      fill="#FFFFFF"
+                      stroke="#C8102E"
                       strokeWidth="3"
                     />
                   </g>
@@ -313,8 +313,8 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
                     cx={pt.x}
                     cy={pt.y}
                     r="4"
-                    fill="#FFFFFF"
-                    stroke="#C9A227"
+                    fill="#141414"
+                    stroke="#C8102E"
                     strokeWidth="2.5"
                   />
                 )}

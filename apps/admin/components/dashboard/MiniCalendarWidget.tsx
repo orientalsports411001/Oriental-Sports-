@@ -146,9 +146,9 @@ export function MiniCalendarWidget() {
                 height: 32,
                 borderRadius: '50%',
                 border: 'none',
-                background: isSelected ? 'var(--ink-heading)' : 'transparent',
+                background: isSelected ? 'var(--blood-crimson)' : 'transparent',
                 color: isSelected ? '#FFFFFF' : 'var(--ink)',
-                fontWeight: isSelected ? 600 : hasEvent ? 600 : 500,
+                fontWeight: isSelected ? 700 : hasEvent ? 600 : 500,
                 fontSize: 12,
                 cursor: 'pointer',
                 display: 'flex',
@@ -156,6 +156,7 @@ export function MiniCalendarWidget() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
+                boxShadow: isSelected ? '0 2px 10px rgba(200, 16, 46, 0.45)' : 'none',
                 transition: 'all 0.15s ease',
                 padding: 0,
               }}
@@ -166,10 +167,10 @@ export function MiniCalendarWidget() {
                   style={{
                     position: 'absolute',
                     bottom: 2,
-                    width: 3.5,
-                    height: 3.5,
+                    width: 4,
+                    height: 4,
                     borderRadius: '50%',
-                    background: 'var(--subtle)',
+                    background: 'var(--blood-crimson)',
                   }}
                 />
               )}

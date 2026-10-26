@@ -27,7 +27,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingBottom: 20,
-            borderBottom: '1px solid var(--stone)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
           <Link
@@ -41,21 +41,22 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/brand/oriental-sports-wordmark.png`}
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/brand/oriental-sports-wordmark-white.png`}
               alt="Oriental Sports Pune"
               style={{ height: 36, width: 'auto', objectFit: 'contain', alignSelf: 'flex-start', display: 'block' }}
               onError={(e) => {
                 e.currentTarget.onerror = null;
-                e.currentTarget.src = '/brand/oriental-sports-wordmark.png';
+                e.currentTarget.src = '/brand/oriental-sports-wordmark-white.png';
               }}
             />
             <div
               style={{
                 fontSize: 10,
                 fontWeight: 700,
-                letterSpacing: '0.12em',
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: 'var(--subtle)',
+                color: '#A3A3A3',
+                marginTop: 2,
               }}
             >
               Operations Desk
@@ -71,14 +72,14 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
               display: 'flex',
               alignItems: 'center',
               padding: '9px 14px',
-              background: 'var(--paper)',
+              background: '#161616',
               borderRadius: 9999,
-              border: '1px solid var(--stone)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               fontSize: 12.5,
-              color: 'var(--subtle)',
+              color: '#737373',
               fontWeight: 500,
               textDecoration: 'none',
-              transition: 'border-color 0.15s ease',
+              transition: 'border-color 0.15s ease, background 0.15s ease',
             }}
           >
             <span>Search equipment catalog...</span>
@@ -102,13 +103,14 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                   justifyContent: 'space-between',
                   padding: '10px 16px',
                   borderRadius: 9999,
-                  background: isActive ? 'var(--stone)' : 'transparent',
-                  color: isActive ? 'var(--ink-heading)' : 'var(--muted)',
-                  fontWeight: isActive ? 600 : 500,
+                  background: isActive ? 'var(--blood-crimson)' : 'transparent',
+                  color: isActive ? '#FFFFFF' : '#A3A3A3',
+                  fontWeight: isActive ? 700 : 500,
                   fontSize: 13.5,
                   textDecoration: 'none',
                   minHeight: 42,
-                  transition: 'background 0.15s ease, color 0.15s ease',
+                  boxShadow: isActive ? '0 4px 14px rgba(200, 16, 46, 0.35)' : 'none',
+                  transition: 'background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
                 }}
               >
                 <span>{item.label}</span>
@@ -117,11 +119,11 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                   <span
                     style={{
                       fontSize: 11,
-                      fontWeight: 600,
+                      fontWeight: 700,
                       padding: '2px 8px',
                       borderRadius: 9999,
-                      background: isActive ? 'rgba(38, 41, 46, 0.08)' : 'var(--stone)',
-                      color: isActive ? 'var(--ink-heading)' : 'var(--subtle)',
+                      background: isActive ? 'rgba(0, 0, 0, 0.28)' : '#1C1C1C',
+                      color: isActive ? '#FFFFFF' : '#737373',
                     }}
                   >
                     {item.badge}
@@ -137,7 +139,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           style={{
             marginTop: 'auto',
             paddingTop: 18,
-            borderTop: '1px solid var(--stone)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
             display: 'flex',
             flexDirection: 'column',
             gap: 10,
@@ -149,9 +151,9 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
               alignItems: 'center',
               gap: 10,
               padding: '10px 12px',
-              background: 'var(--paper)',
+              background: '#161616',
               borderRadius: 16,
-              border: '1px solid var(--stone)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
             <div
@@ -159,8 +161,8 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                 width: 32,
                 height: 32,
                 borderRadius: '50%',
-                background: 'var(--stone)',
-                color: 'var(--ink)',
+                background: 'var(--blood-crimson)',
+                color: '#FFFFFF',
                 display: 'grid',
                 placeItems: 'center',
                 fontWeight: 800,
@@ -175,7 +177,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                 style={{
                   fontWeight: 700,
                   fontSize: 12.5,
-                  color: 'var(--ink)',
+                  color: '#FFFFFF',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -183,7 +185,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
               >
                 {userEmail?.split('@')[0] || 'Admin'}
               </div>
-              <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>
+              <div style={{ fontSize: 10.5, color: '#737373' }}>
                 Superadmin
               </div>
             </div>

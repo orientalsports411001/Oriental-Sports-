@@ -508,11 +508,11 @@ export function ProductForm({ initialData, product: productProp, categories, act
         >
           <div
             style={{
-              background: '#FFFFFF',
+              background: '#141414',
               borderRadius: 24,
               overflow: 'hidden',
-              boxShadow: '0 12px 36px -6px rgba(0, 0, 0, 0.08)',
-              border: '1px solid rgba(0, 0, 0, 0.08)',
+              boxShadow: '0 12px 36px -6px rgba(0, 0, 0, 0.6)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               position: 'sticky',
               top: 24,
             }}
@@ -520,8 +520,8 @@ export function ProductForm({ initialData, product: productProp, categories, act
             <div
               style={{
                 padding: '12px 18px',
-                background: 'rgba(17,17,17,0.03)',
-                borderBottom: '1px solid rgba(0,0,0,0.06)',
+                background: 'rgba(255, 255, 255, 0.03)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',

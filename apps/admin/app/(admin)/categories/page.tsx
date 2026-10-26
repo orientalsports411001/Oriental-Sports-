@@ -75,14 +75,14 @@ export default async function CategoriesPage() {
             style={{
               padding: '10px 22px',
               fontSize: 13,
-              fontWeight: 600,
+              fontWeight: 700,
               letterSpacing: '0.01em',
               borderRadius: 9999,
-              background: 'var(--ink-heading)',
+              background: 'var(--blood-crimson)',
               color: '#FFFFFF',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(38,41,46,0.10)',
+              boxShadow: '0 4px 14px rgba(200, 16, 46, 0.35)',
             }}
           >
             + Create Discipline
@@ -93,16 +93,17 @@ export default async function CategoriesPage() {
       {/* Clean Table Card */}
       <div
         style={{
-          background: '#FFFFFF',
+          background: 'var(--charcoal)',
           borderRadius: 20,
-          boxShadow: '0 4px 24px -2px rgba(17,17,17,0.03)',
+          border: '1px solid var(--line)',
+          boxShadow: '0 8px 30px -4px rgba(0, 0, 0, 0.5)',
           overflow: 'hidden',
         }}
       >
         <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           <table style={{ margin: 0, width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(17,17,17,0.06)' }}>
+              <tr style={{ borderBottom: '1px solid var(--line)' }}>
                 <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--subtle)' }}>
                   Sport / Discipline Name
                 </th>

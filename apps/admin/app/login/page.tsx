@@ -76,7 +76,8 @@ export default function LoginPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '32px 16px',
-        background: 'var(--ivory)',
+        background: 'radial-gradient(ellipse at 50% 18%, rgba(200, 16, 46, 0.16), transparent 65%), #050505',
+        color: '#FFFFFF',
       }}
     >
       <div
@@ -86,29 +87,35 @@ export default function LoginPage() {
           width: '100%',
           padding: '44px 36px',
           margin: 0,
-          border: '1px solid var(--line-strong)',
-          boxShadow: '0 4px 24px rgba(17, 17, 17, 0.06)',
-          background: 'var(--paper)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderTop: '2px solid #C8102E',
+          borderRadius: 24,
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8), 0 0 36px rgba(200, 16, 46, 0.10)',
+          background: '#121212',
         }}
       >
-        {/* Authentic Oriental Sports Brandmark */}
+        {/* Authentic Oriental Sports Brandmark on Dark Surface */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`${basePath}/brand/oriental-sports-wordmark.png`}
+            src={`${basePath}/brand/oriental-sports-wordmark-white.png`}
             alt="Oriental Sports"
             style={{ height: 48, width: 'auto', objectFit: 'contain', margin: '0 auto 10px', display: 'block' }}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/brand/oriental-sports-wordmark-white.png';
+            }}
           />
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--subtle)' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#A3A3A3', marginTop: 10 }}>
             Camp Store Operations · Pune
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid var(--line)', paddingTop: 24, marginBottom: 24 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, textAlign: 'center' }}>
+        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: 24, marginBottom: 24 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8, textAlign: 'center', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
             Administrator Access
           </h1>
-          <p style={{ color: 'var(--muted)', fontSize: 13.5, margin: 0, textAlign: 'center', lineHeight: 1.5 }}>
+          <p style={{ color: '#A3A3A3', fontSize: 13.5, margin: 0, textAlign: 'center', lineHeight: 1.5 }}>
             Access the store operations console to manage catalog, inventory, revenue, and customer orders.
           </p>
         </div>
@@ -122,32 +129,37 @@ export default function LoginPage() {
             style={{
               width: '100%',
               minHeight: 48,
-              fontSize: 13.5,
-              background: 'var(--ink)',
-              color: 'var(--ivory)',
+              fontSize: 14,
+              background: '#C8102E',
+              color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: 8,
               fontWeight: 800,
+              borderRadius: 9999,
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 4px 20px rgba(200, 16, 46, 0.45)',
+              transition: 'all 0.18s ease',
             }}
           >
             {status === 'dev-signing' ? 'Authenticating Admin...' : 'Enter Operations Console →'}
           </button>
-          <div style={{ textAlign: 'center', fontSize: 11.5, color: 'var(--subtle)', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', fontSize: 11.5, color: '#737373', marginTop: 8 }}>
             Direct access for authorized store administrator ({email})
           </div>
         </div>
 
         <div style={{ position: 'relative', margin: '24px 0', textAlign: 'center' }}>
-          <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 1, background: 'var(--line)' }} />
-          <span style={{ position: 'relative', background: 'var(--paper)', padding: '0 12px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--subtle)' }}>
+          <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
+          <span style={{ position: 'relative', background: '#121212', padding: '0 12px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#737373' }}>
             or receive magic link
           </span>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="email" style={{ fontSize: 11, letterSpacing: '0.1em' }}>
+          <label htmlFor="email" style={{ fontSize: 11, letterSpacing: '0.1em', color: '#A3A3A3' }}>
             Store Manager Email
           </label>
           <input
@@ -157,7 +169,14 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ width: '100%', padding: '12px 14px' }}
+            style={{
+              width: '100%',
+              padding: '12px 14px',
+              background: '#181818',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              color: '#FFFFFF',
+              borderRadius: 12,
+            }}
           />
 
           <div style={{ marginTop: 16 }}>
@@ -165,7 +184,15 @@ export default function LoginPage() {
               type="submit"
               className="secondary"
               disabled={status === 'sending'}
-              style={{ width: '100%', minHeight: 44, fontSize: 13 }}
+              style={{
+                width: '100%',
+                minHeight: 44,
+                fontSize: 13,
+                background: '#1C1C1C',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#FFFFFF',
+                borderRadius: 9999,
+              }}
             >
               {status === 'sending' ? 'Sending Magic Link...' : 'Email Sign-In Magic Link'}
             </button>
@@ -182,15 +209,15 @@ export default function LoginPage() {
           style={{
             marginTop: 24,
             paddingTop: 16,
-            borderTop: '1px solid var(--line)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
             fontSize: 11.5,
-            color: 'var(--subtle)',
+            color: '#737373',
             textAlign: 'center',
             lineHeight: 1.5,
           }}
         >
           Oriental Sports Pune · Camp Store Operations<br />
-          Role-protected: Requires <code>role = &apos;admin&apos;</code> in Supabase profiles.
+          Role-protected: Requires <code style={{ background: 'rgba(255, 255, 255, 0.08)', color: '#FF4D6D', padding: '2px 6px', borderRadius: 4 }}>role = &apos;admin&apos;</code> in Supabase profiles.
         </div>
       </div>
     </div>

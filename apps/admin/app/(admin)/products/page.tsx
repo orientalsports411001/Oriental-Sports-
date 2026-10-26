@@ -139,11 +139,11 @@ export default async function ProductsPage({
               fontWeight: 600,
               letterSpacing: '0.01em',
               borderRadius: 9999,
-              background: 'var(--ink-heading)',
+              background: 'var(--blood-crimson)',
               color: '#FFFFFF',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(38,41,46,0.10)',
+              boxShadow: '0 4px 14px rgba(200, 16, 46, 0.35)',
             }}
           >
             + New Product
@@ -151,7 +151,7 @@ export default async function ProductsPage({
         </Link>
       </div>
 
-      {/* Typographic Metric Ribbon (Minimalist, Calm Typography) */}
+      {/* Typographic Metric Ribbon */}
       <div
         style={{
           display: 'grid',
@@ -163,13 +163,13 @@ export default async function ProductsPage({
         <div
           style={{
             padding: '20px 24px',
-            background: '#FFFFFF',
+            background: 'var(--paper)',
             borderRadius: 20,
             border: '1px solid var(--line)',
-            boxShadow: '0 4px 20px -2px rgba(38,41,46,0.03)',
+            boxShadow: '0 8px 24px -2px rgba(0, 0, 0, 0.35)',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.06em', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.08em', marginBottom: 8 }}>
             Total Catalog
           </div>
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--ink-heading)', letterSpacing: '-0.015em', lineHeight: 1.15, marginBottom: 4 }}>
@@ -183,13 +183,13 @@ export default async function ProductsPage({
         <div
           style={{
             padding: '20px 24px',
-            background: '#FFFFFF',
+            background: 'var(--paper)',
             borderRadius: 20,
             border: '1px solid var(--line)',
-            boxShadow: '0 4px 20px -2px rgba(38,41,46,0.03)',
+            boxShadow: '0 8px 24px -2px rgba(0, 0, 0, 0.35)',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.06em', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.08em', marginBottom: 8 }}>
             Published & Live
           </div>
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--success)', letterSpacing: '-0.015em', lineHeight: 1.15, marginBottom: 4 }}>
@@ -203,16 +203,16 @@ export default async function ProductsPage({
         <div
           style={{
             padding: '20px 24px',
-            background: '#FFFFFF',
+            background: 'var(--paper)',
             borderRadius: 20,
             border: '1px solid var(--line)',
-            boxShadow: '0 4px 20px -2px rgba(38,41,46,0.03)',
+            boxShadow: '0 8px 24px -2px rgba(0, 0, 0, 0.35)',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.06em', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.08em', marginBottom: 8 }}>
             Low Stock
           </div>
-          <div style={{ fontSize: 26, fontWeight: 700, color: lowStockCount > 0 ? 'var(--gold-ink)' : 'var(--ink-heading)', letterSpacing: '-0.015em', lineHeight: 1.15, marginBottom: 4 }}>
+          <div style={{ fontSize: 26, fontWeight: 700, color: lowStockCount > 0 ? '#FACC15' : 'var(--ink-heading)', letterSpacing: '-0.015em', lineHeight: 1.15, marginBottom: 4 }}>
             {lowStockCount} Products
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>
@@ -223,13 +223,13 @@ export default async function ProductsPage({
         <div
           style={{
             padding: '20px 24px',
-            background: '#FFFFFF',
+            background: 'var(--paper)',
             borderRadius: 20,
             border: '1px solid var(--line)',
-            boxShadow: '0 4px 20px -2px rgba(38,41,46,0.03)',
+            boxShadow: '0 8px 24px -2px rgba(0, 0, 0, 0.35)',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.06em', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.08em', marginBottom: 8 }}>
             Inventory Value
           </div>
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--ink-heading)', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.015em', lineHeight: 1.15, marginBottom: 4 }}>
@@ -250,9 +250,10 @@ export default async function ProductsPage({
       {/* Clean Minimalist Products Table */}
       <div
         style={{
-          background: '#FFFFFF',
+          background: 'var(--charcoal)',
           borderRadius: 20,
-          boxShadow: '0 4px 24px -2px rgba(17,17,17,0.03)',
+          border: '1px solid var(--line)',
+          boxShadow: '0 8px 30px -4px rgba(0, 0, 0, 0.5)',
           overflow: 'hidden',
         }}
       >

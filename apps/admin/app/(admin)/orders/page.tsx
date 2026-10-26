@@ -150,9 +150,9 @@ export default async function OrdersPage({
               padding: '10px 16px',
               fontSize: 13,
               borderRadius: 12,
-              border: '1px solid rgba(17,17,17,0.1)',
-              background: '#FFFFFF',
-              color: 'var(--ink)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              background: '#161616',
+              color: '#FFFFFF',
               outline: 'none',
             }}
           />
@@ -167,9 +167,9 @@ export default async function OrdersPage({
             fontSize: 12.5,
             fontWeight: 600,
             borderRadius: 12,
-            border: '1px solid rgba(17,17,17,0.1)',
-            background: '#FFFFFF',
-            color: 'var(--ink)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            background: '#161616',
+            color: '#FFFFFF',
             cursor: 'pointer',
             outline: 'none',
           }}
@@ -190,10 +190,11 @@ export default async function OrdersPage({
             fontSize: 12.5,
             fontWeight: 800,
             borderRadius: 12,
-            background: 'var(--ink)',
-            color: 'var(--ivory)',
+            background: 'var(--blood-crimson)',
+            color: '#FFFFFF',
             border: 'none',
             cursor: 'pointer',
+            boxShadow: '0 4px 14px rgba(200, 16, 46, 0.35)',
           }}
         >
           Filter
@@ -210,8 +211,9 @@ export default async function OrdersPage({
               display: 'inline-flex',
               alignItems: 'center',
               borderRadius: 12,
-              background: 'var(--stone)',
-              color: 'var(--ink)',
+              background: '#222222',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              color: '#FFFFFF',
               textDecoration: 'none',
             }}
           >
@@ -223,16 +225,17 @@ export default async function OrdersPage({
       {/* Orders Data Table */}
       <div
         style={{
-          background: '#FFFFFF',
+          background: 'var(--charcoal)',
           borderRadius: 20,
-          boxShadow: '0 4px 24px -2px rgba(17,17,17,0.03)',
+          border: '1px solid var(--line)',
+          boxShadow: '0 8px 30px -4px rgba(0, 0, 0, 0.5)',
           overflow: 'hidden',
         }}
       >
         <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           <table style={{ margin: 0, width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(38, 41, 46, 0.06)' }}>
+              <tr style={{ borderBottom: '1px solid var(--line)' }}>
                 <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--subtle)', background: 'transparent' }}>
                   Order #
                 </th>
