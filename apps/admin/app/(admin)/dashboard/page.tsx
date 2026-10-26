@@ -164,11 +164,11 @@ export default async function DashboardPage() {
                 fontWeight: 600,
                 letterSpacing: '0.01em',
                 borderRadius: 9999,
-                background: 'var(--ink-heading)',
+                background: 'var(--blood-crimson)',
                 color: '#FFFFFF',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(38,41,46,0.10)',
+                boxShadow: '0 4px 14px rgba(200, 16, 46, 0.35)',
               }}
             >
               + New Product
