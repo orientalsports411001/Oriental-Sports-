@@ -1012,7 +1012,7 @@
   top: 50%;
   left: 50%;
   pointer-events: auto;
-  will-change: transform, filter;
+  will-change: transform, opacity;
 }
 
 .orbit-card {
@@ -1027,12 +1027,12 @@
   background: var(--surface-card);
   cursor: zoom-in;
   border-radius: var(--r-2, 6px);
-  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.7);
   transition: border-color var(--t-2) ease, box-shadow var(--t-2) ease;
 }
 .orbit-card:hover {
   border-color: var(--border-crimson);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.9), 0 0 25px rgba(200, 16, 46, 0.25);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.85), 0 0 18px rgba(200, 16, 46, 0.2);
 }
 .orbit-anchor .orbit-card { transform: translate(-50%, -50%); }
 

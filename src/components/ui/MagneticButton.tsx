@@ -29,16 +29,22 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  const rectRef = useRef<DOMRect | null>(null);
 
   const springConfig = { stiffness: 220, damping: 18, mass: 0.1 };
   const springX = useSpring(x, springConfig);
   const springY = useSpring(y, springConfig);
 
+  const handleMouseEnter = () => {
+    if (ref.current) rectRef.current = ref.current.getBoundingClientRect();
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (reduced || (typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches)) return;
     if (!ref.current) return;
+    if (!rectRef.current) rectRef.current = ref.current.getBoundingClientRect();
     const { clientX, clientY } = e;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const { left, top, width, height } = rectRef.current;
     const centerX = left + width / 2;
     const centerY = top + height / 2;
 
@@ -50,6 +56,7 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
   };
 
   const handleMouseLeave = () => {
+    rectRef.current = null;
     x.set(0);
     y.set(0);
   };
@@ -59,6 +66,7 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
   return (
     <div
       ref={ref}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ display: 'inline-block', position: 'relative' }}

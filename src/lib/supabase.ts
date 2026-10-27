@@ -29,7 +29,16 @@ export const isSupabaseConfigured = (): boolean => {
 // Initialize client with fallback placeholder to avoid runtime crash on load if env vars are pending
 export const supabase: SupabaseClient = createClient(
   isSupabaseConfigured() ? supabaseUrl : 'https://placeholder-project.supabase.co',
-  isSupabaseConfigured() ? supabaseAnonKey : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.placeholder'
+  isSupabaseConfigured() ? supabaseAnonKey : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.placeholder',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce',
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    },
+  }
 );
 
 /**

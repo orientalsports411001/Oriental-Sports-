@@ -38,6 +38,7 @@ const ReturnsPage = page(() => import('./pages/PolicyPages'), 'ReturnsPage');
 const PrivacyPage = page(() => import('./pages/PolicyPages'), 'PrivacyPage');
 const TermsPage = page(() => import('./pages/PolicyPages'), 'TermsPage');
 const AuthModal = page(() => import('./components/auth/AuthModal'), 'AuthModal');
+const AuthCallbackPage = page(() => import('./pages/AuthCallbackPage'), 'AuthCallbackPage');
 
 /** Route loading state: a quiet skeleton of the shared page header. */
 const PageSkeleton: React.FC = () => (
@@ -121,6 +122,7 @@ const AppContent: React.FC = () => {
             <Route path="/account/addresses" element={<AccountPage tab="addresses" />} />
             <Route path="/account/wishlist" element={<WishlistPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
             {/* Institutional Policies */}
             <Route path="/shipping" element={<ShippingPage />} />

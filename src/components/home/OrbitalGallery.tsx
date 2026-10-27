@@ -78,13 +78,22 @@ export const OrbitalGallery: React.FC = () => {
   // Restrained pointer tilt (fine pointers only), sprung so it never jitters.
   const tiltX = useSpring(useMotionValue(0), { stiffness: 120, damping: 20 });
   const tiltY = useSpring(useMotionValue(0), { stiffness: 120, damping: 20 });
+  const stageRectRef = useRef<DOMRect | null>(null);
+
+  const onPointerEnter = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse') {
+      stageRectRef.current = e.currentTarget.getBoundingClientRect();
+    }
+  };
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (reduced || e.pointerType !== 'mouse') return;
-    const r = e.currentTarget.getBoundingClientRect();
+    if (!stageRectRef.current) stageRectRef.current = e.currentTarget.getBoundingClientRect();
+    const r = stageRectRef.current;
     tiltX.set(((e.clientX - r.left) / r.width - 0.5) * 14);
     tiltY.set(((e.clientY - r.top) / r.height - 0.5) * 9);
   };
   const onPointerLeave = () => {
+    stageRectRef.current = null;
     tiltX.set(0);
     tiltY.set(0);
   };
@@ -147,6 +156,7 @@ export const OrbitalGallery: React.FC = () => {
       ) : (
         <div
           className="orbit-stage"
+          onPointerEnter={onPointerEnter}
           onPointerMove={onPointerMove}
           onPointerLeave={onPointerLeave}
         >
@@ -208,15 +218,15 @@ const OrbitCard: React.FC<OrbitCardProps> = ({ item, baseAngle, progress, xRadiu
   const z = useTransform(angle, (a) => Math.sin(a) * zRadius);
   const y = useTransform(angle, (a) => (item.yOffset / 60) * yAmp + Math.sin(a * 1.5) * yAmp);
 
-  // Depth: front cards grow to ~1.16, back cards recede gracefully to ~0.84 and soften.
+  // Depth: front cards grow to ~1.16, back cards recede gracefully to ~0.84 and soften via opacity (compositor thread).
   const scale = useTransform(z, (d) => 0.84 + ((d + zRadius) / (zRadius * 2)) * 0.32);
-  const filter = useTransform(z, (d) => (d >= 0 ? 'blur(0px)' : `blur(${(Math.abs(d / zRadius) * 2).toFixed(1)}px)`));
+  const opacity = useTransform(z, (d) => 0.55 + ((d + zRadius) / (zRadius * 2)) * 0.45);
   const zIndex = useTransform(z, (d) => Math.round(10 + (d / zRadius) * 10));
   const rotateY = useTransform(x, (v) => -(v / xRadius) * 12);
   const rotateZ = useTransform(x, (v) => (v / xRadius) * 3);
 
   return (
-    <motion.li className="orbit-anchor" style={{ x, y, z, zIndex, scale, filter, rotateY, rotateZ }}>
+    <motion.li className="orbit-anchor" style={{ x, y, z, zIndex, scale, opacity, rotateY, rotateZ }}>
       <OrbitCardFace item={item} onOpen={onOpen} />
     </motion.li>
   );

@@ -58,9 +58,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     });
 
-    setIsLoading(false);
+    // Fallback safety timeout so UI never hangs in loading state
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 4000);
 
     return () => {
+      clearTimeout(timeout);
       unsubscribe();
     };
   }, []);

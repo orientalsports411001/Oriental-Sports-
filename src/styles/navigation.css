@@ -50,10 +50,11 @@
   position: sticky;
   top: 0;
   z-index: var(--z-header);
-  background: rgba(5, 5, 5, 0.88);
-  backdrop-filter: saturate(1.4) blur(18px);
-  -webkit-backdrop-filter: saturate(1.4) blur(18px);
+  background: rgba(5, 5, 5, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
+  transform: translateZ(0);
   transition: border-color var(--t-2) ease, background-color var(--t-2) ease, box-shadow var(--t-2) ease;
 }
 

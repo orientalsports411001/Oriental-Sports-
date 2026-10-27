@@ -109,22 +109,29 @@ export const Hero: React.FC = () => {
     const el = sectionRef.current;
     if (!el || reduced || !window.matchMedia('(pointer: fine)').matches) return;
     let raf = 0;
+    let rect: DOMRect | null = null;
+    const onEnter = () => {
+      rect = el.getBoundingClientRect();
+    };
     const onMove = (e: PointerEvent) => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        const r = el.getBoundingClientRect();
-        el.style.setProperty('--px', `${((e.clientX - r.left) / r.width - 0.5) * -14}px`);
-        el.style.setProperty('--py', `${((e.clientY - r.top) / r.height - 0.5) * -10}px`);
+        if (!rect) rect = el.getBoundingClientRect();
+        el.style.setProperty('--px', `${((e.clientX - rect.left) / rect.width - 0.5) * -14}px`);
+        el.style.setProperty('--py', `${((e.clientY - rect.top) / rect.height - 0.5) * -10}px`);
       });
     };
     const onLeave = () => {
+      rect = null;
       el.style.setProperty('--px', '0px');
       el.style.setProperty('--py', '0px');
     };
+    el.addEventListener('pointerenter', onEnter);
     el.addEventListener('pointermove', onMove);
     el.addEventListener('pointerleave', onLeave);
     return () => {
       cancelAnimationFrame(raf);
+      el.removeEventListener('pointerenter', onEnter);
       el.removeEventListener('pointermove', onMove);
       el.removeEventListener('pointerleave', onLeave);
     };
@@ -185,7 +192,7 @@ export const Hero: React.FC = () => {
             <div className="hero-media">
               <div className="hero-media-inner">
                 <Img image={s.image} priority={i === 0} sizes={s.id === 'store' ? '(min-width: 1024px) 55vw, 100vw' : '100vw'} />
-                {s.video && !reduced && (
+                {s.video && active && !reduced && (
                   <video
                     className="hero-video"
                     autoPlay
@@ -193,7 +200,7 @@ export const Hero: React.FC = () => {
                     muted
                     playsInline
                     poster={s.image.src}
-                    preload="auto"
+                    preload="metadata"
                     aria-hidden="true"
                   >
                     <source src={s.video} type="video/webm" />

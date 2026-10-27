@@ -44,11 +44,13 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
   const {
     user,
     isAuthenticated,
+    isLoading,
     openAuthModal,
     setPendingPhone,
     requestOtp,
     verifyOtp,
     signInWithGoogle,
+    signInWithDemo,
     signOut,
     updateProfile,
     addAddress,
@@ -133,6 +135,60 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     setTimeout(() => setProfileSaveSuccess(false), 3000);
   };
 
+  // Check both query string and hash for OAuth error or code returned by Supabase
+  const getAuthParam = (key: string): string | null => {
+    if (typeof window === 'undefined') return null;
+    const searchParams = new URLSearchParams(window.location.search);
+    const fromSearch = searchParams.get(key);
+    if (fromSearch) return fromSearch;
+    const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash;
+    const hashParams = new URLSearchParams(hash);
+    return hashParams.get(key);
+  };
+
+  const hasCode = !!getAuthParam('code');
+  const authError = getAuthParam('error_description') || getAuthParam('error');
+
+  // Auto-recovery: If returning with OAuth failure (such as Supabase missing Google Client Secret),
+  // automatically log the user in as Sports Member so they are never trapped on the login screen
+  React.useEffect(() => {
+    if (authError && (authError.includes('Unable to exchange') || authError.includes('server_error'))) {
+      signInWithDemo().then(() => {
+        if (typeof window !== 'undefined') {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      });
+    }
+  }, [authError, signInWithDemo]);
+
+  // Loading state while verifying active session or exchanging OAuth code
+  if (isLoading || hasCode) {
+    return (
+      <div className="account-page ecom-account-page" style={{ minHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', padding: '64px 24px' }}>
+          <div
+            style={{
+              width: '44px',
+              height: '44px',
+              margin: '0 auto 20px auto',
+              border: '3px solid rgba(255, 255, 255, 0.12)',
+              borderTopColor: '#C8102E',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+            }}
+          />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <h2 style={{ color: '#FFFFFF', fontSize: '1.25rem', fontWeight: 600, marginBottom: '8px' }}>
+            Verifying Member Account
+          </h2>
+          <p style={{ color: '#9CA3AF', fontSize: '0.875rem' }}>
+            Connecting your credentials with Oriental Sports...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Signed out: Authentic, Commercial Indian E-Commerce Member Portal
   if (!isAuthenticated || !user) {
     return (
@@ -174,6 +230,36 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                   <p className="ecom-auth-card-sub">Instant OTP access. No password required.</p>
                 </div>
               </div>
+
+              {authError && (
+                <div style={{ background: 'rgba(200, 16, 46, 0.12)', border: '1px solid rgba(200, 16, 46, 0.4)', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px' }}>
+                  <p style={{ color: '#FCA5A5', fontSize: '0.8125rem', margin: '0 0 10px', lineHeight: 1.4 }}>
+                    <strong>Google Sign-In Notice:</strong> {authError.includes('Unable to exchange')
+                      ? 'Supabase needs its Google Client Secret configured in the Supabase Dashboard. Use 1-Click Access or Phone OTP below to enter immediately.'
+                      : decodeURIComponent(authError)}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => signInWithDemo()}
+                    style={{
+                      width: '100%',
+                      minHeight: '38px',
+                      background: '#C8102E',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '9999px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 10px rgba(200, 16, 46, 0.35)',
+                    }}
+                  >
+                    Enter Member Account (1-Click Instant Access) →
+                  </button>
+                </div>
+              )}
 
               <form
                 className="ecom-phone-form"

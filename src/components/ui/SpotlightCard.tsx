@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -9,8 +9,7 @@ interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 /**
  * SpotlightCard — Cult UI & 21st.dev inspired interactive card.
- * Tracks pointer movement on desktop and renders a restrained radial
- * crimson / blood-red light sheen across the surface and border.
+ * High-performance hardware-accelerated CSS variables without React re-renders.
  */
 export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   children,
@@ -21,21 +20,30 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   ...props
 }) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!divRef.current) return;
-    const rect = divRef.current.getBoundingClientRect();
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
+  const rectRef = useRef<DOMRect | null>(null);
 
   const handleMouseEnter = () => {
-    setOpacity(1);
+    if (divRef.current) {
+      rectRef.current = divRef.current.getBoundingClientRect();
+      divRef.current.style.setProperty('--spotlight-opacity', '1');
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = divRef.current;
+    if (!el) return;
+    if (!rectRef.current) rectRef.current = el.getBoundingClientRect();
+    const x = e.clientX - rectRef.current.left;
+    const y = e.clientY - rectRef.current.top;
+    el.style.setProperty('--spotlight-x', `${x}px`);
+    el.style.setProperty('--spotlight-y', `${y}px`);
   };
 
   const handleMouseLeave = () => {
-    setOpacity(0);
+    rectRef.current = null;
+    if (divRef.current) {
+      divRef.current.style.setProperty('--spotlight-opacity', '0');
+    }
   };
 
   return (
@@ -63,9 +71,9 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
           pointerEvents: 'none',
           position: 'absolute',
           inset: 0,
-          opacity,
+          opacity: 'var(--spotlight-opacity, 0)',
           transition: 'opacity 350ms cubic-bezier(0.16, 1, 0.3, 1)',
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 70%)`,
+          background: `radial-gradient(600px circle at var(--spotlight-x, 0px) var(--spotlight-y, 0px), ${spotlightColor}, transparent 70%)`,
           zIndex: 1,
         }}
       />
@@ -76,7 +84,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
           pointerEvents: 'none',
           position: 'absolute',
           inset: 0,
-          opacity,
+          opacity: 'var(--spotlight-opacity, 0)',
           transition: 'opacity 350ms cubic-bezier(0.16, 1, 0.3, 1)',
           border: `1px solid ${borderColor}`,
           borderRadius: 'inherit',

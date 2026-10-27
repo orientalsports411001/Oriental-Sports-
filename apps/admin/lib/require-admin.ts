@@ -18,7 +18,10 @@ export async function requireAdmin() {
 
   if (devAdminCookie) {
     try {
-      const parsed = JSON.parse(devAdminCookie);
+      const raw = devAdminCookie.startsWith('%7B') || devAdminCookie.includes('%22')
+        ? decodeURIComponent(devAdminCookie)
+        : devAdminCookie;
+      const parsed = JSON.parse(raw);
       return {
         user: { id: parsed.id || 'admin-local-master', email: parsed.email || 'pratikjadhav8820@gmail.com' },
         profile: {

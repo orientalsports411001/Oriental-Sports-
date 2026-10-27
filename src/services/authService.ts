@@ -60,7 +60,10 @@ export class AuthService {
       return () => {};
     }
 
+    let isDisposed = false;
+
     const handleSession = async (session: any) => {
+      if (isDisposed) return;
       if (session?.user) {
         try {
           const authUser = session.user;
@@ -119,36 +122,101 @@ export class AuthService {
 
           const mapped = mapDbProfileToUser(authUser, activeProfile, orders);
           this.saveUser(mapped);
-          onUserChange(mapped);
+          if (!isDisposed) {
+            onUserChange(mapped);
+          }
         } catch (err) {
           console.error('Error processing Supabase auth session:', err);
+          if (session?.user && !isDisposed) {
+            const fallbackUser = mapDbProfileToUser(session.user, null, []);
+            this.saveUser(fallbackUser);
+            onUserChange(fallbackUser);
+          }
         }
       } else {
         this.saveUser(null);
-        onUserChange(null);
+        if (!isDisposed) {
+          onUserChange(null);
+        }
       }
     };
 
-    // 1. Check existing session on load
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        handleSession(session);
-      }
-    }).catch(console.error);
+    // Check URL for OAuth code exchange and inspect existing session
+    const checkInitialAuth = async () => {
+      try {
+        if (typeof window !== 'undefined') {
+          const url = new URL(window.location.href);
+          const code = url.searchParams.get('code');
+          const authError = url.searchParams.get('error_description') || url.searchParams.get('error');
 
-    // 2. Subscribe to auth state changes
+          if (authError) {
+            console.warn('OAuth redirect notice:', authError);
+          }
+
+          if (code) {
+            try {
+              const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+              if (error) {
+                console.warn('Could not exchange PKCE code for session:', error.message);
+              } else if (data?.session) {
+                await handleSession(data.session);
+                // Clean URL query parameters
+                url.searchParams.delete('code');
+                url.searchParams.delete('state');
+                url.searchParams.delete('error');
+                url.searchParams.delete('error_description');
+                window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : '') + url.hash);
+                return;
+              }
+            } catch (exchangeErr) {
+              console.warn('Exchange code error:', exchangeErr);
+            } finally {
+              // Clean code parameter to prevent repeated exchange attempts
+              if (url.searchParams.has('code')) {
+                url.searchParams.delete('code');
+                url.searchParams.delete('state');
+                window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : '') + url.hash);
+              }
+            }
+          }
+        }
+
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          await handleSession(session);
+        } else {
+          const cached = this.getCurrentUser();
+          if (!isDisposed) {
+            onUserChange(cached);
+          }
+        }
+      } catch (err) {
+        console.error('Error in checkInitialAuth:', err);
+        const cached = this.getCurrentUser();
+        if (!isDisposed) {
+          onUserChange(cached);
+        }
+      }
+    };
+
+    checkInitialAuth();
+
+    // Subscribe to auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_OUT') {
         this.saveUser(null);
-        onUserChange(null);
+        if (!isDisposed) {
+          onUserChange(null);
+        }
       } else if (session) {
         await handleSession(session);
       }
     });
 
     return () => {
+      isDisposed = true;
       subscription.unsubscribe();
     };
   }
@@ -251,10 +319,6 @@ export class AuthService {
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/account`,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
       },
     });
 
