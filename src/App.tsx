@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -75,12 +75,32 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
+// If arriving at root with OAuth tokens or codes from external redirect, route to /account client-side
+const AuthOAuthWatcher: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash;
+    const search = window.location.search;
+    const hasAuthData = hash.includes('access_token') || hash.includes('error') || search.includes('code') || search.includes('error');
+
+    if (hasAuthData && location.pathname === '/') {
+      navigate('/account' + search + hash, { replace: true });
+    }
+  }, [location, navigate]);
+
+  return null;
+};
+
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isCheckout = location.pathname === '/checkout';
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: isCheckout ? 'var(--charcoal)' : 'var(--obsidian)' }}>
+      <AuthOAuthWatcher />
       {!isCheckout && <Header />}
       <CartDrawer />
       <LazyAuthModal />
