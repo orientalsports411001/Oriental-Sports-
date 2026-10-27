@@ -247,7 +247,7 @@ export class AuthService {
       throw new Error('Supabase is not configured. Please verify your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env');
     }
 
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/account`,
@@ -263,7 +263,10 @@ export class AuthService {
       throw error;
     }
 
-    // Supabase will redirect the browser to Google OAuth consent screen
+    if (data?.url) {
+      window.location.href = data.url;
+    }
+
     return null;
   }
 
