@@ -187,68 +187,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signInWithGoogle = async (): Promise<void> => {
-    const isRealOAuth =
-      process.env.NEXT_PUBLIC_ENABLE_SUPABASE_OAUTH === 'true' &&
-      process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('tvfzfvurqewgvnnhhhad') &&
-      !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
+    const next = returnToUrl || '/account';
+    const redirectTo =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`
+        : undefined;
 
-    if (isRealOAuth) {
-      try {
-        const next = returnToUrl || '/account';
-        const redirectTo =
-          typeof window !== 'undefined'
-            ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`
-            : undefined;
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo,
-            queryParams: {
-              access_type: 'offline',
-              prompt: 'consent',
-            },
-          },
-        });
-        if (error) throw error;
-        return;
-      } catch (err) {
-        console.warn('Google sign-in via Supabase failed, using active member session:', err);
-      }
-    }
-
-    const fallbackProfile: UserProfile = {
-      id: `usr_google_${Date.now()}`,
-      firstName: 'Arjun',
-      lastName: 'Deshmukh',
-      fullName: 'Arjun Deshmukh',
-      email: 'arjun.deshmukh@gmail.com',
-      phone: '+91 98230 45812',
-      sportPreferences: ['Badminton', 'Tennis', 'Cricket'],
-      membershipTier: 'Club Athlete',
-      addresses: [
-        {
-          id: 'addr_google_1',
-          name: 'Arjun Deshmukh',
-          phone: '+91 98230 45812',
-          street: 'Flat 402, Rohan Mithila',
-          locality: 'Viman Nagar',
-          city: 'Pune',
-          state: 'Maharashtra',
-          pincode: '411014',
-          isDefault: true,
-          type: 'home',
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
         },
-      ],
-      orders: [],
-      courtInquiries: [],
-      createdAt: new Date().toISOString(),
-    };
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('oriental_sports_user', JSON.stringify(fallbackProfile));
+      },
+    });
+
+    if (error) {
+      console.error('Google sign-in via Supabase failed:', error);
+      throw error;
     }
-    setUser(fallbackProfile);
-    closeAuthModal();
   };
 
   const signOut = async (): Promise<void> => {

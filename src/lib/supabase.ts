@@ -19,7 +19,6 @@ export const isSupabaseConfigured = (): boolean => {
     supabaseUrl.trim().length > 0 &&
     !supabaseUrl.includes('your_supabase') &&
     !supabaseUrl.includes('placeholder') &&
-    !supabaseUrl.includes('tvfzfvurqewgvnnhhhad') &&
     typeof supabaseAnonKey === 'string' &&
     supabaseAnonKey.trim().length > 0 &&
     !supabaseAnonKey.includes('your_supabase') &&
@@ -37,27 +36,32 @@ export const supabase: SupabaseClient = createClient(
  * Maps a database `profiles` row + associated `orders` into a UI-friendly UserProfile.
  */
 export function mapDbProfileToUser(
-  authUser: { id: string; email?: string | null; created_at?: string },
+  authUser: { id: string; email?: string | null; created_at?: string; user_metadata?: any },
   profileRow: any,
   orders: Order[] = []
 ): UserProfile {
+  const meta = authUser?.user_metadata || {};
   const addresses: Address[] = Array.isArray(profileRow?.addresses)
     ? profileRow.addresses
     : [];
 
   const fullName =
     profileRow?.full_name ||
+    meta?.full_name ||
+    meta?.name ||
     [profileRow?.first_name, profileRow?.last_name].filter(Boolean).join(' ') ||
     authUser.email?.split('@')[0] ||
-    'Oriental Athlete';
+    'Sports Member';
 
   const firstName =
     profileRow?.first_name ||
+    meta?.given_name ||
     fullName.split(' ')[0] ||
-    'Athlete';
+    'Member';
 
   const lastName =
     profileRow?.last_name ||
+    meta?.family_name ||
     fullName.split(' ').slice(1).join(' ') ||
     '';
 

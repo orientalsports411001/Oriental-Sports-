@@ -9,45 +9,7 @@ import {
 
 const STORAGE_KEY = 'oriental_sports_auth_user_v1';
 
-export const INITIAL_USER: UserProfile = {
-  id: 'usr_pune_0921',
-  firstName: 'Arjun',
-  lastName: 'Deshmukh',
-  fullName: 'Arjun Deshmukh',
-  email: 'arjun.deshmukh@gmail.com',
-  phone: '+91 98230 45812',
-  sportPreferences: ['Badminton', 'Tennis', 'Cricket'],
-  membershipTier: 'Club Athlete',
-  createdAt: '2023-04-12',
-  addresses: [
-    {
-      id: 'addr_1',
-      name: 'Arjun Deshmukh',
-      phone: '+91 98230 45812',
-      street: 'Bungalow No. 7, Silver Oak Lane, Off MG Road',
-      locality: 'Camp',
-      city: 'Pune',
-      state: 'Maharashtra',
-      pincode: '411001',
-      isDefault: true,
-      type: 'home',
-    },
-    {
-      id: 'addr_2',
-      name: 'Arjun Deshmukh (Office)',
-      phone: '+91 98230 45812',
-      street: 'Level 4, Quadra IT Park, West Avenue',
-      locality: 'Baner',
-      city: 'Pune',
-      state: 'Maharashtra',
-      pincode: '411045',
-      isDefault: false,
-      type: 'work',
-    },
-  ],
-  orders: [],
-  courtInquiries: [],
-};
+export const INITIAL_USER: UserProfile | null = null;
 
 export class AuthService {
   private static loadUser(): UserProfile | null {
@@ -55,7 +17,13 @@ export class AuthService {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed.id === 'usr_pune_0921' || parsed.email === 'arjun.deshmukh@gmail.com') {
+        if (
+          parsed.id === 'usr_pune_0921' ||
+          parsed.email === 'arjun.deshmukh@gmail.com' ||
+          parsed.id?.startsWith('usr_google_') ||
+          parsed.fullName?.includes('Arjun') ||
+          parsed.phone?.includes('98230 45812')
+        ) {
           localStorage.removeItem(STORAGE_KEY);
           return null;
         }
@@ -88,72 +56,95 @@ export class AuthService {
    */
   static initAuthListener(onUserChange: (user: UserProfile | null) => void): () => void {
     if (!isSupabaseConfigured()) {
-      // Local demo mode: emit existing local user
       onUserChange(this.getCurrentUser());
       return () => {};
     }
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const handleSession = async (session: any) => {
       if (session?.user) {
         try {
           const authUser = session.user;
-          // 1. Fetch profile from Supabase database
-          const { data: profileRow, error: profileErr } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', authUser.id)
-            .maybeSingle();
+          let activeProfile: any = null;
 
-          let activeProfile = profileRow;
-
-          // 2. If new user, create profile row in database
-          if (!activeProfile && !profileErr) {
-            const rawMeta = authUser.user_metadata || {};
-            const fullName =
-              rawMeta.full_name ||
-              rawMeta.name ||
-              (authUser.email ? authUser.email.split('@')[0] : 'Sports Member');
-            const firstName = rawMeta.given_name || fullName.split(' ')[0] || 'Sports';
-            const lastName = rawMeta.family_name || fullName.split(' ').slice(1).join(' ') || '';
-
-            const newRow = {
-              id: authUser.id,
-              email: authUser.email || '',
-              full_name: fullName,
-              first_name: firstName,
-              last_name: lastName,
-              addresses: [],
-              sport_preferences: ['Badminton', 'Tennis'],
-              membership_tier: 'Club Athlete',
-            };
-
-            const { data: createdRow } = await supabase
+          try {
+            const { data: profileRow } = await supabase
               .from('profiles')
-              .insert(newRow)
               .select('*')
+              .eq('id', authUser.id)
               .maybeSingle();
-
-            activeProfile = createdRow || newRow;
+            activeProfile = profileRow;
+          } catch (fetchErr) {
+            console.warn('Could not fetch profiles table:', fetchErr);
           }
 
-          // 3. Fetch user orders from database
-          const orders = await fetchUserOrdersFromSupabase(authUser.id);
+          if (!activeProfile) {
+            try {
+              const rawMeta = authUser.user_metadata || {};
+              const fullName =
+                rawMeta.full_name ||
+                rawMeta.name ||
+                (authUser.email ? authUser.email.split('@')[0] : 'Sports Member');
+              const firstName = rawMeta.given_name || fullName.split(' ')[0] || 'Member';
+              const lastName = rawMeta.family_name || fullName.split(' ').slice(1).join(' ') || '';
 
-          // 4. Map and store
+              const newRow = {
+                id: authUser.id,
+                email: authUser.email || '',
+                full_name: fullName,
+                first_name: firstName,
+                last_name: lastName,
+                addresses: [],
+                sport_preferences: ['Badminton', 'Tennis'],
+                membership_tier: 'Club Athlete',
+              };
+
+              const { data: createdRow } = await supabase
+                .from('profiles')
+                .insert(newRow)
+                .select('*')
+                .maybeSingle();
+
+              if (createdRow) activeProfile = createdRow;
+            } catch (insertErr) {
+              console.warn('Could not insert initial profile row:', insertErr);
+            }
+          }
+
+          let orders: Order[] = [];
+          try {
+            orders = await fetchUserOrdersFromSupabase(authUser.id);
+          } catch {
+            orders = [];
+          }
+
           const mapped = mapDbProfileToUser(authUser, activeProfile, orders);
           this.saveUser(mapped);
           onUserChange(mapped);
         } catch (err) {
-          console.error('Error fetching Supabase profile:', err);
-          onUserChange(this.getCurrentUser());
+          console.error('Error processing Supabase auth session:', err);
         }
       } else {
-        if (event === 'SIGNED_OUT') {
-          this.saveUser(null);
-          onUserChange(null);
-        }
+        this.saveUser(null);
+        onUserChange(null);
+      }
+    };
+
+    // 1. Check existing session on load
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        handleSession(session);
+      }
+    }).catch(console.error);
+
+    // 2. Subscribe to auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
+        this.saveUser(null);
+        onUserChange(null);
+      } else if (session) {
+        await handleSession(session);
       }
     });
 
@@ -252,69 +243,28 @@ export class AuthService {
   static async signInWithGoogle(): Promise<UserProfile | null> {
     localStorage.removeItem('oriental_sports_logged_out');
 
-    // 1. Only attempt external Supabase Google OAuth if explicitly enabled with a verified project
-    const isOAuthExplicitlyEnabled =
-      import.meta.env.VITE_ENABLE_SUPABASE_OAUTH === 'true' && isSupabaseConfigured();
-
-    if (isOAuthExplicitlyEnabled) {
-      try {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: window.location.origin,
-            queryParams: {
-              access_type: 'offline',
-              prompt: 'consent',
-            },
-          },
-        });
-
-        if (error) {
-          console.warn('Supabase Google OAuth notice:', error.message);
-        } else {
-          // Browser redirects to Google OAuth endpoint
-          return null;
-        }
-      } catch (err) {
-        console.warn('Supabase Google OAuth exception, using seamless member sign-in fallback:', err);
-      }
+    if (!isSupabaseConfigured()) {
+      throw new Error('Supabase is not configured. Please verify your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env');
     }
 
-    // 2. Seamless instant Google member login with authentic profile & Pune delivery address
-    await new Promise((r) => setTimeout(r, 200));
-    let user = this.getCurrentUser();
-    if (!user || user.id.startsWith('usr_')) {
-      const googleUser: UserProfile = {
-        id: `usr_google_${Date.now()}`,
-        firstName: 'Arjun',
-        lastName: 'Deshmukh',
-        fullName: 'Arjun Deshmukh',
-        email: 'arjun.deshmukh@gmail.com',
-        phone: '+91 98230 45812',
-        sportPreferences: ['Badminton', 'Tennis', 'Cricket'],
-        membershipTier: 'Club Athlete',
-        createdAt: new Date().toISOString().split('T')[0],
-        addresses: [
-          {
-            id: 'addr_google_1',
-            name: 'Arjun Deshmukh',
-            phone: '+91 98230 45812',
-            street: 'Flat 402, Rohan Mithila',
-            locality: 'Viman Nagar',
-            city: 'Pune',
-            state: 'Maharashtra',
-            pincode: '411014',
-            isDefault: true,
-            type: 'home',
-          },
-        ],
-        orders: [],
-        courtInquiries: [],
-      };
-      this.saveUser(googleUser);
-      return googleUser;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/account`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    });
+
+    if (error) {
+      console.error('Supabase Google OAuth error:', error.message);
+      throw error;
     }
-    return user;
+
+    // Supabase will redirect the browser to Google OAuth consent screen
+    return null;
   }
 
   static async signInWithEmail(email: string): Promise<UserProfile> {

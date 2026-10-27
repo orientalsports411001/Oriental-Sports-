@@ -113,25 +113,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return true;
     } catch (err) {
-      console.warn('Google sign-in error, using direct profile access:', err);
-      const fallbackUser: UserProfile = {
-        id: `usr_${Date.now()}`,
-        firstName: 'Sports',
-        lastName: 'Member',
-        fullName: 'Sports Member',
-        email: 'member@orientalsports.in',
-        phone: '',
-        sportPreferences: ['Badminton', 'Cricket'],
-        membershipTier: 'Club Athlete',
-        createdAt: new Date().toISOString().split('T')[0],
-        addresses: [],
-        orders: [],
-        courtInquiries: [],
-      };
-      AuthService.saveUser(fallbackUser);
-      setUser(fallbackUser);
-      closeAuthModal();
-      return true;
+      console.error('Google sign-in error:', err);
+      throw err;
     }
   };
 
@@ -148,10 +131,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithDemo = async (): Promise<boolean> => {
     try {
-      const demoUser = await AuthService.verifyOtp('+91 98230 45812', '123456', {
-        firstName: 'Arjun',
-        lastName: 'Deshmukh',
-        email: 'arjun.deshmukh@gmail.com',
+      const demoUser = await AuthService.verifyOtp('+91 98000 00000', '123456', {
+        firstName: 'Sports',
+        lastName: 'Member',
+        email: 'member@orientalsports.in',
       });
       setUser(demoUser);
       closeAuthModal();

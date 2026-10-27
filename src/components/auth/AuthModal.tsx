@@ -176,8 +176,8 @@ export const AuthModal: React.FC = () => {
     setError(null);
     try {
       await signInWithGoogle();
-    } catch {
-      setError('Google sign-in could not be completed.');
+    } catch (err: any) {
+      setError(err?.message || 'Google sign-in could not be completed.');
     } finally {
       setIsSubmitting(false);
     }
