@@ -14,11 +14,10 @@ export interface LogoProps {
   linkToHome?: boolean;
 }
 
-// Official Oriental Sports artwork.
-const WORDMARK_LIGHT = { src: '/brand/oriental-sports-wordmark.png', width: 921, height: 274 };
-const WORDMARK_DARK = { src: '/brand/oriental-sports-wordmark-white.png', width: 921, height: 274 };
-const MONOGRAM_LIGHT = { src: '/brand/oriental-sports-monogram.png', width: 921, height: 274 };
-const MONOGRAM_DARK = { src: '/brand/oriental-sports-monogram-white.png', width: 921, height: 274 };
+const WORDMARK_LIGHT = { src: '/brand/oriental-sports-wordmark.png', width: 918, height: 504 };
+const WORDMARK_DARK = { src: '/brand/oriental-sports-wordmark-white.png', width: 918, height: 504 };
+const MONOGRAM_LIGHT = { src: '/brand/oriental-sports-monogram.png', width: 790, height: 316 };
+const MONOGRAM_DARK = { src: '/brand/oriental-sports-monogram-white.png', width: 790, height: 316 };
 
 export const Logo: React.FC<LogoProps> = ({
   variant = 'dark',
@@ -27,11 +26,11 @@ export const Logo: React.FC<LogoProps> = ({
   className = '',
   linkToHome = true,
 }) => {
-  // Height scale (header wordmark height per brand guidance: 36–40px)
+  // Height scale for new stacked identity
   const heights = {
-    sm: 32,
-    md: 40,
-    lg: 56,
+    sm: 36,
+    md: 46,
+    lg: 64,
   };
 
   const h = heights[size];

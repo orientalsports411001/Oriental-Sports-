@@ -42,7 +42,7 @@ export const BrandIntro: React.FC = () => {
       aria-hidden="true"
       onClick={() => setPhase('out')}
     >
-      <img className="brand-intro-mark" src="/brand/oriental-sports-wordmark-white.png" alt="Oriental Sports Pune" width={320} height={95} />
+      <img className="brand-intro-mark" src="/brand/oriental-sports-wordmark-white.png" alt="Oriental Sports Pune" width={320} height={176} />
     </div>
   );
 };

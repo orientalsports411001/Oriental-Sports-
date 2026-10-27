@@ -19,7 +19,7 @@ async function capture() {
     await page.addInitScript(() => {
       sessionStorage.setItem('oriental_intro_shown', 'true');
     });
-    await page.goto('http://localhost:3000', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3001', { waitUntil: 'networkidle' });
     await page.waitForTimeout(600);
 
     const header = await page.$('.site-header');
@@ -48,7 +48,7 @@ async function capture() {
     await page.addInitScript(() => {
       sessionStorage.setItem('oriental_intro_shown', 'true');
     });
-    await page.goto('http://localhost:3000', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3001', { waitUntil: 'networkidle' });
     await page.waitForTimeout(600);
 
     const header = await page.$('.site-header');
@@ -69,7 +69,7 @@ async function capture() {
     await page.addInitScript(() => {
       sessionStorage.setItem('oriental_intro_shown', 'true');
     });
-    await page.goto('http://localhost:3000', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3001', { waitUntil: 'networkidle' });
     await page.waitForTimeout(600);
 
     await page.evaluate(() => {
