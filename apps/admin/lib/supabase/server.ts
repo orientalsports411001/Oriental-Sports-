@@ -39,13 +39,21 @@ export async function createClient() {
  * inventory read and write goes through this client (so drafts/archived
  * products and all orders are visible), gated beforehand by the server-side
  * role check in app/(admin)/layout.tsx (or equivalent per-route check).
+ *
+ * If SUPABASE_SERVICE_ROLE_KEY is not set, throws an error.
+ * All callers should wrap this in try/catch to fall back gracefully.
  */
 export function createServiceRoleClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!serviceKey) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set. Admin data access cannot proceed.');
+  if (!url || !serviceKey) {
+    throw new Error(
+      'Supabase configuration incomplete. ' +
+      (!url ? 'NEXT_PUBLIC_SUPABASE_URL is not set. ' : '') +
+      (!serviceKey ? 'SUPABASE_SERVICE_ROLE_KEY is not set. ' : '') +
+      'Add these to your environment variables.'
+    );
   }
 
   return createSupabaseJsClient(url, serviceKey, {

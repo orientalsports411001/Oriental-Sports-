@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { createServiceRoleClient } from '@/lib/supabase/server';
-import { requireAdmin } from '@/lib/require-admin';
+import { checkAdmin } from '@/lib/require-admin';
 import { saveProduct, removeProduct } from '@/lib/catalog-store';
 
 function parseLines(value: string | null): string[] {
@@ -55,6 +55,30 @@ function validateForPublish(fields: {
   return null;
 }
 
+/**
+ * Helper: check if an error is a Next.js redirect (NEXT_REDIRECT).
+ * These must NEVER be caught — they must be re-thrown so Next.js handles the redirect.
+ */
+function isRedirectError(err: unknown): boolean {
+  if (err && typeof err === 'object' && 'digest' in err) {
+    const digest = (err as { digest?: string }).digest;
+    return typeof digest === 'string' && digest.startsWith('NEXT_REDIRECT');
+  }
+  return false;
+}
+
+/**
+ * Safe admin check for Server Actions. Returns the user or redirects to login.
+ * Unlike requireAdmin(), this never throws NEXT_REDIRECT inside a try/catch.
+ */
+async function ensureAdmin() {
+  const result = await checkAdmin();
+  if (!result.ok) {
+    redirect('/login');
+  }
+  return { user: result.user, profile: result.profile };
+}
+
 function buildProductPayload(formData: FormData) {
   const name = String(formData.get('name') || '').trim();
   const slug = String(formData.get('slug') || '').trim();
@@ -104,7 +128,8 @@ function buildProductPayload(formData: FormData) {
 }
 
 export async function createProduct(formData: FormData) {
-  await requireAdmin();
+  // Auth check BEFORE any try/catch so redirect() can propagate cleanly
+  await ensureAdmin();
   const fields = buildProductPayload(formData);
 
   let status = fields.requestedStatus as 'draft' | 'published' | 'archived';
@@ -153,6 +178,7 @@ export async function createProduct(formData: FormData) {
     if (error) throw error;
     if (data) createdId = data.id;
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     // Save to local fallback store
     const saved = saveProduct({
       name: fields.name,
@@ -180,7 +206,7 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(productId: string, formData: FormData) {
-  await requireAdmin();
+  await ensureAdmin();
   const fields = buildProductPayload(formData);
 
   let status = fields.requestedStatus as 'draft' | 'published' | 'archived';
@@ -226,6 +252,7 @@ export async function updateProduct(productId: string, formData: FormData) {
 
     if (error) throw error;
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     saveProduct({
       id: productId,
       name: fields.name,
@@ -252,7 +279,7 @@ export async function updateProduct(productId: string, formData: FormData) {
 }
 
 export async function adjustStock(productId: string, formData: FormData) {
-  const { user } = await requireAdmin();
+  const { user } = await ensureAdmin();
   const delta = Number(formData.get('delta') || 0);
   const reason = String(formData.get('reason') || '').trim();
 
@@ -270,6 +297,7 @@ export async function adjustStock(productId: string, formData: FormData) {
     });
     if (error) throw error;
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     // Local fallback adjustment
     const existing = saveProduct({ id: productId, name: '' });
     if (existing) {
@@ -281,7 +309,12 @@ export async function adjustStock(productId: string, formData: FormData) {
 }
 
 export async function deleteProduct(productId: string) {
-  await requireAdmin();
+  await ensureAdmin();
+
+  // Separate the Supabase logic from redirects to prevent
+  // redirect errors being swallowed by try/catch
+  let shouldArchive = false;
+  let supabaseWorked = false;
 
   try {
     const admin = createServiceRoleClient();
@@ -297,15 +330,21 @@ export async function deleteProduct(productId: string) {
         .from('products')
         .update({ status: 'archived', updated_at: new Date().toISOString() })
         .eq('id', productId);
-      redirect('/products?saved=Product+archived+to+protect+order+history');
+      shouldArchive = true;
     } else {
       await admin.from('products').delete().eq('id', productId);
       removeProduct(productId);
-      redirect('/products?saved=Product+deleted+successfully');
     }
+    supabaseWorked = true;
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     // Fallback store deletion
     removeProduct(productId);
-    redirect('/products?saved=Product+deleted+successfully');
   }
+
+  // Redirects are OUTSIDE try/catch — they propagate cleanly
+  if (shouldArchive) {
+    redirect('/products?saved=Product+archived+to+protect+order+history');
+  }
+  redirect('/products?saved=Product+deleted+successfully');
 }

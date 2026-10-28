@@ -140,7 +140,14 @@ export function SeoEditor({
         setConfirmFields(existing);
       }
     } catch (err: unknown) {
-      setGenError(err instanceof Error ? err.message : 'Failed to generate SEO suggestions.');
+      // In production, Next.js wraps server action errors with a generic digest message.
+      // Detect that and show a helpful fallback instead of the cryptic digest text.
+      const msg = err instanceof Error ? err.message : '';
+      if (!msg || msg.includes('digest') || msg.includes('Server Components') || msg.includes('production builds')) {
+        setGenError('SEO generation encountered a server error. Please try again.');
+      } else {
+        setGenError(msg);
+      }
     } finally {
       setPending(false);
     }
