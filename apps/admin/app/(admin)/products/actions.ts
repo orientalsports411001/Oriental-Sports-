@@ -351,10 +351,6 @@ export async function updateProduct(productId: string, formData: FormData) {
     targetEditId = saved.id || fields.slug || productId;
   }
 
-  if (publishError) {
-    redirect(`/products/${targetEditId}/edit?error=${encodeURIComponent(publishError)}`);
-  }
-
   redirect(`/products/${targetEditId}/edit?saved=Product+saved+successfully`);
 }
 

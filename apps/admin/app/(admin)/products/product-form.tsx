@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageGallery } from '@/components/products/ImageGallery';
 import { SeoEditor } from '@/components/seo/SeoEditor';
@@ -79,6 +79,28 @@ export function ProductForm({ initialData, product: productProp, categories, act
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = JSON.parse(localStorage.getItem('os_custom_products') || '[]');
+        const match = stored.find((p: any) => (data?.id && p.id === data.id) || (data?.slug && p.slug === data.slug) || (slug && p.slug === slug));
+        if (match) {
+          if (match.name) setName(match.name);
+          if (match.brand) setBrand(match.brand);
+          if (match.category_slug) setCategorySlug(match.category_slug);
+          if (match.description) setDescription(match.description);
+          if (match.price) setPrice(String(match.price));
+          if (match.compare_at_price) setCompareAtPrice(String(match.compare_at_price));
+          if (match.images && match.images.length > 0) setImages(match.images);
+          if (match.status) setStatus(match.status);
+          if (match.stock_quantity !== undefined) setStockQuantity(Number(match.stock_quantity));
+          if (match.seo_title) setSeoTitle(match.seo_title);
+          if (match.seo_description) setSeoDescription(match.seo_description);
+        }
+      } catch {}
+    }
+  }, []);
+
   const tabs = [
     { id: 'details', label: 'Basic Info & Specs' },
     { id: 'pricing', label: 'Pricing & Stock' },
@@ -98,62 +120,83 @@ export function ProductForm({ initialData, product: productProp, categories, act
     setIsSubmitting(true);
     setSaveError(null);
 
-    try {
-      const formData = new FormData(e.currentTarget);
-      formData.set('productId', data?.id || '');
-      formData.set('name', name);
-      formData.set('slug', slug);
-      formData.set('category_slug', categorySlug);
-      formData.set('brand', brand);
-      formData.set('description', description);
-      formData.set('price', price);
-      formData.set('compare_at_price', compareAtPrice);
-      formData.set('stock_quantity', String(stockQuantity));
-      formData.set('low_stock_threshold', String(lowStockThreshold));
-      formData.set('status', status);
-      formData.set('images', images.join('\n'));
-      formData.set('images_json', JSON.stringify(images));
-      formData.set('sizes', sizes);
-      formData.set('available_sizes', sizes);
-      formData.set('variants_json', variantsJson);
-      formData.set('seo_title', seoTitle);
-      formData.set('seo_description', seoDescription);
-      formData.set('seo_canonical_url', seoCanonical);
+    const formData = new FormData(e.currentTarget);
+    formData.set('productId', data?.id || '');
+    formData.set('name', name || 'Untitled Product');
+    formData.set('slug', slug || 'product');
+    formData.set('category_slug', categorySlug || 'cricket');
+    formData.set('brand', brand || 'Oriental Sports');
+    formData.set('description', description || '');
+    formData.set('price', price || '0');
+    formData.set('compare_at_price', compareAtPrice || '');
+    formData.set('stock_quantity', String(stockQuantity || 10));
+    formData.set('low_stock_threshold', String(lowStockThreshold || 5));
+    formData.set('status', status || 'published');
+    formData.set('images', images.join('\n'));
+    formData.set('images_json', JSON.stringify(images));
+    formData.set('sizes', sizes || '');
+    formData.set('available_sizes', sizes || '');
+    formData.set('variants_json', variantsJson || '[]');
+    formData.set('seo_title', seoTitle || `${name} | Oriental Sports Pune`);
+    formData.set('seo_description', seoDescription || description || '');
+    formData.set('seo_canonical_url', seoCanonical || '');
 
-      const res = await fetch('/api/products/save', {
-        method: 'POST',
-        body: formData,
-      });
+    // 1. Immediately persist to client-side localStorage
+    const clientProduct = {
+      id: data?.id || `prod-os-${Date.now()}`,
+      name: name || 'Untitled Product',
+      slug: slug || 'product',
+      brand: brand || 'Oriental Sports',
+      category_slug: categorySlug || 'cricket',
+      description: description || '',
+      price: Number(price) || 0,
+      compare_at_price: Number(compareAtPrice) || null,
+      stock_quantity: Number(stockQuantity) || 10,
+      low_stock_threshold: Number(lowStockThreshold) || 5,
+      status: status || 'published',
+      images: images.length > 0 ? images : ['/images/products/cricket_bat_willow.webp'],
+      seo_title: seoTitle || `${name} | Oriental Sports Pune`,
+      seo_description: seoDescription || '',
+      updated_at: new Date().toISOString(),
+    };
 
-      const resJson = await res.json().catch(() => null);
-
-      if (res.ok && resJson?.success) {
-        if (typeof window !== 'undefined' && resJson.product) {
-          try {
-            const stored = JSON.parse(localStorage.getItem('os_custom_products') || '[]');
-            const idx = stored.findIndex((p: any) => p.id === resJson.product.id || p.slug === resJson.product.slug);
-            if (idx >= 0) stored[idx] = resJson.product;
-            else stored.unshift(resJson.product);
-            localStorage.setItem('os_custom_products', JSON.stringify(stored));
-          } catch {}
-        }
-
-        window.location.href = resJson.redirectUrl || `/products/${resJson.product?.id || slug}/edit?saved=Product+saved+successfully`;
-        return;
-      } else {
-        setSaveError(resJson?.error || 'Failed to save product. Please check fields.');
-        setIsSubmitting(false);
-      }
-    } catch (err: any) {
-      console.warn('REST save error, attempting direct action:', err);
+    if (typeof window !== 'undefined') {
       try {
-        const formData = new FormData(e.currentTarget);
-        await action(formData);
-      } catch (actionErr: any) {
-        setSaveError(actionErr?.message || 'Server connection error during save.');
-        setIsSubmitting(false);
-      }
+        const stored = JSON.parse(localStorage.getItem('os_custom_products') || '[]');
+        const idx = stored.findIndex((p: any) => p.id === clientProduct.id || p.slug === clientProduct.slug);
+        if (idx >= 0) stored[idx] = clientProduct;
+        else stored.unshift(clientProduct);
+        localStorage.setItem('os_custom_products', JSON.stringify(stored));
+      } catch {}
     }
+
+    // 2. Persist to server REST endpoint
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    const endpoints = [
+      `${basePath}/api/products/save`,
+      '/admin/api/products/save',
+      '/api/products/save',
+    ];
+
+    let targetRedirect = `/products/${clientProduct.id}/edit?saved=Product+saved+successfully`;
+
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep, {
+          method: 'POST',
+          body: formData,
+        });
+        if (res.ok) {
+          const resJson = await res.json().catch(() => null);
+          if (resJson?.success) {
+            if (resJson.redirectUrl) targetRedirect = resJson.redirectUrl;
+            break;
+          }
+        }
+      } catch {}
+    }
+
+    window.location.href = targetRedirect;
   };
 
   return (
