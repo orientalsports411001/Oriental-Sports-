@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { deleteCloudinaryAssetAction } from '@/app/(admin)/products/cloudinary-actions';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
+const MAX_IMAGES = 5;
 const ACCEPTED_TYPE_PREFIX = 'image/';
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://orientalsports.in').replace(/\/+$/, '');
 
@@ -38,6 +39,7 @@ export function ImageGallery({
   const [uploads, setUploads] = useState<UploadState[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [limitNotice, setLimitNotice] = useState<string | null>(null);
   const [manualUrl, setManualUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -54,7 +56,20 @@ export function ImageGallery({
     }, {})
   );
 
+  const addImageSafely = useCallback((newImg: GalleryImage) => {
+    const current = imagesRef.current;
+    if (current.length >= MAX_IMAGES) return;
+    const nextList = [...current, newImg].slice(0, MAX_IMAGES);
+    imagesRef.current = nextList;
+    onChange(nextList);
+  }, [onChange]);
+
   const uploadFile = useCallback(async (file: File) => {
+    if (imagesRef.current.length >= MAX_IMAGES) {
+      setLimitNotice(`Maximum limit reached: You can upload up to ${MAX_IMAGES} photos.`);
+      return;
+    }
+
     if (!file.type.startsWith(ACCEPTED_TYPE_PREFIX)) {
       setUploads((prev) => [...prev, { fileName: file.name, progress: 0, error: 'Not an image file.' }]);
       return;
@@ -99,7 +114,7 @@ export function ImageGallery({
 
         const localResult = await localRes.json();
         setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 100 } : u)));
-        onChange([...imagesRef.current, { url: localResult.secure_url, publicId: localResult.public_id }]);
+        addImageSafely({ url: localResult.secure_url, publicId: localResult.public_id });
         setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
         return;
       }
@@ -132,7 +147,7 @@ export function ImageGallery({
         if (localRes.ok) {
           const localResult = await localRes.json();
           setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 100 } : u)));
-          onChange([...imagesRef.current, { url: localResult.secure_url, publicId: localResult.public_id }]);
+          addImageSafely({ url: localResult.secure_url, publicId: localResult.public_id });
           setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
           return;
         }
@@ -142,31 +157,51 @@ export function ImageGallery({
       }
 
       const result = await uploadRes.json();
-      onChange([...imagesRef.current, { url: result.secure_url, publicId: result.public_id }]);
+      addImageSafely({ url: result.secure_url, publicId: result.public_id });
       setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
     } catch (err: any) {
       console.warn('Server upload was rejected or serverless filesystem unavailable. Activating instant client-side asset reader fallback:', err);
       try {
         const clientDataUrl = await readFileAsDataUrl(file);
         setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 100 } : u)));
-        onChange([...imagesRef.current, { url: clientDataUrl, publicId: `client_${Date.now()}` }]);
+        addImageSafely({ url: clientDataUrl, publicId: `client_${Date.now()}` });
         setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
       } catch (readErr: any) {
         setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 0, error: readErr?.message || 'Could not process image.' } : u)));
       }
     }
-  }, [onChange]);
+  }, [addImageSafely]);
 
-  function handleFiles(fileList: FileList | null) {
-    if (!fileList) return;
-    Array.from(fileList).forEach((file) => void uploadFile(file));
+  async function handleFiles(fileList: FileList | null) {
+    if (!fileList || fileList.length === 0) return;
+    setLimitNotice(null);
+
+    const currentCount = imagesRef.current.length;
+    if (currentCount >= MAX_IMAGES) {
+      setLimitNotice(`Maximum limit reached: You can upload up to ${MAX_IMAGES} photos per product.`);
+      return;
+    }
+
+    const remainingSlots = MAX_IMAGES - currentCount;
+    const filesArray = Array.from(fileList);
+    const filesToUpload = filesArray.slice(0, remainingSlots);
+
+    if (filesArray.length > remainingSlots) {
+      setLimitNotice(`Only ${remainingSlots} photo slot${remainingSlots === 1 ? '' : 's'} available (up to ${MAX_IMAGES} photos total). Uploading first ${remainingSlots}.`);
+    }
+
+    // Process files sequentially to ensure state stability
+    for (const file of filesToUpload) {
+      await uploadFile(file);
+    }
   }
 
   async function handleDelete(index: number) {
     const target = images[index];
     setDeleteError(null);
+    setLimitNotice(null);
 
-    if (target.publicId && !target.publicId.startsWith('local_')) {
+    if (target.publicId && !target.publicId.startsWith('local_') && !target.publicId.startsWith('client_')) {
       const result = await deleteCloudinaryAssetAction(target.publicId);
       if (!result.ok) {
         setDeleteError(`Could not delete from Cloudinary: ${result.error || 'unknown error'}`);
@@ -174,7 +209,9 @@ export function ImageGallery({
       }
     }
 
-    onChange(images.filter((_, i) => i !== index));
+    const nextList = images.filter((_, i) => i !== index);
+    imagesRef.current = nextList;
+    onChange(nextList);
   }
 
   function moveImage(index: number, direction: -1 | 1) {
@@ -182,42 +219,64 @@ export function ImageGallery({
     if (target < 0 || target >= images.length) return;
     const next = [...images];
     [next[index], next[target]] = [next[target], next[index]];
+    imagesRef.current = next;
     onChange(next);
   }
 
   function addManualUrl() {
     const url = manualUrl.trim();
     if (!url) return;
-    onChange([...images, { url }]);
+    setLimitNotice(null);
+
+    if (images.length >= MAX_IMAGES) {
+      setLimitNotice(`Maximum limit reached: You can upload up to ${MAX_IMAGES} photos per product.`);
+      return;
+    }
+
+    const nextList = [...images, { url }].slice(0, MAX_IMAGES);
+    imagesRef.current = nextList;
+    onChange(nextList);
     setManualUrl('');
   }
+
+  const isMaxReached = images.length >= MAX_IMAGES;
 
   return (
     <div>
       {/* Tactile Dropzone */}
       <motion.div
-        whileHover={{ scale: 1.006, borderColor: 'var(--ink)' }}
-        whileTap={{ scale: 0.995 }}
+        whileHover={{ scale: isMaxReached ? 1 : 1.006, borderColor: isMaxReached ? 'rgba(17,17,17,0.14)' : 'var(--ink)' }}
+        whileTap={{ scale: isMaxReached ? 1 : 0.995 }}
         onDragOver={(e) => {
           e.preventDefault();
-          setDragOver(true);
+          if (!isMaxReached) setDragOver(true);
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={(e) => {
           e.preventDefault();
           setDragOver(false);
+          if (isMaxReached) {
+            setLimitNotice(`Maximum limit reached: You can upload up to ${MAX_IMAGES} photos per product.`);
+            return;
+          }
           handleFiles(e.dataTransfer.files);
         }}
-        onClick={() => fileInputRef.current?.click()}
+        onClick={() => {
+          if (isMaxReached) {
+            setLimitNotice(`Maximum limit reached: You can upload up to ${MAX_IMAGES} photos per product.`);
+            return;
+          }
+          fileInputRef.current?.click();
+        }}
         role="button"
         tabIndex={0}
         style={{
-          border: `1.5px dashed ${dragOver ? 'var(--ink)' : 'rgba(17,17,17,0.14)'}`,
+          border: `1.5px dashed ${dragOver ? 'var(--ink)' : isMaxReached ? 'rgba(74, 222, 128, 0.35)' : 'rgba(17,17,17,0.14)'}`,
           borderRadius: 20,
-          padding: '32px 24px',
+          padding: '30px 24px',
           textAlign: 'center',
-          cursor: 'pointer',
-          background: dragOver ? 'var(--stone)' : 'var(--paper)',
+          cursor: isMaxReached ? 'default' : 'pointer',
+          background: isMaxReached ? 'rgba(46, 107, 60, 0.08)' : dragOver ? 'var(--stone)' : 'var(--paper)',
           boxShadow: '0 4px 20px -2px rgba(17,17,17,0.03)',
           transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
@@ -228,22 +287,26 @@ export function ImageGallery({
               width: 44,
               height: 44,
               borderRadius: '50%',
-              background: 'var(--stone)',
+              background: isMaxReached ? 'rgba(74, 222, 128, 0.2)' : 'var(--stone)',
               display: 'grid',
               placeItems: 'center',
-              color: 'var(--ink)',
+              color: isMaxReached ? '#4ADE80' : 'var(--ink)',
               fontWeight: 800,
-              fontSize: 20,
+              fontSize: isMaxReached ? 16 : 20,
             }}
           >
-            +
+            {isMaxReached ? '✓' : '+'}
           </div>
           <div>
             <div style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--ink)', marginBottom: 4, letterSpacing: '-0.01em' }}>
-              Drag and drop product photos, or click to browse
+              {isMaxReached
+                ? `All 5 of 5 Photos Uploaded`
+                : `Upload up to 5 product photos, or click to browse (${images.length}/${MAX_IMAGES})`}
             </div>
             <div style={{ fontSize: 12, color: 'var(--subtle)' }}>
-              WebP, high-res JPG, and transparent PNG supported (up to 10MB per file)
+              {isMaxReached
+                ? 'Maximum 5 photos reached. Reorder with ‹ › or delete any card below to replace.'
+                : `WebP, JPG, and PNG supported (up to 10MB per file) • ${MAX_IMAGES - images.length} photo slot${MAX_IMAGES - images.length === 1 ? '' : 's'} remaining`}
             </div>
           </div>
         </div>
@@ -253,6 +316,7 @@ export function ImageGallery({
           type="file"
           accept="image/*"
           multiple
+          disabled={isMaxReached}
           style={{ display: 'none' }}
           onChange={(e) => {
             handleFiles(e.target.files);
@@ -260,6 +324,42 @@ export function ImageGallery({
           }}
         />
       </motion.div>
+
+      {/* Limit / Notice Banner */}
+      {limitNotice && (
+        <div
+          style={{
+            marginTop: 12,
+            padding: '10px 16px',
+            borderRadius: 12,
+            background: 'rgba(234, 179, 8, 0.12)',
+            border: '1px solid rgba(234, 179, 8, 0.3)',
+            color: '#EAB308',
+            fontSize: 12.5,
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 10,
+          }}
+        >
+          <span>{limitNotice}</span>
+          <button
+            type="button"
+            onClick={() => setLimitNotice(null)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#EAB308',
+              fontSize: 16,
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {/* Manual URL Input Bar (Watermelon Pill Bar) */}
       <div style={{ marginTop: 14 }}>
@@ -272,6 +372,7 @@ export function ImageGallery({
             borderRadius: 9999,
             padding: '4px 6px 4px 16px',
             boxShadow: '0 2px 10px rgba(17,17,17,0.03)',
+            opacity: isMaxReached ? 0.6 : 1,
             transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
           }}
         >
@@ -280,7 +381,8 @@ export function ImageGallery({
           </span>
           <input
             type="url"
-            placeholder="Or paste an image URL (/images/products/... or CDN)"
+            disabled={isMaxReached}
+            placeholder={isMaxReached ? "Maximum 5 photos reached (delete a photo below to attach via URL)" : "Or paste an image URL (/images/products/... or CDN)"}
             value={manualUrl}
             onChange={(e) => setManualUrl(e.target.value)}
             onKeyDown={(e) => {
@@ -297,10 +399,12 @@ export function ImageGallery({
               fontSize: 13,
               color: 'var(--ink)',
               padding: '8px 0',
+              cursor: isMaxReached ? 'not-allowed' : 'text',
             }}
           />
           <button
             type="button"
+            disabled={isMaxReached}
             onClick={addManualUrl}
             style={{
               borderRadius: 9999,
@@ -311,10 +415,10 @@ export function ImageGallery({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              background: 'var(--ink)',
+              background: isMaxReached ? 'rgba(17,17,17,0.3)' : 'var(--ink)',
               color: 'var(--ivory)',
               border: 'none',
-              cursor: 'pointer',
+              cursor: isMaxReached ? 'not-allowed' : 'pointer',
             }}
           >
             + Attach
@@ -350,8 +454,21 @@ export function ImageGallery({
       {/* Gallery Cards Grid */}
       {images.length > 0 && (
         <div style={{ marginTop: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--subtle)', marginBottom: 12 }}>
-            Current Media Assets (First card is primary storefront photo)
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--subtle)' }}>
+              Current Media Assets ({images.length}/{MAX_IMAGES}) • First card is primary storefront cover
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                color: isMaxReached ? '#4ADE80' : 'var(--subtle)',
+              }}
+            >
+              {isMaxReached ? 'Maximum 5 Photos (Full)' : `${MAX_IMAGES - images.length} photo slot${MAX_IMAGES - images.length === 1 ? '' : 's'} available`}
+            </div>
           </div>
 
           <div
@@ -390,26 +507,24 @@ export function ImageGallery({
                         e.currentTarget.src = '/images/products/cricket_bat_willow.webp';
                       }}
                     />
-                    {i === 0 && (
-                      <span
-                        style={{
-                          position: 'absolute',
-                          top: 8,
-                          left: 8,
-                          background: 'var(--ink)',
-                          color: 'var(--ivory)',
-                          fontSize: 10,
-                          fontWeight: 800,
-                          letterSpacing: '0.06em',
-                          textTransform: 'uppercase',
-                          padding: '3px 9px',
-                          borderRadius: 9999,
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
-                        }}
-                      >
-                        Primary
-                      </span>
-                    )}
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: 8,
+                        left: 8,
+                        background: i === 0 ? 'var(--ink)' : 'rgba(17,17,17,0.7)',
+                        color: 'var(--ivory)',
+                        fontSize: 10,
+                        fontWeight: 800,
+                        letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        padding: '3px 9px',
+                        borderRadius: 9999,
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+                      }}
+                    >
+                      {i === 0 ? 'Primary Cover' : `Photo ${i + 1}`}
+                    </span>
                   </div>
 
                   <div

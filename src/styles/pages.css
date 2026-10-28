@@ -892,6 +892,8 @@
 
 .pdp-thumbs {
   display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   gap: 8px;
   margin-top: 12px;
 }

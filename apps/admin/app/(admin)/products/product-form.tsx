@@ -124,7 +124,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
   const tabs = [
     { id: 'details', label: 'Basic Info & Specs' },
     { id: 'pricing', label: 'Pricing & Stock' },
-    { id: 'media', label: `Media (${images.length})` },
+    { id: 'media', label: `Media (${images.length}/5)` },
     { id: 'seo', label: 'Search & SEO' },
   ] as const;
 
@@ -152,8 +152,9 @@ export function ProductForm({ initialData, product: productProp, categories, act
     formData.set('stock_quantity', String(stockQuantity || 10));
     formData.set('low_stock_threshold', String(lowStockThreshold || 5));
     formData.set('status', status || 'published');
-    formData.set('images', images.join('\n'));
-    formData.set('images_json', JSON.stringify(images));
+    const finalImages = images.slice(0, 5);
+    formData.set('images', finalImages.join('\n'));
+    formData.set('images_json', JSON.stringify(finalImages));
     formData.set('sizes', sizes || '');
     formData.set('available_sizes', sizes || '');
     formData.set('variants_json', variantsJson || '[]');
@@ -174,7 +175,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
       stock_quantity: Number(stockQuantity) || 10,
       low_stock_threshold: Number(lowStockThreshold) || 5,
       status: status || 'published',
-      images: images.length > 0 ? images : ['/images/products/cricket_bat_willow.webp'],
+      images: finalImages.length > 0 ? finalImages : ['/images/products/cricket_bat_willow.webp'],
       seo_title: seoTitle || `${name} | Oriental Sports Pune`,
       seo_description: seoDescription || '',
       updated_at: new Date().toISOString(),
@@ -676,13 +677,13 @@ export function ProductForm({ initialData, product: productProp, categories, act
                     Photography & Media Assets
                   </h2>
                   <p style={{ margin: 0, fontSize: 13, color: 'var(--subtle)' }}>
-                    Upload or attach high-resolution product photos. Drag or rearrange to set primary cover.
+                    Upload up to 5 high-resolution product photos. Drag or rearrange with ‹ › to set the primary storefront cover.
                   </p>
                 </div>
 
                 <ImageGallery
-                  images={images.map((img) => ({ url: img }))}
-                  onChange={(newImgs) => setImages(newImgs.map((g) => g.url))}
+                  images={images.slice(0, 5).map((img) => ({ url: img }))}
+                  onChange={(newImgs) => setImages(newImgs.slice(0, 5).map((g) => g.url))}
                 />
               </div>
             </motion.div>
