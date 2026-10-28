@@ -111,8 +111,25 @@ export function ImageGallery({
       setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 90 } : u)));
 
       if (!uploadRes.ok) {
+        // If Cloudinary rejects upload (e.g. "cloud_name is disabled"), seamlessly fallback to local asset storage
+        const localFormData = new FormData();
+        localFormData.append('file', file);
+
+        const localRes = await fetch(`${basePath}/api/upload`, {
+          method: 'POST',
+          body: localFormData,
+        });
+
+        if (localRes.ok) {
+          const localResult = await localRes.json();
+          setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 100 } : u)));
+          onChange([...imagesRef.current, { url: localResult.secure_url, publicId: localResult.public_id }]);
+          setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
+          return;
+        }
+
         const body = await uploadRes.json().catch(() => ({}));
-        throw new Error(body?.error?.message || `Cloudinary upload failed (${uploadRes.status}).`);
+        throw new Error(body?.error?.message || `Upload failed (${uploadRes.status}).`);
       }
 
       const result = await uploadRes.json();
