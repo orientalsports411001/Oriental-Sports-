@@ -28,8 +28,21 @@ export const ProductDetailPage: React.FC = () => {
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState<Product | undefined>(() => getLiveProductBySlug(slug));
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState<string>(product?.variants?.[0]?.name || '');
+  const [selectedSize, setSelectedSize] = useState<string>(product?.sizes?.[0] || '');
+  const [quantity, setQuantity] = useState(1);
+  const [addedAnimation, setAddedAnimation] = useState(false);
 
   useEffect(() => {
+    const nextProduct = getLiveProductBySlug(slug);
+    setProduct(nextProduct);
+    setActiveImageIndex(0);
+    setSelectedVariant(nextProduct?.variants?.[0]?.name || '');
+    setSelectedSize(nextProduct?.sizes?.[0] || '');
+    setQuantity(1);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
     const handleUpdate = () => setProduct(getLiveProductBySlug(slug));
     window.addEventListener('storage', handleUpdate);
     window.addEventListener('os_catalog_updated', handleUpdate);
@@ -38,12 +51,6 @@ export const ProductDetailPage: React.FC = () => {
       window.removeEventListener('os_catalog_updated', handleUpdate);
     };
   }, [slug]);
-
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState<string>(product?.variants?.[0]?.name || '');
-  const [selectedSize, setSelectedSize] = useState<string>(product?.sizes?.[0] || '');
-  const [quantity, setQuantity] = useState(1);
-  const [addedAnimation, setAddedAnimation] = useState(false);
 
   if (!product) {
     return (

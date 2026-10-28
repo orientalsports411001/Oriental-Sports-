@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Heart, Star, Check, Plus } from 'lucide-react';
 import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
@@ -34,8 +34,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const navigate = useNavigate();
   const [justAdded, setJustAdded] = useState(false);
   const saved = isInWishlist(product.id);
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a')) {
+      return;
+    }
+    navigate(`/product/${product.slug}`);
+  };
 
   const basePrice = product.price;
   const originalPrice = product.originalPrice || (basePrice > 1000 ? Math.round(basePrice * 1.18) : undefined);
@@ -82,7 +91,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const reviewsCount = product.reviewsCount || Math.floor((product.price % 37) + 14);
 
   return (
-    <article className={`ecom-card ${className}`}>
+    <article
+      className={`ecom-card ${className}`}
+      onClick={handleCardClick}
+      style={{ cursor: 'pointer' }}
+    >
       {/* Media & Interactive Quick Actions */}
       <div className="ecom-card-media-wrap">
         <Link to={`/product/${product.slug}`} className="ecom-card-media" tabIndex={-1} aria-hidden="true">
