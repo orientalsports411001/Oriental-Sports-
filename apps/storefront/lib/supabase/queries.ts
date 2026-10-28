@@ -231,10 +231,12 @@ export async function getFeaturedProductsExcludingCategory(categorySlug: string,
       .eq('status', 'published')
       .contains('metadata', { isFeatured: true })
       .limit(limit);
-    if (error || !data) return [];
-    return (data as ProductRow[]).map(rowToProduct);
+    if (!error && data && data.length > 0) {
+      return (data as ProductRow[]).map(rowToProduct);
+    }
+    return FALLBACK_PRODUCTS.filter((p) => p.category !== categorySlug && p.isFeatured).slice(0, limit);
   } catch {
-    return [];
+    return FALLBACK_PRODUCTS.filter((p) => p.category !== categorySlug && p.isFeatured).slice(0, limit);
   }
 }
 
@@ -250,16 +252,18 @@ export async function getFeaturedProducts(limit = 4): Promise<Product[]> {
       .eq('status', 'published')
       .contains('metadata', { isFeatured: true })
       .limit(limit);
-    if (error || !data) return [];
-    return (data as ProductRow[]).map(rowToProduct);
+    if (!error && data && data.length > 0) {
+      return (data as ProductRow[]).map(rowToProduct);
+    }
+    return FALLBACK_PRODUCTS.filter((p) => p.isFeatured).slice(0, limit);
   } catch {
-    return [];
+    return FALLBACK_PRODUCTS.filter((p) => p.isFeatured).slice(0, limit);
   }
 }
 
 /** Live-typing search — matches name/brand/description/tags, published only. */
 export async function searchProducts(query: string, limit = 8): Promise<Product[]> {
-  const term = query.trim();
+  const term = query.trim().toLowerCase();
   if (!term) return [];
   try {
     const supabase = await createClient();
@@ -272,10 +276,22 @@ export async function searchProducts(query: string, limit = 8): Promise<Product[
       .eq('status', 'published')
       .or(`name.ilike.${like},brand.ilike.${like},description.ilike.${like}`)
       .limit(limit);
-    if (error || !data) return [];
-    return (data as ProductRow[]).map(rowToProduct);
+    if (!error && data && data.length > 0) {
+      return (data as ProductRow[]).map(rowToProduct);
+    }
+    return FALLBACK_PRODUCTS.filter(
+      (p) =>
+        p.name.toLowerCase().includes(term) ||
+        p.brand.toLowerCase().includes(term) ||
+        p.description.toLowerCase().includes(term)
+    ).slice(0, limit);
   } catch {
-    return [];
+    return FALLBACK_PRODUCTS.filter(
+      (p) =>
+        p.name.toLowerCase().includes(term) ||
+        p.brand.toLowerCase().includes(term) ||
+        p.description.toLowerCase().includes(term)
+    ).slice(0, limit);
   }
 }
 
@@ -283,26 +299,26 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 /** Resolves a list of product ids to full product objects — used by the wishlist page and order "buy again". */
 export async function getProductsByIds(ids: string[]): Promise<Product[]> {
-  // Ids come from client-persisted state (localStorage wishlist, a past
-  // order's line items) that can outlive the product it points to, or in
-  // principle carry a malformed value — one non-uuid value in a Postgres
-  // `in()` filter errors the whole query, so those are dropped here rather
-  // than letting a single stale id silently blank out the rest.
-  const validIds = (ids || []).filter((id) => UUID_RE.test(id));
-  if (validIds.length === 0) return [];
+  const idSet = new Set(ids || []);
+  if (idSet.size === 0) return [];
   try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from('products')
-      .select(
-        'id, slug, name, category_slug, brand, description, price, compare_at_price, images, variants, sizes, in_stock, rating, review_count, tags, metadata, created_at, updated_at, seo_title, seo_description, seo_keywords, og_title, og_description, image_alt_text'
-      )
-      .eq('status', 'published')
-      .in('id', validIds);
-    if (error || !data) return [];
-    return (data as ProductRow[]).map(rowToProduct);
+    const validIds = (ids || []).filter((id) => UUID_RE.test(id));
+    if (validIds.length > 0) {
+      const supabase = await createClient();
+      const { data, error } = await supabase
+        .from('products')
+        .select(
+          'id, slug, name, category_slug, brand, description, price, compare_at_price, images, variants, sizes, in_stock, rating, review_count, tags, metadata, created_at, updated_at, seo_title, seo_description, seo_keywords, og_title, og_description, image_alt_text'
+        )
+        .eq('status', 'published')
+        .in('id', validIds);
+      if (!error && data && data.length > 0) {
+        return (data as ProductRow[]).map(rowToProduct);
+      }
+    }
+    return FALLBACK_PRODUCTS.filter((p) => idSet.has(p.id) || idSet.has(p.slug));
   } catch {
-    return [];
+    return FALLBACK_PRODUCTS.filter((p) => idSet.has(p.id) || idSet.has(p.slug));
   }
 }
 
@@ -317,9 +333,11 @@ export async function getProductsBySubcategorySlug(subcategorySlug: string): Pro
       )
       .eq('status', 'published')
       .contains('metadata', { subcategory: subcategorySlug });
-    if (error || !data) return [];
-    return (data as ProductRow[]).map(rowToProduct);
+    if (!error && data && data.length > 0) {
+      return (data as ProductRow[]).map(rowToProduct);
+    }
+    return FALLBACK_PRODUCTS.filter((p) => p.subcategory === subcategorySlug);
   } catch {
-    return [];
+    return FALLBACK_PRODUCTS.filter((p) => p.subcategory === subcategorySlug);
   }
 }

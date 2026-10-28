@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Minus, Plus } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
+import { PRODUCTS, getLiveProducts, getLiveProductBySlug } from '../data/products';
+import type { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { StickyBuyBar } from '../components/products/StickyBuyBar';
 import { ProductCard } from '../components/products/ProductCard';
@@ -26,7 +27,17 @@ export const ProductDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  const product = PRODUCTS.find((p) => p.slug === slug);
+  const [product, setProduct] = useState<Product | undefined>(() => getLiveProductBySlug(slug));
+
+  useEffect(() => {
+    const handleUpdate = () => setProduct(getLiveProductBySlug(slug));
+    window.addEventListener('storage', handleUpdate);
+    window.addEventListener('os_catalog_updated', handleUpdate);
+    return () => {
+      window.removeEventListener('storage', handleUpdate);
+      window.removeEventListener('os_catalog_updated', handleUpdate);
+    };
+  }, [slug]);
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<string>(product?.variants?.[0]?.name || '');
@@ -47,8 +58,9 @@ export const ProductDetailPage: React.FC = () => {
   // Unique images only — some products repeat the same shot.
   const images = [...new Set(product.images)];
 
-  const sameSport = PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id);
-  const related = (sameSport.length > 0 ? sameSport : PRODUCTS.filter((p) => p.isFeatured && p.id !== product.id)).slice(0, 4);
+  const allLive = getLiveProducts();
+  const sameSport = allLive.filter((p) => p.category === product.category && p.id !== product.id);
+  const related = (sameSport.length > 0 ? sameSport : allLive.filter((p) => p.isFeatured && p.id !== product.id)).slice(0, 4);
 
   const activeVariantObj = product?.variants?.find((v) => v.name === selectedVariant);
   const currentPrice =

@@ -1679,3 +1679,64 @@ export const PRODUCTS: Product[] = [
   ...TABLES_PRODUCTS,
   ...COUGAR_PRODUCTS,
 ];
+
+export function getLiveProducts(): Product[] {
+  if (typeof window === 'undefined') return PRODUCTS;
+  try {
+    const raw = localStorage.getItem('os_custom_products');
+    if (raw) {
+      const stored = JSON.parse(raw);
+      if (Array.isArray(stored) && stored.length > 0) {
+        const mapped: Product[] = stored.map((p: any): Product => ({
+          id: p.id || `prod-os-${Date.now()}`,
+          slug: p.slug || 'product',
+          name: p.name || 'Product',
+          category: (p.category_slug || p.category || 'accessories') as any,
+          categoryName: p.categoryName || 'Sports Gear',
+          productType: (p.productType || 'gear') as any,
+          brand: p.brand || 'Oriental Sports',
+          price: Number(p.price) || 0,
+          originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
+          rating: p.rating ?? 4.9,
+          reviewsCount: p.reviewsCount ?? 12,
+          inStock: p.status === 'published' && (p.stock_quantity ?? 10) > 0,
+          images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
+          description: p.description || '',
+          features: Array.isArray(p.features) ? p.features : [p.description || ''],
+          specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },
+          variants: p.variants,
+          sizes: p.sizes,
+        }));
+        const ids = new Set(mapped.map((x: any) => x.id).concat(mapped.map((x: any) => x.slug)));
+        const rest = PRODUCTS.filter((p) => !ids.has(p.id) && !ids.has(p.slug));
+        return [...mapped, ...rest];
+      }
+    }
+  } catch {}
+  return PRODUCTS;
+}
+
+export function getLiveProductBySlug(slug?: string): Product | undefined {
+  if (!slug) return undefined;
+  return getLiveProducts().find((p) => p.slug === slug || p.id === slug);
+}
+
+if (typeof window !== 'undefined') {
+  try {
+    const bc = new BroadcastChannel('oriental_sports_catalog');
+    bc.onmessage = (event) => {
+      if (event.data?.type === 'PRODUCT_SAVED' && event.data?.product) {
+        try {
+          const raw = localStorage.getItem('os_custom_products') || '[]';
+          const stored = JSON.parse(raw);
+          const p = event.data.product;
+          const idx = stored.findIndex((x: any) => x.id === p.id || x.slug === p.slug);
+          if (idx >= 0) stored[idx] = p; else stored.unshift(p);
+          localStorage.setItem('os_custom_products', JSON.stringify(stored));
+        } catch {}
+        window.dispatchEvent(new CustomEvent('os_catalog_updated'));
+      }
+    };
+  } catch {}
+}
+

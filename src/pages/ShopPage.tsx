@@ -1,12 +1,12 @@
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
+import { PRODUCTS, getLiveProducts } from '../data/products';
 import { CATEGORIES } from '../data/categories';
 import { STORE_INFO } from '../data/storeInfo';
 import { ProductCard } from '../components/products/ProductCard';
 import { PageHeader } from '../components/ui/PageHeader';
-import { SportCategory, ProductType } from '../types';
+import { Product, SportCategory, ProductType } from '../types';
 
 type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'rating';
 
@@ -70,6 +70,17 @@ export const ShopPage: React.FC = () => {
   const sortBy = (searchParams.get('sort') as SortKey | null) ?? 'featured';
 
   const [localSearch, setLocalSearch] = useState(searchQuery);
+  const [allProducts, setAllProducts] = useState<Product[]>(() => getLiveProducts());
+
+  useEffect(() => {
+    const handleUpdate = () => setAllProducts(getLiveProducts());
+    window.addEventListener('storage', handleUpdate);
+    window.addEventListener('os_catalog_updated', handleUpdate);
+    return () => {
+      window.removeEventListener('storage', handleUpdate);
+      window.removeEventListener('os_catalog_updated', handleUpdate);
+    };
+  }, []);
 
   useEffect(() => {
     setLocalSearch(searchQuery);
@@ -127,9 +138,9 @@ export const ShopPage: React.FC = () => {
   // Compute available subcategories and brands based on current category selection
   const relevantProducts = useMemo(() => {
     return selectedCategory === 'all'
-      ? PRODUCTS
-      : PRODUCTS.filter((p) => p.category === selectedCategory);
-  }, [selectedCategory]);
+      ? allProducts
+      : allProducts.filter((p) => p.category === selectedCategory);
+  }, [selectedCategory, allProducts]);
 
   const availableSubcategories = useMemo(() => {
     const map = new Map<string, string>();
@@ -151,9 +162,9 @@ export const ShopPage: React.FC = () => {
 
   const categoryCounts = useMemo(() => {
     const map = new Map<string, number>();
-    PRODUCTS.forEach((p) => map.set(p.category, (map.get(p.category) ?? 0) + 1));
+    allProducts.forEach((p) => map.set(p.category, (map.get(p.category) ?? 0) + 1));
     return map;
-  }, []);
+  }, [allProducts]);
 
   const subcategoryCounts = useMemo(() => {
     const map = new Map<string, number>();
@@ -190,7 +201,7 @@ export const ShopPage: React.FC = () => {
   );
 
   const products = useMemo(() => {
-    let list = PRODUCTS.filter((p) => {
+    let list = allProducts.filter((p) => {
       if (selectedCategory !== 'all' && p.category !== selectedCategory) return false;
       if (selectedSubcategory !== 'all' && p.subcategory !== selectedSubcategory) return false;
       if (selectedBrand !== 'all' && p.brand !== selectedBrand) return false;
@@ -267,7 +278,7 @@ export const ShopPage: React.FC = () => {
               }}
             />
             <span>All Sports</span>
-            <span className="filter-count">{PRODUCTS.length}</span>
+            <span className="filter-count">{allProducts.length}</span>
           </label>
           {categoriesWithStock.map((c) => (
             <label key={c.id} className={`filter-radio ${selectedCategory === c.id ? 'is-checked' : ''}`}>
@@ -442,7 +453,7 @@ export const ShopPage: React.FC = () => {
               });
             }}
           >
-            All Sports ({PRODUCTS.length})
+            All Sports ({allProducts.length})
           </button>
           {categoriesWithStock.map((c) => (
             <button

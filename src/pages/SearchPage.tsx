@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { PRODUCTS } from '../data/products';
+import { PRODUCTS, getLiveProducts } from '../data/products';
+import type { Product } from '../types';
 import { COURT_SERVICES } from '../data/courts';
 import { ProductCard } from '../components/products/ProductCard';
 import { PageHeader } from '../components/ui/PageHeader';
@@ -12,12 +13,23 @@ export const SearchPage: React.FC = () => {
   const query = searchParams.get('q') || '';
   const [searchInput, setSearchInput] = useState(query);
   const [filterType, setFilterType] = useState<'all' | 'products' | 'courts'>('all');
+  const [allProducts, setAllProducts] = useState<Product[]>(() => getLiveProducts());
+
+  useEffect(() => {
+    const handleUpdate = () => setAllProducts(getLiveProducts());
+    window.addEventListener('storage', handleUpdate);
+    window.addEventListener('os_catalog_updated', handleUpdate);
+    return () => {
+      window.removeEventListener('storage', handleUpdate);
+      window.removeEventListener('os_catalog_updated', handleUpdate);
+    };
+  }, []);
 
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const matches = (...fields: string[]) =>
     terms.length === 0 || terms.every((t) => fields.some((f) => f && f.toLowerCase().includes(t)));
 
-  const matchedProducts = PRODUCTS.filter((p) => {
+  const matchedProducts = allProducts.filter((p) => {
     const variantNames = p.variants ? p.variants.map((v) => v.name).join(' ') : '';
     const specValues = p.specs ? Object.values(p.specs).join(' ') : '';
     return matches(

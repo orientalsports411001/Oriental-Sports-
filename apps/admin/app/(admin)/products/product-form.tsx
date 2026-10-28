@@ -182,6 +182,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     // 2. Persist to server REST endpoint
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
     const endpoints = [
+      'http://localhost:3000/api/products/save',
       `${basePath}/api/products/save`,
       '/admin/api/products/save',
       '/api/products/save',
@@ -199,6 +200,17 @@ export function ProductForm({ initialData, product: productProp, categories, act
             break;
           }
         }
+      } catch {}
+    }
+
+    if (typeof window !== 'undefined') {
+      try {
+        const bc = new BroadcastChannel('oriental_sports_catalog');
+        bc.postMessage({ type: 'PRODUCT_SAVED', product: clientProduct });
+        bc.close();
+      } catch {}
+      try {
+        window.dispatchEvent(new CustomEvent('os_catalog_updated'));
       } catch {}
     }
 

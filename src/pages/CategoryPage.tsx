@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CATEGORIES } from '../data/categories';
-import { PRODUCTS } from '../data/products';
+import { PRODUCTS, getLiveProducts } from '../data/products';
 import { IMAGES, MediaImage } from '../data/media';
 import { STORE_INFO } from '../data/storeInfo';
 import { ProductCard } from '../components/products/ProductCard';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Reveal } from '../components/motion/Reveal';
-import { SportCategory } from '../types';
+import { Product, SportCategory } from '../types';
 
 // Same art direction as the homepage sport rail.
 const ART: Partial<Record<SportCategory, MediaImage>> = {
@@ -27,11 +27,23 @@ const ART: Partial<Record<SportCategory, MediaImage>> = {
 
 export const CategoryPage: React.FC = () => {
   const { category } = useParams<{ category: string }>();
+  const [allProducts, setAllProducts] = useState<Product[]>(() => getLiveProducts());
+
+  useEffect(() => {
+    const handleUpdate = () => setAllProducts(getLiveProducts());
+    window.addEventListener('storage', handleUpdate);
+    window.addEventListener('os_catalog_updated', handleUpdate);
+    return () => {
+      window.removeEventListener('storage', handleUpdate);
+      window.removeEventListener('os_catalog_updated', handleUpdate);
+    };
+  }, []);
+
   // /products/commercial-treadmills etc. resolve to the parent category with that subcategory selected.
-  const subAlias = PRODUCTS.find((p) => p.subcategory === category);
+  const subAlias = allProducts.find((p) => p.subcategory === category);
   const info = CATEGORIES.find((c) => c.id === (subAlias ? subAlias.category : category));
-  const [selectedSub, setSelectedSub] = React.useState<string>(subAlias ? category! : 'all');
-  React.useEffect(() => {
+  const [selectedSub, setSelectedSub] = useState<string>(subAlias ? category! : 'all');
+  useEffect(() => {
     setSelectedSub(subAlias ? category! : 'all');
   }, [category, subAlias]);
 
@@ -45,7 +57,7 @@ export const CategoryPage: React.FC = () => {
     );
   }
 
-  const allCategoryProducts = PRODUCTS.filter((p) => p.category === info.id);
+  const allCategoryProducts = allProducts.filter((p) => p.category === info.id);
   const subcategories = React.useMemo(() => {
     const map = new Map<string, string>();
     allCategoryProducts.forEach((p) => {
@@ -60,7 +72,7 @@ export const CategoryPage: React.FC = () => {
 
   const others = CATEGORIES.filter((c) => c.id !== info.id);
   // When a sport has few pieces online, keep the page useful with the store's featured gear.
-  const more = products.length < 4 ? PRODUCTS.filter((p) => p.isFeatured && p.category !== info.id).slice(0, 4) : [];
+  const more = products.length < 4 ? allProducts.filter((p) => p.isFeatured && p.category !== info.id).slice(0, 4) : [];
 
   return (
     <div className="category-page">
