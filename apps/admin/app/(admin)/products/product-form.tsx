@@ -79,42 +79,11 @@ export function ProductForm({ initialData, product: productProp, categories, act
     }
   };
 
-  // Full Details Validation
-  const isTitleValid = name.trim().length >= 3;
-  const isSlugValid = slug.trim().length >= 3;
-  const isBrandValid = brand.trim().length >= 2;
-  const isCategoryValid = categorySlug.trim().length > 0;
-  const isDescValid = description.trim().length >= 10;
-  const isPriceValid = Number(price) > 0;
-  const isStockValid = stockQuantity !== undefined && stockQuantity !== null && stockQuantity >= 0;
-  const isMediaValid = images.length > 0;
-  const isSeoTitleValid = seoTitle.trim().length >= 10;
-  const isSeoDescValid = seoDescription.trim().length >= 20;
-
-  const missingDetails: { label: string; tab: 'details' | 'pricing' | 'media' | 'seo' }[] = [];
-  if (!isTitleValid) missingDetails.push({ label: 'Title (min 3 chars)', tab: 'details' });
-  if (!isSlugValid) missingDetails.push({ label: 'URL Slug', tab: 'details' });
-  if (!isBrandValid) missingDetails.push({ label: 'Brand', tab: 'details' });
-  if (!isCategoryValid) missingDetails.push({ label: 'Discipline', tab: 'details' });
-  if (!isDescValid) missingDetails.push({ label: 'Description (min 10 chars)', tab: 'details' });
-  if (!isPriceValid) missingDetails.push({ label: 'Price (₹ > 0)', tab: 'pricing' });
-  if (!isStockValid) missingDetails.push({ label: 'Stock Quantity', tab: 'pricing' });
-  if (!isMediaValid) missingDetails.push({ label: 'At least 1 Product Image', tab: 'media' });
-  if (!isSeoTitleValid) missingDetails.push({ label: 'Google Title (SEO)', tab: 'seo' });
-  if (!isSeoDescValid) missingDetails.push({ label: 'Meta Description (SEO)', tab: 'seo' });
-
-  const isFormComplete = missingDetails.length === 0;
-
-  const isDetailsTabComplete = isTitleValid && isSlugValid && isBrandValid && isCategoryValid && isDescValid;
-  const isPricingTabComplete = isPriceValid && isStockValid;
-  const isMediaTabComplete = isMediaValid;
-  const isSeoTabComplete = isSeoTitleValid && isSeoDescValid;
-
   const tabs = [
-    { id: 'details', label: 'Basic Info & Specs', isComplete: isDetailsTabComplete },
-    { id: 'pricing', label: 'Pricing & Stock', isComplete: isPricingTabComplete },
-    { id: 'media', label: `Media (${images.length})`, isComplete: isMediaTabComplete },
-    { id: 'seo', label: 'Search & SEO', isComplete: isSeoTabComplete },
+    { id: 'details', label: 'Basic Info & Specs' },
+    { id: 'pricing', label: 'Pricing & Stock' },
+    { id: 'media', label: `Media (${images.length})` },
+    { id: 'seo', label: 'Search & SEO' },
   ] as const;
 
   const primaryImage = images[0] || '/images/products/oriental-sports/sg-scorer-classic.webp';
@@ -124,7 +93,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isFormComplete || isSubmitting) return;
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     setSaveError(null);
@@ -209,9 +178,6 @@ export function ProductForm({ initialData, product: productProp, categories, act
                 style={{
                   color: isActive ? 'var(--ivory)' : 'var(--muted)',
                   zIndex: 1,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
                 }}
               >
                 {isActive && (
@@ -228,11 +194,6 @@ export function ProductForm({ initialData, product: productProp, categories, act
                   />
                 )}
                 <span>{t.label}</span>
-                {t.isComplete ? (
-                  <span style={{ fontSize: 10, color: isActive ? '#86EFAC' : '#16A34A', fontWeight: 900 }}>✓</span>
-                ) : (
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#F59E0B', display: 'inline-block' }} />
-                )}
               </button>
             );
           })}
@@ -787,92 +748,56 @@ export function ProductForm({ initialData, product: productProp, categories, act
       <input type="hidden" name="seo_title" value={seoTitle} />
       <input type="hidden" name="seo_description" value={seoDescription} />
 
-      {/* Centered Floating Capsule Action Bar (Skiper.ui / Cult.ui) */}
-      <div className="cult-floating-bar" style={{ gap: 14, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+      {/* Clean Sticky Floating Action Bar */}
+      <div className="cult-floating-bar" style={{ gap: 14, justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
           <span
             style={{
               display: 'inline-block',
-              width: 9,
-              height: 9,
+              width: 8,
+              height: 8,
               borderRadius: '50%',
-              background: isFormComplete ? '#2E6B3C' : '#D97706',
-              boxShadow: isFormComplete ? '0 0 0 3px rgba(46,107,60,0.3)' : '0 0 0 3px rgba(217,119,6,0.3)',
+              background: '#2E6B3C',
+              boxShadow: '0 0 0 3px rgba(46,107,60,0.3)',
               flexShrink: 0,
             }}
           />
-          <div style={{ minWidth: 0 }}>
-            <div
-              style={{
-                fontSize: 12.5,
-                fontWeight: 800,
-                color: '#FFFFFF',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {name ? `Editing: ${name}` : 'Product Editor'}
-            </div>
-            {!isFormComplete ? (
-              <div style={{ fontSize: 11, color: '#FCD34D', fontWeight: 600 }}>
-                {missingDetails.length} detail{missingDetails.length > 1 ? 's' : ''} remaining:{' '}
-                {missingDetails.slice(0, 2).map((m) => m.label).join(', ')}
-                {missingDetails.length > 2 ? ` +${missingDetails.length - 2} more` : ''}
-              </div>
-            ) : (
-              <div style={{ fontSize: 11, color: '#86EFAC', fontWeight: 600 }}>
-                ✓ All specifications verified & ready to publish
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {!isFormComplete && missingDetails.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setActiveTab(missingDetails[0].tab)}
-              style={{
-                padding: '7px 14px',
-                borderRadius: 9999,
-                background: 'rgba(255,255,255,0.12)',
-                color: '#FFFFFF',
-                fontSize: 11.5,
-                fontWeight: 700,
-                border: 'none',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Go to {missingDetails[0].tab.toUpperCase()} →
-            </button>
-          )}
-
-          <button
-            type="submit"
-            disabled={!isFormComplete || isSubmitting}
-            title={!isFormComplete ? `Please complete: ${missingDetails.map((m) => m.label).join(', ')}` : undefined}
+          <span
             style={{
-              padding: '10px 24px',
-              borderRadius: 9999,
-              background: isFormComplete && !isSubmitting ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
-              color: isFormComplete && !isSubmitting ? '#111111' : 'rgba(255,255,255,0.4)',
               fontSize: 13,
-              fontWeight: 800,
-              border: 'none',
-              cursor: isFormComplete && !isSubmitting ? 'pointer' : 'not-allowed',
-              flexShrink: 0,
-              boxShadow: isFormComplete && !isSubmitting ? '0 4px 14px rgba(0,0,0,0.3)' : 'none',
-              transition: 'all 0.2s ease',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
+              fontWeight: 700,
+              color: '#FFFFFF',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
-            {isSubmitting ? 'Saving...' : isFormComplete ? 'Save Changes' : 'Fill All Details to Save'}
-          </button>
+            {name ? `Editing: ${name}` : 'Product Editor'}
+          </span>
         </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          style={{
+            padding: '10px 28px',
+            borderRadius: 9999,
+            background: isSubmitting ? 'rgba(255,255,255,0.2)' : '#FFFFFF',
+            color: '#111111',
+            fontSize: 13,
+            fontWeight: 800,
+            border: 'none',
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            flexShrink: 0,
+            boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+            transition: 'all 0.2s ease',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
+        </button>
       </div>
     </form>
   );

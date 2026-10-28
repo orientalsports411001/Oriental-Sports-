@@ -33,9 +33,10 @@ function parseImages(formData: FormData): string[] {
   if (typeof imagesRaw === 'string' && imagesRaw.trim()) {
     try {
       const parsed = JSON.parse(imagesRaw);
-      if (Array.isArray(parsed)) return parsed.filter((x) => typeof x === 'string' && x.trim());
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed.filter((x) => typeof x === 'string' && x.trim());
     } catch {
-      return parseLines(imagesRaw);
+      const lines = parseLines(imagesRaw);
+      if (lines.length > 0) return lines;
     }
   }
 
@@ -47,27 +48,25 @@ export async function POST(req: Request) {
     const formData = await req.formData();
 
     const productId = getLatestNonEmpty(formData, 'productId') || getLatestNonEmpty(formData, 'id');
-    const name = getLatestNonEmpty(formData, 'name');
-    const slug = getLatestNonEmpty(formData, 'slug') || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const name = getLatestNonEmpty(formData, 'name') || 'Untitled Product';
+    const slug =
+      getLatestNonEmpty(formData, 'slug') ||
+      name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') ||
+      `prod-${Date.now()}`;
     const categorySlug = getLatestNonEmpty(formData, 'category_slug') || 'cricket';
     const brand = getLatestNonEmpty(formData, 'brand') || 'Oriental Sports';
-    const description = getLatestNonEmpty(formData, 'description');
-    const price = Number(getLatestNonEmpty(formData, 'price') || 0);
+    const description = getLatestNonEmpty(formData, 'description') || '';
+    const price = Number(getLatestNonEmpty(formData, 'price')) || 0;
     const compareAtPriceRaw = getLatestNonEmpty(formData, 'compare_at_price');
     const compareAtPrice = compareAtPriceRaw ? Number(compareAtPriceRaw) : null;
-    const stockQuantity = Number(getLatestNonEmpty(formData, 'stock_quantity') || 10);
-    const lowStockThreshold = Number(getLatestNonEmpty(formData, 'low_stock_threshold') || 5);
+    const stockQuantity = Number(getLatestNonEmpty(formData, 'stock_quantity')) || 10;
+    const lowStockThreshold = Number(getLatestNonEmpty(formData, 'low_stock_threshold')) || 5;
     const status = (getLatestNonEmpty(formData, 'status') || 'published') as 'draft' | 'published' | 'archived';
     const images = parseImages(formData);
     const seoTitle = getLatestNonEmpty(formData, 'seo_title') || `${name} | Oriental Sports Pune`;
-    const seoDescription = getLatestNonEmpty(formData, 'seo_description') || description.slice(0, 160);
-
-    if (!name || name.length < 3) {
-      return NextResponse.json({ success: false, error: 'Product title must be at least 3 characters.' }, { status: 400 });
-    }
-    if (!(price > 0)) {
-      return NextResponse.json({ success: false, error: 'Price must be greater than 0.' }, { status: 400 });
-    }
+    const seoDescription =
+      getLatestNonEmpty(formData, 'seo_description') ||
+      (description ? description.slice(0, 160) : `${name} available at Oriental Sports Pune.`);
 
     const saved = saveProduct({
       id: productId || undefined,
