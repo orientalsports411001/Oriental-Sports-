@@ -12,7 +12,14 @@ import { createClient } from '@/lib/supabase/server';
  * - No session -> redirect to /login
  * - Session but profiles.role !== 'admin' -> redirect to /not-authorized
  */
-export async function requireAdmin() {
+/**
+ * Server-side admin check without redirection.
+ * Safe to use inside Server Actions (where redirect() crashes RPC calls).
+ */
+export async function checkAdmin(): Promise<
+  | { ok: true; user: { id: string; email: string }; profile: { id: string; role: string; email: string; full_name: string } }
+  | { ok: false; error: string }
+> {
   const cookieStore = await cookies();
   const devAdminCookie = cookieStore.get('os_dev_admin')?.value;
 
@@ -23,6 +30,7 @@ export async function requireAdmin() {
         : devAdminCookie;
       const parsed = JSON.parse(raw);
       return {
+        ok: true,
         user: { id: parsed.id || 'admin-local-master', email: parsed.email || 'pratikjadhav8820@gmail.com' },
         profile: {
           id: parsed.id || 'admin-local-master',
@@ -41,7 +49,19 @@ export async function requireAdmin() {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      redirect('/login');
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          ok: true,
+          user: { id: 'admin-local-master', email: 'pratikjadhav8820@gmail.com' },
+          profile: {
+            id: 'admin-local-master',
+            role: 'admin',
+            email: 'pratikjadhav8820@gmail.com',
+            full_name: 'Pratik Jadhav (Store Operations)',
+          },
+        };
+      }
+      return { ok: false, error: 'Authentication required. Please sign in to the operations console.' };
     }
 
     const { data: profile } = await supabase
@@ -51,14 +71,23 @@ export async function requireAdmin() {
       .maybeSingle();
 
     if (!profile || profile.role !== 'admin') {
-      redirect('/not-authorized');
+      return { ok: false, error: 'Unauthorized: Admin role required.' };
     }
 
-    return { user, profile };
+    return {
+      ok: true,
+      user: { id: user.id, email: user.email || '' },
+      profile: {
+        id: profile.id,
+        role: profile.role,
+        email: profile.email,
+        full_name: profile.full_name || user.email || 'Administrator',
+      },
+    };
   } catch (err: any) {
-    // If Supabase is unreachable/fails in development mode, provide fallback session
     if (process.env.NODE_ENV === 'development') {
       return {
+        ok: true,
         user: { id: 'admin-local-master', email: 'pratikjadhav8820@gmail.com' },
         profile: {
           id: 'admin-local-master',
@@ -68,6 +97,18 @@ export async function requireAdmin() {
         },
       };
     }
+    return { ok: false, error: err?.message || 'Admin authorization failed.' };
+  }
+}
+
+/**
+ * Server-side admin gate with redirect. Call this at the top of every protected
+ * page/layout/route handler.
+ */
+export async function requireAdmin() {
+  const result = await checkAdmin();
+  if (!result.ok) {
     redirect('/login');
   }
+  return { user: result.user, profile: result.profile };
 }
