@@ -1756,26 +1756,42 @@ export function getLiveProducts(): Product[] {
     const baseFiltered = PRODUCTS.filter((p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug));
 
     if (combinedCustom.length > 0) {
-      const mapped: Product[] = combinedCustom.map((p: any): Product => ({
-        id: p.id || `prod-os-${Date.now()}`,
-        slug: p.slug || 'product',
-        name: p.name || 'Product',
-        category: (p.category_slug || p.category || 'accessories') as any,
-        categoryName: p.categoryName || 'Sports Gear',
-        productType: (p.productType || 'gear') as any,
-        brand: p.brand || 'Oriental Sports',
-        price: Number(p.price) || 0,
-        originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
-        rating: p.rating ?? 4.9,
-        reviewsCount: p.reviewsCount ?? 12,
-        inStock: p.status === 'published' && (p.stock_quantity ?? 10) > 0,
-        images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
-        description: p.description || '',
-        features: Array.isArray(p.features) ? p.features : [p.description || ''],
-        specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },
-        variants: p.variants,
-        sizes: p.sizes,
-      }));
+      const mapped: Product[] = combinedCustom.map((p: any): Product => {
+        const isAlreadyMapped = Boolean(p.category && p.inStock !== undefined);
+        if (isAlreadyMapped) return p as Product;
+
+        const cat = (p.category_slug || p.category || 'accessories');
+        const catName = p.categoryName || (cat.charAt(0).toUpperCase() + cat.slice(1));
+        const inStockVal =
+          p.inStock !== undefined
+            ? p.inStock
+            : p.in_stock !== undefined
+            ? Boolean(p.in_stock)
+            : p.status
+            ? p.status === 'published'
+            : true;
+
+        return {
+          id: p.id || `prod-os-${Date.now()}`,
+          slug: p.slug || 'product',
+          name: p.name || 'Product',
+          category: cat as any,
+          categoryName: catName,
+          productType: (p.productType || (cat === 'cricket' ? 'bat' : cat === 'football' ? 'ball' : 'gear')) as any,
+          brand: p.brand || 'Oriental Sports',
+          price: Number(p.price) || 0,
+          originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
+          rating: p.rating ?? 4.9,
+          reviewsCount: p.reviewsCount ?? p.review_count ?? 12,
+          inStock: inStockVal,
+          images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
+          description: p.description || '',
+          features: Array.isArray(p.features) ? p.features : [p.description || ''],
+          specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },
+          variants: p.variants,
+          sizes: p.sizes,
+        };
+      });
       const ids = new Set(mapped.map((x: any) => x.id).concat(mapped.map((x: any) => x.slug)));
       const rest = baseFiltered.filter((p) => !ids.has(p.id) && !ids.has(p.slug));
       return [...mapped, ...rest];

@@ -87,10 +87,10 @@ export async function POST(req: Request) {
 
     // Also attempt live Supabase upsert in background if available
     try {
-      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
       if (supaUrl && supaKey) {
-        fetch(`${supaUrl}/rest/v1/products`, {
+        fetch(`${supaUrl}/rest/v1/products?on_conflict=slug`, {
           method: 'POST',
           headers: {
             apikey: supaKey,
@@ -99,7 +99,6 @@ export async function POST(req: Request) {
             Prefer: 'resolution=merge-duplicates',
           },
           body: JSON.stringify({
-            id: saved.id.length === 36 ? saved.id : undefined,
             name: saved.name,
             slug: saved.slug,
             category_slug: saved.category_slug,
@@ -108,11 +107,14 @@ export async function POST(req: Request) {
             price: saved.price,
             compare_at_price: saved.compare_at_price,
             images: saved.images,
-            status: saved.status,
-            stock_quantity: saved.stock_quantity,
-            low_stock_threshold: saved.low_stock_threshold,
-            seo_title: saved.seo_title,
-            seo_description: saved.seo_description,
+            in_stock: saved.status === 'published' && (saved.stock_quantity ?? 1) > 0,
+            metadata: {
+              status: saved.status,
+              stock_quantity: saved.stock_quantity,
+              low_stock_threshold: saved.low_stock_threshold,
+              seo_title: saved.seo_title,
+              seo_description: saved.seo_description,
+            },
           }),
         }).catch(() => {});
       }

@@ -188,6 +188,41 @@ export function ProductForm({ initialData, product: productProp, categories, act
         else stored.unshift(clientProduct);
         localStorage.setItem('os_custom_products', JSON.stringify(stored));
       } catch {}
+
+      // Direct client-side Supabase sync
+      try {
+        const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+        const supaKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+        if (supaUrl && supaKey) {
+          fetch(`${supaUrl}/rest/v1/products?on_conflict=slug`, {
+            method: 'POST',
+            headers: {
+              apikey: supaKey,
+              Authorization: `Bearer ${supaKey}`,
+              'Content-Type': 'application/json',
+              Prefer: 'resolution=merge-duplicates',
+            },
+            body: JSON.stringify({
+              name: clientProduct.name,
+              slug: clientProduct.slug,
+              category_slug: clientProduct.category_slug,
+              brand: clientProduct.brand,
+              description: clientProduct.description,
+              price: clientProduct.price,
+              compare_at_price: clientProduct.compare_at_price,
+              images: clientProduct.images,
+              in_stock: clientProduct.status === 'published',
+              metadata: {
+                status: clientProduct.status,
+                stock_quantity: clientProduct.stock_quantity,
+                low_stock_threshold: clientProduct.low_stock_threshold,
+                seo_title: clientProduct.seo_title,
+                seo_description: clientProduct.seo_description,
+              },
+            }),
+          }).catch(() => {});
+        }
+      } catch {}
     }
 
     // 2. Persist to server REST endpoint
