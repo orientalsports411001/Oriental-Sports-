@@ -3,6 +3,7 @@ import { GYM_PRODUCTS } from './gymProducts';
 import { EXERCISE_BIKES } from './exerciseBikes';
 import { TABLES_PRODUCTS } from './tablesProducts';
 import { COUGAR_PRODUCTS } from './cougarProducts';
+import customProductsData from './customProducts.json';
 
 const CORE_PRODUCTS: Product[] = [
   // ==========================================================================
@@ -1655,7 +1656,23 @@ const CORE_PRODUCTS: Product[] = [
   },
 ];
 
+const CUSTOM_PRODUCTS: Product[] = (customProductsData as any[]).map((p) => ({
+  ...p,
+  category: p.category || 'accessories',
+  categoryName: p.categoryName || 'Accessories & Protection',
+  productType: p.productType || 'gear',
+  brand: p.brand || 'Oriental Sports',
+  price: Number(p.price) || 0,
+  rating: p.rating ?? 4.9,
+  reviewsCount: p.reviewsCount ?? 12,
+  inStock: p.inStock !== false,
+  images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
+  features: Array.isArray(p.features) ? p.features : [p.description || ''],
+  specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },
+}));
+
 export const PRODUCTS: Product[] = [
+  ...CUSTOM_PRODUCTS,
   ...CORE_PRODUCTS,
   ...GYM_PRODUCTS,
   ...EXERCISE_BIKES,

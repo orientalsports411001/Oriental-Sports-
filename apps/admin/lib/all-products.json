@@ -1,5 +1,27 @@
 [
   {
+    "id": "prod-os-black-tee",
+    "name": "Oriental Sports Performance Athletic Tee",
+    "slug": "oriental-sports-performance-athletic-tee",
+    "brand": "Oriental Pro",
+    "category_slug": "accessories",
+    "description": "Premium breathable moisture-wicking athletic training t-shirt. Engineered for intense training sessions and match day comfort.",
+    "price": 799,
+    "compare_at_price": 1299,
+    "images": [
+      "/uploads/1793163718477-Black_T-Shirt_Cleaning_Service_Mockup__1_.png"
+    ],
+    "status": "published",
+    "stock_quantity": 25,
+    "low_stock_threshold": 5,
+    "is_featured": true,
+    "seo_title": "Oriental Sports Performance Athletic Tee | Oriental Sports Pune",
+    "seo_description": "Buy Oriental Sports Performance Athletic Tee at Oriental Sports Pune Camp.",
+    "seo_canonical_url": "https://orientalsports.in/product/oriental-sports-performance-athletic-tee",
+    "created_at": "2026-10-28T10:31:58.000Z",
+    "updated_at": "2026-10-28T10:31:58.000Z"
+  },
+  {
     "id": "prod-crick-sg-scorer",
     "name": "SG Scorer Classic Cricket Bat",
     "slug": "sg-scorer-classic-cricket-bat",

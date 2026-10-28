@@ -2,6 +2,7 @@ import 'server-only';
 import { createClient } from './server';
 import type { CategoryInfo } from '@/data/categories';
 import type { Product } from '@/types';
+import { PRODUCTS as FALLBACK_PRODUCTS } from '@/data/products';
 
 /**
  * Server-only product/category reads, backed by Postgres (via Supabase) —
@@ -186,10 +187,16 @@ export async function getProducts(filters?: { categorySlug?: string }): Promise<
       query = query.eq('category_slug', filters.categorySlug);
     }
     const { data, error } = await query.order('created_at', { ascending: true });
-    if (error || !data) return [];
-    return (data as ProductRow[]).map(rowToProduct);
+    if (!error && data && data.length > 0) {
+      return (data as ProductRow[]).map(rowToProduct);
+    }
+    return filters?.categorySlug
+      ? FALLBACK_PRODUCTS.filter((p) => p.category === filters.categorySlug)
+      : FALLBACK_PRODUCTS;
   } catch {
-    return [];
+    return filters?.categorySlug
+      ? FALLBACK_PRODUCTS.filter((p) => p.category === filters.categorySlug)
+      : FALLBACK_PRODUCTS;
   }
 }
 
@@ -204,10 +211,10 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       .eq('slug', slug)
       .eq('status', 'published')
       .maybeSingle();
-    if (error || !data) return null;
-    return rowToProduct(data as ProductRow);
+    if (data) return rowToProduct(data as ProductRow);
+    return FALLBACK_PRODUCTS.find((p) => p.slug === slug) || null;
   } catch {
-    return null;
+    return FALLBACK_PRODUCTS.find((p) => p.slug === slug) || null;
   }
 }
 

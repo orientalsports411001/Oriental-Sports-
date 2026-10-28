@@ -249,6 +249,118 @@ export function getCachedProducts(): AdminProduct[] {
   return productsCache;
 }
 
+function getRepoRoot(): string {
+  const candidates = [
+    process.cwd(),
+    path.resolve(process.cwd(), '..', '..'),
+    path.resolve(process.cwd(), 'apps', 'admin'),
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(path.join(c, 'src', 'data', 'products.ts'))) {
+      return c;
+    }
+  }
+  return process.cwd();
+}
+
+function toStorefrontFormat(p: AdminProduct) {
+  const CATEGORY_NAMES: Record<string, string> = {
+    cricket: 'Cricket',
+    badminton: 'Badminton',
+    football: 'Football',
+    tennis: 'Tennis',
+    pickleball: 'Pickleball',
+    'table-tennis': 'Table Tennis',
+    squash: 'Squash',
+    fitness: 'Fitness & Recovery',
+    'gym-equipment': 'Gym & Strength',
+    volleyball: 'Volleyball',
+    recreation: 'Recreation',
+    accessories: 'Accessories & Protection',
+  };
+
+  const category = (p.category_slug || 'accessories');
+  const categoryName = CATEGORY_NAMES[category] || 'Sports Gear';
+  const safeImages = Array.isArray(p.images) && p.images.length > 0
+    ? p.images
+    : ['/images/products/oriental-sports/sg-scorer-classic.webp'];
+
+  return {
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
+    category,
+    categoryName,
+    subcategory: p.category_slug,
+    subcategoryName: categoryName,
+    productType: (category === 'cricket' ? 'bat' : category === 'badminton' || category === 'tennis' ? 'racket' : 'gear'),
+    brand: p.brand || 'Oriental Sports',
+    price: Number(p.price) || 0,
+    originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
+    currency: 'INR',
+    rating: 4.9,
+    reviewsCount: 16,
+    badge: 'NEW',
+    isFeatured: Boolean(p.is_featured),
+    inStock: p.status === 'published' && (p.stock_quantity ?? 10) > 0,
+    images: safeImages,
+    gallery: safeImages,
+    description: p.description || `${p.name} available at Oriental Sports Pune.`,
+    features: p.description ? [p.description] : ['Match quality performance gear', 'Inspected by Oriental Sports Camp'],
+    specs: {
+      'Brand': p.brand || 'Oriental Sports',
+      'Stock': `${p.stock_quantity ?? 10} units in stock`,
+      'Discipline': categoryName,
+    },
+    seoTitle: p.seo_title || `${p.name} | Oriental Sports Pune`,
+    seoDescription: p.seo_description || p.description || '',
+    createdAt: p.created_at || new Date().toISOString(),
+    updatedAt: p.updated_at || new Date().toISOString(),
+  };
+}
+
+function syncToCatalogFiles(items: AdminProduct[], singleUpdated?: AdminProduct) {
+  try {
+    const root = getRepoRoot();
+    
+    // 1. Persist to apps/admin/lib/all-products.json
+    const adminJsonPath = path.join(root, 'apps', 'admin', 'lib', 'all-products.json');
+    if (fs.existsSync(adminJsonPath)) {
+      fs.writeFileSync(adminJsonPath, JSON.stringify(items, null, 2), 'utf-8');
+    }
+
+    // 2. Persist custom products to src/data/customProducts.json
+    const srcCustomPath = path.join(root, 'src', 'data', 'customProducts.json');
+    let customList: any[] = [];
+    if (fs.existsSync(srcCustomPath)) {
+      try {
+        customList = JSON.parse(fs.readFileSync(srcCustomPath, 'utf-8'));
+        if (!Array.isArray(customList)) customList = [];
+      } catch {}
+    }
+
+    if (singleUpdated) {
+      const storefrontFormat = toStorefrontFormat(singleUpdated);
+      const idx = customList.findIndex((p: any) => p.id === singleUpdated.id || p.slug === singleUpdated.slug);
+      if (idx >= 0) {
+        customList[idx] = storefrontFormat;
+      } else {
+        customList.unshift(storefrontFormat);
+      }
+    }
+
+    fs.writeFileSync(srcCustomPath, JSON.stringify(customList, null, 2), 'utf-8');
+
+    // 3. Mirror to apps/storefront/data/customProducts.json if exists
+    const sfCustomPath = path.join(root, 'apps', 'storefront', 'data', 'customProducts.json');
+    if (fs.existsSync(path.dirname(sfCustomPath))) {
+      fs.writeFileSync(sfCustomPath, JSON.stringify(customList, null, 2), 'utf-8');
+    }
+  } catch (err) {
+    console.error('Failed to sync catalog files:', err);
+  }
+}
+
 export function saveProduct(product: Partial<AdminProduct> & { name: string }): AdminProduct {
   const disk = readDiskCache();
   if (disk) productsCache = disk;
@@ -290,6 +402,7 @@ export function saveProduct(product: Partial<AdminProduct> & { name: string }): 
   }
 
   writeDiskCache(productsCache);
+  syncToCatalogFiles(productsCache, result);
   return result;
 }
 
@@ -300,6 +413,31 @@ export function removeProduct(id: string): boolean {
   const initialLength = productsCache.length;
   productsCache = productsCache.filter((p) => p.id !== id);
   writeDiskCache(productsCache);
+
+  try {
+    const root = getRepoRoot();
+    const adminJsonPath = path.join(root, 'apps', 'admin', 'lib', 'all-products.json');
+    if (fs.existsSync(adminJsonPath)) {
+      fs.writeFileSync(adminJsonPath, JSON.stringify(productsCache, null, 2), 'utf-8');
+    }
+    const srcCustomPath = path.join(root, 'src', 'data', 'customProducts.json');
+    if (fs.existsSync(srcCustomPath)) {
+      const customList = JSON.parse(fs.readFileSync(srcCustomPath, 'utf-8'));
+      if (Array.isArray(customList)) {
+        const filtered = customList.filter((p: any) => p.id !== id && p.slug !== id);
+        fs.writeFileSync(srcCustomPath, JSON.stringify(filtered, null, 2), 'utf-8');
+      }
+    }
+    const sfCustomPath = path.join(root, 'apps', 'storefront', 'data', 'customProducts.json');
+    if (fs.existsSync(sfCustomPath)) {
+      const customList = JSON.parse(fs.readFileSync(sfCustomPath, 'utf-8'));
+      if (Array.isArray(customList)) {
+        const filtered = customList.filter((p: any) => p.id !== id && p.slug !== id);
+        fs.writeFileSync(sfCustomPath, JSON.stringify(filtered, null, 2), 'utf-8');
+      }
+    }
+  } catch {}
+
   return productsCache.length < initialLength;
 }
 

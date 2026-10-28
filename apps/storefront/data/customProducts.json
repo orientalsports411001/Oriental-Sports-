@@ -1,0 +1,39 @@
+[
+  {
+    "id": "prod-os-black-tee",
+    "slug": "oriental-sports-performance-athletic-tee",
+    "name": "Oriental Sports Performance Athletic Tee",
+    "category": "accessories",
+    "categoryName": "Accessories & Protection",
+    "subcategory": "apparel",
+    "subcategoryName": "Athletic Apparel",
+    "productType": "apparel",
+    "brand": "Oriental Pro",
+    "price": 799,
+    "originalPrice": 1299,
+    "currency": "INR",
+    "rating": 4.9,
+    "reviewsCount": 16,
+    "badge": "NEW",
+    "isFeatured": true,
+    "inStock": true,
+    "images": [
+      "/uploads/1793163718477-Black_T-Shirt_Cleaning_Service_Mockup__1_.png"
+    ],
+    "description": "Premium breathable moisture-wicking athletic training t-shirt. Engineered for intense training sessions and match day comfort.",
+    "features": [
+      "Ultra-breathable moisture-wicking technical fabric",
+      "Reinforced flatlock stitching prevents chafing",
+      "Athletic taper fit designed for full freedom of movement"
+    ],
+    "specs": {
+      "Material": "100% Micro-Poly Dri-FIT",
+      "Fit": "Athletic Regular",
+      "Care": "Machine wash cold"
+    },
+    "sizes": ["S", "M", "L", "XL", "XXL"],
+    "seoTitle": "Oriental Sports Performance Athletic Tee | Oriental Sports Pune",
+    "seoDescription": "Buy Oriental Sports Performance Athletic Tee at Oriental Sports Pune Camp."
+  }
+]
+
