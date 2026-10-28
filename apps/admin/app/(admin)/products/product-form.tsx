@@ -87,6 +87,9 @@ export function ProductForm({ initialData, product: productProp, categories, act
         const savedMsg = urlParams.get('saved');
         if (savedMsg) {
           setSavedSuccess(savedMsg);
+          urlParams.delete('saved');
+          const cleanSearch = urlParams.toString();
+          window.history.replaceState(null, '', window.location.pathname + (cleanSearch ? `?${cleanSearch}` : ''));
         }
       } catch {}
 
@@ -109,6 +112,14 @@ export function ProductForm({ initialData, product: productProp, categories, act
       } catch {}
     }
   }, []);
+
+  useEffect(() => {
+    if (!savedSuccess) return;
+    const timer = setTimeout(() => {
+      setSavedSuccess(null);
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, [savedSuccess]);
 
   const tabs = [
     { id: 'details', label: 'Basic Info & Specs' },
@@ -182,10 +193,10 @@ export function ProductForm({ initialData, product: productProp, categories, act
     // 2. Persist to server REST endpoint
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
     const endpoints = [
-      'http://localhost:3000/api/products/save',
+      '/api/products/save',
       `${basePath}/api/products/save`,
       '/admin/api/products/save',
-      '/api/products/save',
+      'http://localhost:3000/api/products/save',
     ];
 
     for (const ep of endpoints) {
@@ -253,12 +264,31 @@ export function ProductForm({ initialData, product: productProp, categories, act
             marginBottom: 24,
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between',
             gap: 12,
             boxShadow: '0 4px 16px rgba(46, 107, 60, 0.2)',
           }}
         >
-          <span style={{ fontSize: 18, lineHeight: 1 }}>✓</span>
-          <span>{savedSuccess}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>✓</span>
+            <span>{savedSuccess}</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setSavedSuccess(null)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#4ADE80',
+              cursor: 'pointer',
+              fontSize: 14,
+              padding: '2px 6px',
+              opacity: 0.7,
+            }}
+          >
+            ✕
+          </button>
         </div>
       )}
 

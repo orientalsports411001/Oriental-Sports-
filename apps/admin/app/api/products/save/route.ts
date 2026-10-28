@@ -85,6 +85,39 @@ export async function POST(req: Request) {
       seo_description: seoDescription,
     });
 
+    // Also attempt live Supabase upsert in background if available
+    try {
+      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (supaUrl && supaKey) {
+        fetch(`${supaUrl}/rest/v1/products`, {
+          method: 'POST',
+          headers: {
+            apikey: supaKey,
+            Authorization: `Bearer ${supaKey}`,
+            'Content-Type': 'application/json',
+            Prefer: 'resolution=merge-duplicates',
+          },
+          body: JSON.stringify({
+            id: saved.id.length === 36 ? saved.id : undefined,
+            name: saved.name,
+            slug: saved.slug,
+            category_slug: saved.category_slug,
+            brand: saved.brand,
+            description: saved.description,
+            price: saved.price,
+            compare_at_price: saved.compare_at_price,
+            images: saved.images,
+            status: saved.status,
+            stock_quantity: saved.stock_quantity,
+            low_stock_threshold: saved.low_stock_threshold,
+            seo_title: saved.seo_title,
+            seo_description: saved.seo_description,
+          }),
+        }).catch(() => {});
+      }
+    } catch {}
+
     const targetId = saved.id || saved.slug || slug;
     return NextResponse.json({
       success: true,

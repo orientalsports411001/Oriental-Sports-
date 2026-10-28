@@ -252,6 +252,7 @@ export function getCachedProducts(): AdminProduct[] {
 function getRepoRoot(): string {
   const candidates = [
     process.cwd(),
+    path.resolve(process.cwd(), '..'),
     path.resolve(process.cwd(), '..', '..'),
     path.resolve(process.cwd(), 'apps', 'admin'),
   ];
@@ -293,7 +294,7 @@ function toStorefrontFormat(p: AdminProduct) {
     categoryName,
     subcategory: p.category_slug,
     subcategoryName: categoryName,
-    productType: (category === 'cricket' ? 'bat' : category === 'badminton' || category === 'tennis' ? 'racket' : 'gear'),
+    productType: (category === 'cricket' ? 'bat' : category === 'badminton' || category === 'tennis' ? 'racket' : category === 'football' ? 'ball' : 'gear'),
     brand: p.brand || 'Oriental Sports',
     price: Number(p.price) || 0,
     originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
@@ -331,6 +332,7 @@ function syncToCatalogFiles(items: AdminProduct[], singleUpdated?: AdminProduct)
 
     // 2. Persist custom products to src/data/customProducts.json
     const srcCustomPath = path.join(root, 'src', 'data', 'customProducts.json');
+    fs.mkdirSync(path.dirname(srcCustomPath), { recursive: true });
     let customList: any[] = [];
     if (fs.existsSync(srcCustomPath)) {
       try {
