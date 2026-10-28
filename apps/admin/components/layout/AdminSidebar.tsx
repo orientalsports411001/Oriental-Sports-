@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LogOut } from 'lucide-react';
 
 interface AdminSidebarProps {
   userEmail?: string;
@@ -139,86 +140,123 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           className="desktop-sidebar-footer"
           style={{
             marginTop: 'auto',
-            paddingTop: 18,
+            paddingTop: 16,
             borderTop: '1px solid rgba(255, 255, 255, 0.08)',
             display: 'flex',
             flexDirection: 'column',
             gap: 10,
           }}
         >
+          {/* User Profile Card */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 10,
-              padding: '10px 12px',
+              gap: 11,
+              padding: '11px 13px',
               background: '#161616',
-              borderRadius: 16,
+              borderRadius: 14,
               border: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+            <div
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                background: 'var(--blood-crimson)',
+                color: '#FFFFFF',
+                display: 'grid',
+                placeItems: 'center',
+                fontWeight: 800,
+                fontSize: 13,
+                flexShrink: 0,
+                boxShadow: '0 0 10px rgba(200, 16, 46, 0.35)',
+              }}
+            >
+              {userEmail?.charAt(0).toUpperCase() || 'P'}
+            </div>
+            <div style={{ minWidth: 0, flex: 1 }}>
               <div
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  background: 'var(--blood-crimson)',
+                  fontWeight: 700,
+                  fontSize: 12.5,
                   color: '#FFFFFF',
-                  display: 'grid',
-                  placeItems: 'center',
-                  fontWeight: 800,
-                  fontSize: 13,
-                  flexShrink: 0,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+                title={userEmail}
+              >
+                {userEmail || 'Admin'}
+              </div>
+              <div
+                style={{
+                  fontSize: 11,
+                  color: '#A3A3A3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  marginTop: 2,
                 }}
               >
-                {userEmail?.charAt(0).toUpperCase() || 'P'}
-              </div>
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div
+                <span
                   style={{
-                    fontWeight: 700,
-                    fontSize: 12.5,
-                    color: '#FFFFFF',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    background: '#22C55E',
+                    display: 'inline-block',
+                    boxShadow: '0 0 6px rgba(34, 197, 94, 0.5)',
                   }}
-                >
-                  {userEmail?.split('@')[0] || 'Admin'}
-                </div>
-                <div style={{ fontSize: 10.5, color: '#737373' }}>
-                  Superadmin
-                </div>
+                />
+                Superadmin
               </div>
             </div>
-
-            <button
-              type="button"
-              onClick={async () => {
-                await fetch('/api/auth/signout', { method: 'POST' }).catch(() => {});
-                document.cookie = 'os_dev_admin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-                window.location.href = '/login';
-              }}
-              title="Sign Out"
-              aria-label="Sign Out"
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#737373',
-                cursor: 'pointer',
-                padding: '4px 6px',
-                minHeight: 'auto',
-                boxShadow: 'none',
-                fontSize: 11,
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = '#F87171'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = '#737373'; }}
-            >
-              Exit
-            </button>
           </div>
+
+          {/* Dedicated Separate Log Out Button */}
+          <button
+            type="button"
+            onClick={async () => {
+              await fetch('/api/auth/signout', { method: 'POST' }).catch(() => {});
+              document.cookie = 'os_dev_admin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+              window.location.href = '/login';
+            }}
+            title="Log out of Admin Operations Console"
+            aria-label="Log Out"
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '10px 14px',
+              background: '#1A1A1A',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: 12,
+              color: '#A3A3A3',
+              fontSize: 12.5,
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)';
+              e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+              e.currentTarget.style.color = '#EF4444';
+              e.currentTarget.style.boxShadow = '0 0 12px rgba(239, 68, 68, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#1A1A1A';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+              e.currentTarget.style.color = '#A3A3A3';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            <LogOut size={14} strokeWidth={2} />
+            <span>Log Out</span>
+          </button>
         </div>
       </nav>
     </aside>
