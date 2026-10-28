@@ -1680,26 +1680,36 @@ export const PRODUCTS: Product[] = [
   ...COUGAR_PRODUCTS,
 ];
 
-export function getLiveProducts(): Product[] {
-  if (typeof window === 'undefined') return PRODUCTS;
+let supabaseLiveItems: Product[] = [];
+
+export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
+  if (typeof window === 'undefined') return [];
   try {
-    const raw = localStorage.getItem('os_custom_products');
-    if (raw) {
-      const stored = JSON.parse(raw);
-      if (Array.isArray(stored) && stored.length > 0) {
-        const mapped: Product[] = stored.map((p: any): Product => ({
-          id: p.id || `prod-os-${Date.now()}`,
+    const supaUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+    const supaKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+    if (!supaUrl || !supaKey) return [];
+    const res = await fetch(`${supaUrl}/rest/v1/products?select=*&order=created_at.desc`, {
+      headers: {
+        apikey: supaKey,
+        Authorization: `Bearer ${supaKey}`,
+      },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        supabaseLiveItems = data.map((p: any): Product => ({
+          id: p.id || `prod-os-${p.slug}`,
           slug: p.slug || 'product',
           name: p.name || 'Product',
-          category: (p.category_slug || p.category || 'accessories') as any,
-          categoryName: p.categoryName || 'Sports Gear',
-          productType: (p.productType || 'gear') as any,
+          category: (p.category_slug || 'accessories') as any,
+          categoryName: (p.category_slug ? p.category_slug.toUpperCase() : 'Sports Gear'),
+          productType: (p.category_slug === 'cricket' ? 'bat' : p.category_slug === 'football' ? 'ball' : 'gear') as any,
           brand: p.brand || 'Oriental Sports',
           price: Number(p.price) || 0,
           originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
           rating: p.rating ?? 4.9,
-          reviewsCount: p.reviewsCount ?? 12,
-          inStock: p.status === 'published' && (p.stock_quantity ?? 10) > 0,
+          reviewsCount: p.review_count ?? 12,
+          inStock: p.in_stock !== false,
           images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
           description: p.description || '',
           features: Array.isArray(p.features) ? p.features : [p.description || ''],
@@ -1707,10 +1717,63 @@ export function getLiveProducts(): Product[] {
           variants: p.variants,
           sizes: p.sizes,
         }));
-        const ids = new Set(mapped.map((x: any) => x.id).concat(mapped.map((x: any) => x.slug)));
-        const rest = PRODUCTS.filter((p) => !ids.has(p.id) && !ids.has(p.slug));
-        return [...mapped, ...rest];
+        window.dispatchEvent(new CustomEvent('os_catalog_updated'));
       }
+    }
+  } catch {}
+  return supabaseLiveItems;
+}
+
+if (typeof window !== 'undefined') {
+  fetchLiveSupabaseProducts().catch(() => {});
+}
+
+export function getLiveProducts(): Product[] {
+  if (typeof window === 'undefined') return PRODUCTS;
+  try {
+    let combinedCustom: any[] = [];
+    const raw = localStorage.getItem('os_custom_products');
+    if (raw) {
+      const stored = JSON.parse(raw);
+      if (Array.isArray(stored)) {
+        combinedCustom = [...stored];
+      }
+    }
+
+    // Merge Supabase items if available
+    if (supabaseLiveItems.length > 0) {
+      const existingIds = new Set(combinedCustom.map((x) => x.id || x.slug));
+      for (const item of supabaseLiveItems) {
+        if (!existingIds.has(item.id) && !existingIds.has(item.slug)) {
+          combinedCustom.push(item);
+        }
+      }
+    }
+
+    if (combinedCustom.length > 0) {
+      const mapped: Product[] = combinedCustom.map((p: any): Product => ({
+        id: p.id || `prod-os-${Date.now()}`,
+        slug: p.slug || 'product',
+        name: p.name || 'Product',
+        category: (p.category_slug || p.category || 'accessories') as any,
+        categoryName: p.categoryName || 'Sports Gear',
+        productType: (p.productType || 'gear') as any,
+        brand: p.brand || 'Oriental Sports',
+        price: Number(p.price) || 0,
+        originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
+        rating: p.rating ?? 4.9,
+        reviewsCount: p.reviewsCount ?? 12,
+        inStock: p.status === 'published' && (p.stock_quantity ?? 10) > 0,
+        images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
+        description: p.description || '',
+        features: Array.isArray(p.features) ? p.features : [p.description || ''],
+        specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },
+        variants: p.variants,
+        sizes: p.sizes,
+      }));
+      const ids = new Set(mapped.map((x: any) => x.id).concat(mapped.map((x: any) => x.slug)));
+      const rest = PRODUCTS.filter((p) => !ids.has(p.id) && !ids.has(p.slug));
+      return [...mapped, ...rest];
     }
   } catch {}
   return PRODUCTS;

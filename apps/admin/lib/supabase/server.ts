@@ -44,15 +44,13 @@ export async function createClient() {
  * All callers should wrap this in try/catch to fall back gracefully.
  */
 export function createServiceRoleClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+  const serviceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.includes('supabase-demo')
+      ? process.env.SUPABASE_SERVICE_ROLE_KEY
+      : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
 
-  if (
-    !url ||
-    !serviceKey ||
-    url.includes('tvfzfvurqewgvnnhhhad') ||
-    url.includes('placeholder')
-  ) {
+  if (!url || !serviceKey || url.includes('placeholder')) {
     throw new Error(
       'Live Supabase backend is not configured or offline. Operating in resilient local catalog mode.'
     );

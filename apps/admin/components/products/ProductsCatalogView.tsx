@@ -641,3 +641,4 @@ export function ProductsCatalogView({
     </div>
   );
 }
+
