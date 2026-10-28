@@ -174,7 +174,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                 boxShadow: '0 0 10px rgba(200, 16, 46, 0.35)',
               }}
             >
-              {userEmail?.charAt(0).toUpperCase() || 'P'}
+              {userEmail?.charAt(0).toUpperCase() || 'A'}
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div
@@ -219,6 +219,11 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           <button
             type="button"
             onClick={async () => {
+              try {
+                const { createClient } = await import('@/lib/supabase/client');
+                const supabase = createClient();
+                await supabase.auth.signOut().catch(() => {});
+              } catch {}
               await fetch('/api/auth/signout', { method: 'POST' }).catch(() => {});
               document.cookie = 'os_dev_admin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
               window.location.href = '/login';

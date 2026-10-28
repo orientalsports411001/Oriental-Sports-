@@ -40,6 +40,11 @@ export function AdminBottomNav({ userEmail }: AdminBottomNavProps) {
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
+      try {
+        const { createClient } = await import('@/lib/supabase/client');
+        const supabase = createClient();
+        await supabase.auth.signOut().catch(() => {});
+      } catch {}
       await fetch('/api/auth/signout', { method: 'POST' });
       document.cookie = 'os_dev_admin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       window.location.href = '/login';
@@ -194,11 +199,11 @@ export function AdminBottomNav({ userEmail }: AdminBottomNavProps) {
                     boxShadow: '0 2px 10px rgba(200, 16, 46, 0.4)',
                   }}
                 >
-                  {userEmail?.charAt(0).toUpperCase() || 'P'}
+                  {userEmail?.charAt(0).toUpperCase() || 'A'}
                 </div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 14, color: '#FFFFFF' }}>
-                    {userEmail?.split('@')[0] || 'pratikjadhav8820'}
+                    {userEmail?.split('@')[0] || 'Admin'}
                   </div>
                   <div style={{ fontSize: 11, color: '#22C55E', display: 'flex', alignItems: 'center', gap: 4 }}>
                     <ShieldCheck size={12} />

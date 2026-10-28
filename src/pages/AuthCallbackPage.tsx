@@ -34,23 +34,7 @@ export const AuthCallbackPage: React.FC = () => {
         const authError = getParam('error_description') || getParam('error');
 
         if (authError) {
-          const isFromAdmin = typeof document !== 'undefined' && document.cookie.includes('os_auth_intent=admin');
-          if (isFromAdmin) {
-            document.cookie = 'os_auth_intent=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-            const adminData = {
-              id: 'usr_admin_verified',
-              email: 'pratikjadhav8820@gmail.com',
-              full_name: 'Store Operations Admin',
-              role: 'admin',
-            };
-            document.cookie = `os_dev_admin=${encodeURIComponent(JSON.stringify(adminData))}; path=/; max-age=604800; SameSite=Lax`;
-            window.location.href = 'http://localhost:3001/dashboard';
-            return;
-          }
-
-          // Auto-recover for storefront
-          await signInWithDemo();
-          navigate('/account', { replace: true });
+          setErrorMsg(authError);
           return;
         }
 
@@ -68,31 +52,12 @@ export const AuthCallbackPage: React.FC = () => {
         // Check if session exists after exchange or implicit flow
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          const isFromAdmin = typeof document !== 'undefined' && document.cookie.includes('os_auth_intent=admin');
-          if (isFromAdmin) {
-            document.cookie = 'os_auth_intent=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-            const adminData = {
-              id: session.user.id,
-              email: session.user.email || 'pratikjadhav8820@gmail.com',
-              full_name: session.user.user_metadata?.full_name || 'Store Operations Admin',
-              role: 'admin',
-            };
-            document.cookie = `os_dev_admin=${encodeURIComponent(JSON.stringify(adminData))}; path=/; max-age=604800; SameSite=Lax`;
-            window.location.href = 'http://localhost:3001/dashboard';
-            return;
-          }
-
           navigate('/account', { replace: true });
         } else {
-          // If no session after 3 seconds, redirect
+          // If no session after 2 seconds, redirect
           const timer = setTimeout(() => {
-            const isFromAdmin = typeof document !== 'undefined' && document.cookie.includes('os_auth_intent=admin');
-            if (isFromAdmin) {
-              window.location.href = 'http://localhost:3001/login';
-            } else {
-              navigate('/account', { replace: true });
-            }
-          }, 2500);
+            navigate('/account', { replace: true });
+          }, 2000);
           return () => clearTimeout(timer);
         }
       } catch (err: any) {

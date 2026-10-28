@@ -1,32 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('pratikjadhav8820@gmail.com');
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error' | 'dev-signing'>('idle');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [message, setMessage] = useState<string | null>(null);
 
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
-  // If redirected back with OAuth error (e.g. Supabase cannot exchange code with Google),
-  // immediately authenticate with authorized admin credentials so the user is never trapped in a loop.
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash;
-      const search = window.location.search;
-      if (hash.includes('error') || search.includes('error=')) {
-        window.history.replaceState(null, '', window.location.pathname);
-        handleDevLogin();
-      }
-    }
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email.trim()) return;
     setStatus('sending');
     setMessage(null);
 
@@ -44,18 +32,14 @@ export default function LoginPage() {
 
       if (error) {
         setStatus('error');
-        setMessage(
-          error.message.includes('fetch')
-            ? 'Supabase cloud endpoint is unreachable in this environment. Use Direct Admin Access below to enter the operations console immediately.'
-            : error.message
-        );
+        setMessage(error.message);
         return;
       }
       setStatus('sent');
-      setMessage(`Magic sign-in link sent to ${email}. Check your email to access the operations console.`);
+      setMessage(`Magic sign-in link sent to ${email}. Check your email inbox to access the operations console.`);
     } catch (err: any) {
       setStatus('error');
-      setMessage('Supabase connection failed. Use Direct Admin Access below to enter the operations console.');
+      setMessage(err?.message || 'Authentication failed. Please try again.');
     }
   };
 
@@ -63,9 +47,6 @@ export default function LoginPage() {
     setStatus('sending');
     setMessage(null);
     try {
-      if (typeof document !== 'undefined') {
-        document.cookie = 'os_auth_intent=admin; path=/; max-age=300; SameSite=Lax';
-      }
       const supabase = createClient();
       const redirectTo =
         typeof window !== 'undefined'
@@ -84,35 +65,12 @@ export default function LoginPage() {
       });
 
       if (error) {
-        console.warn('Google OAuth notice:', error.message);
-        // Fallback to direct authorized admin access if Supabase Google provider is not yet configured
-        await handleDevLogin();
-      }
-    } catch (err: any) {
-      console.warn('Google OAuth exception, using authorized admin fallback:', err);
-      await handleDevLogin();
-    }
-  };
-
-  const handleDevLogin = async () => {
-    setStatus('dev-signing');
-    setMessage(null);
-    try {
-      const res = await fetch(`${basePath}/api/auth/dev-login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        window.location.href = `${basePath}/dashboard`;
-      } else {
         setStatus('error');
-        setMessage(data.error || 'Direct login failed');
+        setMessage(error.message);
       }
     } catch (err: any) {
       setStatus('error');
-      setMessage('Local server error during direct access.');
+      setMessage(err?.message || 'Google sign-in initialization failed.');
     }
   };
 
@@ -129,26 +87,23 @@ export default function LoginPage() {
       }}
     >
       <div
-        className="card"
         style={{
-          maxWidth: 440,
           width: '100%',
-          padding: '44px 36px',
-          margin: 0,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderTop: '2px solid #C8102E',
-          borderRadius: 24,
-          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.8), 0 0 36px rgba(200, 16, 46, 0.10)',
+          maxWidth: 420,
           background: '#121212',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: 20,
+          padding: '36px 32px',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.7)',
         }}
       >
-        {/* Authentic Oriental Sports Brandmark on Dark Surface */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+        {/* Brand Header */}
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`${basePath}/brand/oriental-sports-wordmark-white.png`}
             alt="Oriental Sports"
-            style={{ height: 48, width: 'auto', objectFit: 'contain', margin: '0 auto 10px', display: 'block' }}
+            style={{ height: 44, width: 'auto', objectFit: 'contain', margin: '0 auto 10px', display: 'block' }}
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = '/brand/oriental-sports-wordmark-white.png';
@@ -159,21 +114,21 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: 24, marginBottom: 24 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8, textAlign: 'center', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: 20, marginBottom: 24 }}>
+          <h1 style={{ fontSize: 21, fontWeight: 800, marginBottom: 8, textAlign: 'center', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
             Administrator Access
           </h1>
-          <p style={{ color: '#A3A3A3', fontSize: 13.5, margin: 0, textAlign: 'center', lineHeight: 1.5 }}>
-            Access the store operations console to manage catalog, inventory, revenue, and customer orders.
+          <p style={{ color: '#A3A3A3', fontSize: 13, margin: 0, textAlign: 'center', lineHeight: 1.5 }}>
+            Sign in to manage catalog, equipment inventory, customer orders, and live store operations.
           </p>
         </div>
 
-        {/* Google Sign-In Button (Identical to Main Website) */}
-        <div style={{ marginBottom: 14 }}>
+        {/* Google Sign-In Button */}
+        <div style={{ marginBottom: 20 }}>
           <button
             type="button"
             onClick={handleGoogleSignIn}
-            disabled={status === 'sending' || status === 'dev-signing'}
+            disabled={status === 'sending'}
             style={{
               width: '100%',
               minHeight: 48,
@@ -214,38 +169,7 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* Direct Local Admin Access Action */}
-        <div style={{ marginBottom: 24 }}>
-          <button
-            type="button"
-            onClick={handleDevLogin}
-            disabled={status === 'dev-signing'}
-            style={{
-              width: '100%',
-              minHeight: 46,
-              fontSize: 13.5,
-              background: '#C8102E',
-              color: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              fontWeight: 700,
-              borderRadius: 9999,
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 4px 20px rgba(200, 16, 46, 0.45)',
-              transition: 'all 0.18s ease',
-            }}
-          >
-            {status === 'dev-signing' ? 'Authenticating Admin...' : 'Enter Operations Console →'}
-          </button>
-          <div style={{ textAlign: 'center', fontSize: 11.5, color: '#737373', marginTop: 8 }}>
-            Direct access for authorized store administrator ({email})
-          </div>
-        </div>
-
-        <div style={{ position: 'relative', margin: '24px 0', textAlign: 'center' }}>
+        <div style={{ position: 'relative', margin: '20px 0', textAlign: 'center' }}>
           <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 1, background: 'rgba(255, 255, 255, 0.08)' }} />
           <span style={{ position: 'relative', background: '#121212', padding: '0 12px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#737373' }}>
             or receive magic link
@@ -253,13 +177,13 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="email" style={{ fontSize: 11, letterSpacing: '0.1em', color: '#A3A3A3' }}>
+          <label htmlFor="email" style={{ fontSize: 11, letterSpacing: '0.1em', color: '#A3A3A3', display: 'block', marginBottom: 6 }}>
             Store Manager Email
           </label>
           <input
             id="email"
             type="email"
-            placeholder="pratikjadhav8820@gmail.com"
+            placeholder="admin@orientalsports.in"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -270,6 +194,9 @@ export default function LoginPage() {
               border: '1px solid rgba(255, 255, 255, 0.12)',
               color: '#FFFFFF',
               borderRadius: 12,
+              boxSizing: 'border-box',
+              outline: 'none',
+              fontSize: 13,
             }}
           />
 
@@ -277,7 +204,7 @@ export default function LoginPage() {
             <button
               type="submit"
               className="secondary"
-              disabled={status === 'sending'}
+              disabled={status === 'sending' || !email.trim()}
               style={{
                 width: '100%',
                 minHeight: 44,
@@ -286,6 +213,8 @@ export default function LoginPage() {
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 color: '#FFFFFF',
                 borderRadius: 9999,
+                cursor: 'pointer',
+                fontWeight: 600,
               }}
             >
               {status === 'sending' ? 'Sending Magic Link...' : 'Email Sign-In Magic Link'}
@@ -294,7 +223,18 @@ export default function LoginPage() {
         </form>
 
         {message && (
-          <p className={status === 'error' ? 'error' : 'success'} style={{ marginTop: 16 }}>
+          <p
+            style={{
+              marginTop: 16,
+              padding: '10px 14px',
+              borderRadius: 10,
+              fontSize: 12.5,
+              background: status === 'error' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(34, 197, 94, 0.12)',
+              border: `1px solid ${status === 'error' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
+              color: status === 'error' ? '#EF4444' : '#22C55E',
+              lineHeight: 1.4,
+            }}
+          >
             {message}
           </p>
         )}
@@ -311,7 +251,7 @@ export default function LoginPage() {
           }}
         >
           Oriental Sports Pune · Camp Store Operations<br />
-          Role-protected: Requires <code style={{ background: 'rgba(255, 255, 255, 0.08)', color: '#FF4D6D', padding: '2px 6px', borderRadius: 4 }}>role = &apos;admin&apos;</code> in Supabase profiles.
+          Role-protected: Requires verified admin credentials.
         </div>
       </div>
     </div>
