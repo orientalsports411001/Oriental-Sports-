@@ -36,6 +36,7 @@ export function SeoEditor({
   variants,
   images,
   initial,
+  onChange,
 }: {
   productId?: string;
   slug: string;
