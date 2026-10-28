@@ -22,22 +22,30 @@ export default async function EditProductPage({
   let categories: any[] = CATEGORIES;
   let adjustments: any[] = [];
 
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id);
+
   try {
     const admin = createServiceRoleClient();
-    const [{ data: dbProduct }, { data: dbCategories }, { data: dbAdjustments }] = await Promise.all([
-      admin.from('products').select('*').eq('id', params.id).maybeSingle(),
+    const productQuery = isUuid
+      ? admin.from('products').select('*').eq('id', params.id).maybeSingle()
+      : admin.from('products').select('*').eq('slug', params.id).maybeSingle();
+
+    const [{ data: dbProduct }, { data: dbCategories }] = await Promise.all([
+      productQuery,
       admin.from('categories').select('slug, name').order('name'),
-      admin
-        .from('inventory_adjustments')
-        .select('id, delta, reason, created_at')
-        .eq('product_id', params.id)
-        .order('created_at', { ascending: false })
-        .limit(10),
     ]);
 
-    if (dbProduct) product = dbProduct;
+    if (dbProduct) {
+      product = dbProduct;
+      const { data: dbAdjustments } = await admin
+        .from('inventory_adjustments')
+        .select('id, delta, reason, created_at')
+        .eq('product_id', dbProduct.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (dbAdjustments) adjustments = dbAdjustments;
+    }
     if (dbCategories && dbCategories.length > 0) categories = dbCategories;
-    if (dbAdjustments) adjustments = dbAdjustments;
   } catch (err) {
     // Supabase unavailable, fallback to memory store
   }
@@ -48,9 +56,10 @@ export default async function EditProductPage({
     product = fallback;
   }
 
-  const boundUpdate = updateProduct.bind(null, params.id);
-  const boundAdjustStock = adjustStock.bind(null, params.id);
-  const boundDelete = deleteProduct.bind(null, params.id);
+  const effectiveId = product.id || params.id;
+  const boundUpdate = updateProduct.bind(null, effectiveId);
+  const boundAdjustStock = adjustStock.bind(null, effectiveId);
+  const boundDelete = deleteProduct.bind(null, effectiveId);
 
   return (
     <div>

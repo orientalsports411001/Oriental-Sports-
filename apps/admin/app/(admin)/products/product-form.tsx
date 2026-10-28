@@ -49,6 +49,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
   const [status, setStatus] = useState<string>(data?.status || 'published');
   const [stockQuantity, setStockQuantity] = useState<number>(data?.stock_quantity ?? 10);
   const [lowStockThreshold, setLowStockThreshold] = useState<number>(data?.low_stock_threshold ?? 5);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // SEO State
   const [seoTitle, setSeoTitle] = useState(data?.seo_title || '');
@@ -121,7 +122,18 @@ export function ProductForm({ initialData, product: productProp, categories, act
   const discountPercent = numCompare > numPrice ? Math.round(((numCompare - numPrice) / numCompare) * 100) : 0;
 
   return (
-    <form action={action} style={{ position: 'relative', paddingBottom: 100 }}>
+    <form
+      action={async (formData) => {
+        setIsSubmitting(true);
+        try {
+          await action(formData);
+        } catch (err) {
+          setIsSubmitting(false);
+          throw err;
+        }
+      }}
+      style={{ position: 'relative', paddingBottom: 100 }}
+    >
       {error && <p className="error" style={{ marginBottom: 20 }}>{error}</p>}
 
       {/* Pill Tab Bar */}
@@ -174,7 +186,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
         {/* Left / Main Column: Seamless Studio Surface */}
         <div>
           {/* Tab 1: Basic Info & Specs */}
-          {activeTab === 'details' && (
+          <div style={{ display: activeTab === 'details' ? 'block' : 'none' }}>
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -206,7 +218,6 @@ export function ProductForm({ initialData, product: productProp, categories, act
                         value={name}
                         onChange={(e) => handleNameChange(e.target.value)}
                         placeholder="e.g. SG Scorer Classic Cricket Bat"
-                        required
                         className="cult-input"
                         style={{ fontWeight: 600 }}
                       />
@@ -224,7 +235,6 @@ export function ProductForm({ initialData, product: productProp, categories, act
                         value={slug}
                         onChange={(e) => setSlug(e.target.value)}
                         placeholder="sg-scorer-classic-cricket-bat"
-                        required
                         className="cult-input"
                       />
                       <div style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 4 }}>
@@ -331,10 +341,10 @@ export function ProductForm({ initialData, product: productProp, categories, act
                 </div>
               </div>
             </motion.div>
-          )}
+          </div>
 
           {/* Tab 2: Pricing & Inventory */}
-          {activeTab === 'pricing' && (
+          <div style={{ display: activeTab === 'pricing' ? 'block' : 'none' }}>
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -364,7 +374,6 @@ export function ProductForm({ initialData, product: productProp, categories, act
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
                       placeholder="2899"
-                      required
                       className="cult-input"
                       style={{ fontSize: 16, fontWeight: 700 }}
                     />
@@ -469,10 +478,10 @@ export function ProductForm({ initialData, product: productProp, categories, act
                 </div>
               </div>
             </motion.div>
-          )}
+          </div>
 
           {/* Tab 3: Media Gallery */}
-          {activeTab === 'media' && (
+          <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -494,10 +503,10 @@ export function ProductForm({ initialData, product: productProp, categories, act
                 />
               </div>
             </motion.div>
-          )}
+          </div>
 
           {/* Tab 4: SEO & Social Meta */}
-          {activeTab === 'seo' && (
+          <div style={{ display: activeTab === 'seo' ? 'block' : 'none' }}>
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -539,7 +548,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
                 />
               </div>
             </motion.div>
-          )}
+          </div>
         </div>
 
         {/* Right Column / Live Storefront Preview (Smooth Squircle, Responsive) */}
@@ -699,7 +708,17 @@ export function ProductForm({ initialData, product: productProp, categories, act
 
       </div>
 
-      {/* Hidden Fields for Server Action */}
+      {/* Hidden Fields for Server Action - Guaranteed state across all tabs */}
+      <input type="hidden" name="name" value={name} />
+      <input type="hidden" name="slug" value={slug} />
+      <input type="hidden" name="category_slug" value={categorySlug} />
+      <input type="hidden" name="brand" value={brand} />
+      <input type="hidden" name="description" value={description} />
+      <input type="hidden" name="price" value={price} />
+      <input type="hidden" name="compare_at_price" value={compareAtPrice} />
+      <input type="hidden" name="stock_quantity" value={stockQuantity} />
+      <input type="hidden" name="low_stock_threshold" value={lowStockThreshold} />
+      <input type="hidden" name="status" value={status} />
       <input type="hidden" name="images" value={images.join('\n')} />
       <input type="hidden" name="images_json" value={JSON.stringify(images)} />
       <input type="hidden" name="sizes" value={sizes} />
@@ -773,23 +792,26 @@ export function ProductForm({ initialData, product: productProp, categories, act
 
           <button
             type="submit"
-            disabled={!isFormComplete}
+            disabled={!isFormComplete || isSubmitting}
             title={!isFormComplete ? `Please complete: ${missingDetails.map((m) => m.label).join(', ')}` : undefined}
             style={{
               padding: '10px 24px',
               borderRadius: 9999,
-              background: isFormComplete ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
-              color: isFormComplete ? '#111111' : 'rgba(255,255,255,0.4)',
+              background: isFormComplete && !isSubmitting ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
+              color: isFormComplete && !isSubmitting ? '#111111' : 'rgba(255,255,255,0.4)',
               fontSize: 13,
               fontWeight: 800,
               border: 'none',
-              cursor: isFormComplete ? 'pointer' : 'not-allowed',
+              cursor: isFormComplete && !isSubmitting ? 'pointer' : 'not-allowed',
               flexShrink: 0,
-              boxShadow: isFormComplete ? '0 4px 14px rgba(0,0,0,0.3)' : 'none',
+              boxShadow: isFormComplete && !isSubmitting ? '0 4px 14px rgba(0,0,0,0.3)' : 'none',
               transition: 'all 0.2s ease',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
             }}
           >
-            {isFormComplete ? 'Save Changes' : 'Fill All Details to Save'}
+            {isSubmitting ? 'Saving...' : isFormComplete ? 'Save Changes' : 'Fill All Details to Save'}
           </button>
         </div>
       </div>

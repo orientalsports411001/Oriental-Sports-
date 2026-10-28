@@ -123,20 +123,20 @@ async function ensureAdmin() {
 }
 
 function buildProductPayload(formData: FormData) {
-  const name = String(formData.get('name') || '').trim();
-  const slug = String(formData.get('slug') || '').trim();
-  const categorySlug = String(formData.get('category_slug') || '').trim();
-  const brand = String(formData.get('brand') || '').trim();
-  const description = String(formData.get('description') || '').trim();
-  const price = Number(formData.get('price') || 0);
-  const compareAtPriceRaw = formData.get('compare_at_price');
+  const name = getLatestNonEmpty(formData, 'name');
+  const slug = getLatestNonEmpty(formData, 'slug');
+  const categorySlug = getLatestNonEmpty(formData, 'category_slug');
+  const brand = getLatestNonEmpty(formData, 'brand');
+  const description = getLatestNonEmpty(formData, 'description');
+  const price = Number(getLatestNonEmpty(formData, 'price') || 0);
+  const compareAtPriceRaw = getLatestNonEmpty(formData, 'compare_at_price');
   const compareAtPrice = compareAtPriceRaw ? Number(compareAtPriceRaw) : null;
   const images = parseImages(formData);
   const sizes = parseSizes(formData);
   const variants = parseVariants(formData);
-  const stockQuantity = Number(formData.get('stock_quantity') || 0);
-  const lowStockThreshold = Number(formData.get('low_stock_threshold') || 5);
-  const requestedStatus = String(formData.get('status') || 'draft');
+  const stockQuantity = Number(getLatestNonEmpty(formData, 'stock_quantity') || 0);
+  const lowStockThreshold = Number(getLatestNonEmpty(formData, 'low_stock_threshold') || 5);
+  const requestedStatus = getLatestNonEmpty(formData, 'status') || 'published';
 
   const seoTitle = getLatestNonEmpty(formData, 'seo_title');
   const seoDescription = getLatestNonEmpty(formData, 'seo_description');
@@ -288,6 +288,8 @@ export async function updateProduct(productId: string, formData: FormData) {
     updated_at: new Date().toISOString(),
   };
 
+  let targetEditId = productId;
+
   try {
     const admin = createServiceRoleClient();
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
@@ -298,12 +300,13 @@ export async function updateProduct(productId: string, formData: FormData) {
         .update(updatePayload)
         .eq('id', productId);
       if (error) throw error;
+      targetEditId = productId;
     } else {
       // Non-UUID template product: check if slug exists, then update or upsert
       const { data: existing } = await admin
         .from('products')
-        .select('id')
-        .eq('slug', fields.slug)
+        .select('id, slug')
+        .or(`slug.eq."${productId}",slug.eq."${fields.slug}"`)
         .maybeSingle();
 
       if (existing?.id) {
@@ -312,20 +315,24 @@ export async function updateProduct(productId: string, formData: FormData) {
           .update(updatePayload)
           .eq('id', existing.id);
         if (error) throw error;
+        targetEditId = existing.id;
       } else {
-        const { error } = await admin
+        const { data: inserted, error } = await admin
           .from('products')
           .insert({
             ...updatePayload,
             slug: fields.slug,
-          });
+          })
+          .select('id')
+          .single();
         if (error) throw error;
+        if (inserted?.id) targetEditId = inserted.id;
       }
     }
   } catch (err) {
     if (isRedirectError(err)) throw err;
     console.warn('[updateProduct] Database update notice:', err);
-    saveProduct({
+    const saved = saveProduct({
       id: productId,
       name: fields.name,
       slug: fields.slug,
@@ -341,13 +348,14 @@ export async function updateProduct(productId: string, formData: FormData) {
       seo_title: fields.seoTitle,
       seo_description: fields.seoDescription,
     });
+    targetEditId = saved.id || fields.slug || productId;
   }
 
   if (publishError) {
-    redirect(`/products/${productId}/edit?error=${encodeURIComponent(publishError)}`);
+    redirect(`/products/${targetEditId}/edit?error=${encodeURIComponent(publishError)}`);
   }
 
-  redirect(`/products/${productId}/edit?saved=Product+saved+successfully`);
+  redirect(`/products/${targetEditId}/edit?saved=Product+saved+successfully`);
 }
 
 export async function adjustStock(productId: string, formData: FormData) {
