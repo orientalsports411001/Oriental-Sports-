@@ -42,6 +42,51 @@ function parsePublicIdMap(value: string | null): Record<string, string> {
   return parseAltTextMap(value);
 }
 
+function parseImages(formData: FormData): string[] {
+  const imagesJson = formData.get('images_json');
+  if (typeof imagesJson === 'string' && imagesJson.trim()) {
+    try {
+      const parsed = JSON.parse(imagesJson);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.filter((x) => typeof x === 'string' && x.trim());
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const imagesRaw = formData.get('images');
+  if (typeof imagesRaw === 'string' && imagesRaw.trim()) {
+    try {
+      const parsed = JSON.parse(imagesRaw);
+      if (Array.isArray(parsed)) return parsed.filter((x) => typeof x === 'string' && x.trim());
+    } catch {
+      return parseLines(imagesRaw);
+    }
+  }
+
+  return [];
+}
+
+function parseSizes(formData: FormData): string[] {
+  const raw = formData.get('sizes') || formData.get('available_sizes');
+  return parseLines(typeof raw === 'string' ? raw : null);
+}
+
+function parseVariants(formData: FormData): unknown[] {
+  const raw = formData.get('variants_json') || formData.get('variants');
+  return parseJsonArray(typeof raw === 'string' ? raw : null);
+}
+
+function getLatestNonEmpty(formData: FormData, key: string): string {
+  const all = formData.getAll(key);
+  for (let i = all.length - 1; i >= 0; i--) {
+    const val = String(all[i] || '').trim();
+    if (val) return val;
+  }
+  return '';
+}
+
 function validateForPublish(fields: {
   name: string;
   price: number;
@@ -50,14 +95,13 @@ function validateForPublish(fields: {
 }): string | null {
   if (!fields.name.trim()) return 'Name is required to publish.';
   if (!(fields.price > 0)) return 'Price must be greater than 0 to publish.';
-  if (!fields.categorySlug) return 'A category is required to publish.';
-  if (fields.images.length === 0) return 'At least one image is required to publish.';
+  if (!fields.categorySlug) return 'A sport discipline / category is required to publish.';
+  if (fields.images.length === 0) return 'At least one product image is required to publish.';
   return null;
 }
 
 /**
  * Helper: check if an error is a Next.js redirect (NEXT_REDIRECT).
- * These must NEVER be caught — they must be re-thrown so Next.js handles the redirect.
  */
 function isRedirectError(err: unknown): boolean {
   if (err && typeof err === 'object' && 'digest' in err) {
@@ -68,8 +112,7 @@ function isRedirectError(err: unknown): boolean {
 }
 
 /**
- * Safe admin check for Server Actions. Returns the user or redirects to login.
- * Unlike requireAdmin(), this never throws NEXT_REDIRECT inside a try/catch.
+ * Safe admin check for Server Actions.
  */
 async function ensureAdmin() {
   const result = await checkAdmin();
@@ -88,20 +131,20 @@ function buildProductPayload(formData: FormData) {
   const price = Number(formData.get('price') || 0);
   const compareAtPriceRaw = formData.get('compare_at_price');
   const compareAtPrice = compareAtPriceRaw ? Number(compareAtPriceRaw) : null;
-  const images = parseLines(String(formData.get('images') || ''));
-  const sizes = parseLines(String(formData.get('sizes') || ''));
-  const variants = parseJsonArray(String(formData.get('variants') || ''));
+  const images = parseImages(formData);
+  const sizes = parseSizes(formData);
+  const variants = parseVariants(formData);
   const stockQuantity = Number(formData.get('stock_quantity') || 0);
   const lowStockThreshold = Number(formData.get('low_stock_threshold') || 5);
   const requestedStatus = String(formData.get('status') || 'draft');
 
-  const seoTitle = String(formData.get('seo_title') || '').trim();
-  const seoDescription = String(formData.get('seo_description') || '').trim();
-  const seoKeywords = parseLines(String(formData.get('seo_keywords') || ''));
-  const ogTitle = String(formData.get('og_title') || '').trim();
-  const ogDescription = String(formData.get('og_description') || '').trim();
-  const imageAltText = parseAltTextMap(String(formData.get('image_alt_text') || ''));
-  const cloudinaryPublicIds = parsePublicIdMap(String(formData.get('cloudinary_public_ids') || ''));
+  const seoTitle = getLatestNonEmpty(formData, 'seo_title');
+  const seoDescription = getLatestNonEmpty(formData, 'seo_description');
+  const seoKeywords = parseLines(getLatestNonEmpty(formData, 'seo_keywords'));
+  const ogTitle = getLatestNonEmpty(formData, 'og_title');
+  const ogDescription = getLatestNonEmpty(formData, 'og_description');
+  const imageAltText = parseAltTextMap(getLatestNonEmpty(formData, 'image_alt_text'));
+  const cloudinaryPublicIds = parsePublicIdMap(getLatestNonEmpty(formData, 'cloudinary_public_ids'));
 
   return {
     name,
@@ -128,7 +171,6 @@ function buildProductPayload(formData: FormData) {
 }
 
 export async function createProduct(formData: FormData) {
-  // Auth check BEFORE any try/catch so redirect() can propagate cleanly
   await ensureAdmin();
   const fields = buildProductPayload(formData);
 
@@ -179,6 +221,7 @@ export async function createProduct(formData: FormData) {
     if (data) createdId = data.id;
   } catch (err) {
     if (isRedirectError(err)) throw err;
+    console.warn('[createProduct] Supabase insert notice:', err);
     // Save to local fallback store
     const saved = saveProduct({
       name: fields.name,
@@ -202,7 +245,7 @@ export async function createProduct(formData: FormData) {
     redirect(`/products/${createdId}/edit?error=${encodeURIComponent(publishError)}`);
   }
 
-  redirect(`/products/${createdId}/edit?saved=1`);
+  redirect(`/products/${createdId}/edit?saved=Product+created+successfully`);
 }
 
 export async function updateProduct(productId: string, formData: FormData) {
@@ -221,38 +264,67 @@ export async function updateProduct(productId: string, formData: FormData) {
     if (publishError) status = 'draft';
   }
 
+  const updatePayload = {
+    name: fields.name,
+    slug: fields.slug,
+    category_slug: fields.categorySlug || null,
+    brand: fields.brand,
+    description: fields.description,
+    price: fields.price,
+    compare_at_price: fields.compareAtPrice,
+    images: fields.images,
+    sizes: fields.sizes,
+    variants: fields.variants,
+    stock_quantity: fields.stockQuantity,
+    low_stock_threshold: fields.lowStockThreshold,
+    status,
+    seo_title: fields.seoTitle || null,
+    seo_description: fields.seoDescription || null,
+    seo_keywords: fields.seoKeywords,
+    og_title: fields.ogTitle || null,
+    og_description: fields.ogDescription || null,
+    image_alt_text: fields.imageAltText,
+    cloudinary_public_ids: fields.cloudinaryPublicIds,
+    updated_at: new Date().toISOString(),
+  };
+
   try {
     const admin = createServiceRoleClient();
-    const { error } = await admin
-      .from('products')
-      .update({
-        name: fields.name,
-        slug: fields.slug,
-        category_slug: fields.categorySlug || null,
-        brand: fields.brand,
-        description: fields.description,
-        price: fields.price,
-        compare_at_price: fields.compareAtPrice,
-        images: fields.images,
-        sizes: fields.sizes,
-        variants: fields.variants,
-        stock_quantity: fields.stockQuantity,
-        low_stock_threshold: fields.lowStockThreshold,
-        status,
-        seo_title: fields.seoTitle || null,
-        seo_description: fields.seoDescription || null,
-        seo_keywords: fields.seoKeywords,
-        og_title: fields.ogTitle || null,
-        og_description: fields.ogDescription || null,
-        image_alt_text: fields.imageAltText,
-        cloudinary_public_ids: fields.cloudinaryPublicIds,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', productId);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
 
-    if (error) throw error;
+    if (isUuid) {
+      const { error } = await admin
+        .from('products')
+        .update(updatePayload)
+        .eq('id', productId);
+      if (error) throw error;
+    } else {
+      // Non-UUID template product: check if slug exists, then update or upsert
+      const { data: existing } = await admin
+        .from('products')
+        .select('id')
+        .eq('slug', fields.slug)
+        .maybeSingle();
+
+      if (existing?.id) {
+        const { error } = await admin
+          .from('products')
+          .update(updatePayload)
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await admin
+          .from('products')
+          .insert({
+            ...updatePayload,
+            slug: fields.slug,
+          });
+        if (error) throw error;
+      }
+    }
   } catch (err) {
     if (isRedirectError(err)) throw err;
+    console.warn('[updateProduct] Database update notice:', err);
     saveProduct({
       id: productId,
       name: fields.name,
@@ -275,7 +347,7 @@ export async function updateProduct(productId: string, formData: FormData) {
     redirect(`/products/${productId}/edit?error=${encodeURIComponent(publishError)}`);
   }
 
-  redirect(`/products/${productId}/edit?saved=1`);
+  redirect(`/products/${productId}/edit?saved=Product+saved+successfully`);
 }
 
 export async function adjustStock(productId: string, formData: FormData) {
@@ -305,16 +377,13 @@ export async function adjustStock(productId: string, formData: FormData) {
     }
   }
 
-  redirect(`/products/${productId}/edit?saved=1`);
+  redirect(`/products/${productId}/edit?saved=Stock+adjusted+successfully`);
 }
 
 export async function deleteProduct(productId: string) {
   await ensureAdmin();
 
-  // Separate the Supabase logic from redirects to prevent
-  // redirect errors being swallowed by try/catch
   let shouldArchive = false;
-  let supabaseWorked = false;
 
   try {
     const admin = createServiceRoleClient();
@@ -335,14 +404,11 @@ export async function deleteProduct(productId: string) {
       await admin.from('products').delete().eq('id', productId);
       removeProduct(productId);
     }
-    supabaseWorked = true;
   } catch (err) {
     if (isRedirectError(err)) throw err;
-    // Fallback store deletion
     removeProduct(productId);
   }
 
-  // Redirects are OUTSIDE try/catch — they propagate cleanly
   if (shouldArchive) {
     redirect('/products?saved=Product+archived+to+protect+order+history');
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Globe, Share2, Check, X, AlertCircle } from 'lucide-react';
 import { generateSeoSuggestionsAction } from '@/app/(admin)/products/seo-actions';
@@ -48,6 +48,7 @@ export function SeoEditor({
   variants: unknown[];
   images: string[];
   initial: SeoEditorInitial;
+  onChange?: (values: { seoTitle: string; seoDescription: string }) => void;
 }) {
   const [seoTitle, setSeoTitle] = useState(initial.seoTitle);
   const [seoDescription, setSeoDescription] = useState(initial.seoDescription);
@@ -62,6 +63,10 @@ export function SeoEditor({
   const [genError, setGenError] = useState<string | null>(null);
   const [pendingSuggestions, setPendingSuggestions] = useState<SeoSuggestions | null>(null);
   const [confirmFields, setConfirmFields] = useState<FieldKey[]>([]);
+
+  useEffect(() => {
+    onChange?.({ seoTitle, seoDescription });
+  }, [seoTitle, seoDescription, onChange]);
 
   const allKeywords = useMemo(
     () => [primaryKeyword, ...secondaryKeywords].map((k) => k.trim()).filter(Boolean),
