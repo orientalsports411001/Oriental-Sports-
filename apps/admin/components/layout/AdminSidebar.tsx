@@ -64,8 +64,8 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           </Link>
         </div>
 
-        {/* Quick Search */}
-        <div style={{ marginTop: 18, marginBottom: 16 }}>
+        {/* Quick Search (Desktop) */}
+        <div className="desktop-sidebar-nav-stack" style={{ marginTop: 18, marginBottom: 16 }}>
           <Link
             href="/products"
             style={{
@@ -86,8 +86,8 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           </Link>
         </div>
 
-        {/* Pure Typographic Navigation (Zero AI icons) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+        {/* Pure Typographic Navigation (Zero AI icons) - Desktop */}
+        <div className="desktop-sidebar-nav-stack" style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
           {navItems.map((item) => {
             const isActive =
               pathname === item.href ||
@@ -134,8 +134,9 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           })}
         </div>
 
-        {/* Footer Area: Authenticated User */}
+        {/* Footer Area: Authenticated User (Desktop) */}
         <div
+          className="desktop-sidebar-footer"
           style={{
             marginTop: 'auto',
             paddingTop: 18,
@@ -149,6 +150,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'space-between',
               gap: 10,
               padding: '10px 12px',
               background: '#161616',
@@ -156,39 +158,66 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
               border: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                background: 'var(--blood-crimson)',
-                color: '#FFFFFF',
-                display: 'grid',
-                placeItems: 'center',
-                fontWeight: 800,
-                fontSize: 13,
-                flexShrink: 0,
-              }}
-            >
-              {userEmail?.charAt(0).toUpperCase() || 'P'}
-            </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
               <div
                 style={{
-                  fontWeight: 700,
-                  fontSize: 12.5,
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  background: 'var(--blood-crimson)',
                   color: '#FFFFFF',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
+                  display: 'grid',
+                  placeItems: 'center',
+                  fontWeight: 800,
+                  fontSize: 13,
+                  flexShrink: 0,
                 }}
               >
-                {userEmail?.split('@')[0] || 'Admin'}
+                {userEmail?.charAt(0).toUpperCase() || 'P'}
               </div>
-              <div style={{ fontSize: 10.5, color: '#737373' }}>
-                Superadmin
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: 12.5,
+                    color: '#FFFFFF',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {userEmail?.split('@')[0] || 'Admin'}
+                </div>
+                <div style={{ fontSize: 10.5, color: '#737373' }}>
+                  Superadmin
+                </div>
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={async () => {
+                await fetch('/api/auth/signout', { method: 'POST' }).catch(() => {});
+                document.cookie = 'os_dev_admin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                window.location.href = '/login';
+              }}
+              title="Sign Out"
+              aria-label="Sign Out"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#737373',
+                cursor: 'pointer',
+                padding: '4px 6px',
+                minHeight: 'auto',
+                boxShadow: 'none',
+                fontSize: 11,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#F87171'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = '#737373'; }}
+            >
+              Exit
+            </button>
           </div>
         </div>
       </nav>
