@@ -51,8 +51,6 @@ export function ProductsCatalogView({
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || '');
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [copyFeedback, setCopyFeedback] = useState(false);
 
   // Load custom products from localStorage
   const loadCustomProducts = () => {
@@ -203,16 +201,6 @@ export function ProductsCatalogView({
     } catch {}
   };
 
-  const handleCopyCustomJson = () => {
-    if (typeof window === 'undefined') return;
-    try {
-      const raw = localStorage.getItem('os_custom_products') || '[]';
-      navigator.clipboard.writeText(raw);
-      setCopyFeedback(true);
-      setTimeout(() => setCopyFeedback(false), 2500);
-    } catch {}
-  };
-
   return (
     <div>
       {/* Metric Cards Ribbon */}
@@ -304,53 +292,6 @@ export function ProductsCatalogView({
           </div>
         </div>
       </div>
-
-      {/* Custom Products Synced Notification Bar */}
-      {customProducts.length > 0 && (
-        <div
-          style={{
-            marginBottom: 20,
-            padding: '12px 18px',
-            background: 'rgba(234, 179, 8, 0.08)',
-            border: '1px solid rgba(234, 179, 8, 0.3)',
-            borderRadius: 14,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: 12,
-            fontSize: 13,
-            color: '#FACC15',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 15 }}>⚡</span>
-            <span>
-              <strong>{customProducts.length} custom product{customProducts.length > 1 ? 's' : ''}</strong> active & visible in your catalog.
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <button
-              type="button"
-              onClick={handleCopyCustomJson}
-              style={{
-                padding: '6px 14px',
-                borderRadius: 9999,
-                background: copyFeedback ? '#22C55E' : 'rgba(255, 255, 255, 0.1)',
-                color: copyFeedback ? '#000000' : '#FFFFFF',
-                border: 'none',
-                fontWeight: 600,
-                fontSize: 12,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              {copyFeedback ? '✓ Copied JSON!' : 'Copy Custom Products JSON'}
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Filter Tabs & Search Bar */}
       <div style={{ marginBottom: 20 }}>
@@ -508,44 +449,24 @@ export function ProductsCatalogView({
                       key={p.id}
                       style={{
                         borderBottom: '1px solid rgba(255,255,255,0.04)',
-                        background: p.isCustom ? 'rgba(234, 179, 8, 0.02)' : 'transparent',
                       }}
                     >
                       {/* Product Name & Brand */}
                       <td style={{ padding: '16px 20px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <Link
-                                href={`/products/${p.id}/edit`}
-                                style={{
-                                  fontWeight: 700,
-                                  fontSize: 14,
-                                  color: 'var(--ink)',
-                                  textDecoration: 'none',
-                                }}
-                              >
-                                {p.name}
-                              </Link>
-                              {p.isCustom && (
-                                <span
-                                  style={{
-                                    fontSize: 10,
-                                    fontWeight: 700,
-                                    padding: '2px 6px',
-                                    borderRadius: 4,
-                                    background: 'rgba(234, 179, 8, 0.2)',
-                                    color: '#FACC15',
-                                    letterSpacing: '0.04em',
-                                  }}
-                                >
-                                  NEW UPLOAD
-                                </span>
-                              )}
-                            </div>
-                            <div style={{ fontSize: 12, color: 'var(--subtle)', marginTop: 2 }}>
-                              {p.brand ? `${p.brand} · ` : ''}{p.category_slug || 'General'}
-                            </div>
+                        <div>
+                          <Link
+                            href={`/products/${p.id}/edit`}
+                            style={{
+                              fontWeight: 700,
+                              fontSize: 14,
+                              color: 'var(--ink)',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            {p.name}
+                          </Link>
+                          <div style={{ fontSize: 12, color: 'var(--subtle)', marginTop: 2 }}>
+                            {p.brand ? `${p.brand} · ` : ''}{p.category_slug || 'General'}
                           </div>
                         </div>
                       </td>
