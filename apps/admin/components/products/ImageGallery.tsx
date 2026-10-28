@@ -58,14 +58,42 @@ export function ImageGallery({
     setUploads((prev) => [...prev, { fileName: file.name, progress: 5 }]);
 
     try {
-      const signRes = await fetch('/admin/api/cloudinary/sign', { method: 'POST' });
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+      // Try /api/cloudinary/sign first, then fallback to /admin/api/cloudinary/sign if needed
+      let signRes = await fetch(`${basePath}/api/cloudinary/sign`, { method: 'POST' });
+      if (!signRes.ok && signRes.status === 404) {
+        signRes = await fetch(`${basePath}/admin/api/cloudinary/sign`, { method: 'POST' });
+      }
+
       if (!signRes.ok) {
         const body = await signRes.json().catch(() => ({}));
         throw new Error(body.error || `Could not sign upload (${signRes.status}).`);
       }
       const signed = await signRes.json();
 
-      setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 25 } : u)));
+      setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 30 } : u)));
+
+      // If Cloudinary is not configured or returned local fallback, upload directly to local API
+      if (signed.local) {
+        const localFormData = new FormData();
+        localFormData.append('file', file);
+
+        const localRes = await fetch(`${basePath}/api/upload`, {
+          method: 'POST',
+          body: localFormData,
+        });
+
+        if (!localRes.ok) {
+          const body = await localRes.json().catch(() => ({}));
+          throw new Error(body.error || `Local upload failed (${localRes.status}).`);
+        }
+
+        const localResult = await localRes.json();
+        setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 100 } : u)));
+        onChange([...imagesRef.current, { url: localResult.secure_url, publicId: localResult.public_id }]);
+        setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
+        return;
+      }
 
       const formData = new FormData();
       formData.append('file', file);
@@ -104,7 +132,7 @@ export function ImageGallery({
     const target = images[index];
     setDeleteError(null);
 
-    if (target.publicId) {
+    if (target.publicId && !target.publicId.startsWith('local_')) {
       const result = await deleteCloudinaryAssetAction(target.publicId);
       if (!result.ok) {
         setDeleteError(`Could not delete from Cloudinary: ${result.error || 'unknown error'}`);

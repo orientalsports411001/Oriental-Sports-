@@ -14,7 +14,14 @@ export async function POST() {
   try {
     const signed = buildUploadSignature();
     return NextResponse.json(signed);
-  } catch (err) {
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : '';
+    if (errMsg.includes('Cloudinary is not configured')) {
+      return NextResponse.json({
+        local: true,
+        message: 'Cloudinary credentials not set; routing upload to local asset storage.',
+      });
+    }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Could not sign upload.' },
       { status: 500 }
