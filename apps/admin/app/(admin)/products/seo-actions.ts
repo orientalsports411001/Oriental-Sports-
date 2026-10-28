@@ -69,6 +69,7 @@ export async function generateSeoSuggestionsAction(
   });
 
   if (!result.ok) {
+    lastGeneratedAt.delete(key);
     return { ok: false, error: result.error.message };
   }
 

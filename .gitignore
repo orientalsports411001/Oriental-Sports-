@@ -41,4 +41,9 @@ courts_screenshots2/
 /buyur-images.json
 *.tsbuildinfo
 artifacts/
+# Uploaded media assets
+public/uploads/*
+!public/uploads/.gitkeep
+apps/admin/public/uploads/*
+!apps/admin/public/uploads/.gitkeep
 

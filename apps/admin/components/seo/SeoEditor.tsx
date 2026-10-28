@@ -58,7 +58,7 @@ export function SeoEditor({
   const [ogDescription, setOgDescription] = useState(initial.ogDescription);
   const [imageAltText, setImageAltText] = useState<Record<string, string>>(initial.imageAltText || {});
 
-  const [pending, generating] = useTransition();
+  const [pending, setPending] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
   const [pendingSuggestions, setPendingSuggestions] = useState<SeoSuggestions | null>(null);
   const [confirmFields, setConfirmFields] = useState<FieldKey[]>([]);
@@ -107,9 +107,10 @@ export function SeoEditor({
     });
   }
 
-  function handleGenerateClick() {
+  async function handleGenerateClick() {
     setGenError(null);
-    generating(async () => {
+    setPending(true);
+    try {
       const result = await generateSeoSuggestionsAction(productId || null, {
         name,
         brand,
@@ -138,7 +139,11 @@ export function SeoEditor({
         setPendingSuggestions(result.suggestions);
         setConfirmFields(existing);
       }
-    });
+    } catch (err: unknown) {
+      setGenError(err instanceof Error ? err.message : 'Failed to generate SEO suggestions.');
+    } finally {
+      setPending(false);
+    }
   }
 
   function confirmReplace(field: FieldKey, replace: boolean) {
