@@ -103,19 +103,22 @@ export default async function ProductsPage({
         <Link href="/products/new">
           <button
             style={{
-              padding: '10px 22px',
+              padding: '10px 20px',
               fontSize: 13,
-              fontWeight: 600,
-              letterSpacing: '0.01em',
-              borderRadius: 9999,
-              background: 'var(--blood-crimson)',
+              fontWeight: 700,
+              letterSpacing: '-0.01em',
+              borderRadius: 11,
+              background: 'linear-gradient(135deg, #A81B2B 0%, #821320 100%)',
               color: '#FFFFFF',
-              border: 'none',
+              border: '1px solid rgba(255, 255, 255, 0.16)',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(200, 16, 46, 0.35)',
+              boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 14px rgba(0, 0, 0, 0.45)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
             }}
           >
-            + New Product
+            <span style={{ fontSize: 15, lineHeight: 1 }}>+</span> New Product
           </button>
         </Link>
       </div>

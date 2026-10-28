@@ -132,17 +132,17 @@ export function AdminBottomNav({ userEmail }: AdminBottomNavProps) {
                   width: 20,
                   height: 20,
                   borderRadius: '50%',
-                  background: isProfileActive ? '#FFFFFF' : 'var(--blood-crimson)',
-                  color: isProfileActive ? 'var(--blood-crimson)' : '#FFFFFF',
+                  background: isProfileActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.08)',
+                  color: isProfileActive ? '#A81B2B' : '#FFFFFF',
+                  border: isProfileActive ? '1px solid #FFFFFF' : '1px solid rgba(255, 255, 255, 0.16)',
                   display: 'grid',
                   placeItems: 'center',
                   fontWeight: 800,
                   fontSize: 10,
                   lineHeight: 1,
-                  boxShadow: '0 0 8px rgba(200, 16, 46, 0.4)',
                 }}
               >
-                {userEmail?.charAt(0).toUpperCase() || 'P'}
+                {userEmail?.charAt(0).toUpperCase() || 'A'}
               </div>
             </div>
             <span className="admin-bottom-nav-label">Admin</span>
