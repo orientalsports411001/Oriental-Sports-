@@ -74,3 +74,4 @@ export default function ProductsError({
     </div>
   );
 }
+
