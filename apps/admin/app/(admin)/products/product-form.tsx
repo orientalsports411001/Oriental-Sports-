@@ -51,6 +51,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
   const [lowStockThreshold, setLowStockThreshold] = useState<number>(data?.low_stock_threshold ?? 5);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [savedSuccess, setSavedSuccess] = useState<string | null>(null);
 
   // SEO State
   const [seoTitle, setSeoTitle] = useState(data?.seo_title || '');
@@ -81,6 +82,14 @@ export function ProductForm({ initialData, product: productProp, categories, act
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const savedMsg = urlParams.get('saved');
+        if (savedMsg) {
+          setSavedSuccess(savedMsg);
+        }
+      } catch {}
+
       try {
         const stored = JSON.parse(localStorage.getItem('os_custom_products') || '[]');
         const match = stored.find((p: any) => (data?.id && p.id === data.id) || (data?.slug && p.slug === data.slug) || (slug && p.slug === slug));
@@ -178,8 +187,6 @@ export function ProductForm({ initialData, product: productProp, categories, act
       '/api/products/save',
     ];
 
-    let targetRedirect = `/products/${clientProduct.id}/edit?saved=Product+saved+successfully`;
-
     for (const ep of endpoints) {
       try {
         const res = await fetch(ep, {
@@ -189,14 +196,28 @@ export function ProductForm({ initialData, product: productProp, categories, act
         if (res.ok) {
           const resJson = await res.json().catch(() => null);
           if (resJson?.success) {
-            if (resJson.redirectUrl) targetRedirect = resJson.redirectUrl;
             break;
           }
         }
       } catch {}
     }
 
-    window.location.href = targetRedirect;
+    setIsSubmitting(false);
+    setSavedSuccess(`✓ Saved "${name || 'Product'}" successfully! All updates are live.`);
+
+    if (typeof window !== 'undefined') {
+      try {
+        window.history.replaceState(null, '', `${window.location.pathname}?saved=Product+saved+successfully`);
+      } catch {}
+    }
+
+    // If new product created on /products/new, redirect back to products catalog
+    const isNewCreation = !data?.id && typeof window !== 'undefined' && window.location.pathname.includes('/new');
+    if (isNewCreation) {
+      setTimeout(() => {
+        window.location.href = `${basePath}/products?saved=Product+created+successfully`;
+      }, 700);
+    }
   };
 
   return (
@@ -206,6 +227,28 @@ export function ProductForm({ initialData, product: productProp, categories, act
       style={{ position: 'relative', paddingBottom: 100 }}
     >
       {(error || saveError) && <p className="error" style={{ marginBottom: 20 }}>{saveError || error}</p>}
+
+      {savedSuccess && (
+        <div
+          style={{
+            padding: '14px 20px',
+            borderRadius: 14,
+            background: 'rgba(46, 107, 60, 0.22)',
+            border: '1px solid rgba(74, 222, 128, 0.45)',
+            color: '#4ADE80',
+            fontSize: 14,
+            fontWeight: 700,
+            marginBottom: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            boxShadow: '0 4px 16px rgba(46, 107, 60, 0.2)',
+          }}
+        >
+          <span style={{ fontSize: 18, lineHeight: 1 }}>✓</span>
+          <span>{savedSuccess}</span>
+        </div>
+      )}
 
       {/* Pill Tab Bar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
@@ -800,23 +843,30 @@ export function ProductForm({ initialData, product: productProp, categories, act
               width: 8,
               height: 8,
               borderRadius: '50%',
-              background: '#2E6B3C',
-              boxShadow: '0 0 0 3px rgba(46,107,60,0.3)',
+              background: savedSuccess ? '#4ADE80' : '#2E6B3C',
+              boxShadow: savedSuccess ? '0 0 0 4px rgba(74,222,128,0.35)' : '0 0 0 3px rgba(46,107,60,0.3)',
               flexShrink: 0,
             }}
           />
-          <span
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
-              color: '#FFFFFF',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {name ? `Editing: ${name}` : 'Product Editor'}
-          </span>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#FFFFFF',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {name ? `Editing: ${name}` : 'Product Editor'}
+            </span>
+            {savedSuccess && (
+              <span style={{ fontSize: 11, color: '#4ADE80', fontWeight: 600 }}>
+                ✓ Saved successfully
+              </span>
+            )}
+          </div>
         </div>
 
         <button

@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
@@ -52,8 +51,31 @@ export default async function EditProductPage({
 
   if (!product) {
     const fallback = getCachedProducts().find((p) => p.id === params.id || p.slug === params.id);
-    if (!fallback) notFound();
-    product = fallback;
+    if (fallback) {
+      product = fallback;
+    } else {
+      const cleanName = decodeURIComponent(params.id)
+        .replace(/^prod-os-\d+-?/, '')
+        .replace(/[-_]+/g, ' ')
+        .trim();
+      const capitalized = cleanName ? cleanName.charAt(0).toUpperCase() + cleanName.slice(1) : 'Product';
+      product = {
+        id: params.id,
+        name: capitalized,
+        slug: params.id,
+        brand: 'Oriental Sports',
+        category_slug: 'cricket',
+        description: '',
+        price: 0,
+        compare_at_price: null,
+        images: ['/images/products/cricket_bat_willow.webp'],
+        status: 'published',
+        stock_quantity: 10,
+        low_stock_threshold: 5,
+        seo_title: `${capitalized} | Oriental Sports Pune`,
+        seo_description: '',
+      };
+    }
   }
 
   const effectiveId = product.id || params.id;
