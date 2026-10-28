@@ -1,7 +1,7 @@
 {
   "name": "oriental-sports-admin",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
