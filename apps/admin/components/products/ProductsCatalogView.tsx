@@ -184,7 +184,7 @@ export function ProductsCatalogView({
   };
 
   const handleDeleteProduct = async (id: string) => {
-    // If it's a custom product, delete from client localStorage
+    // 1. Remove from client localStorage
     try {
       const raw = localStorage.getItem('os_custom_products');
       if (raw) {
@@ -195,7 +195,39 @@ export function ProductsCatalogView({
       }
     } catch {}
 
-    // Call server action
+    // 2. Register in deleted blacklist so it is excluded from view
+    try {
+      const delRaw = localStorage.getItem('os_deleted_products') || '[]';
+      const delList = JSON.parse(delRaw);
+      if (!delList.includes(id)) {
+        delList.push(id);
+        localStorage.setItem('os_deleted_products', JSON.stringify(delList));
+      }
+    } catch {}
+
+    // 3. Broadcast deletion event
+    try {
+      const bc = new BroadcastChannel('oriental_sports_catalog');
+      bc.postMessage({ type: 'PRODUCT_DELETED', id });
+      bc.close();
+    } catch {}
+
+    // 4. Delete from live Supabase directly
+    try {
+      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+      if (supaUrl && supaKey) {
+        fetch(`${supaUrl}/rest/v1/products?or=(id.eq.${id},slug.eq.${id})`, {
+          method: 'DELETE',
+          headers: {
+            apikey: supaKey,
+            Authorization: `Bearer ${supaKey}`,
+          },
+        }).catch(() => {});
+      }
+    } catch {}
+
+    // 5. Call server action
     try {
       await deleteAction(id);
     } catch {}

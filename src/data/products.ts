@@ -1731,12 +1731,15 @@ if (typeof window !== 'undefined') {
 export function getLiveProducts(): Product[] {
   if (typeof window === 'undefined') return PRODUCTS;
   try {
+    const deletedRaw = localStorage.getItem('os_deleted_products');
+    const deletedSet = new Set(deletedRaw ? JSON.parse(deletedRaw) : []);
+
     let combinedCustom: any[] = [];
     const raw = localStorage.getItem('os_custom_products');
     if (raw) {
       const stored = JSON.parse(raw);
       if (Array.isArray(stored)) {
-        combinedCustom = [...stored];
+        combinedCustom = stored.filter((p: any) => !deletedSet.has(p.id) && !deletedSet.has(p.slug));
       }
     }
 
@@ -1744,11 +1747,13 @@ export function getLiveProducts(): Product[] {
     if (supabaseLiveItems.length > 0) {
       const existingIds = new Set(combinedCustom.map((x) => x.id || x.slug));
       for (const item of supabaseLiveItems) {
-        if (!existingIds.has(item.id) && !existingIds.has(item.slug)) {
+        if (!existingIds.has(item.id) && !existingIds.has(item.slug) && !deletedSet.has(item.id) && !deletedSet.has(item.slug)) {
           combinedCustom.push(item);
         }
       }
     }
+
+    const baseFiltered = PRODUCTS.filter((p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug));
 
     if (combinedCustom.length > 0) {
       const mapped: Product[] = combinedCustom.map((p: any): Product => ({
@@ -1772,9 +1777,11 @@ export function getLiveProducts(): Product[] {
         sizes: p.sizes,
       }));
       const ids = new Set(mapped.map((x: any) => x.id).concat(mapped.map((x: any) => x.slug)));
-      const rest = PRODUCTS.filter((p) => !ids.has(p.id) && !ids.has(p.slug));
+      const rest = baseFiltered.filter((p) => !ids.has(p.id) && !ids.has(p.slug));
       return [...mapped, ...rest];
     }
+
+    return baseFiltered;
   } catch {}
   return PRODUCTS;
 }
@@ -1796,6 +1803,20 @@ if (typeof window !== 'undefined') {
           const idx = stored.findIndex((x: any) => x.id === p.id || x.slug === p.slug);
           if (idx >= 0) stored[idx] = p; else stored.unshift(p);
           localStorage.setItem('os_custom_products', JSON.stringify(stored));
+        } catch {}
+        window.dispatchEvent(new CustomEvent('os_catalog_updated'));
+      } else if (event.data?.type === 'PRODUCT_DELETED' && event.data?.id) {
+        try {
+          const id = event.data.id;
+          const raw = localStorage.getItem('os_custom_products') || '[]';
+          const stored = JSON.parse(raw).filter((x: any) => x.id !== id && x.slug !== id);
+          localStorage.setItem('os_custom_products', JSON.stringify(stored));
+          const delRaw = localStorage.getItem('os_deleted_products') || '[]';
+          const delList = JSON.parse(delRaw);
+          if (!delList.includes(id)) {
+            delList.push(id);
+            localStorage.setItem('os_deleted_products', JSON.stringify(delList));
+          }
         } catch {}
         window.dispatchEvent(new CustomEvent('os_catalog_updated'));
       }
