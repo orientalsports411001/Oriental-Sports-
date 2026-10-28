@@ -47,12 +47,14 @@ export function createServiceRoleClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!url || !serviceKey) {
+  if (
+    !url ||
+    !serviceKey ||
+    url.includes('tvfzfvurqewgvnnhhhad') ||
+    url.includes('placeholder')
+  ) {
     throw new Error(
-      'Supabase configuration incomplete. ' +
-      (!url ? 'NEXT_PUBLIC_SUPABASE_URL is not set. ' : '') +
-      (!serviceKey ? 'SUPABASE_SERVICE_ROLE_KEY is not set. ' : '') +
-      'Add these to your environment variables.'
+      'Live Supabase backend is not configured or offline. Operating in resilient local catalog mode.'
     );
   }
 

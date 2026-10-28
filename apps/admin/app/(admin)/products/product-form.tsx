@@ -50,6 +50,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
   const [stockQuantity, setStockQuantity] = useState<number>(data?.stock_quantity ?? 10);
   const [lowStockThreshold, setLowStockThreshold] = useState<number>(data?.low_stock_threshold ?? 5);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // SEO State
   const [seoTitle, setSeoTitle] = useState(data?.seo_title || '');
@@ -121,20 +122,78 @@ export function ProductForm({ initialData, product: productProp, categories, act
   const numCompare = Number(compareAtPrice) || 0;
   const discountPercent = numCompare > numPrice ? Math.round(((numCompare - numPrice) / numCompare) * 100) : 0;
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!isFormComplete || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSaveError(null);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      formData.set('productId', data?.id || '');
+      formData.set('name', name);
+      formData.set('slug', slug);
+      formData.set('category_slug', categorySlug);
+      formData.set('brand', brand);
+      formData.set('description', description);
+      formData.set('price', price);
+      formData.set('compare_at_price', compareAtPrice);
+      formData.set('stock_quantity', String(stockQuantity));
+      formData.set('low_stock_threshold', String(lowStockThreshold));
+      formData.set('status', status);
+      formData.set('images', images.join('\n'));
+      formData.set('images_json', JSON.stringify(images));
+      formData.set('sizes', sizes);
+      formData.set('available_sizes', sizes);
+      formData.set('variants_json', variantsJson);
+      formData.set('seo_title', seoTitle);
+      formData.set('seo_description', seoDescription);
+      formData.set('seo_canonical_url', seoCanonical);
+
+      const res = await fetch('/api/products/save', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const resJson = await res.json().catch(() => null);
+
+      if (res.ok && resJson?.success) {
+        if (typeof window !== 'undefined' && resJson.product) {
+          try {
+            const stored = JSON.parse(localStorage.getItem('os_custom_products') || '[]');
+            const idx = stored.findIndex((p: any) => p.id === resJson.product.id || p.slug === resJson.product.slug);
+            if (idx >= 0) stored[idx] = resJson.product;
+            else stored.unshift(resJson.product);
+            localStorage.setItem('os_custom_products', JSON.stringify(stored));
+          } catch {}
+        }
+
+        window.location.href = resJson.redirectUrl || `/products/${resJson.product?.id || slug}/edit?saved=Product+saved+successfully`;
+        return;
+      } else {
+        setSaveError(resJson?.error || 'Failed to save product. Please check fields.');
+        setIsSubmitting(false);
+      }
+    } catch (err: any) {
+      console.warn('REST save error, attempting direct action:', err);
+      try {
+        const formData = new FormData(e.currentTarget);
+        await action(formData);
+      } catch (actionErr: any) {
+        setSaveError(actionErr?.message || 'Server connection error during save.');
+        setIsSubmitting(false);
+      }
+    }
+  };
+
   return (
     <form
-      action={async (formData) => {
-        setIsSubmitting(true);
-        try {
-          await action(formData);
-        } catch (err) {
-          setIsSubmitting(false);
-          throw err;
-        }
-      }}
+      onSubmit={handleSubmit}
+      action={action}
       style={{ position: 'relative', paddingBottom: 100 }}
     >
-      {error && <p className="error" style={{ marginBottom: 20 }}>{error}</p>}
+      {(error || saveError) && <p className="error" style={{ marginBottom: 20 }}>{saveError || error}</p>}
 
       {/* Pill Tab Bar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>

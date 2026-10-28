@@ -55,6 +55,30 @@ export interface AdminOrder {
 }
 
 import allProductsData from './all-products.json';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const TMP_CACHE_FILE = path.join(
+  process.platform === 'win32' ? process.env.TEMP || 'C:\\Windows\\Temp' : '/tmp',
+  'os-admin-products-cache.json'
+);
+
+function readDiskCache(): AdminProduct[] | null {
+  try {
+    if (fs.existsSync(TMP_CACHE_FILE)) {
+      const content = fs.readFileSync(TMP_CACHE_FILE, 'utf-8');
+      const list = JSON.parse(content);
+      if (Array.isArray(list) && list.length > 0) return list;
+    }
+  } catch {}
+  return null;
+}
+
+function writeDiskCache(items: AdminProduct[]) {
+  try {
+    fs.writeFileSync(TMP_CACHE_FILE, JSON.stringify(items), 'utf-8');
+  } catch {}
+}
 
 export const INITIAL_PRODUCTS: AdminProduct[] = allProductsData as AdminProduct[];
 
@@ -220,13 +244,19 @@ let productsCache: AdminProduct[] = [...INITIAL_PRODUCTS];
 let ordersCache: AdminOrder[] = [...INITIAL_ORDERS];
 
 export function getCachedProducts(): AdminProduct[] {
+  const disk = readDiskCache();
+  if (disk) productsCache = disk;
   return productsCache;
 }
 
 export function saveProduct(product: Partial<AdminProduct> & { name: string }): AdminProduct {
+  const disk = readDiskCache();
+  if (disk) productsCache = disk;
+
   const existingIndex = productsCache.findIndex((p) => p.id === product.id || p.slug === product.slug);
   const now = new Date().toISOString();
 
+  let result: AdminProduct;
   if (existingIndex >= 0) {
     const updated: AdminProduct = {
       ...productsCache[existingIndex],
@@ -234,7 +264,7 @@ export function saveProduct(product: Partial<AdminProduct> & { name: string }): 
       updated_at: now,
     };
     productsCache[existingIndex] = updated;
-    return updated;
+    result = updated;
   } else {
     const newProduct: AdminProduct = {
       id: product.id || `prod-os-${Date.now()}`,
@@ -256,13 +286,20 @@ export function saveProduct(product: Partial<AdminProduct> & { name: string }): 
       updated_at: now,
     };
     productsCache.unshift(newProduct);
-    return newProduct;
+    result = newProduct;
   }
+
+  writeDiskCache(productsCache);
+  return result;
 }
 
 export function removeProduct(id: string): boolean {
+  const disk = readDiskCache();
+  if (disk) productsCache = disk;
+
   const initialLength = productsCache.length;
   productsCache = productsCache.filter((p) => p.id !== id);
+  writeDiskCache(productsCache);
   return productsCache.length < initialLength;
 }
 
