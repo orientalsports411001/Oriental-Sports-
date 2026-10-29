@@ -298,7 +298,7 @@ export const CheckoutPage: React.FC = () => {
       </div>
 
       {showMobileSummary && (
-        <div style={{ background: '#ffffff', borderBottom: '1px solid #e5e7eb', padding: '16px 20px' }}>
+        <div style={{ background: '#121214', borderBottom: '1px solid #27272A', padding: '16px 20px' }}>
           <ul className="summary-items-list" style={{ maxHeight: 'none' }}>
             {cart.map((item, idx) => (
               <li key={`${item.product.id}-${idx}`} className="summary-item-row">
@@ -344,7 +344,7 @@ export const CheckoutPage: React.FC = () => {
                 </h2>
                 {!isAuthenticated && (
                   <span className="checkout-card-meta">
-                    Guest checkout or <Link to="/account" style={{ color: '#111827', fontWeight: 600 }}>Sign In</Link>
+                    Guest checkout or <Link to="/account" style={{ color: '#FFFFFF', fontWeight: 600, textDecoration: 'underline' }}>Sign In</Link>
                   </span>
                 )}
               </div>
@@ -441,7 +441,7 @@ export const CheckoutPage: React.FC = () => {
                     <div className="delivery-option-desc">
                       Shop 247, MG Road, Camp, Pune. Ready in 2 hours.
                     </div>
-                    <span className="delivery-option-badge" style={{ background: '#fef3c7', color: '#92400e' }}>
+                    <span className="delivery-option-badge">
                       FREE · INSTANT COLLECTION
                     </span>
                   </div>
@@ -592,10 +592,10 @@ export const CheckoutPage: React.FC = () => {
                     <Store size={14} />
                     <span>Camp Flagship Sports House</span>
                   </div>
-                  <p style={{ margin: '0 0 6px', fontWeight: 600, fontSize: '0.875rem', color: '#111827' }}>
+                  <p style={{ margin: '0 0 6px', fontWeight: 700, fontSize: '0.9375rem', color: '#FFFFFF' }}>
                     {STORE_INFO.addressLine1}, {STORE_INFO.locality}, Pune 411001
                   </p>
-                  <p style={{ margin: '0 0 14px', fontSize: '0.8125rem', color: '#6b7280' }}>
+                  <p style={{ margin: '0 0 14px', fontSize: '0.875rem', color: '#D4D4D8' }}>
                     Open Monday–Sunday 10:00 AM – 8:30 PM. Call {STORE_INFO.displayPhone} upon arrival.
                   </p>
 
@@ -624,7 +624,7 @@ export const CheckoutPage: React.FC = () => {
                   <span>Payment Method</span>
                 </h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0C2340', background: '#E8F1FC', padding: '3px 8px', borderRadius: '4px' }}>
+                  <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.05em', color: '#FFFFFF', background: '#18181B', border: '1px solid #27272A', padding: '3px 8px', borderRadius: '4px' }}>
                     RAZORPAY SECURE
                   </span>
                 </div>
@@ -643,7 +643,7 @@ export const CheckoutPage: React.FC = () => {
                 onClick={handleProceedToRazorpay}
                 disabled={isProcessing}
               >
-                <ShieldCheck size={20} color="#60a5fa" />
+                <ShieldCheck size={20} color="#FFFFFF" />
                 <span>
                   {isProcessing
                     ? 'Connecting to Gateway...'
@@ -654,17 +654,17 @@ export const CheckoutPage: React.FC = () => {
 
               <div className="security-assurances-row">
                 <div className="security-item">
-                  <Lock size={13} color="#15803d" />
+                  <Lock size={13} color="#C8102E" />
                   <span>256-Bit SSL Encrypted</span>
                 </div>
                 <span>•</span>
                 <div className="security-item">
-                  <Check size={13} color="#15803d" />
+                  <Check size={13} color="#C8102E" />
                   <span>GST Tax Invoice with Warranty</span>
                 </div>
                 <span>•</span>
                 <div className="security-item">
-                  <ShieldCheck size={13} color="#15803d" />
+                  <ShieldCheck size={13} color="#C8102E" />
                   <span>100% Genuine Sports Gear</span>
                 </div>
               </div>
@@ -742,7 +742,7 @@ export const CheckoutPage: React.FC = () => {
                 </div>
                 <div className="summary-row">
                   <dt>GST (18%)</dt>
-                  <dd style={{ color: '#6b7280', fontWeight: 500 }}>Included</dd>
+                  <dd style={{ color: '#D4D4D8', fontWeight: 600 }}>Included</dd>
                 </div>
 
                 <div className="summary-total-row">
@@ -832,14 +832,14 @@ export const CheckoutPage: React.FC = () => {
             <div className="rzp-body">
               {simPaymentMethod === 'upi' && (
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ width: '130px', height: '130px', margin: '0 auto 12px', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px', display: 'grid', placeItems: 'center', background: '#ffffff' }}>
-                    <QrCode size={110} color="#0c2340" />
+                  <div style={{ width: '130px', height: '130px', margin: '0 auto 12px', border: '1px solid #27272A', borderRadius: '8px', padding: '10px', display: 'grid', placeItems: 'center', background: '#FFFFFF' }}>
+                    <QrCode size={110} color="#050505" />
                   </div>
-                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: '0 0 4px', color: '#111827' }}>
+                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: '0 0 4px', color: '#FFFFFF' }}>
                     Scan QR with Google Pay, PhonePe, Paytm, or BHIM
                   </p>
-                  <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>
-                    VPA: <strong>orientalsports.pune@okhdfcbank</strong>
+                  <p style={{ fontSize: '0.75rem', color: '#A1A1AA', margin: 0 }}>
+                    VPA: <strong style={{ color: '#FFFFFF' }}>orientalsports.pune@okhdfcbank</strong>
                   </p>
                 </div>
               )}
@@ -857,7 +857,7 @@ export const CheckoutPage: React.FC = () => {
 
               {simPaymentMethod === 'netbanking' && (
                 <div>
-                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: '0 0 10px', color: '#111827' }}>Select Bank</p>
+                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: '0 0 10px', color: '#FFFFFF' }}>Select Bank</p>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                     {['HDFC Bank', 'ICICI Bank', 'State Bank of India', 'Axis Bank', 'Kotak Bank'].map((b) => (
                       <button
@@ -865,9 +865,10 @@ export const CheckoutPage: React.FC = () => {
                         type="button"
                         style={{
                           padding: '8px 12px',
-                          border: '1px solid #e2e8f0',
+                          border: '1px solid #27272A',
                           borderRadius: '6px',
-                          background: '#f8fafc',
+                          background: '#18181B',
+                          color: '#FFFFFF',
                           fontSize: '0.8125rem',
                           fontWeight: 500,
                           cursor: 'pointer',
@@ -884,7 +885,7 @@ export const CheckoutPage: React.FC = () => {
                 <button
                   type="button"
                   className="pay-cta-btn"
-                  style={{ background: '#15803d' }}
+                  style={{ background: '#C8102E' }}
                   onClick={() => {
                     setShowRazorpaySimModal(false);
                     const mockPaymentId = `pay_rzp_${Date.now().toString().slice(-8)}`;
@@ -898,7 +899,7 @@ export const CheckoutPage: React.FC = () => {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#6b7280',
+                    color: '#A1A1AA',
                     fontSize: '0.8125rem',
                     cursor: 'pointer',
                     padding: '6px',

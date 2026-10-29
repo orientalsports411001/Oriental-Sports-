@@ -320,7 +320,7 @@ export const CheckoutPage: React.FC = () => {
                 </h2>
                 {!isAuthenticated && (
                   <span className="checkout-card-meta">
-                    Guest checkout or <Link to="/account" style={{ color: '#111827', fontWeight: 600 }}>Sign In</Link>
+                    Guest checkout or <Link to="/account" style={{ color: '#FFFFFF', fontWeight: 600, textDecoration: 'underline' }}>Sign In</Link>
                   </span>
                 )}
               </div>
@@ -417,7 +417,7 @@ export const CheckoutPage: React.FC = () => {
                     <div className="delivery-option-desc">
                       Shop 247, MG Road, Camp, Pune. Ready in 2 hours.
                     </div>
-                    <span className="delivery-option-badge" style={{ background: '#fef3c7', color: '#92400e' }}>
+                    <span className="delivery-option-badge">
                       FREE · INSTANT COLLECTION
                     </span>
                   </div>
@@ -568,10 +568,10 @@ export const CheckoutPage: React.FC = () => {
                     <Store size={14} />
                     <span>Camp Flagship Sports House</span>
                   </div>
-                  <p style={{ margin: '0 0 6px', fontWeight: 600, fontSize: '0.875rem', color: '#111827' }}>
+                  <p style={{ margin: '0 0 6px', fontWeight: 700, fontSize: '0.9375rem', color: '#FFFFFF' }}>
                     {STORE_INFO.addressLine1}, {STORE_INFO.locality}, Pune 411001
                   </p>
-                  <p style={{ margin: '0 0 14px', fontSize: '0.8125rem', color: '#6b7280' }}>
+                  <p style={{ margin: '0 0 14px', fontSize: '0.875rem', color: '#D4D4D8' }}>
                     Open Monday–Sunday 10:00 AM – 8:30 PM. Call {STORE_INFO.displayPhone} upon arrival.
                   </p>
 
@@ -600,7 +600,7 @@ export const CheckoutPage: React.FC = () => {
                   <span>Payment Method</span>
                 </h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0C2340', background: '#E8F1FC', padding: '3px 8px', borderRadius: '4px' }}>
+                  <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.05em', color: '#FFFFFF', background: '#18181B', border: '1px solid #27272A', padding: '3px 8px', borderRadius: '4px' }}>
                     RAZORPAY SECURE
                   </span>
                 </div>
@@ -619,7 +619,7 @@ export const CheckoutPage: React.FC = () => {
                 onClick={handleProceedToRazorpay}
                 disabled={isProcessing}
               >
-                <ShieldCheck size={20} color="#60a5fa" />
+                <ShieldCheck size={20} color="#FFFFFF" />
                 <span>
                   {isProcessing
                     ? 'Connecting to Gateway...'
@@ -637,17 +637,17 @@ export const CheckoutPage: React.FC = () => {
 
               <div className="security-assurances-row">
                 <div className="security-item">
-                  <Lock size={13} color="#15803d" />
+                  <Lock size={13} color="#C8102E" />
                   <span>256-Bit SSL Encrypted</span>
                 </div>
                 <span>•</span>
                 <div className="security-item">
-                  <Check size={13} color="#15803d" />
+                  <Check size={13} color="#C8102E" />
                   <span>GST Tax Invoice with Warranty</span>
                 </div>
                 <span>•</span>
                 <div className="security-item">
-                  <ShieldCheck size={13} color="#15803d" />
+                  <ShieldCheck size={13} color="#C8102E" />
                   <span>100% Genuine Sports Gear</span>
                 </div>
               </div>
@@ -725,7 +725,7 @@ export const CheckoutPage: React.FC = () => {
                 </div>
                 <div className="summary-row">
                   <dt>GST (18%)</dt>
-                  <dd style={{ color: '#6b7280', fontWeight: 500 }}>Included</dd>
+                  <dd style={{ color: '#D4D4D8', fontWeight: 600 }}>Included</dd>
                 </div>
 
                 <div className="summary-total-row">
