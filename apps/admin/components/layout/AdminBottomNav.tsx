@@ -17,9 +17,11 @@ import {
 
 interface AdminBottomNavProps {
   userEmail?: string;
+  ordersCount?: number;
+  productsCount?: number;
 }
 
-export function AdminBottomNav({ userEmail }: AdminBottomNavProps) {
+export function AdminBottomNav({ userEmail, ordersCount = 1, productsCount = 61 }: AdminBottomNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -87,7 +89,7 @@ export function AdminBottomNav({ userEmail }: AdminBottomNavProps) {
             <div className="admin-bottom-nav-icon-wrap">
               <Package size={19} strokeWidth={isProductsActive && !isProfileModalOpen ? 2.4 : 1.8} />
               <span className="admin-bottom-nav-badge" aria-hidden="true">
-                61
+                {productsCount}
               </span>
             </div>
             <span className="admin-bottom-nav-label">Products</span>
@@ -113,9 +115,11 @@ export function AdminBottomNav({ userEmail }: AdminBottomNavProps) {
           >
             <div className="admin-bottom-nav-icon-wrap">
               <ClipboardList size={19} strokeWidth={isOrdersActive && !isProfileModalOpen ? 2.4 : 1.8} />
-              <span className="admin-bottom-nav-badge" aria-hidden="true">
-                5
-              </span>
+              {ordersCount > 0 && (
+                <span className="admin-bottom-nav-badge" aria-hidden="true">
+                  {ordersCount}
+                </span>
+              )}
             </div>
             <span className="admin-bottom-nav-label">Orders</span>
           </Link>

@@ -6,16 +6,18 @@ import { LogOut } from 'lucide-react';
 
 interface AdminSidebarProps {
   userEmail?: string;
+  ordersCount?: number;
+  productsCount?: number;
 }
 
-export function AdminSidebar({ userEmail }: AdminSidebarProps) {
+export function AdminSidebar({ userEmail, ordersCount = 1, productsCount = 61 }: AdminSidebarProps) {
   const pathname = usePathname();
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard' },
-    { href: '/products', label: 'Products', badge: '61' },
+    { href: '/products', label: 'Products', badge: productsCount > 0 ? String(productsCount) : undefined },
     { href: '/categories', label: 'Disciplines' },
-    { href: '/orders', label: 'Orders', badge: '5' },
+    { href: '/orders', label: 'Orders', badge: ordersCount > 0 ? String(ordersCount) : undefined },
   ];
 
   return (
