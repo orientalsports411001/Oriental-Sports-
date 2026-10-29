@@ -186,6 +186,14 @@
   flex-shrink: 0;
 }
 
+.shop-filter-badge.active,
+.filter-chip.active,
+.filter-chip[aria-pressed="true"] {
+  background: var(--volt-soft);
+  color: var(--volt);
+  border-color: var(--volt-border);
+}
+
 /* Active filter pills */
 .shop-active-pills {
   display: flex;

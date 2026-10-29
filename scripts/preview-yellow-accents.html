@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oriental Sports — Athletic Yellow Accent Comparison</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080808;
+      color: #FFFFFF;
+      font-family: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 40px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header {
+      margin-bottom: 36px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+    .header p {
+      color: #888888;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+    .brand-tag {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #C8102E;
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .option-card {
+      background: #111111;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .option-card.featured {
+      border-color: rgba(234, 179, 8, 0.35);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    .option-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .option-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .hex-badge {
+      font-family: monospace;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .swatch-band {
+      height: 6px;
+      border-radius: 3px;
+      margin-bottom: 24px;
+    }
+
+    /* Option 1: Tour Amber / Warm Gold */
+    .opt-1 .hex-badge { background: rgba(234, 179, 8, 0.15); color: #FACC15; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .opt-1 .swatch-band { background: linear-gradient(90deg, #EAB308, #F59E0B); }
+    .opt-1 .accent-text { color: #FACC15; }
+    .opt-1 .accent-pill {
+      background: rgba(234, 179, 8, 0.12);
+      color: #FACC15;
+      border: 1px solid rgba(234, 179, 8, 0.28);
+    }
+    .opt-1 .pulse-dot { background: #EAB308; box-shadow: 0 0 10px rgba(234, 179, 8, 0.7); }
+    .opt-1 .active-border { border-color: #EAB308 !important; }
+    .opt-1 .accent-tag {
+      background: rgba(234, 179, 8, 0.08);
+      border: 1px solid rgba(234, 179, 8, 0.3);
+      color: #FACC15;
+    }
+
+    /* Option 2: Optic Volt / Tennis Yellow */
+    .opt-2 .hex-badge { background: rgba(212, 248, 0, 0.15); color: #D4F800; border: 1px solid rgba(212, 248, 0, 0.3); }
+    .opt-2 .swatch-band { background: linear-gradient(90deg, #CCFF00, #D4F800); }
+    .opt-2 .accent-text { color: #D4F800; }
+    .opt-2 .accent-pill {
+      background: rgba(212, 248, 0, 0.10);
+      color: #D4F800;
+      border: 1px solid rgba(212, 248, 0, 0.28);
+    }
+    .opt-2 .pulse-dot { background: #D4F800; box-shadow: 0 0 12px rgba(212, 248, 0, 0.8); }
+    .opt-2 .active-border { border-color: #D4F800 !important; }
+    .opt-2 .accent-tag {
+      background: rgba(212, 248, 0, 0.08);
+      border: 1px solid rgba(212, 248, 0, 0.3);
+      color: #D4F800;
+    }
+
+    /* Option 3: Sprint Racing Yellow */
+    .opt-3 .hex-badge { background: rgba(255, 222, 0, 0.15); color: #FFDE00; border: 1px solid rgba(255, 222, 0, 0.3); }
+    .opt-3 .swatch-band { background: linear-gradient(90deg, #FFDE00, #FFC72C); }
+    .opt-3 .accent-text { color: #FFDE00; }
+    .opt-3 .accent-pill {
+      background: rgba(255, 222, 0, 0.12);
+      color: #FFDE00;
+      border: 1px solid rgba(255, 222, 0, 0.28);
+    }
+    .opt-3 .pulse-dot { background: #FFDE00; box-shadow: 0 0 10px rgba(255, 222, 0, 0.7); }
+    .opt-3 .active-border { border-color: #FFDE00 !important; }
+    .opt-3 .accent-tag {
+      background: rgba(255, 222, 0, 0.08);
+      border: 1px solid rgba(255, 222, 0, 0.3);
+      color: #FFDE00;
+    }
+
+    .ui-showcase {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ui-item {
+      background: #181818;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .ui-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #777777;
+      margin-bottom: 8px;
+    }
+
+    .pulse-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #E0E0E0;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .spec-name { color: #888888; }
+    .spec-val { font-weight: 700; }
+
+    .chart-mini {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 48px;
+      padding-top: 10px;
+    }
+    .bar {
+      flex: 1;
+      background: #252525;
+      border-radius: 3px;
+      height: 40%;
+    }
+    .bar.primary { background: #C8102E; height: 75%; }
+    .bar.highlight { height: 95%; }
+
+    /* Comparison Section */
+    .comparison-section {
+      background: #111111;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 28px;
+    }
+    .comp-title {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .order-table-mock {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .order-table-mock th {
+      text-align: left;
+      padding: 10px 14px;
+      color: #666666;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .order-table-mock td {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #E0E0E0;
+    }
+    .order-num { font-weight: 700; color: #FFFFFF; font-family: monospace; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <div class="brand-tag">Oriental Sports Pune · Identity System</div>
+      <h1>Athletic Yellow Accent Exploration</h1>
+      <p>Precision highlights for Pro specs, live status indicators, order states, and charts without breaking the core Blood-Red identity.</p>
+    </div>
+    <div style="text-align: right; color: #777; font-size: 12px;">
+      Canvas: Obsidian #080808<br>Primary Accent: Crimson #C8102E
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Option 1 -->
+    <div class="option-card opt-1 featured">
+      <div class="option-header">
+        <div>
+          <div class="option-title">Tone 1: Tour Gold / Amber</div>
+          <div style="font-size: 12px; color: #888; margin-top: 2px;">Tournament gold & precision calibration</div>
+        </div>
+        <div class="hex-badge">#EAB308</div>
+      </div>
+      <div class="swatch-band"></div>
+
+      <div class="ui-showcase">
+        <div class="ui-item">
+          <div class="ui-label">1. Live Flagship Workshop Pulse</div>
+          <div class="pulse-row">
+            <span class="dot pulse-dot"></span>
+            <span>Camp Workshop Active · 10 Stringers on Duty</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">2. Pro Spec & Limited Release Tag</div>
+          <div style="display: flex; gap: 8px;">
+            <span class="tag accent-tag">PRO JAPAN SPEC</span>
+            <span class="tag accent-tag">TOUR GRADE</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">3. Admin Order Status Pill</div>
+          <div class="pill accent-pill">
+            <span class="dot" style="background: currentColor; width: 6px; height: 6px;"></span>
+            <span>PROCESSING (IN WORKSHOP)</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">4. Technical Spec Highlight</div>
+          <div class="spec-row">
+            <span class="spec-name">Recommended Tension</span>
+            <span class="spec-val accent-text">24 – 30 LBS (PRO)</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">5. Analytics Peak Callout</div>
+          <div class="chart-mini">
+            <div class="bar"></div>
+            <div class="bar primary"></div>
+            <div class="bar"></div>
+            <div class="bar primary"></div>
+            <div class="bar highlight" style="background: #EAB308; box-shadow: 0 0 12px rgba(234, 179, 8, 0.4);"></div>
+            <div class="bar primary"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 2 -->
+    <div class="option-card opt-2">
+      <div class="option-header">
+        <div>
+          <div class="option-title">Tone 2: Optic Volt / Tennis Yellow</div>
+          <div style="font-size: 12px; color: #888; margin-top: 2px;">Tennis ball felt & high-speed optic pop</div>
+        </div>
+        <div class="hex-badge">#D4F800</div>
+      </div>
+      <div class="swatch-band"></div>
+
+      <div class="ui-showcase">
+        <div class="ui-item">
+          <div class="ui-label">1. Live Flagship Workshop Pulse</div>
+          <div class="pulse-row">
+            <span class="dot pulse-dot"></span>
+            <span>Camp Workshop Active · 10 Stringers on Duty</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">2. Pro Spec & Limited Release Tag</div>
+          <div style="display: flex; gap: 8px;">
+            <span class="tag accent-tag">PRO JAPAN SPEC</span>
+            <span class="tag accent-tag">TOUR GRADE</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">3. Admin Order Status Pill</div>
+          <div class="pill accent-pill">
+            <span class="dot" style="background: currentColor; width: 6px; height: 6px;"></span>
+            <span>PROCESSING (IN WORKSHOP)</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">4. Technical Spec Highlight</div>
+          <div class="spec-row">
+            <span class="spec-name">Recommended Tension</span>
+            <span class="spec-val accent-text">24 – 30 LBS (PRO)</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">5. Analytics Peak Callout</div>
+          <div class="chart-mini">
+            <div class="bar"></div>
+            <div class="bar primary"></div>
+            <div class="bar"></div>
+            <div class="bar primary"></div>
+            <div class="bar highlight" style="background: #D4F800; box-shadow: 0 0 14px rgba(212, 248, 0, 0.45);"></div>
+            <div class="bar primary"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 3 -->
+    <div class="option-card opt-3">
+      <div class="option-header">
+        <div>
+          <div class="option-title">Tone 3: Sprint Racing Yellow</div>
+          <div style="font-size: 12px; color: #888; margin-top: 2px;">Classic athletics timing & warning accent</div>
+        </div>
+        <div class="hex-badge">#FFDE00</div>
+      </div>
+      <div class="swatch-band"></div>
+
+      <div class="ui-showcase">
+        <div class="ui-item">
+          <div class="ui-label">1. Live Flagship Workshop Pulse</div>
+          <div class="pulse-row">
+            <span class="dot pulse-dot"></span>
+            <span>Camp Workshop Active · 10 Stringers on Duty</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">2. Pro Spec & Limited Release Tag</div>
+          <div style="display: flex; gap: 8px;">
+            <span class="tag accent-tag">PRO JAPAN SPEC</span>
+            <span class="tag accent-tag">TOUR GRADE</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">3. Admin Order Status Pill</div>
+          <div class="pill accent-pill">
+            <span class="dot" style="background: currentColor; width: 6px; height: 6px;"></span>
+            <span>PROCESSING (IN WORKSHOP)</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">4. Technical Spec Highlight</div>
+          <div class="spec-row">
+            <span class="spec-name">Recommended Tension</span>
+            <span class="spec-val accent-text">24 – 30 LBS (PRO)</span>
+          </div>
+        </div>
+
+        <div class="ui-item">
+          <div class="ui-label">5. Analytics Peak Callout</div>
+          <div class="chart-mini">
+            <div class="bar"></div>
+            <div class="bar primary"></div>
+            <div class="bar"></div>
+            <div class="bar primary"></div>
+            <div class="bar highlight" style="background: #FFDE00; box-shadow: 0 0 12px rgba(255, 222, 0, 0.4);"></div>
+            <div class="bar primary"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Real Admin Context Mockup -->
+  <div class="comparison-section">
+    <div class="comp-title">
+      <span>How Yellow Harmonizes with Red & Black in Admin Orders View</span>
+      <span style="font-size: 12px; font-weight: 500; color: #888;">Clear hierarchy without color conflict</span>
+    </div>
+
+    <table class="order-table-mock">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Customer</th>
+          <th>Status</th>
+          <th>Equipment / Spec</th>
+          <th>Total</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="order-num">OS-2026-5625</td>
+          <td>Pratik Jadhav</td>
+          <td>
+            <span style="background: rgba(200, 16, 46, 0.15); color: #FF4D6D; border: 1px solid rgba(200, 16, 46, 0.3); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+              Confirmed
+            </span>
+          </td>
+          <td>Yonex Astrox 88D Pro (4U/G5)</td>
+          <td style="font-weight: 700; color: #FFFFFF;">₹4,498.00</td>
+          <td style="color: #888;">Inspect →</td>
+        </tr>
+        <tr>
+          <td class="order-num">OS-2026-5626</td>
+          <td>Rohit Sharma</td>
+          <td>
+            <span style="background: rgba(234, 179, 8, 0.15); color: #FACC15; border: 1px solid rgba(234, 179, 8, 0.35); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+              ● Processing (Restringing)
+            </span>
+          </td>
+          <td>Li-Ning Aeronaut 9000C + BG80 Power</td>
+          <td style="font-weight: 700; color: #FFFFFF;">₹12,850.00</td>
+          <td style="color: #888;">Inspect →</td>
+        </tr>
+        <tr>
+          <td class="order-num">OS-2026-5624</td>
+          <td>Aditya Kulkarni</td>
+          <td>
+            <span style="background: rgba(34, 197, 94, 0.15); color: #4ADE80; border: 1px solid rgba(34, 197, 94, 0.3); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+              Delivered
+            </span>
+          </td>
+          <td>Wilson Clash 100 V2 Tennis Racket</td>
+          <td style="font-weight: 700; color: #FFFFFF;">₹18,990.00</td>
+          <td style="color: #888;">Inspect →</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>
+

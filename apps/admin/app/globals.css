@@ -22,6 +22,13 @@
   --border-crimson: rgba(168, 27, 43, 0.35);
   --glow-crimson: 0 4px 16px rgba(168, 27, 43, 0.25);
 
+  /* ---- Optic Volt / Tennis Yellow — Athletic Highlight Accent ----------- */
+  --volt: #D4F800;
+  --volt-soft: rgba(212, 248, 0, 0.10);
+  --volt-border: rgba(212, 248, 0, 0.28);
+  --volt-subtle: rgba(212, 248, 0, 0.06);
+  --glow-volt: 0 0 16px rgba(212, 248, 0, 0.30);
+
   /* Semantic Mappings */
   --ink: #F5F5F5;
   --ink-heading: #FFFFFF;
@@ -476,21 +483,27 @@ td a:hover {
 }
 
 .badge.pending {
-  background: rgba(250, 204, 21, 0.15);
-  color: #FACC15;
-  border: 1px solid rgba(250, 204, 21, 0.3);
+  background: rgba(212, 248, 0, 0.10);
+  color: #D4F800;
+  border: 1px solid rgba(212, 248, 0, 0.28);
 }
 
 .badge.processing {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--ink);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(212, 248, 0, 0.10);
+  color: #D4F800;
+  border: 1px solid rgba(212, 248, 0, 0.28);
 }
 
 .badge.shipped {
   background: #1E1E1E;
   color: #60A5FA;
   border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.badge.in_transit {
+  background: rgba(212, 248, 0, 0.10);
+  color: #D4F800;
+  border: 1px solid rgba(212, 248, 0, 0.28);
 }
 
 .badge.cancelled,
@@ -859,4 +872,10 @@ h1 {
   background: rgba(200, 16, 46, 0.15);
   color: var(--gold-hi);
   border: 1px solid rgba(200, 16, 46, 0.3);
+}
+
+.badge-tag.volt {
+  background: rgba(212, 248, 0, 0.10);
+  color: #D4F800;
+  border: 1px solid rgba(212, 248, 0, 0.28);
 }

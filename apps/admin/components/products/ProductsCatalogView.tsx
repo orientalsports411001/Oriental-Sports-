@@ -296,7 +296,7 @@ export function ProductsCatalogView({
           <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.08em', marginBottom: 8 }}>
             Low Stock
           </div>
-          <div style={{ fontSize: 26, fontWeight: 700, color: lowStockCount > 0 ? '#FACC15' : 'var(--ink-heading)', letterSpacing: '-0.015em', lineHeight: 1.15, marginBottom: 4 }}>
+          <div style={{ fontSize: 26, fontWeight: 700, color: lowStockCount > 0 ? '#D4F800' : 'var(--ink-heading)', letterSpacing: '-0.015em', lineHeight: 1.15, marginBottom: 4 }}>
             {lowStockCount} Products
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>

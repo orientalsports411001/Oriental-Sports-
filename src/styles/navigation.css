@@ -43,7 +43,7 @@
   flex-shrink: 0;
 }
 .utility-status.is-open { color: var(--on-dark); }
-.is-open .status-dot { background: var(--gold); box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.22); }
+.is-open .status-dot { background: var(--volt); box-shadow: 0 0 0 3px rgba(212, 248, 0, 0.22); }
 
 /* ---- Header ------------------------------------------------------------ */
 .site-header {
