@@ -1,0 +1,876 @@
+/* ==========================================================================
+   Oriental Sports Account & Profile System
+   Strict Palette: Studio Racing Crimson (#A81B2B / #C8102E), Obsidian Black (#0A0A0C / #121214),
+   Precision Greys (#27272A / #3F3F46 / #9CA3AF / #E4E4E7) and Crisp White (#FFFFFF).
+   ========================================================================== */
+
+.account-portal-page {
+  background: #0A0A0C;
+  color: #FFFFFF;
+  min-height: 85vh;
+  padding-bottom: clamp(48px, 6vw, 88px);
+}
+
+/* ==========================================================================
+   1. Simple Focused Login Section (Signed Out)
+   ========================================================================== */
+.account-auth-wrap {
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 5vw, 64px) 16px;
+  background: radial-gradient(circle at 50% 18%, rgba(168, 27, 43, 0.08) 0%, transparent 60%);
+}
+
+.account-auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: clamp(24px, 5vw, 36px) clamp(20px, 4vw, 32px);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7);
+  text-align: center;
+}
+
+.account-auth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  background: rgba(168, 27, 43, 0.14);
+  border: 1px solid rgba(168, 27, 43, 0.35);
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+}
+
+.account-auth-title {
+  font-size: clamp(1.5rem, 3.5vw, 1.875rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  margin: 0 0 8px;
+}
+
+.account-auth-sub {
+  font-size: 0.875rem;
+  color: #9CA3AF;
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+.account-phone-field {
+  display: flex;
+  align-items: center;
+  background: #18181B;
+  border: 1.5px solid #27272A;
+  border-radius: 12px;
+  padding: 4px 6px 4px 14px;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.account-phone-field:focus-within {
+  border-color: #A81B2B;
+  box-shadow: 0 0 0 3px rgba(168, 27, 43, 0.25);
+}
+
+.account-phone-prefix {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding-right: 12px;
+  border-right: 1px solid #27272A;
+  flex-shrink: 0;
+}
+
+.account-phone-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 10px 12px;
+  outline: none;
+  min-width: 0;
+}
+
+.account-phone-input::placeholder {
+  color: #52525B;
+}
+
+.account-phone-btn {
+  background: #A81B2B;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 16px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  flex-shrink: 0;
+}
+
+.account-phone-btn:hover {
+  background: #C8102E;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .account-phone-field {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .account-phone-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.account-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.account-auth-divider::before,
+.account-auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #27272A;
+}
+
+.account-auth-divider span {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #71717A;
+  letter-spacing: 0.08em;
+}
+
+.account-auth-google-btn {
+  width: 100%;
+  height: 44px;
+  background: #18181B;
+  border: 1px solid #27272A;
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 12px;
+}
+
+.account-auth-google-btn:hover {
+  background: #222226;
+  border-color: #3F3F46;
+}
+
+.account-auth-demo-btn {
+  width: 100%;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed #3F3F46;
+  border-radius: 10px;
+  color: #A1A1AA;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.account-auth-demo-btn:hover {
+  background: rgba(168, 27, 43, 0.12);
+  border-color: #A81B2B;
+  color: #FFFFFF;
+}
+
+.account-auth-perks {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #1E1E22;
+  text-align: left;
+}
+
+.account-auth-perk-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8125rem;
+  color: #A1A1AA;
+}
+
+.account-auth-perk-item svg {
+  color: #A81B2B;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   2. Desktop Athlete Header & Tabs
+   ========================================================================== */
+.account-desktop-header {
+  background: #121214;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 32px 0;
+}
+
+.account-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.account-header-profile-block {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.account-avatar-squircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: #A81B2B;
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 16px rgba(168, 27, 43, 0.35);
+  flex-shrink: 0;
+}
+
+.account-header-name {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.account-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background: #18181B;
+  border: 1px solid #27272A;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #E4E4E7;
+}
+
+.account-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #A81B2B;
+}
+
+.account-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  color: #9CA3AF;
+  flex-wrap: wrap;
+}
+
+.account-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.account-points-pill {
+  padding: 8px 14px;
+  background: #18181B;
+  border: 1px solid #27272A;
+  border-radius: 10px;
+  text-align: right;
+}
+
+.account-points-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #A81B2B;
+}
+
+.account-points-val {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.account-signout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #18181B;
+  border: 1px solid #27272A;
+  border-radius: 10px;
+  color: #D4D4D8;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.account-signout-btn:hover {
+  background: rgba(168, 27, 43, 0.15);
+  border-color: #A81B2B;
+  color: #FFFFFF;
+}
+
+/* Desktop Segmented Tab Navigation */
+.account-segmented-bar {
+  background: #0E0E10;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 64px;
+  z-index: 30;
+}
+
+.account-segmented-container {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 8px 0;
+}
+.account-segmented-container::-webkit-scrollbar {
+  display: none;
+}
+
+.account-segmented-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: #9CA3AF;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.account-segmented-tab:hover {
+  color: #FFFFFF;
+  background: #18181B;
+}
+
+.account-segmented-tab.is-active {
+  background: #18181B;
+  border-color: #27272A;
+  color: #FFFFFF;
+  box-shadow: inset 0 -2px 0 #A81B2B;
+}
+
+.account-segmented-tab.is-active svg {
+  color: #A81B2B;
+}
+
+/* ==========================================================================
+   3. Mobile Native Profile System (Reference: media_1793256975785_d758e3d8)
+   ========================================================================== */
+.account-mobile-view {
+  display: none;
+}
+
+@media (max-width: 820px) {
+  .account-desktop-view {
+    display: none !important;
+  }
+  .account-mobile-view {
+    display: block !important;
+    padding-top: 16px;
+  }
+}
+
+.account-mobile-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.account-mobile-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.account-mobile-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #A81B2B;
+  color: #FFFFFF;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(168, 27, 43, 0.4);
+}
+
+.account-mobile-profile-card {
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 24px 18px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.account-mobile-avatar-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 12px;
+}
+
+.account-mobile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #A81B2B;
+  color: #FFFFFF;
+  font-size: 1.625rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 14px rgba(168, 27, 43, 0.35);
+}
+
+.account-mobile-avatar-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #18181B;
+  border: 1.5px solid #3F3F46;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.account-mobile-user-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 4px;
+}
+
+.account-mobile-user-sub {
+  font-size: 0.8125rem;
+  color: #9CA3AF;
+  margin: 0 0 12px;
+}
+
+/* Mobile Settings / Activity Groups */
+.account-mobile-section-label {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #71717A;
+  margin: 20px 0 8px 4px;
+}
+
+.account-mobile-menu-card {
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.account-mobile-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.account-mobile-menu-item:last-child {
+  border-bottom: none;
+}
+
+.account-mobile-menu-item:hover,
+.account-mobile-menu-item:active {
+  background: #18181B;
+}
+
+.account-mobile-item-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.account-mobile-item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #18181B;
+  border: 1px solid #27272A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #A81B2B;
+  flex-shrink: 0;
+}
+
+.account-mobile-item-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.account-mobile-item-desc {
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  margin-top: 2px;
+}
+
+.account-mobile-item-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #71717A;
+}
+
+.account-mobile-item-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #D4D4D8;
+  background: #1E1E22;
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+/* Mobile Subview Header */
+.account-subview-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.account-subview-back-btn {
+  background: #18181B;
+  border: 1px solid #27272A;
+  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.account-subview-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+/* ==========================================================================
+   4. Bento Grid & Hub Cards (Red, Black, Grey)
+   ========================================================================== */
+.account-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.account-bento-card {
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 20px;
+  transition: border-color 0.15s ease;
+}
+
+.account-bento-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.account-bento-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.account-bento-label {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9CA3AF;
+}
+
+.account-bento-card svg {
+  color: #A81B2B;
+}
+
+.account-bento-val {
+  font-size: 1.875rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.account-bento-sub {
+  font-size: 0.75rem;
+  color: #71717A;
+  margin-top: 4px;
+}
+
+/* Hub Cards (Store & Addresses) */
+.account-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.account-hub-card {
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.account-hub-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.account-hub-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #A81B2B;
+}
+
+.account-hub-title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 6px;
+}
+
+.account-hub-desc {
+  font-size: 0.875rem;
+  color: #9CA3AF;
+  line-height: 1.5;
+  margin: 0 0 18px;
+}
+
+/* ==========================================================================
+   5. Profile Form (Reference: media_1793256975785_d758e3d8 Screen 2)
+   ========================================================================== */
+.account-profile-form-card {
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: clamp(20px, 4vw, 32px);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.account-profile-avatar-center {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.account-field-squircle {
+  background: #18181B;
+  border: 1px solid #27272A;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.15s ease;
+}
+
+.account-field-squircle:focus-within {
+  border-color: #A81B2B;
+  box-shadow: 0 0 0 2px rgba(168, 27, 43, 0.2);
+}
+
+.account-field-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.account-field-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #71717A;
+  margin-bottom: 4px;
+}
+
+.account-field-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  outline: none;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.account-field-input:disabled {
+  color: #71717A;
+}
+
+.account-field-select {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  outline: none;
+  padding: 0;
+  cursor: pointer;
+}
+.account-field-select option {
+  background: #18181B;
+  color: #FFFFFF;
+}
+
+.account-field-icon {
+  color: #71717A;
+  flex-shrink: 0;
+}
+
+.account-primary-btn {
+  background: #A81B2B;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 11px;
+  padding: 12px 24px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.account-primary-btn:hover {
+  background: #C8102E;
+  transform: translateY(-1px);
+}
+
+.account-secondary-btn {
+  background: #18181B;
+  border: 1px solid #27272A;
+  color: #E4E4E7;
+  border-radius: 11px;
+  padding: 10px 18px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.account-secondary-btn:hover {
+  background: #222226;
+  border-color: #3F3F46;
+  color: #FFFFFF;
+}
+
