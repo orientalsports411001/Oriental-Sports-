@@ -1,20 +1,49 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { ShieldAlert, X, Lock, CheckCircle2 } from 'lucide-react';
 
-export default function LoginPage() {
+const OWNER_EMAIL = 'hello.orientalsports@gmail.com';
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [message, setMessage] = useState<string | null>(null);
+  const [showDeniedModal, setShowDeniedModal] = useState(false);
+  const [attemptedEmail, setAttemptedEmail] = useState('');
 
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
+  // Check URL params for unauthorized or error state on mount
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    const unauthorizedParam = searchParams.get('unauthorized');
+
+    if (unauthorizedParam === '1' || (errorParam && errorParam.toLowerCase().includes('admin'))) {
+      setShowDeniedModal(true);
+      setStatus('error');
+      setMessage(errorParam || `Access restricted: Only ${OWNER_EMAIL} can log in.`);
+    }
+  }, [searchParams]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail) return;
+
+    // Strict client-side check: Only OWNER_EMAIL can log in
+    if (cleanEmail !== OWNER_EMAIL) {
+      setAttemptedEmail(cleanEmail);
+      setShowDeniedModal(true);
+      setStatus('error');
+      setMessage(`Access Denied: Only the store administrator (${OWNER_EMAIL}) can log in.`);
+      return;
+    }
+
     setStatus('sending');
     setMessage(null);
 
@@ -26,7 +55,7 @@ export default function LoginPage() {
           : undefined;
 
       const { error } = await supabase.auth.signInWithOtp({
-        email,
+        email: cleanEmail,
         options: { emailRedirectTo: redirectTo },
       });
 
@@ -36,7 +65,7 @@ export default function LoginPage() {
         return;
       }
       setStatus('sent');
-      setMessage(`Magic sign-in link sent to ${email}. Check your email inbox to access the operations console.`);
+      setMessage(`Magic sign-in link sent to ${cleanEmail}. Check your inbox to enter.`);
     } catch (err: any) {
       setStatus('error');
       setMessage(err?.message || 'Authentication failed. Please try again.');
@@ -75,17 +104,169 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '32px 16px',
-        background: 'radial-gradient(ellipse at 50% 18%, rgba(200, 16, 46, 0.16), transparent 65%), #050505',
-        color: '#FFFFFF',
-      }}
-    >
+    <>
+      {/* =====================================================================
+          ACCESS DENIED POPUP MODAL (Triggers if other email attempts to log in)
+         ===================================================================== */}
+      {showDeniedModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+            backgroundColor: 'rgba(0, 0, 0, 0.88)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+          }}
+          onClick={() => setShowDeniedModal(false)}
+        >
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: 420,
+              backgroundColor: '#0D0D10',
+              border: '1.5px solid #DC2626',
+              borderRadius: 20,
+              padding: '32px 28px',
+              boxShadow: '0 25px 70px -10px rgba(220, 38, 38, 0.4), 0 20px 40px rgba(0, 0, 0, 0.9)',
+              color: '#FFFFFF',
+              textAlign: 'center',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setShowDeniedModal(false)}
+              aria-label="Close message"
+              style={{
+                position: 'absolute',
+                top: 14,
+                right: 14,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: 'none',
+                borderRadius: '50%',
+                width: 32,
+                height: 32,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#A3A3A3',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <X size={16} />
+            </button>
+
+            {/* Shield Warning Icon */}
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: '50%',
+                background: 'rgba(220, 38, 38, 0.14)',
+                border: '2px solid rgba(220, 38, 38, 0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 18px',
+                color: '#EF4444',
+              }}
+            >
+              <ShieldAlert size={34} />
+            </div>
+
+            {/* Pill Badge */}
+            <span
+              style={{
+                display: 'inline-block',
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: '#EF4444',
+                background: 'rgba(220, 38, 38, 0.14)',
+                padding: '4px 12px',
+                borderRadius: 9999,
+                marginBottom: 12,
+                border: '1px solid rgba(220, 38, 38, 0.4)',
+              }}
+            >
+              Access Denied
+            </span>
+
+            {/* Modal Heading */}
+            <h2
+              style={{
+                fontSize: 20,
+                fontWeight: 800,
+                color: '#FFFFFF',
+                margin: '0 0 10px',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Only Admin Can Log In
+            </h2>
+
+            {/* Modal Body */}
+            <p
+              style={{
+                fontSize: 13,
+                color: '#A3A3A3',
+                lineHeight: 1.55,
+                margin: '0 0 20px',
+              }}
+            >
+              {attemptedEmail ? (
+                <>
+                  The account <strong style={{ color: '#FFFFFF' }}>{attemptedEmail}</strong> does not
+                  have administrator privileges.
+                  <br />
+                  <br />
+                </>
+              ) : null}
+              Only the verified store owner (
+              <strong style={{ color: '#FFFFFF' }}>{OWNER_EMAIL}</strong>) is authorized to log in
+              to the Oriental Sports operations console. Other accounts cannot log in.
+            </p>
+
+            {/* Action Button */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowDeniedModal(false);
+                setEmail(OWNER_EMAIL);
+              }}
+              style={{
+                width: '100%',
+                minHeight: 44,
+                borderRadius: 12,
+                background: '#DC2626',
+                border: 'none',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                fontSize: 13,
+                cursor: 'pointer',
+                letterSpacing: '0.02em',
+                boxShadow: '0 4px 14px rgba(220, 38, 38, 0.35)',
+                transition: 'background 0.15s ease',
+              }}
+            >
+              Use Owner Email ({OWNER_EMAIL})
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Main Login Card */}
       <div
         style={{
           width: '100%',
@@ -118,8 +299,8 @@ export default function LoginPage() {
           <h1 style={{ fontSize: 21, fontWeight: 800, marginBottom: 8, textAlign: 'center', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
             Administrator Access
           </h1>
-          <p style={{ color: '#A3A3A3', fontSize: 13, margin: 0, textAlign: 'center', lineHeight: 1.5 }}>
-            Sign in to manage catalog, equipment inventory, customer orders, and live store operations.
+          <p style={{ color: '#A3A3A3', fontSize: 12.5, margin: 0, textAlign: 'center', lineHeight: 1.5 }}>
+            Role-gated operations console. Only <strong style={{ color: '#FFFFFF' }}>{OWNER_EMAIL}</strong> is authorized to log in.
           </p>
         </div>
 
@@ -167,6 +348,9 @@ export default function LoginPage() {
             </svg>
             <span>{status === 'sending' ? 'Connecting to Google...' : 'Continue with Google'}</span>
           </button>
+          <div style={{ fontSize: 11, color: '#737373', textAlign: 'center', marginTop: 6 }}>
+            Must match owner account ({OWNER_EMAIL})
+          </div>
         </div>
 
         <div style={{ position: 'relative', margin: '20px 0', textAlign: 'center' }}>
@@ -177,13 +361,13 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="email" style={{ fontSize: 11, letterSpacing: '0.1em', color: '#A3A3A3', display: 'block', marginBottom: 6 }}>
-            Store Manager Email
+          <label htmlFor="email" style={{ fontSize: 11, letterSpacing: '0.08em', color: '#A3A3A3', display: 'block', marginBottom: 6, textTransform: 'uppercase', fontWeight: 600 }}>
+            Administrator Email
           </label>
           <input
             id="email"
             type="email"
-            placeholder="admin@orientalsports.in"
+            placeholder={OWNER_EMAIL}
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -191,7 +375,7 @@ export default function LoginPage() {
               width: '100%',
               padding: '12px 14px',
               background: '#181818',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
+              border: email && email.toLowerCase() !== OWNER_EMAIL ? '1px solid rgba(220, 38, 38, 0.6)' : '1px solid rgba(255, 255, 255, 0.12)',
               color: '#FFFFFF',
               borderRadius: 12,
               boxSizing: 'border-box',
@@ -200,21 +384,29 @@ export default function LoginPage() {
             }}
           />
 
+          {email && email.trim().toLowerCase() !== OWNER_EMAIL && (
+            <div style={{ fontSize: 11.5, color: '#EF4444', marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
+              <ShieldAlert size={13} />
+              <span>Only {OWNER_EMAIL} is authorized to log in.</span>
+            </div>
+          )}
+
           <div style={{ marginTop: 16 }}>
             <button
               type="submit"
-              className="secondary"
               disabled={status === 'sending' || !email.trim()}
               style={{
                 width: '100%',
                 minHeight: 44,
                 fontSize: 13,
-                background: '#1C1C1C',
+                background: email.trim().toLowerCase() === OWNER_EMAIL ? '#DC2626' : '#1C1C1C',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 color: '#FFFFFF',
                 borderRadius: 9999,
                 cursor: 'pointer',
-                fontWeight: 600,
+                fontWeight: 700,
+                letterSpacing: '0.02em',
+                transition: 'all 0.15s ease',
               }}
             >
               {status === 'sending' ? 'Sending Magic Link...' : 'Email Sign-In Magic Link'}
@@ -233,9 +425,13 @@ export default function LoginPage() {
               border: `1px solid ${status === 'error' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
               color: status === 'error' ? '#EF4444' : '#22C55E',
               lineHeight: 1.4,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 8,
             }}
           >
-            {message}
+            {status === 'error' ? <ShieldAlert size={16} style={{ flexShrink: 0, marginTop: 1 }} /> : <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: 1 }} />}
+            <span>{message}</span>
           </p>
         )}
 
@@ -251,9 +447,29 @@ export default function LoginPage() {
           }}
         >
           Oriental Sports Pune · Camp Store Operations<br />
-          Role-protected: Requires verified admin credentials.
+          Role-protected: Only <strong style={{ color: '#A3A3A3' }}>{OWNER_EMAIL}</strong> can log in.
         </div>
       </div>
+    </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '32px 16px',
+        background: 'radial-gradient(ellipse at 50% 18%, rgba(200, 16, 46, 0.16), transparent 65%), #050505',
+        color: '#FFFFFF',
+      }}
+    >
+      <Suspense fallback={<div style={{ color: '#A3A3A3' }}>Loading operations console...</div>}>
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }

@@ -2,6 +2,8 @@ import 'server-only';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
+export const OWNER_ADMIN_EMAIL = 'hello.orientalsports@gmail.com';
+
 /**
  * Server-side admin check without redirection.
  * Safe to use inside Server Actions (where redirect() crashes RPC calls).
@@ -24,16 +26,14 @@ export async function checkAdmin(): Promise<
       .eq('id', user.id)
       .maybeSingle();
 
-    const allowedAdmins = [
-      'pratikjadhav8820@gmail.com',
-      'orientalsports411001@gmail.com',
-    ];
+    const userEmail = (user.email || profile?.email || '').toLowerCase().trim();
+    const isOwnerAdmin = userEmail === OWNER_ADMIN_EMAIL;
 
-    const userEmail = (user.email || profile?.email || '').toLowerCase();
-    const isAdmin = profile?.role === 'admin' || allowedAdmins.includes(userEmail);
-
-    if (!isAdmin) {
-      return { ok: false, error: 'Unauthorized: Admin role required.' };
+    if (!isOwnerAdmin) {
+      return {
+        ok: false,
+        error: `Access Denied: Only the store administrator (${OWNER_ADMIN_EMAIL}) can log in.`,
+      };
     }
 
     return {
@@ -43,7 +43,7 @@ export async function checkAdmin(): Promise<
         id: profile?.id || user.id,
         role: 'admin',
         email: user.email || '',
-        full_name: profile?.full_name || user.user_metadata?.full_name || user.email || 'Administrator',
+        full_name: profile?.full_name || user.user_metadata?.full_name || 'Oriental Sports Admin',
       },
     };
   } catch (err: any) {
@@ -58,7 +58,11 @@ export async function checkAdmin(): Promise<
 export async function requireAdmin() {
   const result = await checkAdmin();
   if (!result.ok) {
-    redirect('/login');
+    redirect(
+      `/login?error=${encodeURIComponent(
+        `Access restricted: Only the store administrator (${OWNER_ADMIN_EMAIL}) can log in.`
+      )}&unauthorized=1`
+    );
   }
   return { user: result.user, profile: result.profile };
 }
