@@ -641,14 +641,15 @@ export async function sendOrderStatusEmail(
 
   // Real Resend API dispatch
   try {
-    const res = await fetch('https://api.resend.com/emails', {
+    let activeFrom = fromEmail;
+    let res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: fromEmail,
+        from: activeFrom,
         to: [recipientEmail],
         subject,
         html: htmlContent,
@@ -656,7 +657,65 @@ export async function sendOrderStatusEmail(
       }),
     });
 
-    const data = await res.json().catch(() => ({}));
+    let data = await res.json().catch(() => ({}));
+
+    // If domain orientalsports.in is not yet verified in Resend, Resend returns 403.
+    // In that case, fallback to onboarding@resend.dev and dispatch an alert to the verified owner email.
+    if (!res.ok && (res.status === 403 || data?.name === 'validation_error' || data?.statusCode === 403)) {
+      const isDomainIssue =
+        data?.message?.toLowerCase().includes('not verified') ||
+        data?.message?.toLowerCase().includes('verify') ||
+        data?.message?.toLowerCase().includes('domain') ||
+        data?.message?.toLowerCase().includes('testing emails');
+
+      if (isDomainIssue) {
+        console.warn(
+          `[Email Dispatcher] Custom domain is unverified in Resend. Attempting owner notification to hello.orientalsports@gmail.com via onboarding@resend.dev...`
+        );
+
+        const fallbackRes = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Oriental Sports <onboarding@resend.dev>',
+            to: ['hello.orientalsports@gmail.com'],
+            subject: `[Order Alert] ${stageConfig.headline} — Order ${orderNumber} (${recipientEmail})`,
+            html: htmlContent,
+            text: textContent,
+          }),
+        });
+
+        const fallbackData = await fallbackRes.json().catch(() => ({}));
+
+        if (fallbackRes.ok) {
+          console.log(
+            `[Email Dispatcher] Sent order notification to store owner hello.orientalsports@gmail.com [Resend ID: ${fallbackData?.id}]. Note: verify orientalsports.in in Resend to send to ${recipientEmail}.`
+          );
+          return {
+            success: true,
+            simulated: false,
+            messageId: fallbackData?.id,
+            stage,
+            recipient: 'hello.orientalsports@gmail.com',
+            orderNumber,
+            error: `Domain unverified: email dispatched to store owner (hello.orientalsports@gmail.com). Add orientalsports.in to resend.com/domains to send to customers directly.`,
+          };
+        }
+      }
+
+      const errMsg = data?.message || data?.error || `Resend API returned HTTP ${res.status}`;
+      console.error(`[Email Dispatcher] Resend error for order ${orderNumber}:`, errMsg);
+      return {
+        success: false,
+        error: errMsg,
+        orderNumber,
+        stage,
+        recipient: recipientEmail,
+      };
+    }
 
     if (!res.ok) {
       const errMsg = data?.message || data?.error || `Resend API returned HTTP ${res.status}`;
