@@ -221,10 +221,11 @@ export const AddressModal: React.FC<AddressModalProps> = ({
               <input
                 id="addr-phone"
                 type="tel"
+                inputMode="numeric"
+                maxLength={10}
                 required
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="10-digit number"
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                 style={{
                   width: '100%',
                   height: '40px',

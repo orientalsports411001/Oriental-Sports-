@@ -276,10 +276,10 @@ export const AuthModal: React.FC = () => {
                       <input
                         id="phone-input"
                         type="tel"
-                        maxLength={12}
-                        placeholder="98765 43210"
+                        inputMode="numeric"
+                        maxLength={10}
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
                         className="auth-phone-input"
                         autoFocus
                         required

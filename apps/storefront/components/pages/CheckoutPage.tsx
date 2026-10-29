@@ -336,11 +336,13 @@ export const CheckoutPage: React.FC = () => {
                     <input
                       id="phone"
                       type="tel"
+                      inputMode="numeric"
+                      maxLength={10}
                       className={`form-input form-input-with-prefix ${formErrors.phone ? 'has-error' : ''}`}
-                      placeholder="98230 45812"
                       value={form.phone}
                       onChange={(e) => {
-                        setForm({ ...form, phone: e.target.value });
+                        const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setForm({ ...form, phone: digitsOnly });
                         if (formErrors.phone) setFormErrors({ ...formErrors, phone: '' });
                       }}
                     />

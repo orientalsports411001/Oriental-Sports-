@@ -244,11 +244,16 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 <input
                   type="tel"
                   name="phone"
-                  placeholder="Enter 10-digit mobile"
-                  pattern="[0-9\s]{10,14}"
+                  inputMode="numeric"
+                  maxLength={10}
+                  pattern="[0-9]{10}"
                   className="account-phone-input"
                   aria-label="Mobile Number"
                   autoComplete="tel"
+                  onInput={(e) => {
+                    const el = e.currentTarget;
+                    el.value = el.value.replace(/\D/g, '').slice(0, 10);
+                  }}
                   required
                 />
                 <button type="submit" className="account-phone-btn">
