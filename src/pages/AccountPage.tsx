@@ -921,11 +921,6 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               </div>
 
               <div className="account-header-actions">
-                <div className="account-points-pill">
-                  <div className="account-points-label">Stringing Loyalty</div>
-                  <div className="account-points-val">{user.stringingLoyaltyPoints} Pts</div>
-                </div>
-
                 <button
                   type="button"
                   onClick={signOut}
@@ -1282,23 +1277,6 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     <ChevronRight size={16} />
                   </div>
                 </button>
-
-                <div className="account-mobile-menu-item">
-                  <div className="account-mobile-item-left">
-                    <div className="account-mobile-item-icon">
-                      <Award size={18} />
-                    </div>
-                    <div>
-                      <div className="account-mobile-item-title">Stringing Loyalty</div>
-                      <div className="account-mobile-item-desc">Free Yonex restrings</div>
-                    </div>
-                  </div>
-                  <div className="account-mobile-item-right">
-                    <span className="account-mobile-item-badge" style={{ color: '#FFFFFF', background: '#A81B2B' }}>
-                      {user.stringingLoyaltyPoints} Pts
-                    </span>
-                  </div>
-                </div>
               </div>
 
               {/* Account Settings Group */}
