@@ -28,19 +28,6 @@
   justify-content: space-between;
 }
 
-.checkout-header-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8125rem;
-  color: #4b5563;
-  font-weight: 500;
-}
-
-.checkout-header-badge svg {
-  color: #15803d;
-}
-
 /* ---- Step Progress Bar --------------------------------------------------- */
 .checkout-progress {
   display: flex;
@@ -981,10 +968,6 @@
 .checkout-header {
   background: var(--surface-black, #0a0a0a);
   border-bottom: 1px solid var(--border, #27272a);
-}
-
-.checkout-header-badge {
-  color: #a1a1aa !important;
 }
 
 .checkout-progress {

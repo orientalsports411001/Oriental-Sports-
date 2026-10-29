@@ -246,11 +246,6 @@ export const CheckoutPage: React.FC = () => {
               <span>Payment</span>
             </div>
           </nav>
-
-          <div className="checkout-header-badge">
-            <Lock size={15} />
-            <span>256-Bit SSL Encrypted</span>
-          </div>
         </div>
       </header>
 
@@ -637,11 +632,6 @@ export const CheckoutPage: React.FC = () => {
 
               <div className="security-assurances-row">
                 <div className="security-item">
-                  <Lock size={13} color="#C8102E" />
-                  <span>256-Bit SSL Encrypted</span>
-                </div>
-                <span>•</span>
-                <div className="security-item">
                   <Check size={13} color="#C8102E" />
                   <span>GST Tax Invoice with Warranty</span>
                 </div>
@@ -764,7 +754,7 @@ export const CheckoutPage: React.FC = () => {
             <Link to="/terms">Terms of Service</Link>
           </div>
           <p className="checkout-footer-copy">
-            © {new Date().getFullYear()} Oriental Sports Pune. All rights reserved. 256-Bit SSL Encrypted Razorpay Checkout.
+            © {new Date().getFullYear()} Oriental Sports Pune. All rights reserved. Secure Razorpay Checkout.
           </p>
         </div>
       </footer>

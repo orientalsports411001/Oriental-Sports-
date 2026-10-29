@@ -495,11 +495,6 @@ export const AuthModal: React.FC = () => {
               </a>.
             </p>
             <div className="auth-trust-badges">
-              <div className="auth-trust-item">
-                <ShieldCheck size={14} color="#10B981" />
-                <span>256-Bit SSL Encrypted</span>
-              </div>
-              <span>•</span>
               <div>Official Oriental Sports Pune Store</div>
             </div>
           </div>
