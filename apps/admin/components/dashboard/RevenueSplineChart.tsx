@@ -1,37 +1,143 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useMemo } from 'react';
 
+interface OrderInput {
+  total_amount: number;
+  created_at?: string;
+  status?: string;
+}
 
 interface DataPoint {
   month: string;
   value: number;
   label: string;
+  sublabel?: string;
 }
 
-const sixMonthsData: DataPoint[] = [
-  { month: 'May', value: 18200, label: '₹18,200 · May 2026' },
-  { month: 'Jun', value: 24500, label: '₹24,500 · Jun 2026' },
-  { month: 'Jul', value: 21800, label: '₹21,800 · Jul 2026' },
-  { month: 'Aug', value: 31400, label: '₹31,400 · Aug 2026' },
-  { month: 'Sep', value: 36900, label: '₹36,900 · Sep 2026' },
-  { month: 'Oct', value: 40136, label: '₹40,136 · Oct 2026 (Peak)' },
-];
+interface RevenueSplineChartProps {
+  totalRevenue?: number;
+  orders?: OrderInput[];
+}
 
-const thirtyDaysData: DataPoint[] = [
-  { month: 'W1', value: 7200, label: '₹7,200 · Oct 1-7' },
-  { month: 'W2', value: 9800, label: '₹9,800 · Oct 8-14' },
-  { month: 'W3', value: 14600, label: '₹14,600 · Oct 15-21' },
-  { month: 'W4', value: 8536, label: '₹8,536 · Oct 22-28' },
-];
-
-export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: number }) {
+export function RevenueSplineChart({ totalRevenue = 0, orders = [] }: RevenueSplineChartProps) {
   const [timeRange, setTimeRange] = useState<'6m' | '30d'>('6m');
-  const [activePointIndex, setActivePointIndex] = useState<number>(5); // Default to latest
+  const [activePointIndex, setActivePointIndex] = useState<number>(5);
+
+  // Compute reference date from orders or current system time
+  const refDate = useMemo(() => {
+    if (orders.length > 0 && orders[0].created_at) {
+      const d = new Date(orders[0].created_at);
+      if (!isNaN(d.getTime())) return d;
+    }
+    return new Date();
+  }, [orders]);
+
+  // Compute real 6 months data points
+  const sixMonthsData = useMemo<DataPoint[]>(() => {
+    const monthsList: { key: string; monthName: string; year: number; fullLabel: string }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
+      const monthName = d.toLocaleString('en-US', { month: 'short' });
+      const year = d.getFullYear();
+      const key = `${year}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      monthsList.push({ key, monthName, year, fullLabel: `${monthName} ${year}` });
+    }
+
+    const monthlyTotals: Record<string, number> = {};
+    for (const m of monthsList) {
+      monthlyTotals[m.key] = 0;
+    }
+
+    for (const order of orders) {
+      if (!order.created_at) continue;
+      const od = new Date(order.created_at);
+      if (isNaN(od.getTime())) continue;
+      const key = `${od.getFullYear()}-${String(od.getMonth() + 1).padStart(2, '0')}`;
+      if (monthlyTotals[key] !== undefined) {
+        monthlyTotals[key] += Number(order.total_amount || 0);
+      }
+    }
+
+    return monthsList.map((m) => {
+      const val = monthlyTotals[m.key] || 0;
+      return {
+        month: m.monthName,
+        value: val,
+        label: `₹${val.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} · ${m.fullLabel}`,
+        sublabel: m.fullLabel,
+      };
+    });
+  }, [orders, refDate]);
+
+  // Compute real 30 days (4 weeks) data points
+  const thirtyDaysData = useMemo<DataPoint[]>(() => {
+    const nowMs = refDate.getTime();
+    const dayMs = 24 * 60 * 60 * 1000;
+    const weekTotals = [0, 0, 0, 0];
+
+    for (const order of orders) {
+      if (!order.created_at) continue;
+      const od = new Date(order.created_at);
+      if (isNaN(od.getTime())) continue;
+      const diffDays = Math.floor((nowMs - od.getTime()) / dayMs);
+      if (diffDays >= 0 && diffDays < 30) {
+        if (diffDays >= 22) weekTotals[0] += Number(order.total_amount || 0);
+        else if (diffDays >= 15) weekTotals[1] += Number(order.total_amount || 0);
+        else if (diffDays >= 7) weekTotals[2] += Number(order.total_amount || 0);
+        else weekTotals[3] += Number(order.total_amount || 0);
+      }
+    }
+
+    return [
+      {
+        month: 'W1',
+        value: weekTotals[0],
+        label: `₹${weekTotals[0].toLocaleString('en-IN')} · 22–30 days ago`,
+      },
+      {
+        month: 'W2',
+        value: weekTotals[1],
+        label: `₹${weekTotals[1].toLocaleString('en-IN')} · 15–21 days ago`,
+      },
+      {
+        month: 'W3',
+        value: weekTotals[2],
+        label: `₹${weekTotals[2].toLocaleString('en-IN')} · 8–14 days ago`,
+      },
+      {
+        month: 'W4',
+        value: weekTotals[3],
+        label: `₹${weekTotals[3].toLocaleString('en-IN')} · Past 7 days`,
+      },
+    ];
+  }, [orders, refDate]);
 
   const dataset = timeRange === '6m' ? sixMonthsData : thirtyDaysData;
-  const activePoint = dataset[Math.min(activePointIndex, dataset.length - 1)];
+  const safeActiveIndex = Math.min(activePointIndex, dataset.length - 1);
+  const activePoint = dataset[safeActiveIndex];
+
+  // Real trend calculation (no fake +18.4%)
+  const currentMonthRevenue = sixMonthsData[sixMonthsData.length - 1]?.value || 0;
+  const previousMonthRevenue = sixMonthsData[sixMonthsData.length - 2]?.value || 0;
+  let trendBadgeText = 'Live intake';
+  let isPositiveTrend = true;
+
+  if (previousMonthRevenue > 0) {
+    const diff = currentMonthRevenue - previousMonthRevenue;
+    const pct = ((diff / previousMonthRevenue) * 100).toFixed(1);
+    trendBadgeText = `${Number(pct) >= 0 ? '+' : ''}${pct}% MoM`;
+    isPositiveTrend = Number(pct) >= 0;
+  } else if (currentMonthRevenue > 0) {
+    trendBadgeText = `${orders.length} order${orders.length > 1 ? 's' : ''} logged`;
+    isPositiveTrend = true;
+  } else if (totalRevenue > 0) {
+    trendBadgeText = `${orders.length} verified order${orders.length > 1 ? 's' : ''}`;
+    isPositiveTrend = true;
+  } else {
+    trendBadgeText = '0 active orders';
+    isPositiveTrend = false;
+  }
 
   // SVG Chart Geometry
   const width = 640;
@@ -43,12 +149,16 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
   const chartW = width - paddingX * 2;
   const chartH = height - paddingTop - paddingBottom;
 
-  const maxValue = 45000;
+  const maxValInDataset = Math.max(...dataset.map((d) => d.value), 0);
+  const maxValue =
+    maxValInDataset > 0
+      ? Math.max(Math.ceil((maxValInDataset * 1.3) / 1000) * 1000, 1000)
+      : 5000;
 
-  // Calculate points
+  // Calculate points on SVG coordinate system
   const points = dataset.map((d, i) => {
-    const x = paddingX + (i / (dataset.length - 1)) * chartW;
-    const y = paddingTop + chartH - (d.value / maxValue) * chartH;
+    const x = paddingX + (i / Math.max(dataset.length - 1, 1)) * chartW;
+    const y = paddingTop + chartH - (maxValue > 0 ? (d.value / maxValue) * chartH : 0);
     return { x, y, ...d };
   });
 
@@ -69,7 +179,26 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
   };
 
   const linePath = makeSplinePath(points);
-  const areaPath = `${linePath} L ${points[points.length - 1].x} ${paddingTop + chartH} L ${points[0].x} ${paddingTop + chartH} Z`;
+  const baselineY = paddingTop + chartH;
+  const areaPath =
+    points.length > 0
+      ? `${linePath} L ${points[points.length - 1].x} ${baselineY} L ${points[0].x} ${baselineY} Z`
+      : '';
+
+  // Dynamic gridline steps (4 clean divisions)
+  const gridFractions = [0.25, 0.5, 0.75, 1.0];
+  const gridValues = gridFractions.map((f) => {
+    const val = Math.round((maxValue * f) / 100) * 100;
+    return val;
+  });
+
+  const formatGridLabel = (val: number) => {
+    if (val >= 1000) {
+      const k = val / 1000;
+      return `₹${k % 1 === 0 ? k : k.toFixed(1)}k`;
+    }
+    return `₹${val}`;
+  };
 
   return (
     <div
@@ -111,13 +240,13 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
                 alignItems: 'center',
                 padding: '2px 8px',
                 borderRadius: 9999,
-                background: 'rgba(46, 107, 60, 0.10)',
-                color: 'var(--success)',
+                background: isPositiveTrend ? 'rgba(46, 107, 60, 0.10)' : 'rgba(255, 255, 255, 0.06)',
+                color: isPositiveTrend ? 'var(--success)' : 'var(--muted)',
                 fontSize: 11,
                 fontWeight: 600,
               }}
             >
-              +18.4%
+              {trendBadgeText}
             </span>
           </div>
 
@@ -154,7 +283,7 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
             type="button"
             onClick={() => {
               setTimeRange('6m');
-              setActivePointIndex(5);
+              setActivePointIndex(sixMonthsData.length - 1);
             }}
             style={{
               padding: '5px 14px',
@@ -176,7 +305,7 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
             type="button"
             onClick={() => {
               setTimeRange('30d');
-              setActivePointIndex(3);
+              setActivePointIndex(thirtyDaysData.length - 1);
             }}
             style={{
               padding: '5px 14px',
@@ -214,8 +343,8 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
             </filter>
           </defs>
 
-          {/* Horizontal Grid lines */}
-          {[10000, 20000, 30000, 40000].map((val) => {
+          {/* Dynamic Horizontal Grid lines */}
+          {gridValues.map((val) => {
             const y = paddingTop + chartH - (val / maxValue) * chartH;
             return (
               <g key={val}>
@@ -236,32 +365,34 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
                   fill="rgba(255, 255, 255, 0.35)"
                   fontFamily="system-ui, sans-serif"
                 >
-                  ₹{val / 1000}k
+                  {formatGridLabel(val)}
                 </text>
               </g>
             );
           })}
 
           {/* Spline Area Fill */}
-          <path d={areaPath} fill="url(#buyurRevenueGrad)" />
+          {areaPath && <path d={areaPath} fill="url(#buyurRevenueGrad)" />}
 
           {/* Spline Crimson Line Stroke */}
-          <path
-            d={linePath}
-            fill="none"
-            stroke="#C8102E"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            filter="url(#goldGlow)"
-          />
+          {linePath && (
+            <path
+              d={linePath}
+              fill="none"
+              stroke="#C8102E"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#goldGlow)"
+            />
+          )}
 
           {/* Interactive Dots & Month Labels */}
           {points.map((pt, idx) => {
-            const isSelected = idx === activePointIndex;
+            const isSelected = idx === safeActiveIndex;
             return (
               <g
-                key={pt.month}
+                key={`${pt.month}-${idx}`}
                 style={{ cursor: 'pointer' }}
                 onClick={() => setActivePointIndex(idx)}
                 onMouseEnter={() => setActivePointIndex(idx)}
@@ -312,10 +443,10 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
                   <circle
                     cx={pt.x}
                     cy={pt.y}
-                    r="4"
-                    fill="#141414"
+                    r={pt.value > 0 ? '5' : '3.5'}
+                    fill={pt.value > 0 ? '#C8102E' : '#141414'}
                     stroke="#C8102E"
-                    strokeWidth="2.5"
+                    strokeWidth="2"
                   />
                 )}
               </g>
@@ -323,17 +454,17 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
           })}
         </svg>
 
-        {/* Floating Dark Capsule Tooltip (Buyur style!) */}
-        {activePoint && points[activePointIndex] && (
+        {/* Floating Dark Capsule Tooltip */}
+        {activePoint && points[safeActiveIndex] && (
           <div
             style={{
               position: 'absolute',
-              left: `${Math.min(90, Math.max(10, (points[activePointIndex].x / width) * 100))}%`,
-              top: `${(points[activePointIndex].y / height) * 100}%`,
+              left: `${Math.min(90, Math.max(10, (points[safeActiveIndex].x / width) * 100))}%`,
+              top: `${(points[safeActiveIndex].y / height) * 100}%`,
               transform:
-                activePointIndex >= points.length - 2
+                safeActiveIndex >= points.length - 2
                   ? 'translate(-88%, -130%)'
-                  : activePointIndex <= 1
+                  : safeActiveIndex <= 1
                   ? 'translate(-12%, -130%)'
                   : 'translate(-50%, -130%)',
               background: '#111111',
@@ -342,7 +473,8 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
               borderRadius: 9999,
               fontSize: 11.5,
               fontWeight: 800,
-              boxShadow: '0 8px 24px -2px rgba(0,0,0,0.3)',
+              boxShadow: '0 8px 24px -2px rgba(0,0,0,0.5)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               pointerEvents: 'none',
               whiteSpace: 'nowrap',
               display: 'flex',
@@ -352,7 +484,7 @@ export function RevenueSplineChart({ totalRevenue = 40136 }: { totalRevenue?: nu
               maxWidth: 'calc(100% - 20px)',
             }}
           >
-            <span style={{ color: 'var(--gold-hi)' }}>●</span>
+            <span style={{ color: activePoint.value > 0 ? '#4ADE80' : 'var(--muted)' }}>●</span>
             <span>{activePoint.label}</span>
           </div>
         )}

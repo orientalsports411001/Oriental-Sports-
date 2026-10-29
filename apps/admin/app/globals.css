@@ -462,6 +462,7 @@ td a:hover {
 
 .badge.published,
 .badge.paid,
+.badge.confirmed,
 .badge.delivered {
   background: rgba(34, 197, 94, 0.15);
   color: #4ADE80;

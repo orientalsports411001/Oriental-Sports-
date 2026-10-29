@@ -14,14 +14,7 @@ export default async function DashboardPage() {
   let publishedCount = 0;
   let draftCount = 0;
   let lowStockRows: any[] = [];
-  let recentOrders: any[] = [];
-  let totalOrdersCount = 0;
-  let paidOrdersData: any[] = [];
-  let pendingCount = 0;
-  let paidCount = 0;
-  let processingCount = 0;
-  let shippedCount = 0;
-  let deliveredCount = 0;
+  let dbOrders: any[] = [];
 
   try {
     const admin = createServiceRoleClient();
@@ -30,47 +23,24 @@ export default async function DashboardPage() {
       resDraft,
       resLowStock,
       resOrders,
-      resTotalOrders,
-      resPaidOrders,
-      resPending,
-      resPaid,
-      resProcessing,
-      resShipped,
-      resDelivered,
     ] = await Promise.all([
       admin.from('products').select('id', { count: 'exact', head: true }).eq('status', 'published'),
       admin.from('products').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
       admin.from('products').select('id, name, stock_quantity, low_stock_threshold').order('stock_quantity', { ascending: true }),
-      admin.from('orders').select('id, order_number, status, total_amount, created_at, user_id, shipping_address').order('created_at', { ascending: false }).limit(6),
-      admin.from('orders').select('id', { count: 'exact', head: true }),
-      admin.from('orders').select('total_amount').in('status', ['paid', 'processing', 'shipped', 'delivered']),
-      admin.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-      admin.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'paid'),
-      admin.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'processing'),
-      admin.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'shipped'),
-      admin.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'delivered'),
+      admin.from('orders').select('id, order_number, status, total_amount, created_at, user_id, shipping_address, customer_name, customer_email, payment_method').order('created_at', { ascending: false }).limit(100),
     ]);
 
     publishedCount = resPublished.count || 0;
     draftCount = resDraft.count || 0;
     lowStockRows = resLowStock.data || [];
-    recentOrders = resOrders.data || [];
-    totalOrdersCount = resTotalOrders.count || 0;
-    paidOrdersData = resPaidOrders.data || [];
-    pendingCount = resPending.count || 0;
-    paidCount = resPaid.count || 0;
-    processingCount = resProcessing.count || 0;
-    shippedCount = resShipped.count || 0;
-    deliveredCount = resDelivered.count || 0;
+    dbOrders = resOrders.data || [];
   } catch (err) {
     // Supabase endpoint fallback
   }
 
-  // Fallback to verified Oriental Sports store records if Supabase has 0 data or is unreachable
-  if (totalOrdersCount === 0 && publishedCount === 0) {
+  // Fallback to verified Oriental Sports store records if Supabase has 0 products
+  if (publishedCount === 0) {
     const cachedProducts = getCachedProducts();
-    const cachedOrders = getCachedOrders();
-
     publishedCount = cachedProducts.filter((p) => p.status === 'published').length;
     draftCount = cachedProducts.filter((p) => p.status === 'draft').length;
     lowStockRows = cachedProducts.map((p) => ({
@@ -79,38 +49,46 @@ export default async function DashboardPage() {
       stock_quantity: p.stock_quantity,
       low_stock_threshold: p.low_stock_threshold,
     }));
-    recentOrders = cachedOrders.map((o) => ({
-      id: o.id,
-      order_number: o.order_number,
-      status: o.status,
-      total_amount: o.total_amount,
-      created_at: o.created_at,
-      user_id: o.user_id,
-      customer_name: o.customer_name,
-      customer_email: o.customer_email,
-      shipping_address: o.shipping_address,
-    }));
-    totalOrdersCount = cachedOrders.length;
-    paidOrdersData = cachedOrders
-      .filter((o) => ['paid', 'processing', 'shipped', 'delivered'].includes(o.status))
-      .map((o) => ({ total_amount: o.total_amount }));
-
-    pendingCount = cachedOrders.filter((o) => o.status === 'pending').length;
-    paidCount = cachedOrders.filter((o) => o.status === 'paid').length;
-    processingCount = cachedOrders.filter((o) => o.status === 'processing').length;
-    shippedCount = cachedOrders.filter((o) => o.status === 'shipped').length;
-    deliveredCount = cachedOrders.filter((o) => o.status === 'delivered').length;
   }
 
-  // 1. Calculate Total Income (₹ Gross Revenue)
-  const totalIncome = (paidOrdersData || []).reduce(
+  // Merge live database orders with cached / synced store orders (deduplicate by order_number)
+  const cachedOrders = getCachedOrders();
+  const allOrders: any[] = [...dbOrders];
+  const existingOrderNumbers = new Set(allOrders.map((o) => o.order_number || o.id));
+
+  for (const c of cachedOrders) {
+    if (!existingOrderNumbers.has(c.order_number) && !existingOrderNumbers.has(c.id)) {
+      allOrders.push(c);
+    }
+  }
+
+  // Sort latest orders first
+  allOrders.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+
+  // Real orders that count toward gross revenue (verified checkouts)
+  const revenueOrders = allOrders.filter((o) =>
+    ['confirmed', 'paid', 'processing', 'shipped', 'delivered'].includes((o.status || '').toLowerCase())
+  );
+
+  // 1. Calculate Real Gross Revenue (₹)
+  const totalIncome = revenueOrders.reduce(
     (acc, curr) => acc + Number(curr.total_amount || 0),
     0
   );
 
-  // 2. Calculate Average Order Value (AOV)
-  const paidOrdersCount = paidOrdersData?.length || 0;
+  // 2. Real Order Counts
+  const totalOrdersCount = allOrders.length;
+  const paidOrdersCount = revenueOrders.length;
   const averageOrderValue = paidOrdersCount > 0 ? totalIncome / paidOrdersCount : 0;
+
+  const paidCount = allOrders.filter((o) =>
+    ['paid', 'confirmed'].includes((o.status || '').toLowerCase())
+  ).length;
+  const processingCount = allOrders.filter((o) =>
+    (o.status || '').toLowerCase() === 'processing'
+  ).length;
+
+  const recentOrders = allOrders.slice(0, 6);
 
   // 3. Filter low-stock items
   const lowStock = (lowStockRows || []).filter(
@@ -318,7 +296,7 @@ export default async function DashboardPage() {
         {/* Left Column (Chart + Orders Table) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
           {/* 1. Spline Revenue Chart Component */}
-          <RevenueSplineChart totalRevenue={totalIncome} />
+          <RevenueSplineChart totalRevenue={totalIncome} orders={revenueOrders} />
 
           {/* 2. Recent Customer Orders Card */}
           <div
@@ -386,6 +364,13 @@ export default async function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
+                  {recentOrders.length === 0 && (
+                    <tr>
+                      <td colSpan={5} style={{ textAlign: 'center', padding: '36px 14px', color: 'var(--muted)', fontSize: 13 }}>
+                        No orders logged yet. Customer purchases will appear here in real-time.
+                      </td>
+                    </tr>
+                  )}
                   {recentOrders.map((o) => {
                     const customerName =
                       o.customer_name ||
