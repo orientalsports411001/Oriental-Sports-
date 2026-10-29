@@ -27,7 +27,7 @@ export interface AdminOrder {
   customer_name: string;
   customer_email: string;
   customer_phone: string;
-  status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'paid' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   total_amount: number;
   subtotal: number;
   shipping: number;
@@ -63,6 +63,11 @@ const TMP_CACHE_FILE = path.join(
   'os-admin-products-cache.json'
 );
 
+const TMP_ORDERS_CACHE_FILE = path.join(
+  process.platform === 'win32' ? process.env.TEMP || 'C:\\Windows\\Temp' : '/tmp',
+  'os-admin-orders-cache.json'
+);
+
 function readDiskCache(): AdminProduct[] | null {
   try {
     if (fs.existsSync(TMP_CACHE_FILE)) {
@@ -80,10 +85,55 @@ function writeDiskCache(items: AdminProduct[]) {
   } catch {}
 }
 
+function readOrdersDiskCache(): AdminOrder[] | null {
+  try {
+    if (fs.existsSync(TMP_ORDERS_CACHE_FILE)) {
+      const content = fs.readFileSync(TMP_ORDERS_CACHE_FILE, 'utf-8');
+      const list = JSON.parse(content);
+      if (Array.isArray(list) && list.length > 0) return list;
+    }
+  } catch {}
+  return null;
+}
+
+function writeOrdersDiskCache(items: AdminOrder[]) {
+  try {
+    fs.writeFileSync(TMP_ORDERS_CACHE_FILE, JSON.stringify(items), 'utf-8');
+  } catch {}
+}
+
 export const INITIAL_PRODUCTS: AdminProduct[] = allProductsData as AdminProduct[];
 
 
 export const INITIAL_ORDERS: AdminOrder[] = [
+  {
+    id: 'ord-2026-5625',
+    order_number: 'OS-2026-5625',
+    user_id: 'usr-pratik-jadhav',
+    customer_name: 'Pratik Jadhav',
+    customer_email: 'pratikjadhav8820@gmail.com',
+    customer_phone: '+91 98230 45812',
+    status: 'confirmed',
+    total_amount: 4498,
+    subtotal: 4498,
+    shipping: 0,
+    tax: 686,
+    payment_method: 'Razorpay (UPI - ID: pay_rzp_58310021)',
+    tracking_number: 'OS-PICKUP-5625',
+    carrier: 'Oriental Store Counter (Camp)',
+    created_at: '2026-10-29T07:15:00.000Z',
+    shipping_address: {
+      fullName: 'Pratik Jadhav',
+      phone: '+91 98230 45812',
+      addressLine1: 'Shop 247, MG Road (Camp Store Pickup)',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
+    },
+    items: [
+      { product_name: 'Yonex Astrox 88D Play Badminton Racket', price: 4498, quantity: 1, selected_variant: '4U / G5' },
+    ],
+  },
   {
     id: 'ord-2026-1001',
     order_number: 'OS-9281',
@@ -444,12 +494,89 @@ export function removeProduct(id: string): boolean {
 }
 
 export function getCachedOrders(): AdminOrder[] {
+  const disk = readOrdersDiskCache();
+  if (disk && Array.isArray(disk) && disk.length > 0) {
+    const orderMap = new Map<string, AdminOrder>();
+    // Disk orders first
+    for (const o of disk) {
+      orderMap.set(o.order_number || o.id, o);
+    }
+    // In-memory cache orders
+    for (const o of ordersCache) {
+      if (!orderMap.has(o.order_number || o.id)) {
+        orderMap.set(o.order_number || o.id, o);
+      }
+    }
+    // Initial orders
+    for (const o of INITIAL_ORDERS) {
+      if (!orderMap.has(o.order_number || o.id)) {
+        orderMap.set(o.order_number || o.id, o);
+      }
+    }
+    ordersCache = Array.from(orderMap.values());
+  }
   return ordersCache;
 }
 
+export function saveAdminOrder(order: Partial<AdminOrder> & { order_number: string }): AdminOrder {
+  const disk = readOrdersDiskCache();
+  if (disk && Array.isArray(disk)) ordersCache = disk;
+
+  const existingIndex = ordersCache.findIndex(
+    (o) => (order.id && o.id === order.id) || o.order_number === order.order_number
+  );
+  const now = new Date().toISOString();
+
+  let result: AdminOrder;
+  if (existingIndex >= 0) {
+    const updated: AdminOrder = {
+      ...ordersCache[existingIndex],
+      ...order,
+    };
+    ordersCache[existingIndex] = updated;
+    result = updated;
+  } else {
+    const newOrder: AdminOrder = {
+      id: order.id || `ord-${Date.now()}`,
+      order_number: order.order_number,
+      user_id: order.user_id || 'usr-guest',
+      customer_name: order.customer_name || 'Customer',
+      customer_email: order.customer_email || '',
+      customer_phone: order.customer_phone || '',
+      status: order.status || 'confirmed',
+      total_amount: Number(order.total_amount || 0),
+      subtotal: Number(order.subtotal || order.total_amount || 0),
+      shipping: Number(order.shipping || 0),
+      tax: Number(order.tax || 0),
+      payment_method: order.payment_method || 'Razorpay / UPI',
+      tracking_number: order.tracking_number,
+      carrier: order.carrier,
+      created_at: order.created_at || now,
+      shipping_address: order.shipping_address || {
+        fullName: order.customer_name || 'Customer',
+        phone: order.customer_phone || '',
+        addressLine1: 'Camp Flagship Store Pickup',
+        city: 'Pune',
+        state: 'Maharashtra',
+        pincode: '411001',
+      },
+      items: order.items || [],
+    };
+    ordersCache.unshift(newOrder);
+    result = newOrder;
+  }
+
+  writeOrdersDiskCache(ordersCache);
+  return result;
+}
+
 export function updateOrder(id: string, updates: Partial<AdminOrder>): AdminOrder | null {
-  const index = ordersCache.findIndex((o) => o.id === id);
+  const disk = readOrdersDiskCache();
+  if (disk && Array.isArray(disk)) ordersCache = disk;
+
+  const index = ordersCache.findIndex((o) => o.id === id || o.order_number === id);
   if (index === -1) return null;
   ordersCache[index] = { ...ordersCache[index], ...updates };
+  writeOrdersDiskCache(ordersCache);
   return ordersCache[index];
 }

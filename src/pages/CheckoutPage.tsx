@@ -109,8 +109,13 @@ export const CheckoutPage: React.FC = () => {
   const handleCreateAndFinalizeOrder = async (paymentId: string, paymentMethodName: string) => {
     const orderNum = `OS-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
+    const orderUuid =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `3b8909d7-8e68-45a7-96a1-${Date.now().toString(16).padStart(12, '0')}`;
+
     const newOrder: Order = {
-      id: `ord-${Date.now().toString().slice(-6)}`,
+      id: orderUuid,
       orderNumber: orderNum,
       date: new Date().toISOString().split('T')[0],
       status: 'confirmed',

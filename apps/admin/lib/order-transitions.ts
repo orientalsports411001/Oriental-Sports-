@@ -5,9 +5,10 @@
  * this, so a crafted request can't bypass the UI.
  */
 export const ALLOWED_ORDER_TRANSITIONS: Record<string, string[]> = {
-  pending: ['paid', 'failed'],
-  paid: ['processing', 'cancelled'],
-  processing: ['shipped', 'cancelled'],
+  pending: ['paid', 'confirmed', 'failed'],
+  paid: ['processing', 'shipped', 'cancelled'],
+  confirmed: ['processing', 'shipped', 'cancelled'],
+  processing: ['shipped', 'delivered', 'cancelled'],
   shipped: ['delivered'],
   delivered: [],
   cancelled: [],

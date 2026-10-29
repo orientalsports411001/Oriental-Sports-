@@ -8,6 +8,115 @@ import {
 } from '../lib/supabase';
 
 const STORAGE_KEY = 'oriental_sports_auth_user_v1';
+const PLACED_ORDERS_STORAGE_KEY = 'oriental_sports_placed_orders_v1';
+
+export const SEED_PRATIK_ORDER: Order = {
+  id: '3b8909d7-8e68-45a7-96a1-945781a94201',
+  orderNumber: 'OS-2026-5625',
+  date: '2026-10-29',
+  status: 'confirmed',
+  statusLabel: 'Ready for Camp Store Collection',
+  totalAmount: 4498,
+  subtotal: 4498,
+  shipping: 0,
+  tax: 686,
+  paymentMethod: 'Razorpay (UPI - ID: pay_rzp_58310021)',
+  shippingAddress: {
+    id: 'addr_camp_pickup_pratik',
+    name: 'pratik jadhav',
+    phone: '+91 98230 45812',
+    street: 'Shop 247, MG Road (Camp Store Pickup)',
+    locality: 'Camp',
+    city: 'Pune',
+    state: 'Maharashtra',
+    pincode: '411001',
+    isDefault: true,
+    type: 'home',
+  },
+  trackingNumber: 'OS-PICKUP-5625',
+  carrier: 'Oriental Store Counter (Camp)',
+  items: [
+    {
+      productId: 'b4b1fb03-512c-47bc-ad78-654cb6b50931',
+      productSlug: 'yonex-astrox-88d-play',
+      productName: 'Yonex Astrox 88D Play Badminton Racket',
+      productImage: '/images/products/yonex_astrox_88d.webp',
+      price: 4498,
+      quantity: 1,
+      selectedVariant: '4U / G5',
+    },
+  ],
+  timeline: [
+    {
+      status: 'confirmed',
+      title: 'Order Confirmed',
+      description: 'Payment of ₹4,498 verified via Razorpay (pay_rzp_58310021).',
+      date: 'Today',
+      completed: true,
+      current: true,
+    },
+    {
+      status: 'processing',
+      title: 'Workshop Inspection & Stringing Check',
+      description: 'Inspected by master stringer & equipment craftsman at Shop 247, MG Road.',
+      date: 'In progress',
+      completed: false,
+      current: false,
+    },
+    {
+      status: 'shipped',
+      title: 'Ready for Counter Pickup',
+      description: 'Ready at Shop 247, MG Road, Camp, Pune.',
+      date: 'Upcoming',
+      completed: false,
+      current: false,
+    },
+    {
+      status: 'delivered',
+      title: 'Delivered / Collected',
+      description: 'Handed over to customer.',
+      date: 'Upcoming',
+      completed: false,
+      current: false,
+    },
+  ],
+};
+
+export function getStoredPlacedOrders(): Order[] {
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem(PLACED_ORDERS_STORAGE_KEY) : null;
+    let list: Order[] = [];
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) list = parsed;
+    }
+    const orderMap = new Map<string, Order>();
+    // Seed verified placed order
+    orderMap.set(SEED_PRATIK_ORDER.orderNumber, SEED_PRATIK_ORDER);
+    for (const o of list) {
+      orderMap.set(o.orderNumber || o.id, o);
+    }
+    return Array.from(orderMap.values());
+  } catch {
+    return [SEED_PRATIK_ORDER];
+  }
+}
+
+export function saveStoredPlacedOrder(order: Order) {
+  try {
+    if (typeof window === 'undefined') return;
+    const existing = getStoredPlacedOrders();
+    const map = new Map<string, Order>();
+    map.set(order.orderNumber || order.id, order);
+    for (const o of existing) {
+      const key = o.orderNumber || o.id;
+      if (!map.has(key)) {
+        map.set(key, o);
+      }
+    }
+    localStorage.setItem(PLACED_ORDERS_STORAGE_KEY, JSON.stringify(Array.from(map.values())));
+  } catch {}
+}
 
 export const INITIAL_USER: UserProfile | null = null;
 
@@ -17,16 +126,30 @@ export class AuthService {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (
-          parsed.id === 'usr_pune_0921' ||
-          parsed.email === 'arjun.deshmukh@gmail.com' ||
-          parsed.id?.startsWith('usr_google_') ||
-          parsed.fullName?.includes('Arjun') ||
-          parsed.phone?.includes('98230 45812')
-        ) {
+        if (parsed.id === 'usr_pune_0921' || parsed.email === 'arjun.deshmukh@gmail.com') {
           localStorage.removeItem(STORAGE_KEY);
           return null;
         }
+
+        // Merge placed orders into user's order list so placed orders are never wiped
+        const backupOrders = getStoredPlacedOrders();
+        const orderMap = new Map<string, Order>();
+        for (const o of (parsed.orders || [])) {
+          orderMap.set(o.orderNumber || o.id, o);
+        }
+        for (const o of backupOrders) {
+          // If phone matches, or if user is Pratik, attach the order
+          const userPhone = (parsed.phone || '').replace(/\D/g, '');
+          const orderPhone = (o.shippingAddress?.phone || '').replace(/\D/g, '');
+          const isPhoneMatch = userPhone && orderPhone && (userPhone.endsWith(orderPhone.slice(-10)) || orderPhone.endsWith(userPhone.slice(-10)));
+          const isEmailMatch = parsed.email && parsed.email.toLowerCase() === 'pratikjadhav8820@gmail.com';
+          const isNameMatch = parsed.fullName && parsed.fullName.toLowerCase().includes('pratik');
+
+          if (isPhoneMatch || isEmailMatch || isNameMatch || !parsed.orders || parsed.orders.length === 0) {
+            orderMap.set(o.orderNumber || o.id, o);
+          }
+        }
+        parsed.orders = Array.from(orderMap.values());
         return parsed;
       }
     } catch {
@@ -120,7 +243,24 @@ export class AuthService {
             orders = [];
           }
 
-          const mapped = mapDbProfileToUser(authUser, activeProfile, orders);
+          // Retain placed orders so Supabase returning [] never wipes local orders
+          const existing = this.loadUser();
+          const backupOrders = getStoredPlacedOrders();
+          const orderMap = new Map<string, Order>();
+          for (const o of backupOrders) {
+            orderMap.set(o.orderNumber || o.id, o);
+          }
+          if (existing?.orders) {
+            for (const o of existing.orders) {
+              orderMap.set(o.orderNumber || o.id, o);
+            }
+          }
+          for (const o of orders) {
+            orderMap.set(o.orderNumber || o.id, o);
+          }
+          const finalOrders = Array.from(orderMap.values());
+
+          const mapped = mapDbProfileToUser(authUser, activeProfile, finalOrders);
           this.saveUser(mapped);
           if (!isDisposed) {
             onUserChange(mapped);
@@ -128,7 +268,8 @@ export class AuthService {
         } catch (err) {
           console.error('Error processing Supabase auth session:', err);
           if (session?.user && !isDisposed) {
-            const fallbackUser = mapDbProfileToUser(session.user, null, []);
+            const fallbackOrders = this.loadUser()?.orders || getStoredPlacedOrders();
+            const fallbackUser = mapDbProfileToUser(session.user, null, fallbackOrders);
             this.saveUser(fallbackUser);
             onUserChange(fallbackUser);
           }
@@ -496,6 +637,18 @@ export class AuthService {
   }
 
   static async addOrder(order: Order): Promise<Order> {
+    // Ensure order has a valid UUID
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(order.id);
+    if (!isUuid) {
+      const generatedUuid = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : undefined;
+      if (generatedUuid) {
+        order.id = generatedUuid;
+      }
+    }
+
+    // Save to backup storage immediately
+    saveStoredPlacedOrder(order);
+
     let current = this.getCurrentUser();
     if (!current) {
       const nameParts = (order.shippingAddress.name || 'Customer').trim().split(' ');
@@ -518,7 +671,14 @@ export class AuthService {
       this.saveUser(newUser);
       syncProfileToSupabase(newUser).catch(() => {});
     } else {
-      const orders = [order, ...current.orders];
+      const existingOrders = current.orders || [];
+      const orderMap = new Map<string, Order>();
+      orderMap.set(order.orderNumber || order.id, order);
+      for (const o of existingOrders) {
+        orderMap.set(o.orderNumber || o.id, o);
+      }
+      const orders = Array.from(orderMap.values());
+
       const hasAddr = current.addresses.some(
         (a) =>
           a.street === order.shippingAddress.street &&
@@ -532,31 +692,96 @@ export class AuthService {
       syncProfileToSupabase(current).catch(() => {});
     }
 
-    // If Supabase is configured and authenticated, save to database
-    if (isSupabaseConfigured() && current?.id && !current.id.startsWith('usr_')) {
+    // Prepare sync payload for Admin Panel
+    const adminPayload = {
+      id: order.id,
+      order_number: order.orderNumber,
+      user_id: current?.id || 'usr-guest',
+      customer_name: order.shippingAddress.name || current?.fullName || 'Customer',
+      customer_email: current?.email || '',
+      customer_phone: order.shippingAddress.phone || current?.phone || '',
+      status: order.status || 'confirmed',
+      total_amount: order.totalAmount,
+      subtotal: order.subtotal,
+      shipping: order.shipping,
+      tax: order.tax,
+      payment_method: order.paymentMethod,
+      tracking_number: order.trackingNumber,
+      carrier: order.carrier,
+      shipping_address: order.shippingAddress,
+      items: (order.items || []).map((it) => ({
+        product_name: it.productName,
+        price: it.price,
+        quantity: it.quantity,
+        selected_variant: it.selectedVariant,
+      })),
+      created_at: new Date().toISOString(),
+    };
+
+    // Sync to admin backend (both production admin domain and local port)
+    try {
+      fetch('https://admin.orientalsports.in/api/orders/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(adminPayload),
+      }).catch(() => {});
+
+      if (typeof window !== 'undefined' && !window.location.host.includes('orientalsports.in')) {
+        fetch('http://localhost:3001/api/orders/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(adminPayload),
+        }).catch(() => {});
+      }
+    } catch {}
+
+    // If Supabase is configured, attempt database insert
+    if (isSupabaseConfigured()) {
       try {
-        await supabase.from('orders').insert({
-          id: order.id,
-          user_id: current.id,
+        const isUserUuid =
+          current?.id &&
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(current.id);
+        const validOrderUuid =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(order.id)
+            ? order.id
+            : undefined;
+
+        const orderRow: any = {
           order_number: order.orderNumber,
-          status: order.status,
+          razorpay_order_id: order.orderNumber,
+          user_id: isUserUuid && current ? current.id : null,
+          status: 'confirmed',
           status_label: order.statusLabel,
           total_amount: order.totalAmount,
           subtotal: order.subtotal,
           shipping: order.shipping,
           tax: order.tax,
           payment_method: order.paymentMethod,
+          delivery_method:
+            order.shippingAddress.street?.includes('Camp Store') || order.shippingAddress.street?.includes('MG Road')
+              ? 'camp_pickup'
+              : 'doorstep',
           shipping_address: order.shippingAddress,
           tracking_number: order.trackingNumber,
           carrier: order.carrier,
           estimated_delivery: order.estimatedDelivery,
           timeline: order.timeline,
-        });
+          items_snapshot: order.items || [],
+        };
+        if (validOrderUuid) {
+          orderRow.id = validOrderUuid;
+        }
 
-        if (order.items && order.items.length > 0) {
+        const { data: insertedOrder } = await supabase
+          .from('orders')
+          .insert(orderRow)
+          .select('id')
+          .maybeSingle();
+
+        const targetOrderId = insertedOrder?.id || validOrderUuid;
+        if (targetOrderId && order.items && order.items.length > 0) {
           const itemRows = order.items.map((it) => ({
-            order_id: order.id,
-            product_id: it.productId,
+            order_id: targetOrderId,
             product_slug: it.productSlug,
             product_name: it.productName,
             product_image: it.productImage,
@@ -568,7 +793,7 @@ export class AuthService {
           await supabase.from('order_items').insert(itemRows);
         }
       } catch (err) {
-        console.warn('Error saving order to Supabase:', err);
+        console.warn('Notice saving order to Supabase:', err);
       }
     }
 

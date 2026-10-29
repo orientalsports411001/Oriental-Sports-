@@ -63,32 +63,40 @@ export default async function OrdersPage({
     // Supabase fallback
   }
 
-  // Fallback to Oriental Sports store orders
-  if (orders.length === 0) {
-    let all = getCachedOrders();
-
-    if (searchParams.status) {
-      all = all.filter((o) => o.status === searchParams.status);
+  // Merge live database orders with cached / synced store orders
+  const cached = getCachedOrders();
+  const existingOrderNumbers = new Set(orders.map((o) => o.order_number));
+  for (const c of cached) {
+    if (!existingOrderNumbers.has(c.order_number)) {
+      orders.push(c);
     }
-    if (searchParams.from) {
-      all = all.filter((o) => o.created_at >= searchParams.from!);
-    }
-    if (searchParams.to) {
-      all = all.filter((o) => o.created_at <= searchParams.to!);
-    }
-    if (searchParams.q) {
-      const q = searchParams.q.toLowerCase();
-      all = all.filter(
-        (o) =>
-          o.order_number.toLowerCase().includes(q) ||
-          o.customer_name.toLowerCase().includes(q) ||
-          o.customer_email.toLowerCase().includes(q) ||
-          o.customer_phone.includes(q)
-      );
-    }
-
-    orders = all;
   }
+
+  // Apply search and status filters across all orders
+  if (searchParams.status) {
+    orders = orders.filter((o) => o.status === searchParams.status);
+  }
+  if (searchParams.from) {
+    orders = orders.filter((o) => o.created_at >= searchParams.from!);
+  }
+  if (searchParams.to) {
+    orders = orders.filter((o) => o.created_at <= searchParams.to!);
+  }
+  if (searchParams.q) {
+    const q = searchParams.q.toLowerCase();
+    orders = orders.filter(
+      (o) =>
+        o.order_number.toLowerCase().includes(q) ||
+        (o.customer_name && o.customer_name.toLowerCase().includes(q)) ||
+        (o.customer_email && o.customer_email.toLowerCase().includes(q)) ||
+        (o.customer_phone && o.customer_phone.includes(q)) ||
+        ((o.shipping_address as any)?.name && (o.shipping_address as any).name.toLowerCase().includes(q)) ||
+        ((o.shipping_address as any)?.fullName && (o.shipping_address as any).fullName.toLowerCase().includes(q))
+    );
+  }
+
+  // Sort latest first
+  orders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
     <div style={{ maxWidth: 1420, margin: '0 auto' }}>
