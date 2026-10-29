@@ -222,8 +222,8 @@ export function MiniCalendarWidget() {
               borderBottom: '1px solid rgba(38, 41, 46, 0.06)',
             }}
           >
-            <div style={{ fontWeight: 600, lineHeight: 1.2, color: 'var(--ink-heading)' }}>Shivajinagar District Club</div>
-            <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>OS-9281 · Acrylic Court System · ₹15,490</div>
+            <div style={{ fontWeight: 600, lineHeight: 1.2, color: 'var(--ink-heading)' }}>Camp Flagship Sports House</div>
+            <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>OS-2026-5625 · Yonex Astrox 88D Play · ₹4,498</div>
           </div>
 
           <div
@@ -233,8 +233,8 @@ export function MiniCalendarWidget() {
               paddingTop: 2,
             }}
           >
-            <div style={{ fontWeight: 600, lineHeight: 1.2, color: 'var(--ink-heading)' }}>Kothrud Arena Academy</div>
-            <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>OS-9282 · Li-Ning Windstorm · ₹6,349</div>
+            <div style={{ fontWeight: 600, lineHeight: 1.2, color: 'var(--ink-heading)' }}>MG Road Stringing Desk</div>
+            <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>Ready for Customer Counter Collection</div>
           </div>
         </div>
       </div>

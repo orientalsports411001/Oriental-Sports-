@@ -85,12 +85,27 @@ function writeDiskCache(items: AdminProduct[]) {
   } catch {}
 }
 
+const BANNED_DUMMY_ORDERS = new Set([
+  'OS-9281',
+  'OS-9282',
+  'OS-9283',
+  'OS-9284',
+  'OS-9285',
+  'ord-2026-1001',
+  'ord-2026-1002',
+  'ord-2026-1003',
+  'ord-2026-1004',
+  'ord-2026-1005',
+]);
+
 function readOrdersDiskCache(): AdminOrder[] | null {
   try {
     if (fs.existsSync(TMP_ORDERS_CACHE_FILE)) {
       const content = fs.readFileSync(TMP_ORDERS_CACHE_FILE, 'utf-8');
       const list = JSON.parse(content);
-      if (Array.isArray(list) && list.length > 0) return list;
+      if (Array.isArray(list) && list.length > 0) {
+        return list.filter((o) => !BANNED_DUMMY_ORDERS.has(o.order_number) && !BANNED_DUMMY_ORDERS.has(o.id));
+      }
     }
   } catch {}
   return null;
@@ -132,146 +147,6 @@ export const INITIAL_ORDERS: AdminOrder[] = [
     },
     items: [
       { product_name: 'Yonex Astrox 88D Play Badminton Racket', price: 4498, quantity: 1, selected_variant: '4U / G5' },
-    ],
-  },
-  {
-    id: 'ord-2026-1001',
-    order_number: 'OS-9281',
-    user_id: 'usr-pune-01',
-    customer_name: 'Rohan Deshmukh',
-    customer_email: 'rohan.deshmukh@gmail.com',
-    customer_phone: '+91 98220 14892',
-    status: 'delivered',
-    total_amount: 15490,
-    subtotal: 15490,
-    shipping: 0,
-    tax: 0,
-    payment_method: 'UPI / Razorpay',
-    tracking_number: 'BLUEDART-8829104',
-    carrier: 'BlueDart Express',
-    created_at: '2026-10-22T14:30:00.000Z',
-    shipping_address: {
-      fullName: 'Rohan Deshmukh',
-      phone: '+91 98220 14892',
-      addressLine1: 'B-402, Rohan Tarang, Wakad',
-      addressLine2: 'Near Datta Mandir Road',
-      city: 'Pune',
-      state: 'Maharashtra',
-      pincode: '411057',
-    },
-    items: [
-      { product_name: 'Yonex Astrox 88D Pro Badminton Racket', price: 15490, quantity: 1, selected_variant: '4U / G5' },
-    ],
-  },
-  {
-    id: 'ord-2026-1002',
-    order_number: 'OS-9282',
-    user_id: 'usr-pune-02',
-    customer_name: 'Vikram Shinde',
-    customer_email: 'vikram.shinde@kalyanigroup.com',
-    customer_phone: '+91 98231 77201',
-    status: 'shipped',
-    total_amount: 6349,
-    subtotal: 6349,
-    shipping: 0,
-    tax: 0,
-    payment_method: 'Credit Card / Razorpay',
-    tracking_number: 'DELHIVERY-9940122',
-    carrier: 'Delhivery Surface',
-    created_at: '2026-10-22T11:15:00.000Z',
-    shipping_address: {
-      fullName: 'Vikram Shinde',
-      phone: '+91 98231 77201',
-      addressLine1: 'Flat 12, Hermes Waves, Kalyani Nagar',
-      addressLine2: 'Opposite Joggers Park',
-      city: 'Pune',
-      state: 'Maharashtra',
-      pincode: '411006',
-    },
-    items: [
-      { product_name: 'SG Scorer Classic Cricket Bat', price: 2899, quantity: 1, selected_variant: 'Full Size' },
-      { product_name: 'SG Profile Kashmir Willow Bat', price: 3450, quantity: 1, selected_variant: 'Size 6' },
-    ],
-  },
-  {
-    id: 'ord-2026-1003',
-    order_number: 'OS-9283',
-    user_id: 'usr-pune-03',
-    customer_name: 'Priya Nair',
-    customer_email: 'priya.nair89@gmail.com',
-    customer_phone: '+91 98902 44109',
-    status: 'processing',
-    total_amount: 14999,
-    subtotal: 14999,
-    shipping: 0,
-    tax: 0,
-    payment_method: 'Net Banking / HDFC',
-    created_at: '2026-10-21T18:40:00.000Z',
-    shipping_address: {
-      fullName: 'Priya Nair',
-      phone: '+91 98902 44109',
-      addressLine1: 'Row House 4, Nyati Estate, Mohammed Wadi',
-      addressLine2: 'Near Corinthian Club',
-      city: 'Pune',
-      state: 'Maharashtra',
-      pincode: '411060',
-    },
-    items: [
-      { product_name: 'Heavy Duty Multi-Angle Adjustable Workout Bench', price: 14999, quantity: 1 },
-    ],
-  },
-  {
-    id: 'ord-2026-1004',
-    order_number: 'OS-9284',
-    user_id: 'usr-pune-04',
-    customer_name: 'Aditya Patil',
-    customer_email: 'aditya.patil@outlook.com',
-    customer_phone: '+91 94220 89123',
-    status: 'paid',
-    total_amount: 3298,
-    subtotal: 3298,
-    shipping: 0,
-    tax: 0,
-    payment_method: 'UPI / Google Pay',
-    created_at: '2026-10-20T16:20:00.000Z',
-    shipping_address: {
-      fullName: 'Aditya Patil',
-      phone: '+91 94220 89123',
-      addressLine1: 'Plot 77, Mayur Colony, Kothrud',
-      addressLine2: 'Near Jog Hospital',
-      city: 'Pune',
-      state: 'Maharashtra',
-      pincode: '411038',
-    },
-    items: [
-      { product_name: 'Nivia Storm Football Match Quality Size 5', price: 1199, quantity: 2 },
-      { product_name: 'Cosco Championship Heavy Duty Tennis Balls (Can of 3)', price: 450, quantity: 2 },
-    ],
-  },
-  {
-    id: 'ord-2026-1005',
-    order_number: 'OS-9285',
-    user_id: 'usr-pune-05',
-    customer_name: 'Suhas Kulkarni',
-    customer_email: 'suhas.kulkarni@techm.com',
-    customer_phone: '+91 98224 55301',
-    status: 'pending',
-    total_amount: 8490,
-    subtotal: 8490,
-    shipping: 0,
-    tax: 0,
-    payment_method: 'UPI / PhonePe',
-    created_at: '2026-10-20T10:05:00.000Z',
-    shipping_address: {
-      fullName: 'Suhas Kulkarni',
-      phone: '+91 98224 55301',
-      addressLine1: 'A-101, Blue Ridge, Hinjawadi Phase 1',
-      city: 'Pune',
-      state: 'Maharashtra',
-      pincode: '411057',
-    },
-    items: [
-      { product_name: 'Li-Ning Windstorm 72 Lightweight Racket', price: 8490, quantity: 1 },
     ],
   },
 ];
@@ -515,7 +390,7 @@ export function getCachedOrders(): AdminOrder[] {
     }
     ordersCache = Array.from(orderMap.values());
   }
-  return ordersCache;
+  return ordersCache.filter((o) => !BANNED_DUMMY_ORDERS.has(o.order_number) && !BANNED_DUMMY_ORDERS.has(o.id));
 }
 
 export function saveAdminOrder(order: Partial<AdminOrder> & { order_number: string }): AdminOrder {
