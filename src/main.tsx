@@ -9,6 +9,7 @@ import './styles/home.css';
 import './styles/pages.css';
 import './styles/checkout.css';
 import './styles/account.css';
+import './styles/order-success.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

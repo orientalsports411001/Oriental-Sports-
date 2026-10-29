@@ -7,6 +7,7 @@ import '../styles/home.css';
 import '../styles/pages.css';
 import '../styles/checkout.css';
 import '../styles/auth-modal.css';
+import '../styles/order-success.css';
 import { Providers } from './providers';
 import { AppShell } from './app-shell';
 import { Analytics } from '@/components/analytics/Analytics';
