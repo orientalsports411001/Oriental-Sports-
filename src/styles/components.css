@@ -362,7 +362,7 @@
   align-content: start;
 }
 
-.footer-logo { display: block; height: 48px; width: auto; }
+.footer-logo { display: block; height: 40px; width: auto; }
 
 .footer-address {
   margin-top: 20px;

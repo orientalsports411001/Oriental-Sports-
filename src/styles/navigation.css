@@ -72,9 +72,9 @@
   gap: 16px;
 }
 
-.header-logo { height: 36px; width: auto; }
+.header-logo { height: 32px; width: auto; }
 @media (min-width: 1024px) {
-  .header-logo { height: 46px; }
+  .header-logo { height: 40px; }
 }
 
 .header-nav {
