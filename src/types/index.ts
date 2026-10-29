@@ -74,6 +74,8 @@ export interface Product {
   variants?: ProductVariant[];
   sizes?: string[];
   inStock: boolean;
+  status?: 'draft' | 'published' | 'archived';
+  stock_quantity?: number;
   isFeatured?: boolean;
   sku?: string;
   discountPrice?: number;

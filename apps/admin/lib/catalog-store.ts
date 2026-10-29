@@ -180,9 +180,102 @@ let productsCache: AdminProduct[] = [...INITIAL_PRODUCTS];
 let ordersCache: AdminOrder[] = [...INITIAL_ORDERS];
 
 export function getCachedProducts(): AdminProduct[] {
-  const disk = readDiskCache();
-  if (disk) productsCache = disk;
-  return productsCache;
+  const disk = readDiskCache() || [];
+
+  // Map to hold unified products keyed by id and slug
+  const productMap = new Map<string, AdminProduct>();
+
+  // 1. Base 131 items from all-products.json
+  for (const p of INITIAL_PRODUCTS) {
+    productMap.set(p.id, p);
+    if (p.slug) productMap.set(p.slug, p);
+  }
+
+  // 2. Overlay disk cache items (if any modifications or new items)
+  for (const p of disk) {
+    const existing = productMap.get(p.id) || (p.slug ? productMap.get(p.slug) : undefined);
+    const merged = existing ? { ...existing, ...p } : p;
+    productMap.set(p.id, merged);
+    if (p.slug) productMap.set(p.slug, merged);
+  }
+
+  // 3. Overlay in-memory cache items (current process mutations)
+  for (const p of productsCache) {
+    const existing = productMap.get(p.id) || (p.slug ? productMap.get(p.slug) : undefined);
+    const merged = existing ? { ...existing, ...p } : p;
+    productMap.set(p.id, merged);
+    if (p.slug) productMap.set(p.slug, merged);
+  }
+
+  // 4. Overlay customProducts.json if present
+  try {
+    const root = getRepoRoot();
+    const srcCustomPath = path.join(root, 'src', 'data', 'customProducts.json');
+    if (fs.existsSync(srcCustomPath)) {
+      const content = fs.readFileSync(srcCustomPath, 'utf-8');
+      const list = JSON.parse(content);
+      if (Array.isArray(list)) {
+        for (const item of list) {
+          const id = item.id || `prod-os-${item.slug}`;
+          const existing = productMap.get(id) || (item.slug ? productMap.get(item.slug) : undefined);
+          const mapped: AdminProduct = {
+            id,
+            name: item.name || existing?.name || 'Product',
+            slug: item.slug || existing?.slug || id,
+            brand: item.brand || existing?.brand || 'Oriental Sports',
+            category_slug: item.subcategory || item.category || existing?.category_slug || 'cricket',
+            description: item.description || existing?.description || '',
+            price: Number(item.price ?? existing?.price ?? 0),
+            compare_at_price: item.originalPrice ?? item.compare_at_price ?? existing?.compare_at_price ?? null,
+            images: Array.isArray(item.images) && item.images.length > 0 ? item.images : (existing?.images || []),
+            status: item.status || (item.inStock === false ? 'draft' : existing?.status || 'published'),
+            stock_quantity: Number(item.stockQuantity ?? item.stock_quantity ?? (item.inStock === false ? 0 : existing?.stock_quantity ?? 10)),
+            low_stock_threshold: Number(item.lowStockThreshold ?? item.low_stock_threshold ?? existing?.low_stock_threshold ?? 5),
+            is_featured: Boolean(item.isFeatured ?? existing?.is_featured),
+            seo_title: item.seoTitle || existing?.seo_title,
+            seo_description: item.seoDescription || existing?.seo_description,
+            created_at: item.createdAt || existing?.created_at || new Date().toISOString(),
+            updated_at: item.updatedAt || existing?.updated_at || new Date().toISOString(),
+          };
+          productMap.set(id, mapped);
+          if (mapped.slug) productMap.set(mapped.slug, mapped);
+        }
+      }
+    }
+  } catch {}
+
+  // Deduplicate into unified array
+  const unified: AdminProduct[] = [];
+  const seen = new Set<string>();
+
+  // Any newly created items (not part of INITIAL_PRODUCTS) appear at top
+  const allCandidates = [...productsCache, ...disk];
+  for (const c of allCandidates) {
+    const key = c.id || c.slug;
+    if (key && !seen.has(key)) {
+      const resolved = productMap.get(c.id) || (c.slug ? productMap.get(c.slug) : undefined) || c;
+      const isBase = INITIAL_PRODUCTS.some((b) => b.id === resolved.id || b.slug === resolved.slug);
+      if (!isBase) {
+        seen.add(resolved.id);
+        if (resolved.slug) seen.add(resolved.slug);
+        unified.push(resolved);
+      }
+    }
+  }
+
+  // Base 131 items (with their latest overlaid values)
+  for (const base of INITIAL_PRODUCTS) {
+    const key = base.id || base.slug;
+    if (key && !seen.has(key)) {
+      const resolved = productMap.get(base.id) || (base.slug ? productMap.get(base.slug) : undefined) || base;
+      seen.add(resolved.id);
+      if (resolved.slug) seen.add(resolved.slug);
+      unified.push(resolved);
+    }
+  }
+
+  productsCache = unified;
+  return unified;
 }
 
 function getRepoRoot(): string {
@@ -239,6 +332,9 @@ function toStorefrontFormat(p: AdminProduct) {
     reviewsCount: 16,
     badge: 'NEW',
     isFeatured: Boolean(p.is_featured),
+    status: p.status || 'published',
+    stockQuantity: Number(p.stock_quantity ?? 10),
+    lowStockThreshold: Number(p.low_stock_threshold ?? 5),
     inStock: p.status === 'published' && (p.stock_quantity ?? 10) > 0,
     images: safeImages,
     gallery: safeImages,
@@ -279,12 +375,29 @@ function syncToCatalogFiles(items: AdminProduct[], singleUpdated?: AdminProduct)
 
     if (singleUpdated) {
       const storefrontFormat = toStorefrontFormat(singleUpdated);
-      const idx = customList.findIndex((p: any) => p.id === singleUpdated.id || p.slug === singleUpdated.slug);
+      const origSlug = (singleUpdated as any).originalSlug;
+      const idx = customList.findIndex(
+        (p: any) =>
+          p.id === singleUpdated.id ||
+          p.slug === singleUpdated.slug ||
+          (origSlug && p.slug === origSlug)
+      );
       if (idx >= 0) {
         customList[idx] = storefrontFormat;
       } else {
         customList.unshift(storefrontFormat);
       }
+      // Deduplicate customList
+      const sIds = new Set<string>();
+      const sSlugs = new Set<string>();
+      customList = customList.filter((item: any) => {
+        if (!item) return false;
+        if (item.id && sIds.has(item.id)) return false;
+        if (item.slug && sSlugs.has(item.slug)) return false;
+        if (item.id) sIds.add(item.id);
+        if (item.slug) sSlugs.add(item.slug);
+        return true;
+      });
     }
 
     fs.writeFileSync(srcCustomPath, JSON.stringify(customList, null, 2), 'utf-8');
@@ -299,11 +412,18 @@ function syncToCatalogFiles(items: AdminProduct[], singleUpdated?: AdminProduct)
   }
 }
 
-export function saveProduct(product: Partial<AdminProduct> & { name: string }): AdminProduct {
+export function saveProduct(
+  product: Partial<AdminProduct> & { name: string; originalSlug?: string }
+): AdminProduct {
   const disk = readDiskCache();
   if (disk) productsCache = disk;
 
-  const existingIndex = productsCache.findIndex((p) => p.id === product.id || p.slug === product.slug);
+  const existingIndex = productsCache.findIndex(
+    (p) =>
+      (product.id && p.id === product.id) ||
+      (product.originalSlug && p.slug === product.originalSlug) ||
+      (product.slug && p.slug === product.slug)
+  );
   const now = new Date().toISOString();
 
   let result: AdminProduct;
@@ -338,6 +458,17 @@ export function saveProduct(product: Partial<AdminProduct> & { name: string }): 
     productsCache.unshift(newProduct);
     result = newProduct;
   }
+
+  // Deduplicate productsCache in-place so duplicate entries are never retained
+  const seenIds = new Set<string>();
+  const seenSlugs = new Set<string>();
+  productsCache = productsCache.filter((p) => {
+    if (!p) return false;
+    if (seenIds.has(p.id) || seenSlugs.has(p.slug)) return false;
+    seenIds.add(p.id);
+    seenSlugs.add(p.slug);
+    return true;
+  });
 
   writeDiskCache(productsCache);
   syncToCatalogFiles(productsCache, result);
@@ -377,6 +508,36 @@ export function removeProduct(id: string): boolean {
   } catch {}
 
   return productsCache.length < initialLength;
+}
+
+export function toggleProductVisibility(
+  idOrSlug: string,
+  newStatus: 'published' | 'draft' | 'archived',
+  newStockQuantity?: number
+): AdminProduct | null {
+  const current = getCachedProducts();
+  const index = current.findIndex((p) => p.id === idOrSlug || p.slug === idOrSlug);
+  if (index === -1) return null;
+
+  const updates: Partial<AdminProduct> = {
+    status: newStatus,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (typeof newStockQuantity === 'number') {
+    updates.stock_quantity = newStockQuantity;
+  }
+
+  const updated: AdminProduct = {
+    ...current[index],
+    ...updates,
+  };
+
+  current[index] = updated;
+  productsCache = [...current];
+  writeDiskCache(productsCache);
+  syncToCatalogFiles(productsCache, updated);
+  return updated;
 }
 
 export function getCachedOrders(): AdminOrder[] {

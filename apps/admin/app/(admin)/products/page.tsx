@@ -15,66 +15,76 @@ export default async function ProductsPage({
 }) {
   await requireAdmin();
 
-  let products: any[] = [];
-  let count: number = 0;
+  let dbProducts: any[] = [];
   let categories: { slug: string; name: string }[] = CATEGORIES;
 
   try {
     const admin = createServiceRoleClient();
-    let query = admin
-      .from('products')
-      .select('id, name, slug, brand, category_slug, status, price, compare_at_price, images, stock_quantity, low_stock_threshold', {
-        count: 'exact',
-      });
+    const [resProducts, resCategories] = await Promise.all([
+      admin
+        .from('products')
+        .select('id, name, slug, brand, category_slug, status, price, compare_at_price, images, stock_quantity, low_stock_threshold'),
+      admin.from('categories').select('slug, name').order('name'),
+    ]);
 
-    if (searchParams.q) {
-      query = query.ilike('name', `%${searchParams.q}%`);
+    if (resProducts.data && resProducts.data.length > 0) {
+      dbProducts = resProducts.data;
     }
-    if (searchParams.status) {
-      query = query.eq('status', searchParams.status);
-    }
-    if (searchParams.category) {
-      query = query.eq('category_slug', searchParams.category);
-    }
-
-    const { data: dbProducts, count: dbCount } = await query.order('created_at', { ascending: false });
-    const { data: dbCategories } = await admin.from('categories').select('slug, name').order('name');
-
-    if (dbProducts && dbProducts.length > 0) {
-      products = dbProducts;
-      count = dbCount || dbProducts.length;
-    }
-    if (dbCategories && dbCategories.length > 0) {
-      categories = dbCategories;
+    if (resCategories.data && resCategories.data.length > 0) {
+      categories = resCategories.data;
     }
   } catch (err) {
     // Supabase fallback
   }
 
-  // Fallback to cached catalog store
+  // Unified catalog store (all 131 items + Supabase DB updates)
   const allCached = getCachedProducts();
-  if (products.length === 0) {
-    let all = allCached;
 
-    if (searchParams.q) {
-      const q = searchParams.q.toLowerCase();
-      all = all.filter((p) => p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.slug.toLowerCase().includes(q));
-    }
-    if (searchParams.status) {
-      all = all.filter((p) => p.status === searchParams.status);
-    }
-    if (searchParams.category) {
-      all = all.filter((p) => p.category_slug === searchParams.category);
-    }
-
-    count = all.length;
-    products = all;
+  // Merge Supabase products with allCached (Supabase overrides by slug/id, while keeping the rest of the 131 products)
+  const productMap = new Map<string, any>();
+  for (const p of allCached) {
+    productMap.set(p.id, p);
+    if (p.slug) productMap.set(p.slug, p);
   }
 
-  // Summary Metrics
-  const publishedCount = allCached.filter((p) => p.status === 'published').length;
-  const lowStockCount = allCached.filter((p) => p.stock_quantity <= p.low_stock_threshold).length;
-  const totalCatalogValue = allCached.reduce((acc, p) => acc + (p.price * p.stock_quantity), 0);
+  for (const p of dbProducts) {
+    const existing = productMap.get(p.id) || (p.slug ? productMap.get(p.slug) : undefined);
+    const merged = existing ? { ...existing, ...p } : p;
+    productMap.set(p.id, merged);
+    if (p.slug) productMap.set(p.slug, merged);
+  }
+
+  const unifiedProducts: any[] = [];
+  const seenKeys = new Set<string>();
+
+  // Add dbProducts not in allCached first
+  for (const p of dbProducts) {
+    const key = p.id || p.slug;
+    if (key && !seenKeys.has(key)) {
+      seenKeys.add(key);
+      if (p.slug) seenKeys.add(p.slug);
+      if (!allCached.some((c) => c.id === p.id || c.slug === p.slug)) {
+        unifiedProducts.push(productMap.get(p.id) || p);
+      }
+    }
+  }
+
+  // Add all base cached items
+  for (const c of allCached) {
+    const resolved = productMap.get(c.id) || (c.slug ? productMap.get(c.slug) : c);
+    const key = resolved.id || resolved.slug;
+    if (key && !seenKeys.has(key)) {
+      seenKeys.add(key);
+      if (resolved.slug) seenKeys.add(resolved.slug);
+      unifiedProducts.push(resolved);
+    }
+  }
+
+  // Summary Metrics reflect the unified count (131+ products)
+  const publishedCount = unifiedProducts.filter((p) => p.status === 'published').length;
+  const lowStockCount = unifiedProducts.filter((p) => p.stock_quantity <= p.low_stock_threshold).length;
+  const totalCatalogValue = unifiedProducts.reduce((acc, p) => acc + (p.price * p.stock_quantity), 0);
+  const count = unifiedProducts.length;
 
   return (
     <div style={{ maxWidth: 1420, margin: '0 auto' }}>
@@ -128,7 +138,7 @@ export default async function ProductsPage({
 
       {/* Live Client-Reconciled Products Catalog */}
       <ProductsCatalogView
-        initialProducts={products}
+        initialProducts={unifiedProducts}
         initialCount={count}
         categories={categories}
         totalCatalogValue={totalCatalogValue}

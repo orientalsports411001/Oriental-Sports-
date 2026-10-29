@@ -1709,7 +1709,9 @@ export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
           originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
           rating: p.rating ?? 4.9,
           reviewsCount: p.review_count ?? 12,
-          inStock: p.in_stock !== false,
+          inStock: p.status === 'published' ? (p.in_stock !== false) : false,
+          status: p.status || 'published',
+          stock_quantity: Number(p.stock_quantity ?? 10),
           images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
           description: p.description || '',
           features: Array.isArray(p.features) ? p.features : [p.description || ''],
@@ -1729,7 +1731,9 @@ if (typeof window !== 'undefined') {
 }
 
 export function getLiveProducts(): Product[] {
-  if (typeof window === 'undefined') return PRODUCTS;
+  if (typeof window === 'undefined') {
+    return PRODUCTS.filter((p) => !p.status || p.status === 'published');
+  }
   try {
     const deletedRaw = localStorage.getItem('os_deleted_products');
     const deletedSet = new Set(deletedRaw ? JSON.parse(deletedRaw) : []);
@@ -1753,12 +1757,33 @@ export function getLiveProducts(): Product[] {
       }
     }
 
-    const baseFiltered = PRODUCTS.filter((p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug));
+    // Track explicit status overrides (e.g. products toggled to draft/archived in admin)
+    const hiddenSet = new Set<string>();
+    for (const p of combinedCustom) {
+      if (p.status === 'draft' || p.status === 'archived') {
+        if (p.id) hiddenSet.add(p.id);
+        if (p.slug) hiddenSet.add(p.slug);
+      }
+    }
+
+    const baseFiltered = PRODUCTS.filter(
+      (p) =>
+        !deletedSet.has(p.id) &&
+        !deletedSet.has(p.slug) &&
+        !hiddenSet.has(p.id) &&
+        !hiddenSet.has(p.slug) &&
+        (!p.status || p.status === 'published')
+    );
 
     if (combinedCustom.length > 0) {
-      const mapped: Product[] = combinedCustom.map((p: any): Product => {
+      // Filter out non-published items from customer view
+      const visibleCustom = combinedCustom.filter(
+        (p) => (!p.status || p.status === 'published') && !hiddenSet.has(p.id) && !hiddenSet.has(p.slug)
+      );
+
+      const mapped: Product[] = visibleCustom.map((p: any): Product => {
         const isAlreadyMapped = Boolean(p.category && p.inStock !== undefined);
-        if (isAlreadyMapped) return p as Product;
+        if (isAlreadyMapped) return { ...p, status: 'published' } as Product;
 
         const cat = (p.category_slug || p.category || 'accessories');
         const catName = p.categoryName || (cat.charAt(0).toUpperCase() + cat.slice(1));
@@ -1767,8 +1792,6 @@ export function getLiveProducts(): Product[] {
             ? p.inStock
             : p.in_stock !== undefined
             ? Boolean(p.in_stock)
-            : p.status
-            ? p.status === 'published'
             : true;
 
         return {
@@ -1784,6 +1807,8 @@ export function getLiveProducts(): Product[] {
           rating: p.rating ?? 4.9,
           reviewsCount: p.reviewsCount ?? p.review_count ?? 12,
           inStock: inStockVal,
+          status: 'published',
+          stock_quantity: Number(p.stock_quantity ?? p.stockQuantity ?? (inStockVal ? 10 : 0)),
           images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
           description: p.description || '',
           features: Array.isArray(p.features) ? p.features : [p.description || ''],
@@ -1792,6 +1817,7 @@ export function getLiveProducts(): Product[] {
           sizes: p.sizes,
         };
       });
+
       const ids = new Set(mapped.map((x: any) => x.id).concat(mapped.map((x: any) => x.slug)));
       const rest = baseFiltered.filter((p) => !ids.has(p.id) && !ids.has(p.slug));
       return [...mapped, ...rest];
@@ -1799,7 +1825,7 @@ export function getLiveProducts(): Product[] {
 
     return baseFiltered;
   } catch {}
-  return PRODUCTS;
+  return PRODUCTS.filter((p) => !p.status || p.status === 'published');
 }
 
 export function getLiveProductBySlug(slug?: string): Product | undefined {
@@ -1818,6 +1844,34 @@ if (typeof window !== 'undefined') {
           const p = event.data.product;
           const idx = stored.findIndex((x: any) => x.id === p.id || x.slug === p.slug);
           if (idx >= 0) stored[idx] = p; else stored.unshift(p);
+          localStorage.setItem('os_custom_products', JSON.stringify(stored));
+        } catch {}
+        window.dispatchEvent(new CustomEvent('os_catalog_updated'));
+      } else if (event.data?.type === 'PRODUCT_STATUS_TOGGLED') {
+        try {
+          const { productId, status, stockQuantity } = event.data;
+          const raw = localStorage.getItem('os_custom_products') || '[]';
+          const stored = JSON.parse(raw);
+          const idx = stored.findIndex((x: any) => x.id === productId || x.slug === productId);
+          if (idx >= 0) {
+            stored[idx].status = status;
+            if (typeof stockQuantity === 'number') {
+              stored[idx].stock_quantity = stockQuantity;
+              stored[idx].inStock = status === 'published' && stockQuantity > 0;
+            } else {
+              stored[idx].inStock = status === 'published';
+            }
+          } else {
+            const orig = PRODUCTS.find((x) => x.id === productId || x.slug === productId);
+            if (orig) {
+              stored.unshift({
+                ...orig,
+                status,
+                stock_quantity: typeof stockQuantity === 'number' ? stockQuantity : 10,
+                inStock: status === 'published' && (typeof stockQuantity === 'number' ? stockQuantity > 0 : true),
+              });
+            }
+          }
           localStorage.setItem('os_custom_products', JSON.stringify(stored));
         } catch {}
         window.dispatchEvent(new CustomEvent('os_catalog_updated'));

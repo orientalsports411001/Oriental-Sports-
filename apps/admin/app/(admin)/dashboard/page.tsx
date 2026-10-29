@@ -5,51 +5,76 @@ import { getCachedProducts, getCachedOrders } from '@/lib/catalog-store';
 
 import { RevenueSplineChart } from '@/components/dashboard/RevenueSplineChart';
 import { MiniCalendarWidget } from '@/components/dashboard/MiniCalendarWidget';
+import { LowStockCard } from '@/components/dashboard/LowStockCard';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
   await requireAdmin();
 
-  let publishedCount = 0;
-  let draftCount = 0;
-  let lowStockRows: any[] = [];
+  let dbProducts: any[] = [];
   let dbOrders: any[] = [];
 
   try {
     const admin = createServiceRoleClient();
     const [
-      resPublished,
-      resDraft,
-      resLowStock,
+      resProducts,
       resOrders,
     ] = await Promise.all([
-      admin.from('products').select('id', { count: 'exact', head: true }).eq('status', 'published'),
-      admin.from('products').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
-      admin.from('products').select('id, name, stock_quantity, low_stock_threshold').order('stock_quantity', { ascending: true }),
+      admin.from('products').select('id, name, slug, stock_quantity, low_stock_threshold, status, price'),
       admin.from('orders').select('id, order_number, status, total_amount, created_at, user_id, shipping_address, customer_name, customer_email, payment_method').order('created_at', { ascending: false }).limit(100),
     ]);
 
-    publishedCount = resPublished.count || 0;
-    draftCount = resDraft.count || 0;
-    lowStockRows = resLowStock.data || [];
+    dbProducts = resProducts.data || [];
     dbOrders = resOrders.data || [];
   } catch (err) {
     // Supabase endpoint fallback
   }
 
-  // Fallback to verified Oriental Sports store records if Supabase has 0 products
-  if (publishedCount === 0) {
-    const cachedProducts = getCachedProducts();
-    publishedCount = cachedProducts.filter((p) => p.status === 'published').length;
-    draftCount = cachedProducts.filter((p) => p.status === 'draft').length;
-    lowStockRows = cachedProducts.map((p) => ({
-      id: p.id,
-      name: p.name,
-      stock_quantity: p.stock_quantity,
-      low_stock_threshold: p.low_stock_threshold,
-    }));
+  // Unified catalog store (all 131 items + Supabase DB overrides)
+  const cachedProducts = getCachedProducts();
+  const productMap = new Map<string, any>();
+  for (const p of cachedProducts) {
+    productMap.set(p.id, p);
+    if (p.slug) productMap.set(p.slug, p);
   }
+
+  for (const p of dbProducts) {
+    const existing = productMap.get(p.id) || (p.slug ? productMap.get(p.slug) : undefined);
+    const merged = existing ? { ...existing, ...p } : p;
+    productMap.set(p.id, merged);
+    if (p.slug) productMap.set(p.slug, merged);
+  }
+
+  const allProducts: any[] = [];
+  const seenKeys = new Set<string>();
+
+  for (const p of dbProducts) {
+    const key = p.id || p.slug;
+    if (key && !seenKeys.has(key)) {
+      seenKeys.add(key);
+      if (p.slug) seenKeys.add(p.slug);
+      if (!cachedProducts.some((c) => c.id === p.id || c.slug === p.slug)) {
+        allProducts.push(productMap.get(p.id) || p);
+      }
+    }
+  }
+
+  for (const c of cachedProducts) {
+    const resolved = productMap.get(c.id) || (c.slug ? productMap.get(c.slug) : c);
+    const key = resolved.id || resolved.slug;
+    if (key && !seenKeys.has(key)) {
+      seenKeys.add(key);
+      if (resolved.slug) seenKeys.add(resolved.slug);
+      allProducts.push(resolved);
+    }
+  }
+
+  const publishedCount = allProducts.filter((p) => p.status === 'published').length;
+  const draftCount = allProducts.filter((p) => p.status === 'draft').length;
+  const lowStock = allProducts
+    .filter((p) => p.stock_quantity <= p.low_stock_threshold)
+    .sort((a, b) => a.stock_quantity - b.stock_quantity);
 
   // Merge live database orders with cached / synced store orders (deduplicate by order_number)
   const cachedOrders = getCachedOrders();
@@ -89,11 +114,6 @@ export default async function DashboardPage() {
   ).length;
 
   const recentOrders = allOrders.slice(0, 6);
-
-  // 3. Filter low-stock items
-  const lowStock = (lowStockRows || []).filter(
-    (p) => p.stock_quantity <= p.low_stock_threshold
-  );
 
   return (
     <div style={{ maxWidth: 1420, margin: '0 auto' }}>
@@ -278,7 +298,7 @@ export default async function DashboardPage() {
             {publishedCount} SKUs
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-            <span>{draftCount} review drafts</span> · <span style={{ color: 'var(--ink)', fontWeight: 600 }}>{lowStock.length} low threshold</span>
+            <span>{draftCount} review drafts</span> · <Link href="/products?filter=low_stock" style={{ color: '#D4F800', fontWeight: 700, textDecoration: 'none' }}>{lowStock.length} low threshold →</Link>
           </div>
         </div>
       </div>
@@ -475,93 +495,8 @@ export default async function DashboardPage() {
           {/* 1. Interactive Mini Calendar Widget */}
           <MiniCalendarWidget />
 
-          {/* 2. Low Stock Warnings Card */}
-          <div
-            className="admin-card"
-            style={{
-              boxShadow: '0 8px 30px -4px rgba(17, 17, 17, 0.04)',
-              minWidth: 0,
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 16,
-              }}
-            >
-              <h3 style={{ margin: 0, fontSize: 14.5, fontWeight: 800 }}>Low Stock Warnings</h3>
-              <span
-                style={{
-                  fontSize: 10.5,
-                  fontWeight: 800,
-                  padding: '2px 8px',
-                  borderRadius: 9999,
-                  background: 'var(--stone)',
-                  color: 'var(--ink)',
-                }}
-              >
-                {lowStock.length} Items
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {lowStock.slice(0, 4).map((p) => (
-                <div
-                  key={p.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 14px',
-                    background: 'var(--stone)',
-                    borderRadius: 16,
-                  }}
-                >
-                  <div style={{ minWidth: 0, flex: 1, paddingRight: 8 }}>
-                    <Link
-                      href={`/products/${p.id}/edit`}
-                      style={{
-                        fontSize: 12.5,
-                        fontWeight: 700,
-                        color: 'var(--ink)',
-                        display: 'block',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {p.name}
-                    </Link>
-                    <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>
-                      Threshold: {p.low_stock_threshold} units
-                    </div>
-                  </div>
-
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <span
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 900,
-                        color: p.stock_quantity === 0 ? 'var(--error)' : 'var(--ink)',
-                      }}
-                    >
-                      {p.stock_quantity} left
-                    </span>
-                    <div>
-                      <Link
-                        href={`/products/${p.id}/edit`}
-                        style={{ fontSize: 11, fontWeight: 700, color: 'var(--ink)' }}
-                      >
-                        Restock →
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* 2. Interactive Low Stock Warnings Card */}
+          <LowStockCard items={lowStock} />
         </div>
       </div>
     </div>

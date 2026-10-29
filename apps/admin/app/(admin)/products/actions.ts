@@ -1,9 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { checkAdmin } from '@/lib/require-admin';
-import { saveProduct, removeProduct } from '@/lib/catalog-store';
+import { saveProduct, removeProduct, getCachedProducts } from '@/lib/catalog-store';
 
 function parseLines(value: string | null): string[] {
   if (!value) return [];
@@ -254,6 +255,7 @@ export async function createProduct(formData: FormData) {
 export async function updateProduct(productId: string, formData: FormData) {
   await ensureAdmin();
   const fields = buildProductPayload(formData);
+  const originalSlug = getLatestNonEmpty(formData, 'originalSlug');
 
   let status = fields.requestedStatus as 'draft' | 'published' | 'archived';
   let publishError: string | null = null;
@@ -300,64 +302,165 @@ export async function updateProduct(productId: string, formData: FormData) {
     const admin = createServiceRoleClient();
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
 
+    let existingId: string | null = null;
+
     if (isUuid) {
+      const { data: byId } = await admin.from('products').select('id').eq('id', productId).maybeSingle();
+      if (byId?.id) existingId = byId.id;
+    }
+
+    if (!existingId && originalSlug) {
+      const { data: byOrigSlug } = await admin.from('products').select('id').eq('slug', originalSlug).maybeSingle();
+      if (byOrigSlug?.id) existingId = byOrigSlug.id;
+    }
+
+    if (!existingId && productId) {
+      const { data: bySlug } = await admin.from('products').select('id').eq('slug', productId).maybeSingle();
+      if (bySlug?.id) existingId = bySlug.id;
+    }
+
+    if (!existingId && fields.slug) {
+      const { data: byFieldSlug } = await admin.from('products').select('id').eq('slug', fields.slug).maybeSingle();
+      if (byFieldSlug?.id) existingId = byFieldSlug.id;
+    }
+
+    if (existingId) {
       const { error } = await admin
         .from('products')
         .update(updatePayload)
-        .eq('id', productId);
+        .eq('id', existingId);
       if (error) throw error;
-      targetEditId = productId;
+      targetEditId = existingId;
     } else {
-      // Non-UUID template product: check if slug exists, then update or upsert
-      const { data: existing } = await admin
+      const insertData: any = {
+        ...updatePayload,
+        slug: fields.slug,
+      };
+      if (isUuid) insertData.id = productId;
+      const { data: inserted, error } = await admin
         .from('products')
-        .select('id, slug')
-        .or(`slug.eq."${productId}",slug.eq."${fields.slug}"`)
-        .maybeSingle();
-
-      if (existing?.id) {
-        const { error } = await admin
-          .from('products')
-          .update(updatePayload)
-          .eq('id', existing.id);
-        if (error) throw error;
-        targetEditId = existing.id;
-      } else {
-        const { data: inserted, error } = await admin
-          .from('products')
-          .insert({
-            ...updatePayload,
-            slug: fields.slug,
-          })
-          .select('id')
-          .single();
-        if (error) throw error;
-        if (inserted?.id) targetEditId = inserted.id;
-      }
+        .insert(insertData)
+        .select('id')
+        .single();
+      if (error) throw error;
+      if (inserted?.id) targetEditId = inserted.id;
     }
   } catch (err) {
     if (isRedirectError(err)) throw err;
     console.warn('[updateProduct] Database update notice:', err);
-    const saved = saveProduct({
-      id: productId,
-      name: fields.name,
-      slug: fields.slug,
-      brand: fields.brand,
-      category_slug: fields.categorySlug,
-      description: fields.description,
-      price: fields.price,
-      compare_at_price: fields.compareAtPrice,
-      images: fields.images,
-      status,
-      stock_quantity: fields.stockQuantity,
-      low_stock_threshold: fields.lowStockThreshold,
-      seo_title: fields.seoTitle,
-      seo_description: fields.seoDescription,
-    });
-    targetEditId = saved.id || fields.slug || productId;
   }
 
+  // Always update in catalog-store as well
+  const saved = saveProduct({
+    id: productId,
+    originalSlug: originalSlug || undefined,
+    name: fields.name,
+    slug: fields.slug,
+    brand: fields.brand,
+    category_slug: fields.categorySlug,
+    description: fields.description,
+    price: fields.price,
+    compare_at_price: fields.compareAtPrice,
+    images: fields.images,
+    status,
+    stock_quantity: fields.stockQuantity,
+    low_stock_threshold: fields.lowStockThreshold,
+    seo_title: fields.seoTitle,
+    seo_description: fields.seoDescription,
+  });
+  targetEditId = targetEditId || saved.id || fields.slug || productId;
+
+  revalidatePath('/products');
+  revalidatePath(`/products/${targetEditId}/edit`);
+
+  if (publishError) {
+    redirect(`/products/${targetEditId}/edit?error=${encodeURIComponent(publishError)}`);
+  }
   redirect(`/products/${targetEditId}/edit?saved=Product+saved+successfully`);
+}
+
+export async function toggleProductVisibility(productId: string, currentStatus: string) {
+  await ensureAdmin();
+
+  const newStatus: 'published' | 'draft' = currentStatus === 'published' ? 'draft' : 'published';
+  const inStock = newStatus === 'published';
+
+  // 1. Update in local catalog-store
+  const cached = getCachedProducts().find((p) => p.id === productId || p.slug === productId);
+  if (cached) {
+    saveProduct({
+      ...cached,
+      status: newStatus,
+    });
+  } else {
+    saveProduct({
+      id: productId,
+      name: productId,
+      status: newStatus,
+    });
+  }
+
+  // 2. Update in Supabase
+  try {
+    const admin = createServiceRoleClient();
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+    const query = isUuid
+      ? admin.from('products').update({ status: newStatus, in_stock: inStock, updated_at: new Date().toISOString() }).eq('id', productId)
+      : admin.from('products').update({ status: newStatus, in_stock: inStock, updated_at: new Date().toISOString() }).eq('slug', productId);
+    await query;
+  } catch (err) {
+    console.warn('[toggleProductVisibility] Supabase update notice:', err);
+  }
+
+  revalidatePath('/products');
+  return { success: true, status: newStatus };
+}
+
+export async function restockProduct(productId: string, newStock: number) {
+  await ensureAdmin();
+
+  const quantity = Math.max(0, Number(newStock) || 0);
+  const status: 'published' | 'draft' = quantity > 0 ? 'published' : 'draft';
+
+  // 1. Update in local catalog-store
+  const cached = getCachedProducts().find((p) => p.id === productId || p.slug === productId);
+  if (cached) {
+    saveProduct({
+      ...cached,
+      stock_quantity: quantity,
+      status: quantity > 0 ? 'published' : cached.status,
+    });
+  } else {
+    saveProduct({
+      id: productId,
+      name: productId,
+      stock_quantity: quantity,
+      status,
+    });
+  }
+
+  // 2. Update in Supabase
+  try {
+    const admin = createServiceRoleClient();
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+    const updateObj: Record<string, any> = {
+      stock_quantity: quantity,
+      in_stock: quantity > 0,
+      updated_at: new Date().toISOString(),
+    };
+    if (quantity > 0) {
+      updateObj.status = 'published';
+    }
+    const query = isUuid
+      ? admin.from('products').update(updateObj).eq('id', productId)
+      : admin.from('products').update(updateObj).eq('slug', productId);
+    await query;
+  } catch (err) {
+    console.warn('[restockProduct] Supabase update notice:', err);
+  }
+
+  revalidatePath('/products');
+  return { success: true, stock_quantity: quantity, status: quantity > 0 ? 'published' : 'draft' };
 }
 
 export async function adjustStock(productId: string, formData: FormData) {

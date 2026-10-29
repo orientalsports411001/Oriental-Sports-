@@ -70,7 +70,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
 
   const handleNameChange = (val: string) => {
     setName(val);
-    if (!initialData) {
+    if (!data) {
       setSlug(
         val
           .toLowerCase()
@@ -142,6 +142,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
 
     const formData = new FormData(e.currentTarget);
     formData.set('productId', data?.id || '');
+    formData.set('originalSlug', data?.slug || '');
     formData.set('name', name || 'Untitled Product');
     formData.set('slug', slug || 'product');
     formData.set('category_slug', categorySlug || 'cricket');
@@ -184,10 +185,30 @@ export function ProductForm({ initialData, product: productProp, categories, act
     if (typeof window !== 'undefined') {
       try {
         const stored = JSON.parse(localStorage.getItem('os_custom_products') || '[]');
-        const idx = stored.findIndex((p: any) => p.id === clientProduct.id || p.slug === clientProduct.slug);
-        if (idx >= 0) stored[idx] = clientProduct;
-        else stored.unshift(clientProduct);
-        localStorage.setItem('os_custom_products', JSON.stringify(stored));
+        const idx = stored.findIndex(
+          (p: any) =>
+            p.id === clientProduct.id ||
+            p.slug === clientProduct.slug ||
+            (data?.id && p.id === data.id) ||
+            (data?.slug && p.slug === data.slug)
+        );
+        if (idx >= 0) {
+          stored[idx] = clientProduct;
+        } else {
+          stored.unshift(clientProduct);
+        }
+        // Deduplicate any repeated entries by id and slug
+        const seenIds = new Set<string>();
+        const seenSlugs = new Set<string>();
+        const deduplicated = stored.filter((p: any) => {
+          if (!p) return false;
+          if (p.id && seenIds.has(p.id)) return false;
+          if (p.slug && seenSlugs.has(p.slug)) return false;
+          if (p.id) seenIds.add(p.id);
+          if (p.slug) seenSlugs.add(p.slug);
+          return true;
+        });
+        localStorage.setItem('os_custom_products', JSON.stringify(deduplicated));
       } catch {}
 
       // Direct client-side Supabase sync
@@ -893,6 +914,8 @@ export function ProductForm({ initialData, product: productProp, categories, act
       </div>
 
       {/* Hidden Fields for Server Action - Guaranteed state across all tabs */}
+      <input type="hidden" name="productId" value={data?.id || ''} />
+      <input type="hidden" name="originalSlug" value={data?.slug || ''} />
       <input type="hidden" name="name" value={name} />
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="category_slug" value={categorySlug} />

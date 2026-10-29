@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { saveProduct } from '@/lib/catalog-store';
+import { createServiceRoleClient } from '@/lib/supabase/server';
 
 function getLatestNonEmpty(formData: FormData, key: string): string {
   const all = formData.getAll(key);
@@ -48,9 +50,11 @@ export async function POST(req: Request) {
     const formData = await req.formData();
 
     const productId = getLatestNonEmpty(formData, 'productId') || getLatestNonEmpty(formData, 'id');
+    const originalSlug = getLatestNonEmpty(formData, 'originalSlug');
     const name = getLatestNonEmpty(formData, 'name') || 'Untitled Product';
     const slug =
       getLatestNonEmpty(formData, 'slug') ||
+      originalSlug ||
       name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') ||
       `prod-${Date.now()}`;
     const categorySlug = getLatestNonEmpty(formData, 'category_slug') || 'cricket';
@@ -68,8 +72,10 @@ export async function POST(req: Request) {
       getLatestNonEmpty(formData, 'seo_description') ||
       (description ? description.slice(0, 160) : `${name} available at Oriental Sports Pune.`);
 
+    // Update in-place in catalog-store (matches by id, originalSlug, or slug)
     const saved = saveProduct({
       id: productId || undefined,
+      originalSlug: originalSlug || undefined,
       name,
       slug,
       brand,
@@ -85,42 +91,82 @@ export async function POST(req: Request) {
       seo_description: seoDescription,
     });
 
-    // Also attempt live Supabase upsert in background if available
+    // In Supabase, if productId is provided, update by id first before attempting slug conflict
     try {
-      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
-      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
-      if (supaUrl && supaKey) {
-        fetch(`${supaUrl}/rest/v1/products?on_conflict=slug`, {
-          method: 'POST',
-          headers: {
-            apikey: supaKey,
-            Authorization: `Bearer ${supaKey}`,
-            'Content-Type': 'application/json',
-            Prefer: 'resolution=merge-duplicates',
-          },
-          body: JSON.stringify({
-            name: saved.name,
-            slug: saved.slug,
-            category_slug: saved.category_slug,
-            brand: saved.brand,
-            description: saved.description,
-            price: saved.price,
-            compare_at_price: saved.compare_at_price,
-            images: saved.images,
-            in_stock: saved.status === 'published' && (saved.stock_quantity ?? 1) > 0,
-            metadata: {
-              status: saved.status,
-              stock_quantity: saved.stock_quantity,
-              low_stock_threshold: saved.low_stock_threshold,
-              seo_title: saved.seo_title,
-              seo_description: saved.seo_description,
-            },
-          }),
-        }).catch(() => {});
+      const admin = createServiceRoleClient();
+      const isUuid = productId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+
+      const supaPayload = {
+        name: saved.name,
+        slug: saved.slug,
+        category_slug: saved.category_slug,
+        brand: saved.brand,
+        description: saved.description,
+        price: saved.price,
+        compare_at_price: saved.compare_at_price,
+        images: saved.images,
+        in_stock: saved.status === 'published' && (saved.stock_quantity ?? 1) > 0,
+        metadata: {
+          status: saved.status,
+          stock_quantity: saved.stock_quantity,
+          low_stock_threshold: saved.low_stock_threshold,
+          seo_title: saved.seo_title,
+          seo_description: saved.seo_description,
+        },
+        updated_at: new Date().toISOString(),
+      };
+
+      let updated = false;
+      if (isUuid) {
+        const { error, data } = await admin
+          .from('products')
+          .update(supaPayload)
+          .eq('id', productId)
+          .select('id');
+        if (!error && data && data.length > 0) {
+          updated = true;
+        }
       }
-    } catch {}
+      if (!updated && (originalSlug || productId)) {
+        const matchSlug = originalSlug || productId;
+        const { error, data } = await admin
+          .from('products')
+          .update(supaPayload)
+          .eq('slug', matchSlug)
+          .select('id');
+        if (!error && data && data.length > 0) {
+          updated = true;
+        }
+      }
+      if (!updated && saved.slug) {
+        const { error, data } = await admin
+          .from('products')
+          .update(supaPayload)
+          .eq('slug', saved.slug)
+          .select('id');
+        if (!error && data && data.length > 0) {
+          updated = true;
+        }
+      }
+      if (!updated) {
+        await admin.from('products').upsert(
+          {
+            ...supaPayload,
+            ...(isUuid ? { id: productId } : {}),
+          },
+          { onConflict: 'slug' }
+        );
+      }
+    } catch (e) {
+      // Supabase update notice / fallback
+    }
 
     const targetId = saved.id || saved.slug || slug;
+    try {
+      revalidatePath('/products');
+      revalidatePath(`/products/${targetId}/edit`);
+    } catch {}
+
     return NextResponse.json({
       success: true,
       product: saved,

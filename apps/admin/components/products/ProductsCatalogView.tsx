@@ -48,9 +48,11 @@ export function ProductsCatalogView({
   const searchParams = useSearchParams();
 
   const [customProducts, setCustomProducts] = useState<ProductItem[]>([]);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || '');
+  const [showOnlyLowStock, setShowOnlyLowStock] = useState(searchParams.get('filter') === 'low_stock');
 
   // Load custom products from localStorage
   const loadCustomProducts = () => {
@@ -137,6 +139,9 @@ export function ProductsCatalogView({
   const filteredProducts = useMemo(() => {
     let list = allMergedProducts;
 
+    if (showOnlyLowStock) {
+      list = list.filter((p) => p.stock_quantity <= p.low_stock_threshold);
+    }
     if (selectedCategory) {
       list = list.filter((p) => p.category_slug === selectedCategory);
     }
@@ -154,14 +159,15 @@ export function ProductsCatalogView({
     }
 
     return list;
-  }, [allMergedProducts, selectedCategory, selectedStatus, searchTerm]);
+  }, [allMergedProducts, showOnlyLowStock, selectedCategory, selectedStatus, searchTerm]);
 
   // Update URL params smoothly
-  const updateUrl = (category: string, status: string, q: string) => {
+  const updateUrl = (category: string, status: string, q: string, lowStock: boolean) => {
     const params = new URLSearchParams();
     if (category) params.set('category', category);
     if (status) params.set('status', status);
     if (q) params.set('q', q);
+    if (lowStock) params.set('filter', 'low_stock');
     const newSearch = params.toString();
     const newUrl = `/products${newSearch ? `?${newSearch}` : ''}`;
     window.history.replaceState(null, '', newUrl);
@@ -170,17 +176,23 @@ export function ProductsCatalogView({
   const handleCategorySelect = (catSlug: string) => {
     const next = selectedCategory === catSlug ? '' : catSlug;
     setSelectedCategory(next);
-    updateUrl(next, selectedStatus, searchTerm);
+    updateUrl(next, selectedStatus, searchTerm, showOnlyLowStock);
   };
 
   const handleStatusSelect = (stat: string) => {
     setSelectedStatus(stat);
-    updateUrl(selectedCategory, stat, searchTerm);
+    updateUrl(selectedCategory, stat, searchTerm, showOnlyLowStock);
   };
 
   const handleSearchChange = (val: string) => {
     setSearchTerm(val);
-    updateUrl(selectedCategory, selectedStatus, val);
+    updateUrl(selectedCategory, selectedStatus, val, showOnlyLowStock);
+  };
+
+  const toggleLowStockFilter = () => {
+    const next = !showOnlyLowStock;
+    setShowOnlyLowStock(next);
+    updateUrl(selectedCategory, selectedStatus, searchTerm, next);
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -231,6 +243,103 @@ export function ProductsCatalogView({
     try {
       await deleteAction(id);
     } catch {}
+  };
+
+  const handleSetVisibilityAndStock = async (
+    productId: string,
+    targetStatus: 'published' | 'draft' | 'archived',
+    newStock?: number
+  ) => {
+    if (togglingId) return;
+    setTogglingId(productId);
+
+    // 1. Optimistic update in customProducts state
+    setCustomProducts((prev) => {
+      const idx = prev.findIndex((p) => p.id === productId || p.slug === productId);
+      if (idx >= 0) {
+        const copy = [...prev];
+        copy[idx] = {
+          ...copy[idx],
+          status: targetStatus,
+          ...(newStock !== undefined ? { stock_quantity: newStock } : {}),
+        };
+        return copy;
+      }
+      const original = initialProducts.find((p) => p.id === productId || p.slug === productId);
+      if (original) {
+        return [
+          {
+            ...original,
+            status: targetStatus,
+            ...(newStock !== undefined ? { stock_quantity: newStock } : {}),
+            isCustom: true,
+          },
+          ...prev,
+        ];
+      }
+      return prev;
+    });
+
+    // 2. Persist to localStorage
+    try {
+      const raw = localStorage.getItem('os_custom_products');
+      const list = raw ? JSON.parse(raw) : [];
+      const idx = list.findIndex((p: any) => p.id === productId || p.slug === productId);
+      if (idx >= 0) {
+        list[idx].status = targetStatus;
+        if (newStock !== undefined) list[idx].stock_quantity = newStock;
+      } else {
+        const orig = initialProducts.find((p) => p.id === productId || p.slug === productId);
+        if (orig) {
+          list.unshift({
+            ...orig,
+            status: targetStatus,
+            ...(newStock !== undefined ? { stock_quantity: newStock } : {}),
+          });
+        }
+      }
+      localStorage.setItem('os_custom_products', JSON.stringify(list));
+    } catch {}
+
+    // 3. Broadcast update to other tabs & storefront
+    try {
+      const bc = new BroadcastChannel('oriental_sports_catalog');
+      bc.postMessage({
+        type: 'PRODUCT_STATUS_TOGGLED',
+        productId,
+        status: targetStatus,
+        stockQuantity: newStock,
+      });
+      bc.close();
+    } catch {}
+
+    // 4. Send to server API
+    try {
+      await fetch('/api/products/toggle-visibility', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId,
+          status: targetStatus,
+          stockQuantity: newStock,
+        }),
+      });
+    } catch {}
+
+    setTogglingId(null);
+  };
+
+  const handleToggleVisibility = async (productId: string, currentStatus: string) => {
+    const nextStatus = currentStatus === 'published' ? 'draft' : 'published';
+    await handleSetVisibilityAndStock(productId, nextStatus);
+  };
+
+  const handleRestockAndShow = async (productId: string) => {
+    const promptVal = window.prompt('Enter restock quantity units to make product live:', '10');
+    if (promptVal === null) return;
+    const parsed = parseInt(promptVal, 10);
+    const validQty = isNaN(parsed) || parsed <= 0 ? 10 : parsed;
+    await handleSetVisibilityAndStock(productId, 'published', validQty);
   };
 
   return (
@@ -285,22 +394,33 @@ export function ProductsCatalogView({
         </div>
 
         <div
+          onClick={toggleLowStockFilter}
+          title="Click to toggle Low Stock filter"
           style={{
             padding: '20px 24px',
-            background: 'var(--paper)',
+            background: showOnlyLowStock ? 'rgba(212, 248, 0, 0.08)' : 'var(--paper)',
             borderRadius: 20,
-            border: '1px solid var(--line)',
-            boxShadow: '0 8px 24px -2px rgba(0, 0, 0, 0.35)',
+            border: showOnlyLowStock ? '1px solid #D4F800' : '1px solid var(--line)',
+            boxShadow: showOnlyLowStock ? '0 0 20px rgba(212, 248, 0, 0.2)' : '0 8px 24px -2px rgba(0, 0, 0, 0.35)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.08em', marginBottom: 8 }}>
-            Low Stock
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: showOnlyLowStock ? '#D4F800' : 'var(--subtle)', letterSpacing: '0.08em' }}>
+              Low Stock
+            </div>
+            {showOnlyLowStock && (
+              <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 9999, background: '#D4F800', color: '#111' }}>
+                FILTER ACTIVE
+              </span>
+            )}
           </div>
           <div style={{ fontSize: 26, fontWeight: 700, color: lowStockCount > 0 ? '#D4F800' : 'var(--ink-heading)', letterSpacing: '-0.015em', lineHeight: 1.15, marginBottom: 4 }}>
             {lowStockCount} Products
           </div>
-          <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-            Below reorder threshold
+          <div style={{ fontSize: 12, color: showOnlyLowStock ? 'var(--ink)' : 'var(--muted)' }}>
+            {showOnlyLowStock ? 'Showing low stock items only (Click to clear)' : 'Below reorder threshold (Click to filter)'}
           </div>
         </div>
 
@@ -386,7 +506,7 @@ export function ProductsCatalogView({
           })}
         </div>
 
-        {/* Search & Status Filters */}
+        {/* Search, Low Stock Pill & Status Filters */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 260px', position: 'relative' }}>
             <input
@@ -406,6 +526,31 @@ export function ProductsCatalogView({
               }}
             />
           </div>
+
+          {/* Dedicated Low Stock Filter Button/Pill */}
+          <button
+            type="button"
+            onClick={toggleLowStockFilter}
+            style={{
+              padding: '10px 16px',
+              borderRadius: 12,
+              border: showOnlyLowStock ? '1px solid #D4F800' : '1px solid var(--line)',
+              background: showOnlyLowStock ? '#D4F800' : 'rgba(255, 255, 255, 0.04)',
+              color: showOnlyLowStock ? '#111111' : 'var(--ink)',
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              transition: 'all 0.15s ease',
+              whiteSpace: 'nowrap',
+              boxShadow: showOnlyLowStock ? '0 2px 14px rgba(212, 248, 0, 0.35)' : 'none',
+            }}
+          >
+            <span>Low Stock ({lowStockCount})</span>
+            {showOnlyLowStock && <span style={{ fontSize: 11, opacity: 0.8 }}>✕</span>}
+          </button>
 
           <select
             value={selectedStatus}
@@ -508,19 +653,41 @@ export function ProductsCatalogView({
                         {p.category_slug || 'General'}
                       </td>
 
-                      {/* Status Pill */}
+                      {/* Status Badge */}
                       <td style={{ padding: '16px 20px' }}>
                         <span
                           className={`badge ${p.status}`}
                           style={{
                             fontSize: 11,
-                            padding: '3px 9px',
+                            padding: '4px 10px',
                             borderRadius: 9999,
-                            fontWeight: 700,
-                            textTransform: 'capitalize',
+                            fontWeight: 800,
+                            letterSpacing: '0.04em',
+                            textTransform: 'uppercase',
+                            background:
+                              p.status === 'published'
+                                ? 'rgba(34, 197, 94, 0.15)'
+                                : p.status === 'draft'
+                                ? 'rgba(255, 255, 255, 0.08)'
+                                : 'rgba(239, 68, 68, 0.15)',
+                            color:
+                              p.status === 'published'
+                                ? 'var(--success)'
+                                : p.status === 'draft'
+                                ? 'var(--muted)'
+                                : 'var(--error)',
+                            border:
+                              p.status === 'published'
+                                ? '1px solid rgba(34, 197, 94, 0.3)'
+                                : p.status === 'draft'
+                                ? '1px solid rgba(255, 255, 255, 0.14)'
+                                : '1px solid rgba(239, 68, 68, 0.3)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
                           }}
                         >
-                          {p.status}
+                          {p.status === 'published' ? '● Published' : p.status === 'draft' ? '○ Hidden' : 'Archived'}
                         </span>
                       </td>
 
@@ -542,33 +709,141 @@ export function ProductsCatalogView({
                           style={{
                             fontSize: 13,
                             fontWeight: 700,
-                            color: isOut ? 'var(--error)' : isLow ? 'var(--gold-ink)' : 'var(--ink)',
+                            color: isOut ? 'var(--error)' : isLow ? '#D4F800' : 'var(--ink)',
                           }}
                         >
                           {p.stock_quantity} in stock
                         </div>
                         {isLow && !isOut && (
-                          <div style={{ fontSize: 11, color: 'var(--gold-ink)' }}>
+                          <div style={{ fontSize: 11, color: '#D4F800', fontWeight: 600 }}>
                             Low threshold ({p.low_stock_threshold})
                           </div>
                         )}
                         {isOut && (
-                          <div style={{ fontSize: 11, color: 'var(--error)' }}>
+                          <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 700 }}>
                             Out of stock
                           </div>
                         )}
                       </td>
 
-                      {/* Actions */}
+                      {/* Actions with 1-Click Show/Hide and Restock */}
                       <td style={{ textAlign: 'right', padding: '16px 20px' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12 }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 8 }}>
+                          {/* Out of Stock Quick Actions */}
+                          {isOut && p.status === 'published' && (
+                            <button
+                              type="button"
+                              onClick={() => handleSetVisibilityAndStock(p.id, 'draft')}
+                              disabled={togglingId === p.id}
+                              title="Hide out-of-stock item from customer storefront"
+                              style={{
+                                fontSize: 11,
+                                fontWeight: 700,
+                                padding: '4px 9px',
+                                borderRadius: 8,
+                                background: 'rgba(239, 68, 68, 0.12)',
+                                color: '#FF6B6B',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              Hide Out of Stock
+                            </button>
+                          )}
+
+                          {isOut && (p.status === 'draft' || p.status === 'archived') && (
+                            <button
+                              type="button"
+                              onClick={() => handleRestockAndShow(p.id)}
+                              disabled={togglingId === p.id}
+                              title="Restock units and make live on storefront"
+                              style={{
+                                fontSize: 11,
+                                fontWeight: 700,
+                                padding: '4px 9px',
+                                borderRadius: 8,
+                                background: 'rgba(212, 248, 0, 0.12)',
+                                color: '#D4F800',
+                                border: '1px solid rgba(212, 248, 0, 0.35)',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              + Restock & Show
+                            </button>
+                          )}
+
+                          {/* 1-Click Show / Hide Button */}
+                          {p.status === 'published' ? (
+                            <button
+                              type="button"
+                              onClick={() => handleToggleVisibility(p.id, p.status)}
+                              disabled={togglingId === p.id}
+                              title="Hide product from storefront"
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                padding: '5px 11px',
+                                fontSize: 12,
+                                fontWeight: 600,
+                                borderRadius: 8,
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                color: 'var(--muted)',
+                                border: '1px solid rgba(255, 255, 255, 0.12)',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                              </svg>
+                              Hide
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleToggleVisibility(p.id, p.status)}
+                              disabled={togglingId === p.id}
+                              title="Publish and make visible on customer storefront"
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                padding: '5px 11px',
+                                fontSize: 12,
+                                fontWeight: 700,
+                                borderRadius: 8,
+                                background: 'rgba(34, 197, 94, 0.12)',
+                                color: 'var(--success)',
+                                border: '1px solid rgba(34, 197, 94, 0.3)',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                              </svg>
+                              Show
+                            </button>
+                          )}
+
                           <Link
                             href={`/products/${p.id}/edit`}
                             style={{
-                              fontSize: 12.5,
+                              fontSize: 12,
                               fontWeight: 700,
                               color: 'var(--ink)',
                               textDecoration: 'none',
+                              padding: '5px 10px',
+                              borderRadius: 8,
+                              background: 'rgba(255, 255, 255, 0.04)',
+                              border: '1px solid var(--line)',
                             }}
                           >
                             Edit
