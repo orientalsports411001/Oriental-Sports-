@@ -28,6 +28,8 @@ interface AuthContextType {
   setDefaultAddress: (id: string) => Promise<void>;
   getOrderById: (orderId: string) => Order | undefined;
   addOrder: (order: Order) => Promise<Order>;
+  syncOrders: (userIdOrPhone?: string) => Promise<Order[]>;
+  isSyncingOrders: boolean;
   returnToUrl: string | null;
 }
 
@@ -41,6 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [pendingPhone, setPendingPhone] = useState<string>('');
   const [devOtpCode, setDevOtpCode] = useState<string | null>(null);
   const [returnToUrl, setReturnToUrl] = useState<string | null>(null);
+  const [isSyncingOrders, setIsSyncingOrders] = useState<boolean>(false);
   const isSupabaseLive = isSupabaseConfigured();
 
   useEffect(() => {
@@ -58,6 +61,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     });
 
+    // 3. Listen to orders sync events across tabs / background syncs
+    const handleOrdersUpdated = () => {
+      const current = AuthService.getCurrentUser();
+      if (current) {
+        setUser({ ...current });
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('oriental_orders_updated', handleOrdersUpdated);
+    }
+
     // Fallback safety timeout so UI never hangs in loading state
     const timeout = setTimeout(() => {
       setIsLoading(false);
@@ -66,6 +80,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       clearTimeout(timeout);
       unsubscribe();
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('oriental_orders_updated', handleOrdersUpdated);
+      }
     };
   }, []);
 
@@ -194,6 +211,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved;
   };
 
+  const syncOrders = async (userIdOrPhone?: string): Promise<Order[]> => {
+    setIsSyncingOrders(true);
+    try {
+      const orders = await AuthService.syncUserOrdersFromRemote(userIdOrPhone);
+      const currentUser = AuthService.getCurrentUser();
+      if (currentUser) {
+        setUser({ ...currentUser });
+      }
+      return orders;
+    } finally {
+      setIsSyncingOrders(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -221,6 +252,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setDefaultAddress,
         getOrderById,
         addOrder,
+        syncOrders,
+        isSyncingOrders,
         returnToUrl,
       }}
     >

@@ -64,7 +64,14 @@ export default async function OrderDetailPage({
   }
 
   const allowedNext = ALLOWED_ORDER_TRANSITIONS[order.status] || [];
-  const trackableStatuses = ['processing', 'shipped', 'delivered'];
+  const trackableStatuses = [
+    'confirmed',
+    'processing',
+    'shipped',
+    'in_transit',
+    'ready_for_pickup',
+    'delivered',
+  ];
   const canEditTracking = trackableStatuses.includes(order.status);
 
   const boundChangeStatus = changeOrderStatus.bind(null, order.id);

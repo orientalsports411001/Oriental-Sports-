@@ -1,5 +1,6 @@
 import React from 'react';
 import { FALLBACK_IMAGE, MediaImage } from '../../data/media';
+import { getOptimizedImageUrl, generateSrcSet, isCloudinaryUrl } from '../../lib/cloudinary';
 
 interface ImgProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   image: MediaImage | string;
@@ -10,7 +11,7 @@ interface ImgProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'
 }
 
 /**
- * Responsive image with focal point, lazy loading and a local fallback.
+ * Responsive image with focal point, lazy loading, Cloudinary auto-scaling, and a local fallback.
  * Always fills its parent (object-fit: cover) — size the wrapper, not the img.
  */
 export const Img: React.FC<ImgProps> = ({
@@ -25,11 +26,20 @@ export const Img: React.FC<ImgProps> = ({
 }) => {
   const media: MediaImage = typeof image === 'string' ? { src: image, alt: alt ?? '' } : image;
 
+  const isCloudinary = isCloudinaryUrl(media.src);
+
+  // If Cloudinary URL and no custom srcSet is provided, generate responsive auto-scaling srcset
+  const resolvedSrc = isCloudinary && !media.srcSet
+    ? getOptimizedImageUrl(media.src, { width: priority ? 1200 : 800 })
+    : media.src;
+
+  const resolvedSrcSet = media.srcSet || (isCloudinary ? generateSrcSet(media.src) : undefined);
+
   return (
     <img
-      src={media.src}
-      srcSet={media.srcSet}
-      sizes={media.srcSet ? sizes : undefined}
+      src={resolvedSrc}
+      srcSet={resolvedSrcSet}
+      sizes={resolvedSrcSet ? sizes : undefined}
       alt={alt ?? media.alt}
       loading={priority ? 'eager' : 'lazy'}
       decoding={priority ? 'sync' : 'async'}

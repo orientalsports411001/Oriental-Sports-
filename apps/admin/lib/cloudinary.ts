@@ -23,6 +23,14 @@ export type CloudinaryConfig = {
   apiSecret: string;
 };
 
+export function isCloudinaryConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET
+  );
+}
+
 export function getCloudinaryConfig(): CloudinaryConfig {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
@@ -90,6 +98,10 @@ export function buildUploadSignature() {
  * existing local `/images/...` paths.
  */
 export async function destroyCloudinaryAsset(publicId: string): Promise<{ ok: boolean; error?: string }> {
+  if (!isCloudinaryConfigured()) {
+    return { ok: false, error: 'Cloudinary is not configured. Asset could not be removed from cloud.' };
+  }
+
   const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
   const timestamp = Math.floor(Date.now() / 1000);
   const paramsToSign: Record<string, string | number> = { public_id: publicId, timestamp };

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { deleteCloudinaryAssetAction } from '@/app/(admin)/products/cloudinary-actions';
+import { getOptimizedImageUrl } from '@/lib/cloudinary-url';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
 const MAX_IMAGES = 5;
@@ -41,7 +42,30 @@ export function ImageGallery({
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [limitNotice, setLimitNotice] = useState<string | null>(null);
   const [manualUrl, setManualUrl] = useState('');
+  const [cloudinaryStatus, setCloudinaryStatus] = useState<{
+    configured?: boolean;
+    cloudName?: string | null;
+    missing?: string[];
+  } | null>(null);
+  const [showCloudinaryGuide, setShowCloudinaryGuide] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    fetch(`${basePath}/api/cloudinary/sign`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) {
+          setCloudinaryStatus(data);
+        }
+      })
+      .catch(() => {
+        setCloudinaryStatus({
+          configured: false,
+          missing: ['NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'],
+        });
+      });
+  }, []);
 
   const imagesRef = useRef(images);
   useEffect(() => {
@@ -243,6 +267,126 @@ export function ImageGallery({
 
   return (
     <div>
+      {/* Cloudinary Status & Config Helper Banner */}
+      {cloudinaryStatus && !cloudinaryStatus.configured && (
+        <div
+          style={{
+            marginBottom: 20,
+            padding: '16px 20px',
+            borderRadius: 14,
+            background: 'rgba(234, 179, 8, 0.08)',
+            border: '1px solid rgba(234, 179, 8, 0.28)',
+            color: 'var(--ink)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 18 }}>⚡</span>
+              <div>
+                <strong style={{ fontSize: 13.5, color: '#B45309' }}>
+                  Cloudinary Auto-Scaling: Not Configured (Local Fallback Active)
+                </strong>
+                <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--subtle)' }}>
+                  Uploads currently fallback to local storage. Configure Cloudinary for automatic WebP/AVIF compression and responsive scaling across screen sizes.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowCloudinaryGuide((prev) => !prev)}
+              style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#B45309',
+                background: 'rgba(234, 179, 8, 0.15)',
+                border: '1px solid rgba(234, 179, 8, 0.35)',
+                borderRadius: 8,
+                padding: '6px 12px',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {showCloudinaryGuide ? 'Hide Setup Guide ▲' : 'Setup Guide ▼'}
+            </button>
+          </div>
+
+          {showCloudinaryGuide && (
+            <div
+              style={{
+                marginTop: 14,
+                paddingTop: 14,
+                borderTop: '1px solid rgba(234, 179, 8, 0.2)',
+                fontSize: 12,
+                lineHeight: 1.6,
+                color: 'var(--ink)',
+              }}
+            >
+              <p style={{ margin: '0 0 8px', fontWeight: 700 }}>
+                To connect Cloudinary in 3 quick steps:
+              </p>
+              <ol style={{ margin: '0 0 10px', paddingLeft: 20 }}>
+                <li>
+                  Sign in or create a free account at{' '}
+                  <a
+                    href="https://console.cloudinary.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ color: '#B45309', textDecoration: 'underline' }}
+                  >
+                    console.cloudinary.com
+                  </a>
+                </li>
+                <li>Go to <strong>Settings → Access Keys</strong> and copy your credentials.</li>
+                <li>Add the following 3 variables to <code>apps/admin/.env.local</code>:</li>
+              </ol>
+              <pre
+                style={{
+                  background: 'rgba(0, 0, 0, 0.05)',
+                  padding: '10px 14px',
+                  borderRadius: 8,
+                  fontFamily: 'monospace',
+                  fontSize: 11.5,
+                  overflowX: 'auto',
+                  margin: '0 0 10px',
+                }}
+              >
+{`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret`}
+              </pre>
+              <p style={{ margin: 0, fontSize: 11.5, color: 'var(--subtle)' }}>
+                Missing right now:{' '}
+                <strong>{cloudinaryStatus.missing?.join(', ') || 'credentials'}</strong>. Restart the server once updated.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {cloudinaryStatus && cloudinaryStatus.configured && (
+        <div
+          style={{
+            marginBottom: 20,
+            padding: '10px 16px',
+            borderRadius: 12,
+            background: 'rgba(34, 197, 94, 0.08)',
+            border: '1px solid rgba(34, 197, 94, 0.25)',
+            color: '#15803D',
+            fontSize: 12.5,
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <span>✓</span>
+          <span>
+            <strong>Cloudinary Connected:</strong> Direct signed uploads and automatic multi-screen scaling active (
+            <code>{cloudinaryStatus.cloudName}</code>).
+          </span>
+        </div>
+      )}
+
       {/* Tactile Dropzone */}
       <motion.div
         whileHover={{ scale: isMaxReached ? 1 : 1.006, borderColor: isMaxReached ? 'rgba(17,17,17,0.14)' : 'var(--ink)' }}
@@ -500,7 +644,7 @@ export function ImageGallery({
                   <div style={{ position: 'relative', height: 130, background: 'var(--stone)' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={resolveImageUrl(img.url)}
+                      src={getOptimizedImageUrl(resolveImageUrl(img.url), { width: 400, quality: 'auto' })}
                       alt=""
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       onError={(e) => {

@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { saveAdminOrder, getCachedOrders, AdminOrder } from '@/lib/catalog-store';
+import { sendOrderStatusEmail } from '@/lib/email';
+
+export const dynamic = 'force-dynamic';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -73,6 +76,14 @@ export async function POST(req: Request) {
       },
       items: body.items || [],
       created_at: body.created_at || new Date().toISOString(),
+    });
+
+    // Send order confirmation / placement email notification (non-blocking)
+    sendOrderStatusEmail({
+      order: saved,
+      stage: saved.status || 'confirmed',
+    }).catch((err) => {
+      console.warn('[Sync Route] Error sending order confirmation email:', err);
     });
 
     // Also attempt Supabase upsert in background if available

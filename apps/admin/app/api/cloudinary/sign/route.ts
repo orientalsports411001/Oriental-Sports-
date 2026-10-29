@@ -1,6 +1,32 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { buildUploadSignature } from '@/lib/cloudinary';
+import { buildUploadSignature, isCloudinaryConfigured } from '@/lib/cloudinary';
+
+/**
+ * Checks Cloudinary configuration status so the admin UI can display
+ * informative setup guidance or status indicator.
+ */
+export async function GET() {
+  await requireAdmin();
+
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || null;
+  const hasApiKey = Boolean(process.env.CLOUDINARY_API_KEY);
+  const hasApiSecret = Boolean(process.env.CLOUDINARY_API_SECRET);
+  const configured = isCloudinaryConfigured();
+
+  const missing: string[] = [];
+  if (!cloudName) missing.push('NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME');
+  if (!hasApiKey) missing.push('CLOUDINARY_API_KEY');
+  if (!hasApiSecret) missing.push('CLOUDINARY_API_SECRET');
+
+  return NextResponse.json({
+    configured,
+    cloudName,
+    hasApiKey,
+    hasApiSecret,
+    missing,
+  });
+}
 
 /**
  * Signs an upload request so the browser can POST the file bytes directly to

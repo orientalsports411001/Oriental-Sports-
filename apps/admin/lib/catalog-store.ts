@@ -27,7 +27,18 @@ export interface AdminOrder {
   customer_name: string;
   customer_email: string;
   customer_phone: string;
-  status: 'pending' | 'paid' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status:
+    | 'pending'
+    | 'paid'
+    | 'confirmed'
+    | 'processing'
+    | 'shipped'
+    | 'in_transit'
+    | 'ready_for_pickup'
+    | 'delivered'
+    | 'cancelled'
+    | 'failed'
+    | string;
   total_amount: number;
   subtotal: number;
   shipping: number;

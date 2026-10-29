@@ -24,6 +24,7 @@ import {
   Check,
   Camera,
   Mail,
+  RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -58,6 +59,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     updateAddress,
     deleteAddress,
     setDefaultAddress,
+    syncOrders,
+    isSyncingOrders,
   } = useAuth();
 
   const { wishlist } = useWishlist();
@@ -77,6 +80,30 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
       }
     }
   }, [tab, isAuthenticated, openAuthModal]);
+
+  // Synchronize orders with admin API on mount and on tab changes, plus 30s background polling
+  React.useEffect(() => {
+    let intervalId: any = null;
+
+    const doSync = async () => {
+      try {
+        await syncOrders();
+      } catch (err) {
+        console.warn('Orders sync notice:', err);
+      }
+    };
+
+    // Run sync when viewing orders or overview
+    if (activeTab === 'orders' || activeTab === 'overview') {
+      doSync();
+      // 30s background poll so changes made by admin appear in real-time
+      intervalId = setInterval(doSync, 30000);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [activeTab, syncOrders]);
 
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -341,11 +368,41 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
         <div>
-          <h2 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
-            Orders & Deliveries ({user.orders.length})
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <h2 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+              Orders & Deliveries ({user.orders.length})
+            </h2>
+            <button
+              type="button"
+              onClick={() => syncOrders()}
+              disabled={isSyncingOrders}
+              title="Sync latest order status directly from Oriental Sports Camp workshop"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                borderRadius: '6px',
+                padding: '4px 10px',
+                color: '#E5E7EB',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: isSyncingOrders ? 'wait' : 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <RefreshCw
+                size={12}
+                style={{
+                  animation: isSyncingOrders ? 'spin 0.9s linear infinite' : 'none',
+                }}
+              />
+              <span>{isSyncingOrders ? 'Syncing...' : 'Sync with Admin'}</span>
+            </button>
+          </div>
           <span style={{ fontSize: '0.8125rem', color: '#9CA3AF' }}>
-            Equipment dispatches and walk-in racket restringing tickets
+            Equipment dispatches, Camp store collections, and workshop stringing tickets
           </span>
         </div>
 

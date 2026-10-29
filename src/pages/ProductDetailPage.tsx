@@ -8,9 +8,17 @@ import { StickyBuyBar } from '../components/products/StickyBuyBar';
 import { ProductCard } from '../components/products/ProductCard';
 import { Img } from '../components/ui/Img';
 import { STORE_INFO } from '../data/storeInfo';
+import { isCloudinaryUrl, getOptimizedImageUrl, generateSrcSet } from '../lib/cloudinary';
 
-/** Studio shots have a -sm.webp twin; remote images use the CDN width param. */
+/** Studio shots have a -sm.webp twin; Cloudinary shots get auto-scaled srcset. */
 const galleryImage = (src: string, alt: string) => {
+  if (isCloudinaryUrl(src)) {
+    return {
+      src: getOptimizedImageUrl(src, { width: 1400 }),
+      srcSet: generateSrcSet(src),
+      alt,
+    };
+  }
   if (src.startsWith('/images/') && src.endsWith('.webp')) {
     return { src, srcSet: `${src.replace(/\.webp$/, '-sm.webp')} 560w, ${src} 1024w`, alt };
   }

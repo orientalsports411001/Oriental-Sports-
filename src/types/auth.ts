@@ -2,6 +2,7 @@ export interface Address {
   id: string;
   name: string;
   phone: string;
+  email?: string;
   street: string;
   locality: string;
   city: string;
@@ -26,7 +27,9 @@ export type OrderStatus =
   | 'confirmed'
   | 'processing'
   | 'shipped'
+  | 'in_transit'
   | 'out_for_delivery'
+  | 'ready_for_pickup'
   | 'delivered'
   | 'cancelled';
 
@@ -43,6 +46,8 @@ export interface Order {
   id: string;
   orderNumber: string;
   date: string;
+  customerEmail?: string;
+  customerName?: string;
   status: OrderStatus;
   statusLabel: string;
   totalAmount: number;
@@ -52,9 +57,11 @@ export interface Order {
   paymentMethod: string;
   items: OrderItem[];
   shippingAddress: Address;
+  deliveryMethod?: 'doorstep' | 'camp_pickup' | string;
   trackingNumber?: string;
   carrier?: string;
   estimatedDelivery?: string;
+  updatedAt?: string;
   timeline: TrackingStep[];
 }
 
@@ -95,3 +102,6 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+
+export { generateOrderTimeline, normalizeOrderStatus, getOrderStatusLabel } from '../utils/orderTimeline';
+

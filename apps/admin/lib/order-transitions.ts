@@ -6,10 +6,12 @@
  */
 export const ALLOWED_ORDER_TRANSITIONS: Record<string, string[]> = {
   pending: ['paid', 'confirmed', 'failed'],
-  paid: ['processing', 'shipped', 'cancelled'],
-  confirmed: ['processing', 'shipped', 'cancelled'],
-  processing: ['shipped', 'delivered', 'cancelled'],
-  shipped: ['delivered'],
+  paid: ['processing', 'shipped', 'ready_for_pickup', 'cancelled'],
+  confirmed: ['processing', 'shipped', 'ready_for_pickup', 'cancelled'],
+  processing: ['shipped', 'in_transit', 'ready_for_pickup', 'delivered', 'cancelled'],
+  shipped: ['in_transit', 'delivered'],
+  in_transit: ['delivered'],
+  ready_for_pickup: ['delivered'],
   delivered: [],
   cancelled: [],
   failed: [],

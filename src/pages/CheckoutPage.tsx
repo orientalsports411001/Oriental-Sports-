@@ -31,6 +31,7 @@ import {
   isLiveRazorpayKey,
   RazorpayOptions,
 } from '../services/razorpay';
+import { sendOrderEmailNotification } from '../services/emailNotification';
 
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
@@ -117,6 +118,8 @@ export const CheckoutPage: React.FC = () => {
     const newOrder: Order = {
       id: orderUuid,
       orderNumber: orderNum,
+      customerEmail: form.email,
+      customerName: `${form.firstName} ${form.lastName}`.trim(),
       date: new Date().toISOString().split('T')[0],
       status: 'confirmed',
       statusLabel:
@@ -132,6 +135,7 @@ export const CheckoutPage: React.FC = () => {
         id: `addr_${Date.now()}`,
         name: `${form.firstName} ${form.lastName}`.trim(),
         phone: form.phone.startsWith('+91') ? form.phone : `+91 ${form.phone}`,
+        email: form.email,
         street: deliveryMethod === 'camp_pickup' ? 'Shop 247, MG Road (Camp Store Pickup)' : form.street,
         locality: form.locality || 'Camp',
         city: form.city || 'Pune',
@@ -192,6 +196,15 @@ export const CheckoutPage: React.FC = () => {
     };
 
     await addOrder(newOrder);
+
+    // Trigger instant order confirmation email notification
+    sendOrderEmailNotification({
+      order: newOrder,
+      stage: 'confirmed',
+      customerEmail: form.email,
+      customerName: `${form.firstName} ${form.lastName}`.trim(),
+    }).catch(() => {});
+
     clearCart();
     navigate('/order-success', { state: { order: newOrder } });
   };

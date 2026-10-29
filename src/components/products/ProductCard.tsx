@@ -5,6 +5,7 @@ import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { Img } from '../ui/Img';
+import { isCloudinaryUrl, getOptimizedImageUrl, generateSrcSet } from '../../lib/cloudinary';
 
 interface ProductCardProps {
   product: Product;
@@ -13,8 +14,15 @@ interface ProductCardProps {
   sizes?: string;
 }
 
-/** Local studio shots ship a -sm.webp twin; build a srcset when one exists. */
+/** Local studio shots ship a -sm.webp twin; Cloudinary shots get auto-scaled srcset. */
 const imageFor = (src: string, alt: string) => {
+  if (isCloudinaryUrl(src)) {
+    return {
+      src: getOptimizedImageUrl(src, { width: 800 }),
+      srcSet: generateSrcSet(src),
+      alt,
+    };
+  }
   if (src.startsWith('/images/') && src.endsWith('.webp')) {
     const small = src.replace(/\.webp$/, '-sm.webp');
     return { src, srcSet: `${small} 560w, ${src} 1024w`, alt };
