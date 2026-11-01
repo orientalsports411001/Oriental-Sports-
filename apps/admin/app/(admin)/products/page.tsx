@@ -21,14 +21,20 @@ export default async function ProductsPage({
   try {
     const admin = createServiceRoleClient();
     const [resProducts, resCategories] = await Promise.all([
-      admin
-        .from('products')
-        .select('id, name, slug, brand, category_slug, status, price, compare_at_price, images, stock_quantity, low_stock_threshold'),
+      admin.from('products').select('*'),
       admin.from('categories').select('slug, name').order('name'),
     ]);
 
     if (resProducts.data && resProducts.data.length > 0) {
-      dbProducts = resProducts.data;
+      dbProducts = resProducts.data.map((p: any) => ({
+        ...p,
+        status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
+        stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
+        low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
+        is_featured: Boolean(p.metadata?.is_featured ?? p.is_featured),
+        seo_title: p.metadata?.seo_title ?? p.seo_title,
+        seo_description: p.metadata?.seo_description ?? p.seo_description,
+      }));
     }
     if (resCategories.data && resCategories.data.length > 0) {
       categories = resCategories.data;
@@ -82,8 +88,8 @@ export default async function ProductsPage({
 
   // Summary Metrics reflect the unified count (131+ products)
   const publishedCount = unifiedProducts.filter((p) => p.status === 'published').length;
-  const lowStockCount = unifiedProducts.filter((p) => p.stock_quantity <= p.low_stock_threshold).length;
-  const totalCatalogValue = unifiedProducts.reduce((acc, p) => acc + (p.price * p.stock_quantity), 0);
+  const lowStockCount = unifiedProducts.filter((p) => Number(p.stock_quantity ?? 0) <= Number(p.low_stock_threshold ?? 5)).length;
+  const totalCatalogValue = unifiedProducts.reduce((acc, p) => acc + (Number(p.price || 0) * Number(p.stock_quantity || 0)), 0);
   const count = unifiedProducts.length;
 
   return (

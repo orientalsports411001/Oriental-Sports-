@@ -76,6 +76,7 @@ export interface Product {
   inStock: boolean;
   status?: 'draft' | 'published' | 'archived';
   stock_quantity?: number;
+  low_stock_threshold?: number;
   isFeatured?: boolean;
   sku?: string;
   discountPrice?: number;

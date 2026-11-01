@@ -107,6 +107,8 @@ const BANNED_DUMMY_ORDERS = new Set([
   'ord-2026-1003',
   'ord-2026-1004',
   'ord-2026-1005',
+  'ord-2026-5625',
+  'OS-2026-5625',
 ]);
 
 function readOrdersDiskCache(): AdminOrder[] | null {
@@ -130,37 +132,7 @@ function writeOrdersDiskCache(items: AdminOrder[]) {
 
 export const INITIAL_PRODUCTS: AdminProduct[] = allProductsData as AdminProduct[];
 
-
-export const INITIAL_ORDERS: AdminOrder[] = [
-  {
-    id: 'ord-2026-5625',
-    order_number: 'OS-2026-5625',
-    user_id: 'usr-pratik-jadhav',
-    customer_name: 'Pratik Jadhav',
-    customer_email: 'pratikjadhav8820@gmail.com',
-    customer_phone: '+91 98230 45812',
-    status: 'confirmed',
-    total_amount: 4498,
-    subtotal: 4498,
-    shipping: 0,
-    tax: 686,
-    payment_method: 'Razorpay (UPI - ID: pay_rzp_58310021)',
-    tracking_number: 'OS-PICKUP-5625',
-    carrier: 'Oriental Store Counter (Camp)',
-    created_at: '2026-10-29T07:15:00.000Z',
-    shipping_address: {
-      fullName: 'Pratik Jadhav',
-      phone: '+91 98230 45812',
-      addressLine1: 'Shop 247, MG Road (Camp Store Pickup)',
-      city: 'Pune',
-      state: 'Maharashtra',
-      pincode: '411001',
-    },
-    items: [
-      { product_name: 'Yonex Astrox 88D Play Badminton Racket', price: 4498, quantity: 1, selected_variant: '4U / G5' },
-    ],
-  },
-];
+export const INITIAL_ORDERS: AdminOrder[] = [];
 
 export const CATEGORIES = [
   { slug: 'cricket', name: 'Cricket' },

@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { checkAdmin } from '@/lib/require-admin';
 import { saveProduct, removeProduct, getCachedProducts } from '@/lib/catalog-store';
+import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 
 function parseLines(value: string | null): string[] {
   if (!value) return [];
@@ -404,13 +405,33 @@ export async function toggleProductVisibility(productId: string, currentStatus: 
   try {
     const admin = createServiceRoleClient();
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+    const { data: existing } = await (isUuid
+      ? admin.from('products').select('metadata').eq('id', productId).maybeSingle()
+      : admin.from('products').select('metadata').eq('slug', productId).maybeSingle());
+
+    const updatedMetadata = {
+      ...(existing?.metadata || {}),
+      status: newStatus,
+    };
+
+    const updateObj = {
+      in_stock: inStock,
+      metadata: updatedMetadata,
+      updated_at: new Date().toISOString(),
+    };
+
     const query = isUuid
-      ? admin.from('products').update({ status: newStatus, in_stock: inStock, updated_at: new Date().toISOString() }).eq('id', productId)
-      : admin.from('products').update({ status: newStatus, in_stock: inStock, updated_at: new Date().toISOString() }).eq('slug', productId);
+      ? admin.from('products').update(updateObj).eq('id', productId)
+      : admin.from('products').update(updateObj).eq('slug', productId);
     await query;
   } catch (err) {
     console.warn('[toggleProductVisibility] Supabase update notice:', err);
   }
+
+  await broadcastRealtimeEvent('product_updated', {
+    productId,
+    status: newStatus,
+  });
 
   revalidatePath('/products');
   return { success: true, status: newStatus };
@@ -443,14 +464,22 @@ export async function restockProduct(productId: string, newStock: number) {
   try {
     const admin = createServiceRoleClient();
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
-    const updateObj: Record<string, any> = {
+    const { data: existing } = await (isUuid
+      ? admin.from('products').select('metadata').eq('id', productId).maybeSingle()
+      : admin.from('products').select('metadata').eq('slug', productId).maybeSingle());
+
+    const updatedMetadata = {
+      ...(existing?.metadata || {}),
       stock_quantity: quantity,
+      ...(quantity > 0 ? { status: 'published' } : {}),
+    };
+
+    const updateObj: Record<string, any> = {
       in_stock: quantity > 0,
+      metadata: updatedMetadata,
       updated_at: new Date().toISOString(),
     };
-    if (quantity > 0) {
-      updateObj.status = 'published';
-    }
+
     const query = isUuid
       ? admin.from('products').update(updateObj).eq('id', productId)
       : admin.from('products').update(updateObj).eq('slug', productId);
@@ -458,6 +487,12 @@ export async function restockProduct(productId: string, newStock: number) {
   } catch (err) {
     console.warn('[restockProduct] Supabase update notice:', err);
   }
+
+  await broadcastRealtimeEvent('product_updated', {
+    productId,
+    stock_quantity: quantity,
+    status: quantity > 0 ? 'published' : 'draft',
+  });
 
   revalidatePath('/products');
   return { success: true, stock_quantity: quantity, status: quantity > 0 ? 'published' : 'draft' };
@@ -521,6 +556,8 @@ export async function deleteProduct(productId: string) {
     if (isRedirectError(err)) throw err;
     removeProduct(productId);
   }
+
+  await broadcastRealtimeEvent('product_deleted', { productId });
 
   if (shouldArchive) {
     redirect('/products?saved=Product+archived+to+protect+order+history');

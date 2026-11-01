@@ -21,11 +21,16 @@ export default async function DashboardPage() {
       resProducts,
       resOrders,
     ] = await Promise.all([
-      admin.from('products').select('id, name, slug, stock_quantity, low_stock_threshold, status, price'),
+      admin.from('products').select('*'),
       admin.from('orders').select('id, order_number, status, total_amount, created_at, user_id, shipping_address, customer_name, customer_email, payment_method').order('created_at', { ascending: false }).limit(100),
     ]);
 
-    dbProducts = resProducts.data || [];
+    dbProducts = (resProducts.data || []).map((p: any) => ({
+      ...p,
+      status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
+      stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
+      low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
+    }));
     dbOrders = resOrders.data || [];
   } catch (err) {
     // Supabase endpoint fallback
@@ -70,11 +75,12 @@ export default async function DashboardPage() {
     }
   }
 
-  const publishedCount = allProducts.filter((p) => p.status === 'published').length;
+  const totalSkusCount = allProducts.length;
+  const publishedCount = allProducts.filter((p) => (p.status || 'published') === 'published').length;
   const draftCount = allProducts.filter((p) => p.status === 'draft').length;
   const lowStock = allProducts
-    .filter((p) => p.stock_quantity <= p.low_stock_threshold)
-    .sort((a, b) => a.stock_quantity - b.stock_quantity);
+    .filter((p) => Number(p.stock_quantity ?? 0) <= Number(p.low_stock_threshold ?? 5))
+    .sort((a, b) => Number(a.stock_quantity ?? 0) - Number(b.stock_quantity ?? 0));
 
   // Merge live database orders with cached / synced store orders (deduplicate by order_number)
   const cachedOrders = getCachedOrders();
@@ -270,7 +276,7 @@ export default async function DashboardPage() {
             ₹{averageOrderValue.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-            High-ticket equipment & systems
+            {paidOrdersCount > 0 ? 'High-ticket equipment & systems' : 'No completed checkouts yet'}
           </div>
         </div>
 
@@ -283,7 +289,7 @@ export default async function DashboardPage() {
           }}
         >
           <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--subtle)', letterSpacing: '0.06em', marginBottom: 10 }}>
-            Catalog Disciplines
+            Total SKUs
           </div>
           <div
             style={{
@@ -295,10 +301,10 @@ export default async function DashboardPage() {
               lineHeight: 1.15,
             }}
           >
-            {publishedCount} SKUs
+            {totalSkusCount} SKUs
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-            <span>{draftCount} review drafts</span> · <Link href="/products?filter=low_stock" style={{ color: '#D4F800', fontWeight: 700, textDecoration: 'none' }}>{lowStock.length} low threshold →</Link>
+            <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{publishedCount} published</span> · {draftCount} draft · <Link href="/products?filter=low_stock" style={{ color: '#D4F800', fontWeight: 700, textDecoration: 'none' }}>{lowStock.length} low threshold →</Link>
           </div>
         </div>
       </div>

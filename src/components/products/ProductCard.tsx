@@ -55,7 +55,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const basePrice = product.price;
-  const originalPrice = product.originalPrice || (basePrice > 1000 ? Math.round(basePrice * 1.18) : undefined);
+  const originalPrice =
+    product.originalPrice && product.originalPrice > basePrice
+      ? product.originalPrice
+      : undefined;
   const discount =
     originalPrice && originalPrice > basePrice
       ? Math.round(((originalPrice - basePrice) / originalPrice) * 100)
@@ -95,8 +98,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     displayName = displayName.slice(product.brand.length).trim().replace(/^[-–·:]\s*/, '');
   }
 
-  const rating = product.rating || 4.6;
-  const reviewsCount = product.reviewsCount || Math.floor((product.price % 37) + 14);
+  const rating = product.rating;
+  const reviewsCount = product.reviewsCount;
 
   return (
     <article
@@ -139,12 +142,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Rating Badge (Myntra / Flipkart style) */}
-        <div className="ecom-card-rating-badge">
-          <span>{rating.toFixed(1)}</span>
-          <Star size={10} fill="#F59E0B" color="#F59E0B" />
-          <span className="ecom-rating-sep">|</span>
-          <span className="ecom-rating-count">{reviewsCount}</span>
-        </div>
+        {rating ? (
+          <div className="ecom-card-rating-badge">
+            <span>{rating.toFixed(1)}</span>
+            <Star size={10} fill="#F59E0B" color="#F59E0B" />
+            {Boolean(reviewsCount && reviewsCount > 0) && (
+              <>
+                <span className="ecom-rating-sep">|</span>
+                <span className="ecom-rating-count">{reviewsCount}</span>
+              </>
+            )}
+          </div>
+        ) : null}
       </div>
 
       {/* Card Info Section */}

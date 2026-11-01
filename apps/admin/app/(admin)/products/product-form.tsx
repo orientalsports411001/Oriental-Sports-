@@ -93,22 +93,9 @@ export function ProductForm({ initialData, product: productProp, categories, act
         }
       } catch {}
 
+      // Clean up deprecated localStorage probe cache if present
       try {
-        const stored = JSON.parse(localStorage.getItem('os_custom_products') || '[]');
-        const match = stored.find((p: any) => (data?.id && p.id === data.id) || (data?.slug && p.slug === data.slug) || (slug && p.slug === slug));
-        if (match) {
-          if (match.name) setName(match.name);
-          if (match.brand) setBrand(match.brand);
-          if (match.category_slug) setCategorySlug(match.category_slug);
-          if (match.description) setDescription(match.description);
-          if (match.price) setPrice(String(match.price));
-          if (match.compare_at_price) setCompareAtPrice(String(match.compare_at_price));
-          if (match.images && match.images.length > 0) setImages(match.images);
-          if (match.status) setStatus(match.status);
-          if (match.stock_quantity !== undefined) setStockQuantity(Number(match.stock_quantity));
-          if (match.seo_title) setSeoTitle(match.seo_title);
-          if (match.seo_description) setSeoDescription(match.seo_description);
-        }
+        localStorage.removeItem('os_custom_products');
       } catch {}
     }
   }, []);
@@ -163,91 +150,21 @@ export function ProductForm({ initialData, product: productProp, categories, act
     formData.set('seo_description', seoDescription || description || '');
     formData.set('seo_canonical_url', seoCanonical || '');
 
-    // 1. Immediately persist to client-side localStorage
-    const clientProduct = {
-      id: data?.id || `prod-os-${Date.now()}`,
-      name: name || 'Untitled Product',
-      slug: slug || 'product',
-      brand: brand || 'Oriental Sports',
-      category_slug: categorySlug || 'cricket',
-      description: description || '',
-      price: Number(price) || 0,
-      compare_at_price: Number(compareAtPrice) || null,
-      stock_quantity: Number(stockQuantity) || 10,
-      low_stock_threshold: Number(lowStockThreshold) || 5,
-      status: status || 'published',
-      images: finalImages.length > 0 ? finalImages : ['/images/products/cricket_bat_willow.webp'],
-      seo_title: seoTitle || `${name} | Oriental Sports Pune`,
-      seo_description: seoDescription || '',
-      updated_at: new Date().toISOString(),
-    };
-
+    // 1. Clean up deprecated localStorage probe storage
     if (typeof window !== 'undefined') {
       try {
-        const stored = JSON.parse(localStorage.getItem('os_custom_products') || '[]');
-        const idx = stored.findIndex(
-          (p: any) =>
-            p.id === clientProduct.id ||
-            p.slug === clientProduct.slug ||
-            (data?.id && p.id === data.id) ||
-            (data?.slug && p.slug === data.slug)
-        );
-        if (idx >= 0) {
-          stored[idx] = clientProduct;
-        } else {
-          stored.unshift(clientProduct);
-        }
-        // Deduplicate any repeated entries by id and slug
-        const seenIds = new Set<string>();
-        const seenSlugs = new Set<string>();
-        const deduplicated = stored.filter((p: any) => {
-          if (!p) return false;
-          if (p.id && seenIds.has(p.id)) return false;
-          if (p.slug && seenSlugs.has(p.slug)) return false;
-          if (p.id) seenIds.add(p.id);
-          if (p.slug) seenSlugs.add(p.slug);
-          return true;
-        });
-        localStorage.setItem('os_custom_products', JSON.stringify(deduplicated));
+        localStorage.removeItem('os_custom_products');
       } catch {}
 
-      // Direct client-side Supabase sync
+      // Multi-tab sync broadcast
       try {
-        const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
-        const supaKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
-        if (supaUrl && supaKey) {
-          fetch(`${supaUrl}/rest/v1/products?on_conflict=slug`, {
-            method: 'POST',
-            headers: {
-              apikey: supaKey,
-              Authorization: `Bearer ${supaKey}`,
-              'Content-Type': 'application/json',
-              Prefer: 'resolution=merge-duplicates',
-            },
-            body: JSON.stringify({
-              name: clientProduct.name,
-              slug: clientProduct.slug,
-              category_slug: clientProduct.category_slug,
-              brand: clientProduct.brand,
-              description: clientProduct.description,
-              price: clientProduct.price,
-              compare_at_price: clientProduct.compare_at_price,
-              images: clientProduct.images,
-              in_stock: clientProduct.status === 'published',
-              metadata: {
-                status: clientProduct.status,
-                stock_quantity: clientProduct.stock_quantity,
-                low_stock_threshold: clientProduct.low_stock_threshold,
-                seo_title: clientProduct.seo_title,
-                seo_description: clientProduct.seo_description,
-              },
-            }),
-          }).catch(() => {});
-        }
+        const bc = new BroadcastChannel('oriental_sports_catalog');
+        bc.postMessage({ type: 'PRODUCT_SAVED', slug });
+        bc.close();
       } catch {}
     }
 
-    // 2. Persist to server REST endpoint
+    // 2. Persist to authoritative server REST endpoint (Supabase + all-products.json)
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
     const endpoints = [
       '/api/products/save',
@@ -274,7 +191,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     if (typeof window !== 'undefined') {
       try {
         const bc = new BroadcastChannel('oriental_sports_catalog');
-        bc.postMessage({ type: 'PRODUCT_SAVED', product: clientProduct });
+        bc.postMessage({ type: 'PRODUCT_SAVED', slug, name });
         bc.close();
       } catch {}
       try {

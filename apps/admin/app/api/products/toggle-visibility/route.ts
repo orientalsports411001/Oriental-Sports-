@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { getCachedProducts, saveProduct } from '@/lib/catalog-store';
+import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 
 export async function POST(req: Request) {
   try {
@@ -14,11 +15,13 @@ export async function POST(req: Request) {
       body = {
         productId: formData.get('productId') || formData.get('id'),
         status: formData.get('status'),
+        stockQuantity: formData.get('stockQuantity') || formData.get('stock_quantity'),
       };
     }
 
     const productId = String(body.productId || body.id || '').trim();
     let status = String(body.status || '').trim();
+    const newStock = body.stockQuantity !== undefined ? Number(body.stockQuantity) : undefined;
 
     if (!productId) {
       return NextResponse.json({ success: false, error: 'Product ID is required.' }, { status: 400 });
@@ -38,12 +41,14 @@ export async function POST(req: Request) {
       updatedProduct = saveProduct({
         ...cached,
         status: status as any,
+        ...(newStock !== undefined ? { stock_quantity: newStock } : {}),
       });
     } else {
       updatedProduct = saveProduct({
         id: productId,
         name: productId,
         status: status as any,
+        ...(newStock !== undefined ? { stock_quantity: newStock } : {}),
       });
     }
 
@@ -51,11 +56,23 @@ export async function POST(req: Request) {
     try {
       const admin = createServiceRoleClient();
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
-      const updateData = {
+
+      const { data: existing } = await (isUuid
+        ? admin.from('products').select('metadata').eq('id', productId).maybeSingle()
+        : admin.from('products').select('metadata').eq('slug', productId).maybeSingle());
+
+      const updatedMetadata = {
+        ...(existing?.metadata || {}),
         status,
+        ...(newStock !== undefined ? { stock_quantity: newStock } : {}),
+      };
+
+      const updateData = {
         in_stock: inStock,
+        metadata: updatedMetadata,
         updated_at: new Date().toISOString(),
       };
+
       const query = isUuid
         ? admin.from('products').update(updateData).eq('id', productId)
         : admin.from('products').update(updateData).eq('slug', productId);
@@ -68,6 +85,14 @@ export async function POST(req: Request) {
       revalidatePath('/products');
       revalidatePath(`/products/${productId}/edit`);
     } catch {}
+
+    // 3. Broadcast realtime event on oriental_sports_sync
+    await broadcastRealtimeEvent('product_updated', {
+      product: updatedProduct,
+      productId,
+      status,
+      stock_quantity: newStock,
+    });
 
     return NextResponse.json({
       success: true,

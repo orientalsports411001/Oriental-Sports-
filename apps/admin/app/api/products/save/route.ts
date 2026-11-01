@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { saveProduct } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 
 function getLatestNonEmpty(formData: FormData, key: string): string {
   const all = formData.getAll(key);
@@ -166,6 +167,15 @@ export async function POST(req: Request) {
       revalidatePath('/products');
       revalidatePath(`/products/${targetId}/edit`);
     } catch {}
+
+    // Broadcast realtime update on oriental_sports_sync channel
+    await broadcastRealtimeEvent('product_updated', {
+      product: saved,
+      productId: saved.id,
+      slug: saved.slug,
+      status: saved.status,
+      stock_quantity: saved.stock_quantity,
+    });
 
     return NextResponse.json({
       success: true,

@@ -35,7 +35,15 @@ export default async function EditProductPage({
     ]);
 
     if (dbProduct) {
-      product = dbProduct;
+      product = {
+        ...dbProduct,
+        status: dbProduct.metadata?.status ?? dbProduct.status ?? (dbProduct.in_stock === false ? 'draft' : 'published'),
+        stock_quantity: Number(dbProduct.metadata?.stock_quantity ?? dbProduct.stock_quantity ?? 50),
+        low_stock_threshold: Number(dbProduct.metadata?.low_stock_threshold ?? dbProduct.low_stock_threshold ?? 5),
+        is_featured: Boolean(dbProduct.metadata?.is_featured ?? dbProduct.is_featured),
+        seo_title: dbProduct.metadata?.seo_title ?? dbProduct.seo_title,
+        seo_description: dbProduct.metadata?.seo_description ?? dbProduct.seo_description,
+      };
       const { data: dbAdjustments } = await admin
         .from('inventory_adjustments')
         .select('id, delta, reason, created_at')

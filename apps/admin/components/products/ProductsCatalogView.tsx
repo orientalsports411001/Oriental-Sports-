@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DeleteProductButton } from './DeleteProductButton';
+import { createClient } from '@/lib/supabase/client';
 
 interface Category {
   slug: string;
@@ -47,72 +48,114 @@ export function ProductsCatalogView({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [customProducts, setCustomProducts] = useState<ProductItem[]>([]);
+  const [products, setProducts] = useState<ProductItem[]>(initialProducts);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || '');
   const [showOnlyLowStock, setShowOnlyLowStock] = useState(searchParams.get('filter') === 'low_stock');
 
-  // Load custom products from localStorage
-  const loadCustomProducts = () => {
-    if (typeof window === 'undefined') return;
-    try {
-      const raw = localStorage.getItem('os_custom_products');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          const formatted: ProductItem[] = parsed.map((p: any) => ({
-            id: p.id || `prod-os-${p.slug}`,
-            name: p.name || 'Untitled Product',
-            slug: p.slug || 'product',
-            brand: p.brand || 'Oriental Sports',
-            category_slug: p.category_slug || p.category || 'accessories',
-            status: (p.status || 'published') as any,
-            price: Number(p.price) || 0,
-            compare_at_price: p.compare_at_price ? Number(p.compare_at_price) : null,
-            images: Array.isArray(p.images) ? p.images : [],
-            stock_quantity: Number(p.stock_quantity ?? 10),
-            low_stock_threshold: Number(p.low_stock_threshold ?? 5),
-            isCustom: true,
-          }));
-          setCustomProducts(formatted);
-        }
-      }
-    } catch {}
-  };
-
+  // Keep internal state aligned with server props
   useEffect(() => {
-    loadCustomProducts();
+    setProducts(initialProducts);
+  }, [initialProducts]);
 
-    // Listen to storage events and BroadcastChannel
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'os_custom_products') {
-        loadCustomProducts();
-      }
-    };
-    window.addEventListener('storage', handleStorage);
-    window.addEventListener('os_catalog_updated', loadCustomProducts);
+  // Subscribe to Supabase Realtime channel oriental_sports_sync and postgres_changes on products
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel('oriental_sports_sync')
+      .on('broadcast', { event: 'product_updated' }, (msg: any) => {
+        const item = msg?.payload?.product;
+        if (item) {
+          const mapped: ProductItem = {
+            id: item.id || `prod-os-${item.slug}`,
+            name: item.name || 'Untitled Product',
+            slug: item.slug || 'product',
+            brand: item.brand || 'Oriental Sports',
+            category_slug: item.category_slug || 'accessories',
+            status: item.metadata?.status ?? item.status ?? 'published',
+            price: Number(item.price) || 0,
+            compare_at_price: item.compare_at_price ? Number(item.compare_at_price) : null,
+            images: Array.isArray(item.images) ? item.images : [],
+            stock_quantity: Number(item.metadata?.stock_quantity ?? item.stock_quantity ?? 50),
+            low_stock_threshold: Number(item.metadata?.low_stock_threshold ?? item.low_stock_threshold ?? 5),
+          };
+          setProducts((prev) => {
+            const idx = prev.findIndex((p) => p.id === mapped.id || p.slug === mapped.slug);
+            if (idx >= 0) {
+              const copy = [...prev];
+              copy[idx] = { ...copy[idx], ...mapped };
+              return copy;
+            } else {
+              return [mapped, ...prev];
+            }
+          });
+        }
+        router.refresh();
+      })
+      .on('broadcast', { event: 'product_deleted' }, (msg: any) => {
+        const targetId = msg?.payload?.productId;
+        if (targetId) {
+          setProducts((prev) => prev.filter((p) => p.id !== targetId && p.slug !== targetId));
+        }
+        router.refresh();
+      })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        (payload: any) => {
+          if (payload.eventType === 'DELETE') {
+            const oldId = payload.old?.id;
+            const oldSlug = payload.old?.slug;
+            setProducts((prev) => prev.filter((p) => p.id !== oldId && p.slug !== oldSlug));
+          } else if (payload.new) {
+            const newItem = payload.new;
+            const mappedItem: ProductItem = {
+              id: newItem.id,
+              name: newItem.name || 'Product',
+              slug: newItem.slug,
+              brand: newItem.brand || 'Oriental Sports',
+              category_slug: newItem.category_slug || 'accessories',
+              price: Number(newItem.price) || 0,
+              compare_at_price: newItem.compare_at_price ? Number(newItem.compare_at_price) : null,
+              images: Array.isArray(newItem.images) ? newItem.images : [],
+              status: newItem.metadata?.status ?? (newItem.in_stock === false ? 'draft' : 'published'),
+              stock_quantity: Number(newItem.metadata?.stock_quantity ?? 50),
+              low_stock_threshold: Number(newItem.metadata?.low_stock_threshold ?? 5),
+            };
+            setProducts((prev) => {
+              const idx = prev.findIndex((p) => p.id === mappedItem.id || p.slug === mappedItem.slug);
+              if (idx >= 0) {
+                const copy = [...prev];
+                copy[idx] = { ...copy[idx], ...mappedItem };
+                return copy;
+              } else {
+                return [mappedItem, ...prev];
+              }
+            });
+          }
+          router.refresh();
+        }
+      )
+      .subscribe();
 
+    // BroadcastChannel fallback for multi-tab sync
     let bc: BroadcastChannel | null = null;
     try {
       bc = new BroadcastChannel('oriental_sports_catalog');
-      bc.onmessage = () => loadCustomProducts();
+      bc.onmessage = () => {
+        router.refresh();
+      };
     } catch {}
 
     return () => {
-      window.removeEventListener('storage', handleStorage);
-      window.removeEventListener('os_catalog_updated', loadCustomProducts);
+      supabase.removeChannel(channel);
       if (bc) bc.close();
     };
-  }, []);
+  }, [router]);
 
-  // Merge custom products with server products (deduplicating by id and slug)
-  const allMergedProducts = useMemo(() => {
-    const customIds = new Set(customProducts.map((p) => p.id).concat(customProducts.map((p) => p.slug)));
-    const serverFiltered = initialProducts.filter((p) => !customIds.has(p.id) && !customIds.has(p.slug));
-    return [...customProducts, ...serverFiltered];
-  }, [customProducts, initialProducts]);
+  const allMergedProducts = products;
 
   // Compute live metrics
   const totalSkus = allMergedProducts.length;
@@ -196,25 +239,12 @@ export function ProductsCatalogView({
   };
 
   const handleDeleteProduct = async (id: string) => {
-    // 1. Remove from client localStorage
-    try {
-      const raw = localStorage.getItem('os_custom_products');
-      if (raw) {
-        const list = JSON.parse(raw);
-        const filtered = list.filter((p: any) => p.id !== id && p.slug !== id);
-        localStorage.setItem('os_custom_products', JSON.stringify(filtered));
-        loadCustomProducts();
-      }
-    } catch {}
+    // 1. Optimistic removal from state
+    setProducts((prev) => prev.filter((p) => p.id !== id && p.slug !== id));
 
-    // 2. Register in deleted blacklist so it is excluded from view
+    // 2. Clean up from localStorage if present
     try {
-      const delRaw = localStorage.getItem('os_deleted_products') || '[]';
-      const delList = JSON.parse(delRaw);
-      if (!delList.includes(id)) {
-        delList.push(id);
-        localStorage.setItem('os_deleted_products', JSON.stringify(delList));
-      }
+      localStorage.removeItem('os_custom_products');
     } catch {}
 
     // 3. Broadcast deletion event
@@ -224,22 +254,7 @@ export function ProductsCatalogView({
       bc.close();
     } catch {}
 
-    // 4. Delete from live Supabase directly
-    try {
-      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
-      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
-      if (supaUrl && supaKey) {
-        fetch(`${supaUrl}/rest/v1/products?or=(id.eq.${id},slug.eq.${id})`, {
-          method: 'DELETE',
-          headers: {
-            apikey: supaKey,
-            Authorization: `Bearer ${supaKey}`,
-          },
-        }).catch(() => {});
-      }
-    } catch {}
-
-    // 5. Call server action
+    // 4. Call server action
     try {
       await deleteAction(id);
     } catch {}
@@ -253,8 +268,8 @@ export function ProductsCatalogView({
     if (togglingId) return;
     setTogglingId(productId);
 
-    // 1. Optimistic update in customProducts state
-    setCustomProducts((prev) => {
+    // 1. Optimistic update in products state
+    setProducts((prev) => {
       const idx = prev.findIndex((p) => p.id === productId || p.slug === productId);
       if (idx >= 0) {
         const copy = [...prev];
@@ -265,43 +280,15 @@ export function ProductsCatalogView({
         };
         return copy;
       }
-      const original = initialProducts.find((p) => p.id === productId || p.slug === productId);
-      if (original) {
-        return [
-          {
-            ...original,
-            status: targetStatus,
-            ...(newStock !== undefined ? { stock_quantity: newStock } : {}),
-            isCustom: true,
-          },
-          ...prev,
-        ];
-      }
       return prev;
     });
 
-    // 2. Persist to localStorage
+    // 2. Clean up localStorage so it doesn't conflict
     try {
-      const raw = localStorage.getItem('os_custom_products');
-      const list = raw ? JSON.parse(raw) : [];
-      const idx = list.findIndex((p: any) => p.id === productId || p.slug === productId);
-      if (idx >= 0) {
-        list[idx].status = targetStatus;
-        if (newStock !== undefined) list[idx].stock_quantity = newStock;
-      } else {
-        const orig = initialProducts.find((p) => p.id === productId || p.slug === productId);
-        if (orig) {
-          list.unshift({
-            ...orig,
-            status: targetStatus,
-            ...(newStock !== undefined ? { stock_quantity: newStock } : {}),
-          });
-        }
-      }
-      localStorage.setItem('os_custom_products', JSON.stringify(list));
+      localStorage.removeItem('os_custom_products');
     } catch {}
 
-    // 3. Broadcast update to other tabs & storefront
+    // 3. Broadcast update to multi-tab channel
     try {
       const bc = new BroadcastChannel('oriental_sports_catalog');
       bc.postMessage({

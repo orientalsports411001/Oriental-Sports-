@@ -108,7 +108,7 @@ export const CheckoutPage: React.FC = () => {
   };
 
   const handleCreateAndFinalizeOrder = async (paymentId: string, paymentMethodName: string) => {
-    const orderNum = `OS-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const orderNum = `OS-2026-${Date.now().toString().slice(-6)}`;
 
     const orderUuid =
       typeof crypto !== 'undefined' && crypto.randomUUID
@@ -144,7 +144,7 @@ export const CheckoutPage: React.FC = () => {
         isDefault: false,
         type: 'home',
       },
-      trackingNumber: `OS-DTDC-${Math.floor(10000 + Math.random() * 90000)}`,
+      trackingNumber: `OS-DTDC-${Date.now().toString().slice(-6)}`,
       carrier: deliveryMethod === 'camp_pickup' ? 'Oriental Store Counter' : 'DTDC Express Pune',
       items: cart.map((item) => ({
         productId: item.product.id,
@@ -896,7 +896,7 @@ export const CheckoutPage: React.FC = () => {
                   style={{ background: '#C8102E' }}
                   onClick={() => {
                     setShowRazorpaySimModal(false);
-                    const mockPaymentId = `pay_rzp_${Date.now().toString().slice(-8)}`;
+                    const mockPaymentId = `pay_sim_${Date.now().toString().slice(-8)}`;
                     handleCreateAndFinalizeOrder(mockPaymentId, simPaymentMethod.toUpperCase());
                   }}
                 >

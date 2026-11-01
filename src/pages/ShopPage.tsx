@@ -243,7 +243,7 @@ export const ShopPage: React.FC = () => {
     });
 
     return list;
-  }, [selectedCategory, selectedSubcategory, selectedBrand, selectedBatSize, priceRange, searchQuery, sortBy]);
+  }, [allProducts, selectedCategory, selectedSubcategory, selectedBrand, selectedBatSize, priceRange, searchQuery, sortBy]);
 
   const categoriesWithStock = CATEGORIES.filter((c) => categoryCounts.has(c.id));
 

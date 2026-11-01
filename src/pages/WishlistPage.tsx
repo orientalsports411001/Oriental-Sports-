@@ -282,10 +282,14 @@ export const WishlistPage: React.FC = () => {
           >
             {wishlistedProducts.map((product) => {
               const basePrice = product.price;
-              const originalPrice = product.originalPrice || (basePrice > 1000 ? Math.round(basePrice * 1.18) : undefined);
-              const discount = originalPrice && originalPrice > basePrice
-                ? Math.round(((originalPrice - basePrice) / originalPrice) * 100)
-                : null;
+              const originalPrice =
+                product.originalPrice && product.originalPrice > basePrice
+                  ? product.originalPrice
+                  : undefined;
+              const discount =
+                originalPrice && originalPrice > basePrice
+                  ? Math.round(((originalPrice - basePrice) / originalPrice) * 100)
+                  : null;
               const isMoving = movingId === product.id;
               const brandName = product.brand || product.categoryName || 'Oriental Sports';
 

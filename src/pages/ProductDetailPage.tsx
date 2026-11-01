@@ -74,8 +74,12 @@ export const ProductDetailPage: React.FC = () => {
   const images = [...new Set(product.images)];
 
   const allLive = getLiveProducts();
-  const sameSport = allLive.filter((p) => p.category === product.category && p.id !== product.id);
-  const related = (sameSport.length > 0 ? sameSport : allLive.filter((p) => p.isFeatured && p.id !== product.id)).slice(0, 4);
+  const isDifferent = (p: Product) =>
+    p.id !== product.id &&
+    p.slug !== product.slug &&
+    p.name.toLowerCase() !== product.name.toLowerCase();
+  const sameSport = allLive.filter((p) => p.category === product.category && isDifferent(p));
+  const related = (sameSport.length > 0 ? sameSport : allLive.filter((p) => p.isFeatured && isDifferent(p))).slice(0, 4);
 
   const activeVariantObj = product?.variants?.find((v) => v.name === selectedVariant);
   const currentPrice =
