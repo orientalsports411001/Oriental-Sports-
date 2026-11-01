@@ -3,9 +3,7 @@
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { ShieldAlert, X, CheckCircle2, Loader2 } from 'lucide-react';
-
-const OWNER_EMAIL = 'hello.orientalsports@gmail.com';
+import { ShieldAlert, X, Loader2 } from 'lucide-react';
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -31,7 +29,7 @@ function LoginForm() {
 
     if (unauthorizedParam === '1') {
       setShowDeniedModal(true);
-      setMessage(errorParam || `Access restricted: Only ${OWNER_EMAIL} can log in.`);
+      setMessage(errorParam || 'Access restricted: Administrator privileges required.');
       // Strip error params immediately from URL so reloading the page won't reopen the modal
       if (typeof window !== 'undefined') {
         try {
@@ -201,9 +199,8 @@ function LoginForm() {
                 margin: '0 0 20px',
               }}
             >
-              Only the verified store owner (
-              <strong style={{ color: '#FFFFFF' }}>{OWNER_EMAIL}</strong>) is authorized to log in
-              to the Oriental Sports operations console. Other accounts cannot log in.
+              This account does not have administrator privileges.
+              Only verified store administrators are authorized to sign in to the operations console.
             </p>
 
             {/* Action Button */}
@@ -228,7 +225,7 @@ function LoginForm() {
                 transition: 'background 0.15s ease',
               }}
             >
-              Sign In with Owner Account
+              Sign In with Authorized Account
             </button>
           </div>
         </div>
@@ -268,7 +265,7 @@ function LoginForm() {
             Administrator Access
           </h1>
           <p style={{ color: '#A3A3A3', fontSize: 13, margin: 0, textAlign: 'center', lineHeight: 1.5 }}>
-            Role-gated operations console. Only <strong style={{ color: '#FFFFFF' }}>{OWNER_EMAIL}</strong> is authorized to log in.
+            Role-gated operations console. Authorized store personnel only.
           </p>
         </div>
 
@@ -327,7 +324,7 @@ function LoginForm() {
             )}
           </button>
           <div style={{ fontSize: 11.5, color: '#737373', textAlign: 'center', marginTop: 10 }}>
-            Must match verified owner account ({OWNER_EMAIL})
+            Sign in with your verified administrator account
           </div>
         </div>
 
@@ -364,7 +361,7 @@ function LoginForm() {
           }}
         >
           Oriental Sports Pune · Camp Store Operations<br />
-          Role-protected: Only <strong style={{ color: '#A3A3A3' }}>{OWNER_EMAIL}</strong> can log in.
+          Protected System · Authorized Access Only
         </div>
       </div>
     </>

@@ -34,7 +34,7 @@ export async function GET(request: Request) {
         await supabase.auth.signOut();
         return NextResponse.redirect(
           `${origin}/login?error=${encodeURIComponent(
-            `Access restricted: The account ${userEmail} is not authorized for administration.`
+            'Access restricted: This account is not authorized for administration.'
           )}&unauthorized=1`
         );
       }

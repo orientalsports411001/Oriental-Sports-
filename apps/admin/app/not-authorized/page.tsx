@@ -71,7 +71,7 @@ export default function NotAuthorizedPage() {
             letterSpacing: '-0.02em',
           }}
         >
-          Only Admin Can Log In
+          Administrator Access Required
         </h1>
 
         <p
@@ -82,9 +82,7 @@ export default function NotAuthorizedPage() {
             margin: '0 0 24px',
           }}
         >
-          Only the verified store owner (
-          <strong style={{ color: '#FFFFFF' }}>hello.orientalsports@gmail.com</strong>) is authorized
-          to access the Oriental Sports Management Console. Other accounts cannot log in.
+          This account does not have administrator privileges. Only authorized store administrators can access the Oriental Sports Management Console.
         </p>
 
         <Link

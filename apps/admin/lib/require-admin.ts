@@ -43,7 +43,7 @@ export async function checkAdmin(): Promise<
     if (!isOwnerAdmin) {
       return {
         ok: false,
-        error: `Access Denied: The account ${userEmail} does not have administrator privileges. Only ${OWNER_ADMIN_EMAIL} can log in.`,
+        error: 'Access Denied: This account does not have administrator privileges.',
         reason: 'forbidden',
       };
     }
@@ -77,7 +77,7 @@ export async function requireAdmin() {
     // Only display the access denied error if a signed-in user is actually forbidden
     redirect(
       `/login?error=${encodeURIComponent(
-        result.error || `Access restricted: Only the store administrator (${OWNER_ADMIN_EMAIL}) can log in.`
+        result.error || 'Access restricted: Administrator privileges required.'
       )}&unauthorized=1`
     );
   }
