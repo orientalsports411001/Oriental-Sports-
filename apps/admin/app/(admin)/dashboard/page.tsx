@@ -9,7 +9,11 @@ import { LowStockCard } from '@/components/dashboard/LowStockCard';
 
 export const dynamic = 'force-dynamic';
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: { saved?: string };
+}) {
   await requireAdmin();
 
   let dbProducts: any[] = [];
@@ -123,6 +127,28 @@ export default async function DashboardPage() {
 
   return (
     <div style={{ maxWidth: 1420, margin: '0 auto' }}>
+      {searchParams?.saved && (
+        <div
+          style={{
+            padding: '14px 20px',
+            borderRadius: 14,
+            background: 'rgba(46, 107, 60, 0.22)',
+            border: '1px solid rgba(74, 222, 128, 0.45)',
+            color: '#4ADE80',
+            fontSize: 14,
+            fontWeight: 700,
+            marginBottom: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            boxShadow: '0 4px 16px rgba(46, 107, 60, 0.2)',
+          }}
+        >
+          <span style={{ fontSize: 18, lineHeight: 1 }}>✓</span>
+          <span>{searchParams.saved}</span>
+        </div>
+      )}
+
       {/* Top Operations Header */}
       <div
         style={{

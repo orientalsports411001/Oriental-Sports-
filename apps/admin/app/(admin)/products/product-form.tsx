@@ -124,18 +124,53 @@ export function ProductForm({ initialData, product: productProp, categories, act
     e.preventDefault();
     if (isSubmitting) return;
 
-    setIsSubmitting(true);
     setSaveError(null);
+
+    // 1. Strict Form Validation
+    const trimmedName = name.trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      setSaveError('Product Name is required (minimum 2 characters).');
+      setActiveTab('details');
+      return;
+    }
+
+    const trimmedDesc = description.trim();
+    if (!trimmedDesc || trimmedDesc.length < 5) {
+      setSaveError('Product Description is required (minimum 5 characters).');
+      setActiveTab('details');
+      return;
+    }
+
+    const numericPrice = Number(price);
+    if (!price || isNaN(numericPrice) || numericPrice <= 0) {
+      setSaveError('Product Price is required and must be a valid number greater than ₹0.');
+      setActiveTab('pricing');
+      return;
+    }
+
+    if (!images || images.length === 0) {
+      setSaveError('At least 1 product image is required. Please upload or add an image in the Media tab.');
+      setActiveTab('media');
+      return;
+    }
+
+    if (!categorySlug) {
+      setSaveError('Please select a Sport Discipline / Category.');
+      setActiveTab('details');
+      return;
+    }
+
+    setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
     formData.set('productId', data?.id || '');
     formData.set('originalSlug', data?.slug || '');
-    formData.set('name', name || 'Untitled Product');
-    formData.set('slug', slug || 'product');
+    formData.set('name', trimmedName);
+    formData.set('slug', slug || trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
     formData.set('category_slug', categorySlug || 'cricket');
     formData.set('brand', brand || 'Oriental Sports');
-    formData.set('description', description || '');
-    formData.set('price', price || '0');
+    formData.set('description', trimmedDesc);
+    formData.set('price', String(numericPrice));
     formData.set('compare_at_price', compareAtPrice || '');
     formData.set('stock_quantity', String(stockQuantity || 10));
     formData.set('low_stock_threshold', String(lowStockThreshold || 5));
@@ -146,21 +181,14 @@ export function ProductForm({ initialData, product: productProp, categories, act
     formData.set('sizes', sizes || '');
     formData.set('available_sizes', sizes || '');
     formData.set('variants_json', variantsJson || '[]');
-    formData.set('seo_title', seoTitle || `${name} | Oriental Sports Pune`);
-    formData.set('seo_description', seoDescription || description || '');
+    formData.set('seo_title', seoTitle || `${trimmedName} | Oriental Sports Pune`);
+    formData.set('seo_description', seoDescription || trimmedDesc || '');
     formData.set('seo_canonical_url', seoCanonical || '');
 
     // 1. Clean up deprecated localStorage probe storage
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem('os_custom_products');
-      } catch {}
-
-      // Multi-tab sync broadcast
-      try {
-        const bc = new BroadcastChannel('oriental_sports_catalog');
-        bc.postMessage({ type: 'PRODUCT_SAVED', slug });
-        bc.close();
       } catch {}
     }
 
@@ -173,6 +201,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
       'http://localhost:3000/api/products/save',
     ];
 
+    let saveSuccess = false;
     for (const ep of endpoints) {
       try {
         const res = await fetch(ep, {
@@ -182,16 +211,24 @@ export function ProductForm({ initialData, product: productProp, categories, act
         if (res.ok) {
           const resJson = await res.json().catch(() => null);
           if (resJson?.success) {
+            saveSuccess = true;
             break;
           }
         }
       } catch {}
     }
 
+    if (!saveSuccess) {
+      setSaveError('Failed to save product to the database. Please check your connection and try again.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Broadcast update across tabs
     if (typeof window !== 'undefined') {
       try {
         const bc = new BroadcastChannel('oriental_sports_catalog');
-        bc.postMessage({ type: 'PRODUCT_SAVED', slug, name });
+        bc.postMessage({ type: 'PRODUCT_SAVED', slug, name: trimmedName });
         bc.close();
       } catch {}
       try {
@@ -199,21 +236,13 @@ export function ProductForm({ initialData, product: productProp, categories, act
       } catch {}
     }
 
-    setIsSubmitting(false);
-    setSavedSuccess(`✓ Saved "${name || 'Product'}" successfully! All updates are live.`);
+    setSavedSuccess(`✓ Saved "${trimmedName}" successfully! Moving to Dashboard...`);
 
+    // Lock button state and immediately navigate to Dashboard
     if (typeof window !== 'undefined') {
-      try {
-        window.history.replaceState(null, '', `${window.location.pathname}?saved=Product+saved+successfully`);
-      } catch {}
-    }
-
-    // If new product created on /products/new, redirect back to products catalog
-    const isNewCreation = !data?.id && typeof window !== 'undefined' && window.location.pathname.includes('/new');
-    if (isNewCreation) {
       setTimeout(() => {
-        window.location.href = `${basePath}/products?saved=Product+created+successfully`;
-      }, 700);
+        window.location.href = `${basePath}/dashboard?saved=${encodeURIComponent(`Product "${trimmedName}" saved successfully!`)}`;
+      }, 400);
     }
   };
 
@@ -907,7 +936,9 @@ export function ProductForm({ initialData, product: productProp, categories, act
             gap: 8,
           }}
         >
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+          {isSubmitting
+            ? (savedSuccess ? '✓ Saved! Moving to Dashboard...' : 'Saving Product...')
+            : 'Save Product'}
         </button>
       </div>
     </form>
