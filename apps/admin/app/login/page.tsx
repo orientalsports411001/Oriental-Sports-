@@ -10,7 +10,7 @@ const OWNER_EMAIL = 'hello.orientalsports@gmail.com';
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(OWNER_EMAIL);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [message, setMessage] = useState<string | null>(null);
   const [showDeniedModal, setShowDeniedModal] = useState(false);
@@ -18,15 +18,39 @@ function LoginForm() {
 
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
+  const handleDismissDeniedModal = () => {
+    setShowDeniedModal(false);
+    setEmail(OWNER_EMAIL);
+    if (typeof window !== 'undefined') {
+      try {
+        window.history.replaceState({}, '', window.location.pathname);
+      } catch {}
+    }
+  };
+
   // Check URL params for unauthorized or error state on mount
   useEffect(() => {
     const errorParam = searchParams.get('error');
     const unauthorizedParam = searchParams.get('unauthorized');
 
-    if (unauthorizedParam === '1' || (errorParam && errorParam.toLowerCase().includes('admin'))) {
+    if (unauthorizedParam === '1') {
       setShowDeniedModal(true);
       setStatus('error');
       setMessage(errorParam || `Access restricted: Only ${OWNER_EMAIL} can log in.`);
+      // Strip error params immediately from URL so reloading the page won't reopen the modal
+      if (typeof window !== 'undefined') {
+        try {
+          window.history.replaceState({}, '', window.location.pathname);
+        } catch {}
+      }
+    } else if (errorParam) {
+      setStatus('error');
+      setMessage(errorParam);
+      if (typeof window !== 'undefined') {
+        try {
+          window.history.replaceState({}, '', window.location.pathname);
+        } catch {}
+      }
     }
   }, [searchParams]);
 
@@ -124,7 +148,7 @@ function LoginForm() {
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
           }}
-          onClick={() => setShowDeniedModal(false)}
+          onClick={handleDismissDeniedModal}
         >
           <div
             style={{
@@ -144,7 +168,7 @@ function LoginForm() {
             {/* Close Button */}
             <button
               type="button"
-              onClick={() => setShowDeniedModal(false)}
+              onClick={handleDismissDeniedModal}
               aria-label="Close message"
               style={{
                 position: 'absolute',
@@ -241,10 +265,7 @@ function LoginForm() {
             {/* Action Button */}
             <button
               type="button"
-              onClick={() => {
-                setShowDeniedModal(false);
-                setEmail(OWNER_EMAIL);
-              }}
+              onClick={handleDismissDeniedModal}
               style={{
                 width: '100%',
                 minHeight: 44,

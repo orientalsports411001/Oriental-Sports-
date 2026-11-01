@@ -4,20 +4,31 @@ import { createClient } from '@/lib/supabase/server';
 
 export const OWNER_ADMIN_EMAIL = 'hello.orientalsports@gmail.com';
 
+export function isAuthorizedAdminEmail(email?: string | null): boolean {
+  if (!email) return false;
+  const clean = email.toLowerCase().trim();
+  if (clean === OWNER_ADMIN_EMAIL) return true;
+  const envAdmins = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  return envAdmins.includes(clean);
+}
+
 /**
  * Server-side admin check without redirection.
  * Safe to use inside Server Actions (where redirect() crashes RPC calls).
  */
 export async function checkAdmin(): Promise<
   | { ok: true; user: { id: string; email: string }; profile: { id: string; role: string; email: string; full_name: string } }
-  | { ok: false; error: string }
+  | { ok: false; error: string; reason: 'unauthenticated' | 'forbidden' }
 > {
   try {
     const supabase = await createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      return { ok: false, error: 'Authentication required. Please sign in to the operations console.' };
+      return { ok: false, error: 'Authentication required. Please sign in.', reason: 'unauthenticated' };
     }
 
     const { data: profile } = await supabase
@@ -27,12 +38,13 @@ export async function checkAdmin(): Promise<
       .maybeSingle();
 
     const userEmail = (user.email || profile?.email || '').toLowerCase().trim();
-    const isOwnerAdmin = userEmail === OWNER_ADMIN_EMAIL;
+    const isOwnerAdmin = isAuthorizedAdminEmail(userEmail);
 
     if (!isOwnerAdmin) {
       return {
         ok: false,
-        error: `Access Denied: Only the store administrator (${OWNER_ADMIN_EMAIL}) can log in.`,
+        error: `Access Denied: The account ${userEmail} does not have administrator privileges. Only ${OWNER_ADMIN_EMAIL} can log in.`,
+        reason: 'forbidden',
       };
     }
 
@@ -47,7 +59,7 @@ export async function checkAdmin(): Promise<
       },
     };
   } catch (err: any) {
-    return { ok: false, error: err?.message || 'Admin authorization failed.' };
+    return { ok: false, error: err?.message || 'Admin authorization failed.', reason: 'unauthenticated' };
   }
 }
 
@@ -58,9 +70,14 @@ export async function checkAdmin(): Promise<
 export async function requireAdmin() {
   const result = await checkAdmin();
   if (!result.ok) {
+    // If the user simply has not logged in yet, take them to the clean login screen
+    if (result.reason === 'unauthenticated') {
+      redirect('/login');
+    }
+    // Only display the access denied error if a signed-in user is actually forbidden
     redirect(
       `/login?error=${encodeURIComponent(
-        `Access restricted: Only the store administrator (${OWNER_ADMIN_EMAIL}) can log in.`
+        result.error || `Access restricted: Only the store administrator (${OWNER_ADMIN_EMAIL}) can log in.`
       )}&unauthorized=1`
     );
   }

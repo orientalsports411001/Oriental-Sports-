@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { OWNER_ADMIN_EMAIL } from '@/lib/require-admin';
+import { OWNER_ADMIN_EMAIL, isAuthorizedAdminEmail } from '@/lib/require-admin';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -23,18 +23,18 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
       }
 
-      // Strictly verify that the signed-in user is the authorized owner
+      // Strictly verify that the signed-in user is an authorized owner/admin
       const {
         data: { user },
       } = await supabase.auth.getUser();
       const userEmail = (user?.email || '').toLowerCase().trim();
 
-      if (userEmail !== OWNER_ADMIN_EMAIL) {
+      if (!isAuthorizedAdminEmail(userEmail)) {
         // Invalidate unauthorized session immediately
         await supabase.auth.signOut();
         return NextResponse.redirect(
           `${origin}/login?error=${encodeURIComponent(
-            `Access restricted: Only the store administrator (${OWNER_ADMIN_EMAIL}) can log in.`
+            `Access restricted: The account ${userEmail} is not authorized for administration.`
           )}&unauthorized=1`
         );
       }
