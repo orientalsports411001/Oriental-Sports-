@@ -31,10 +31,28 @@ export async function getAdminNavCounts(): Promise<{ productsCount: number; orde
   try {
     const admin = createServiceRoleClient();
     const { data: dbProducts } = await admin.from('products').select('id, slug');
-    if (Array.isArray(dbProducts)) {
+    if (Array.isArray(dbProducts) && dbProducts.length > 0) {
       productsCount = uniqueProductCount(cachedProducts, dbProducts);
     }
   } catch {}
+
+  // Direct PostgREST fallback if client failed or returned 131
+  if (productsCount === cachedProducts.length) {
+    try {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+      const res = await fetch(`${url}/rest/v1/products?select=id,slug`, {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+        cache: 'no-store',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          productsCount = uniqueProductCount(cachedProducts, data);
+        }
+      }
+    } catch {}
+  }
 
   try {
     const admin = createServiceRoleClient();

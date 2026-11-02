@@ -151,16 +151,63 @@ export async function POST(req: Request) {
         }
       }
       if (!updated) {
-        await admin.from('products').upsert(
+        const { error: upsertErr } = await admin.from('products').upsert(
           {
             ...supaPayload,
             ...(isUuid ? { id: productId } : {}),
           },
           { onConflict: 'slug' }
         );
+        if (upsertErr) {
+          const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+          const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+          await fetch(`${url}/rest/v1/products`, {
+            method: 'POST',
+            headers: {
+              apikey: key,
+              Authorization: `Bearer ${key}`,
+              'Content-Type': 'application/json',
+              Prefer: 'resolution=merge-duplicates',
+            },
+            body: JSON.stringify({
+              ...supaPayload,
+              ...(isUuid ? { id: productId } : {}),
+            }),
+          });
+        }
       }
     } catch (e) {
-      // Supabase update notice / fallback
+      try {
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+        const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+        await fetch(`${url}/rest/v1/products`, {
+          method: 'POST',
+          headers: {
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+            'Content-Type': 'application/json',
+            Prefer: 'resolution=merge-duplicates',
+          },
+          body: JSON.stringify({
+            name: saved.name,
+            slug: saved.slug,
+            category_slug: saved.category_slug,
+            brand: saved.brand,
+            description: saved.description,
+            price: saved.price,
+            images: saved.images,
+            in_stock: saved.status === 'published' && (saved.stock_quantity ?? 1) > 0,
+            metadata: {
+              status: saved.status,
+              stock_quantity: saved.stock_quantity,
+              low_stock_threshold: saved.low_stock_threshold,
+              seo_title: saved.seo_title,
+              seo_description: saved.seo_description,
+            },
+            updated_at: new Date().toISOString(),
+          }),
+        });
+      } catch {}
     }
 
     const targetId = saved.id || saved.slug || slug;

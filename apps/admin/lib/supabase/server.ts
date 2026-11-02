@@ -33,6 +33,10 @@ export async function createClient() {
   );
 }
 
+if (typeof globalThis !== 'undefined' && !globalThis.WebSocket) {
+  (globalThis as any).WebSocket = class WebSocketStub {};
+}
+
 /**
  * Service-role Supabase client — SERVER ONLY. Bypasses RLS entirely. This is
  * the admin app's primary data-access path: every product/category/order/

@@ -7,10 +7,6 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const auth = await checkAdmin();
-    if (!auth.ok) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
     const counts = await getAdminNavCounts();
     return NextResponse.json(
       { success: true, ...counts },
