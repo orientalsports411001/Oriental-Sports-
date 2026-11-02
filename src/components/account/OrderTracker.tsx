@@ -113,7 +113,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
     `Hello Oriental Sports Camp Pune team! I'm inquiring about my order ${order.orderNumber} (₹${order.totalAmount.toLocaleString('en-IN')}). Could you assist with status updates?`
   )}`;
 
-  const isSyncBusy = isLocalSyncing || isSyncingOrders;
+  const isSyncBusy = isLocalSyncing;
 
   return (
     <div

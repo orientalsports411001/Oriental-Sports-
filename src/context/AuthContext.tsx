@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { UserProfile, Address, Order } from '../types/auth';
 import { AuthService } from '../services/authService';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -211,19 +211,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved;
   };
 
-  const syncOrders = async (userIdOrPhone?: string): Promise<Order[]> => {
+  const isSyncingRef = useRef(false);
+
+  const syncOrders = useCallback(async (userIdOrPhone?: string): Promise<Order[]> => {
+    if (isSyncingRef.current) return [];
+    isSyncingRef.current = true;
     setIsSyncingOrders(true);
     try {
       const orders = await AuthService.syncUserOrdersFromRemote(userIdOrPhone);
       const currentUser = AuthService.getCurrentUser();
       if (currentUser) {
-        setUser({ ...currentUser });
+        setUser(currentUser);
       }
       return orders;
+    } catch {
+      return [];
     } finally {
+      isSyncingRef.current = false;
       setIsSyncingOrders(false);
     }
-  };
+  }, []);
 
   return (
     <AuthContext.Provider

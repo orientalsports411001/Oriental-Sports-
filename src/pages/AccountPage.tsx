@@ -81,29 +81,21 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     }
   }, [tab, isAuthenticated, openAuthModal]);
 
-  // Synchronize orders with admin API on mount and on tab changes, plus 30s background polling
+  // Synchronize orders with admin API once on tab entry and quiet 45s interval
   React.useEffect(() => {
     let intervalId: any = null;
 
-    const doSync = async () => {
-      try {
-        await syncOrders();
-      } catch (err) {
-        console.warn('Orders sync notice:', err);
-      }
-    };
-
-    // Run sync when viewing orders or overview
     if (activeTab === 'orders' || activeTab === 'overview') {
-      doSync();
-      // 30s background poll so changes made by admin appear in real-time
-      intervalId = setInterval(doSync, 30000);
+      syncOrders().catch(() => {});
+      intervalId = setInterval(() => {
+        syncOrders().catch(() => {});
+      }, 45000);
     }
 
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [activeTab, syncOrders]);
+  }, [activeTab]);
 
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
