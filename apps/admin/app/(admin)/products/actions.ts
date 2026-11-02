@@ -6,6 +6,7 @@ import { createServiceRoleClient } from '@/lib/supabase/server';
 import { checkAdmin } from '@/lib/require-admin';
 import { saveProduct, removeProduct, getCachedProducts } from '@/lib/catalog-store';
 import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
+import { revalidateAdminNav } from '@/lib/nav-counts';
 
 function parseLines(value: string | null): string[] {
   if (!value) return [];
@@ -371,7 +372,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   });
   targetEditId = targetEditId || saved.id || fields.slug || productId;
 
-  revalidatePath('/products');
+  revalidateAdminNav();
   revalidatePath(`/products/${targetEditId}/edit`);
 
   if (publishError) {
@@ -433,7 +434,7 @@ export async function toggleProductVisibility(productId: string, currentStatus: 
     status: newStatus,
   });
 
-  revalidatePath('/products');
+  revalidateAdminNav();
   return { success: true, status: newStatus };
 }
 
@@ -494,7 +495,7 @@ export async function restockProduct(productId: string, newStock: number) {
     status: quantity > 0 ? 'published' : 'draft',
   });
 
-  revalidatePath('/products');
+  revalidateAdminNav();
   return { success: true, stock_quantity: quantity, status: quantity > 0 ? 'published' : 'draft' };
 }
 

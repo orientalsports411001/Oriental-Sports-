@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useAdminNavCounts } from '@/hooks/useAdminNavCounts';
 import {
   LayoutDashboard,
   Package,
@@ -21,11 +22,14 @@ interface AdminBottomNavProps {
   productsCount?: number;
 }
 
-export function AdminBottomNav({ userEmail, ordersCount = 1, productsCount = 61 }: AdminBottomNavProps) {
+export function AdminBottomNav({ userEmail, ordersCount = 0, productsCount = 0 }: AdminBottomNavProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const liveCounts = useAdminNavCounts(productsCount, ordersCount);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const productsBadge = liveCounts.productsCount;
+  const ordersBadge = liveCounts.ordersCount;
 
   const isDashboardActive = pathname === '/dashboard';
   const isProductsActive = pathname?.startsWith('/products');
@@ -89,7 +93,7 @@ export function AdminBottomNav({ userEmail, ordersCount = 1, productsCount = 61 
             <div className="admin-bottom-nav-icon-wrap">
               <Package size={19} strokeWidth={isProductsActive && !isProfileModalOpen ? 2.4 : 1.8} />
               <span className="admin-bottom-nav-badge" aria-hidden="true">
-                {productsCount}
+                {productsBadge}
               </span>
             </div>
             <span className="admin-bottom-nav-label">Products</span>
@@ -115,9 +119,9 @@ export function AdminBottomNav({ userEmail, ordersCount = 1, productsCount = 61 
           >
             <div className="admin-bottom-nav-icon-wrap">
               <ClipboardList size={19} strokeWidth={isOrdersActive && !isProfileModalOpen ? 2.4 : 1.8} />
-              {ordersCount > 0 && (
+              {ordersBadge > 0 && (
                 <span className="admin-bottom-nav-badge" aria-hidden="true">
-                  {ordersCount}
+                  {ordersBadge}
                 </span>
               )}
             </div>

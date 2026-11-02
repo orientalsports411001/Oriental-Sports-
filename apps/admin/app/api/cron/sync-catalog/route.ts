@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { revalidateAdminNav } from '@/lib/nav-counts';
 
 // Enforce max duration for Edge/Serverless Cron
 export const maxDuration = 60;
@@ -129,7 +130,7 @@ export async function GET(req: NextRequest) {
     // 4. Revalidate frontend paths if changes were resolved
     if (report.inconsistenciesResolved > 0) {
       try {
-        revalidatePath('/products');
+        revalidateAdminNav();
         revalidatePath('/dashboard');
       } catch (revErr) {
         report.details.push(`Revalidation notice: ${String(revErr)}`);

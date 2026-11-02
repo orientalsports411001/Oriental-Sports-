@@ -42,7 +42,7 @@ export interface SeoProvider {
   generateSeoSuggestions(input: SeoSuggestionInput): Promise<SeoProviderResult>;
 }
 
-const REQUEST_TIMEOUT_MS = 20_000;
+const REQUEST_TIMEOUT_MS = 3_500;
 
 /**
  * Hand-written type guard to validate AI JSON output shape.

@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { saveProduct } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
+import { revalidateAdminNav } from '@/lib/nav-counts';
 
 function getLatestNonEmpty(formData: FormData, key: string): string {
   const all = formData.getAll(key);
@@ -164,7 +165,7 @@ export async function POST(req: Request) {
 
     const targetId = saved.id || saved.slug || slug;
     try {
-      revalidatePath('/products');
+      revalidateAdminNav();
       revalidatePath(`/products/${targetId}/edit`);
     } catch {}
 

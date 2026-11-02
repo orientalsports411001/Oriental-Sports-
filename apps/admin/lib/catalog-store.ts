@@ -246,6 +246,18 @@ export function getCachedProducts(): AdminProduct[] {
     }
   }
 
+  // Include products that exist only in customProducts.json / overlays
+  const leftovers = new Map<string, AdminProduct>();
+  for (const p of productMap.values()) {
+    leftovers.set(p.id || p.slug, p);
+  }
+  for (const p of leftovers.values()) {
+    if ((p.id && seen.has(p.id)) || (p.slug && seen.has(p.slug))) continue;
+    if (p.id) seen.add(p.id);
+    if (p.slug) seen.add(p.slug);
+    unified.unshift(p);
+  }
+
   productsCache = unified;
   return unified;
 }

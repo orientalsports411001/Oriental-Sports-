@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogOut } from 'lucide-react';
+import { useAdminNavCounts } from '@/hooks/useAdminNavCounts';
 
 interface AdminSidebarProps {
   userEmail?: string;
@@ -10,14 +11,15 @@ interface AdminSidebarProps {
   productsCount?: number;
 }
 
-export function AdminSidebar({ userEmail, ordersCount = 1, productsCount = 61 }: AdminSidebarProps) {
+export function AdminSidebar({ userEmail, ordersCount = 0, productsCount = 0 }: AdminSidebarProps) {
   const pathname = usePathname();
+  const liveCounts = useAdminNavCounts(productsCount, ordersCount);
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard' },
-    { href: '/products', label: 'Products', badge: productsCount > 0 ? String(productsCount) : undefined },
+    { href: '/products', label: 'Products', badge: liveCounts.productsCount > 0 ? String(liveCounts.productsCount) : undefined },
     { href: '/categories', label: 'Disciplines' },
-    { href: '/orders', label: 'Orders', badge: ordersCount > 0 ? String(ordersCount) : undefined },
+    { href: '/orders', label: 'Orders', badge: liveCounts.ordersCount > 0 ? String(liveCounts.ordersCount) : undefined },
   ];
 
   return (

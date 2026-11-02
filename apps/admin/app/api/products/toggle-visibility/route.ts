@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import { revalidateAdminNav } from '@/lib/nav-counts';
 import { getCachedProducts, saveProduct } from '@/lib/catalog-store';
 import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 
@@ -82,7 +83,7 @@ export async function POST(req: Request) {
     }
 
     try {
-      revalidatePath('/products');
+      revalidateAdminNav();
       revalidatePath(`/products/${productId}/edit`);
     } catch {}
 
