@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   User,
   Package,
@@ -65,19 +65,31 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
   const { wishlist } = useWishlist();
 
+  const navigate = useNavigate();
+  const prevTabPropRef = React.useRef(tab);
+
   const [activeTab, setActiveTab] = useState<AccountTab>(
     (tab && ['overview', 'orders', 'addresses', 'courts', 'wishlist', 'profile'].includes(tab))
       ? (tab as AccountTab)
       : 'overview'
   );
 
+  const switchTab = React.useCallback((newTab: AccountTab) => {
+    setActiveTab(newTab);
+    prevTabPropRef.current = newTab;
+    const path = newTab === 'overview' ? '/account' : `/account/${newTab}`;
+    navigate(path);
+  }, [navigate]);
+
   React.useEffect(() => {
-    if (tab && ['overview', 'orders', 'addresses', 'courts', 'wishlist', 'profile'].includes(tab)) {
-      setActiveTab(tab as AccountTab);
-    } else if (tab === 'login' || tab === 'signup' || tab === 'verify') {
-      if (!isAuthenticated) {
-        openAuthModal('phone');
+    if (tab && prevTabPropRef.current !== tab) {
+      prevTabPropRef.current = tab;
+      if (['overview', 'orders', 'addresses', 'courts', 'wishlist', 'profile'].includes(tab)) {
+        setActiveTab(tab as AccountTab);
       }
+    }
+    if ((tab === 'login' || tab === 'signup' || tab === 'verify') && !isAuthenticated) {
+      openAuthModal('phone');
     }
   }, [tab, isAuthenticated, openAuthModal]);
 
@@ -995,7 +1007,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
             <div className="account-segmented-container">
               <button
                 type="button"
-                onClick={() => setActiveTab('overview')}
+                onClick={() => switchTab('overview')}
                 className={`account-segmented-tab ${activeTab === 'overview' ? 'is-active' : ''}`}
               >
                 <Activity size={15} />
@@ -1004,7 +1016,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('orders')}
+                onClick={() => switchTab('orders')}
                 className={`account-segmented-tab ${activeTab === 'orders' ? 'is-active' : ''}`}
               >
                 <Package size={15} />
@@ -1013,7 +1025,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('addresses')}
+                onClick={() => switchTab('addresses')}
                 className={`account-segmented-tab ${activeTab === 'addresses' ? 'is-active' : ''}`}
               >
                 <MapPin size={15} />
@@ -1022,7 +1034,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('courts')}
+                onClick={() => switchTab('courts')}
                 className={`account-segmented-tab ${activeTab === 'courts' ? 'is-active' : ''}`}
               >
                 <Layers size={15} />
@@ -1031,7 +1043,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('wishlist')}
+                onClick={() => switchTab('wishlist')}
                 className={`account-segmented-tab ${activeTab === 'wishlist' ? 'is-active' : ''}`}
               >
                 <Heart size={15} />
@@ -1040,7 +1052,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
               <button
                 type="button"
-                onClick={() => setActiveTab('profile')}
+                onClick={() => switchTab('profile')}
                 className={`account-segmented-tab ${activeTab === 'profile' ? 'is-active' : ''}`}
               >
                 <User size={15} />
@@ -1104,7 +1116,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     </h2>
                     <button
                       type="button"
-                      onClick={() => setActiveTab('orders')}
+                      onClick={() => switchTab('orders')}
                       style={{
                         background: 'none',
                         border: 'none',
@@ -1167,7 +1179,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                     </span>
                     <button
                       type="button"
-                      onClick={() => setActiveTab('addresses')}
+                      onClick={() => switchTab('addresses')}
                       style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600 }}
                     >
                       Manage ({user.addresses.length})
@@ -1233,7 +1245,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                 <h1 className="account-mobile-title">Profile</h1>
                 <button
                   type="button"
-                  onClick={() => setActiveTab('profile')}
+                  onClick={() => switchTab('profile')}
                   className="account-mobile-action-btn"
                   title="Edit Profile"
                   aria-label="Edit Profile"
@@ -1250,7 +1262,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                   </div>
                   <div
                     className="account-mobile-avatar-edit"
-                    onClick={() => setActiveTab('profile')}
+                    onClick={() => switchTab('profile')}
                   >
                     <Camera size={13} />
                   </div>
@@ -1274,7 +1286,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               <div className="account-mobile-menu-card">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('orders')}
+                  onClick={() => switchTab('orders')}
                   className="account-mobile-menu-item"
                 >
                   <div className="account-mobile-item-left">
@@ -1294,7 +1306,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
                 <button
                   type="button"
-                  onClick={() => setActiveTab('courts')}
+                  onClick={() => switchTab('courts')}
                   className="account-mobile-menu-item"
                 >
                   <div className="account-mobile-item-left">
@@ -1314,7 +1326,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
                 <button
                   type="button"
-                  onClick={() => setActiveTab('wishlist')}
+                  onClick={() => switchTab('wishlist')}
                   className="account-mobile-menu-item"
                 >
                   <div className="account-mobile-item-left">
@@ -1338,7 +1350,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               <div className="account-mobile-menu-card">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('profile')}
+                  onClick={() => switchTab('profile')}
                   className="account-mobile-menu-item"
                 >
                   <div className="account-mobile-item-left">
@@ -1357,7 +1369,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
 
                 <button
                   type="button"
-                  onClick={() => setActiveTab('addresses')}
+                  onClick={() => switchTab('addresses')}
                   className="account-mobile-menu-item"
                 >
                   <div className="account-mobile-item-left">
@@ -1427,7 +1439,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
               <div className="account-subview-header">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('overview')}
+                  onClick={() => switchTab('overview')}
                   className="account-subview-back-btn"
                   aria-label="Back to Profile"
                 >
