@@ -12,8 +12,8 @@ export function normalizeOrderStatus(rawStatus?: string): OrderStatus {
   if (clean === 'delivered' || clean === 'completed') return 'delivered';
   if (clean === 'ready_for_pickup' || clean === 'ready' || clean === 'ready for pickup') return 'ready_for_pickup';
   if (clean === 'out_for_delivery') return 'out_for_delivery';
-  if (clean === 'in_transit' || clean === 'dispatched') return 'in_transit';
-  if (clean === 'shipped') return 'shipped';
+  if (clean === 'in_transit') return 'in_transit';
+  if (clean === 'dispatched' || clean === 'shipped') return 'shipped';
   if (clean === 'processing' || clean === 'in_progress' || clean === 'in progress') return 'processing';
   if (clean === 'confirmed' || clean === 'paid' || clean === 'pending') return 'confirmed';
 
@@ -152,15 +152,19 @@ export function generateOrderTimeline(
     current: activeRank === 2,
   };
 
-  // Step 3: Logistics / Pickup ready
+  // Step 3: Logistics / Pickup ready / Out for Delivery
   const step3Title = isPickup
     ? 'Ready for Camp Store Collection'
+    : norm === 'out_for_delivery'
+    ? 'Out for Delivery Today'
     : norm === 'in_transit'
-    ? 'In Transit / Out for Delivery'
-    : 'Dispatched / In Transit';
+    ? 'In Transit'
+    : 'Dispatched via Courier';
 
   const step3Description = isPickup
     ? 'Package is staged at Oriental Sports Camp flagship counter (Shop 247, MG Road, Camp). Bring order ID for verification.'
+    : norm === 'out_for_delivery'
+    ? (carrier ? `${carrier} delivery executive is out for doorstep delivery today.` : 'Delivery executive is out for doorstep delivery today.')
     : carrier
     ? `Handed over to ${carrier}${trackingNumber ? ` (AWB: ${trackingNumber})` : ''} for expedited dispatch.`
     : 'Handed over to logistics carrier partner for expedited dispatch.';

@@ -65,6 +65,23 @@ export default async function OrdersPage({
 
   // Merge live database orders with cached / synced store orders
   const cached = getCachedOrders();
+  const cachedMap = new Map(cached.map((c) => [c.order_number, c]));
+
+  // Merge cached updates (status, tracking, customer details) into db orders
+  orders = orders.map((o) => {
+    const c = cachedMap.get(o.order_number);
+    if (!c) return o;
+    return {
+      ...o,
+      status: c.status || o.status,
+      carrier: c.carrier || o.carrier,
+      tracking_number: c.tracking_number || o.tracking_number,
+      customer_name: o.customer_name || c.customer_name,
+      customer_phone: o.customer_phone || c.customer_phone,
+      customer_email: o.customer_email || c.customer_email,
+    };
+  });
+
   const existingOrderNumbers = new Set(orders.map((o) => o.order_number));
   for (const c of cached) {
     if (!existingOrderNumbers.has(c.order_number)) {
@@ -183,9 +200,9 @@ export default async function OrdersPage({
           }}
         >
           <option value="">All Statuses</option>
-          {['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled'].map((s) => (
+          {['confirmed', 'processing', 'dispatched', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'].map((s) => (
             <option key={s} value={s}>
-              {s.charAt(0).toUpperCase() + s.slice(1)}
+              {s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ')}
             </option>
           ))}
         </select>

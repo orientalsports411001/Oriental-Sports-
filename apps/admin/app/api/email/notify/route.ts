@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sendOrderStatusEmail, OrderEmailData } from '@/lib/email';
+import { sendOrderStatusEmail, sendAdminNewOrderNotification, OrderEmailData } from '@/lib/email';
 import { getCachedOrders } from '@/lib/catalog-store';
 
 export const dynamic = 'force-dynamic';
@@ -111,6 +111,13 @@ export async function POST(req: Request) {
       recipientEmail,
       recipientName: body.customerName || orderData.customer_name,
     });
+
+    // If new order confirmation stage or explicitly requested, also notify store admin
+    if (stage === 'confirmed' || body.notifyAdmin) {
+      sendAdminNewOrderNotification(orderData).catch((err) => {
+        console.warn('[api/email/notify] Warning notifying admin:', err);
+      });
+    }
 
     return NextResponse.json(
       {

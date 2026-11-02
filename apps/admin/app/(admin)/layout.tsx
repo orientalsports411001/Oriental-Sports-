@@ -1,6 +1,7 @@
 import { requireAdmin } from '@/lib/require-admin';
 import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { AdminBottomNav } from '@/components/layout/AdminBottomNav';
+import { AdminOrderNotifier } from '@/components/orders/AdminOrderNotifier';
 import { getAdminNavCounts } from '@/lib/nav-counts';
 
 export const dynamic = 'force-dynamic';
@@ -12,6 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="admin-shell">
+      <AdminOrderNotifier />
       <AdminSidebar userEmail={profile.email} ordersCount={ordersCount} productsCount={productsCount} />
 
       <main className="admin-main">{children}</main>

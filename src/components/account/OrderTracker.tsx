@@ -97,9 +97,10 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
   const statusColorMap: Record<string, { bg: string; text: string; border: string }> = {
     confirmed: { bg: 'rgba(59, 130, 246, 0.15)', text: '#60A5FA', border: 'rgba(59, 130, 246, 0.3)' },
     processing: { bg: 'rgba(245, 158, 11, 0.15)', text: '#FBBF24', border: 'rgba(245, 158, 11, 0.3)' },
+    dispatched: { bg: 'rgba(200, 16, 46, 0.15)', text: '#FF4D6D', border: 'rgba(200, 16, 46, 0.3)' },
     shipped: { bg: 'rgba(200, 16, 46, 0.15)', text: '#FF4D6D', border: 'rgba(200, 16, 46, 0.3)' },
     in_transit: { bg: 'rgba(200, 16, 46, 0.18)', text: '#FF6B8B', border: 'rgba(200, 16, 46, 0.4)' },
-    out_for_delivery: { bg: 'rgba(200, 16, 46, 0.2)', text: '#FF6B8B', border: 'rgba(200, 16, 46, 0.4)' },
+    out_for_delivery: { bg: 'rgba(37, 99, 235, 0.18)', text: '#60A5FA', border: 'rgba(37, 99, 235, 0.4)' },
     ready_for_pickup: { bg: 'rgba(16, 185, 129, 0.15)', text: '#34D399', border: 'rgba(16, 185, 129, 0.35)' },
     delivered: { bg: 'rgba(16, 185, 129, 0.15)', text: '#34D399', border: 'rgba(16, 185, 129, 0.3)' },
     cancelled: { bg: 'rgba(107, 114, 128, 0.15)', text: '#9CA3AF', border: 'rgba(107, 114, 128, 0.3)' },

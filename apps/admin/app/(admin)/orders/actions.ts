@@ -44,9 +44,10 @@ export async function changeOrderStatus(orderId: string, formData: FormData) {
   }
 
   // Update in local / cached catalog store
-  const cached = getCachedOrders().find((o) => o.id === orderId || o.order_number === orderId);
+  let cached = getCachedOrders().find((o) => o.id === orderId || o.order_number === orderId);
   if (cached) {
     updateOrder(cached.id, { status: nextStatus as any });
+    cached = { ...cached, status: nextStatus as any };
   }
 
   // Send stage update email to customer
@@ -74,19 +75,31 @@ export async function changeOrderStatus(orderId: string, formData: FormData) {
 
         emailOrder = {
           ...dbOrder,
+          status: nextStatus,
           customer_email: customerEmail,
           customer_name: customerName,
           items: items || [],
         };
       }
+    } else {
+      emailOrder = {
+        ...emailOrder,
+        status: nextStatus,
+      };
     }
 
     if (emailOrder) {
+      const recipientEmail =
+        emailOrder.customer_email ||
+        (emailOrder.shipping_address as any)?.email;
+
       await sendOrderStatusEmail({
         order: emailOrder,
         stage: nextStatus,
         trackingNumber: emailOrder.tracking_number,
         carrier: emailOrder.carrier,
+        recipientEmail,
+        recipientName: emailOrder.customer_name,
       });
     }
   } catch (emailErr) {
@@ -108,8 +121,10 @@ export async function updateTracking(orderId: string, formData: FormData) {
       const trackableStatuses = [
         'confirmed',
         'processing',
+        'dispatched',
         'shipped',
         'in_transit',
+        'out_for_delivery',
         'ready_for_pickup',
         'delivered',
       ];

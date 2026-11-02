@@ -106,11 +106,12 @@ export function getStageConfig(stage: string): StageConfig {
         accentColor: '#D97706',
       };
     case 'shipped':
+    case 'dispatched':
       return {
-        badge: 'DISPATCHED',
+        badge: 'ORDER DISPATCHED',
         headline: 'Dispatched via Courier',
         message:
-          'Dispatched with carrier & tracking AWB. Your gear has cleared final packing and is en route for swift doorstep delivery.',
+          'Your equipment has cleared final workshop inspection, electronic string tension calibration, and export-grade protective packaging. It has been handed over to the courier partner for swift doorstep delivery.',
         stepIndex: 3,
         accentColor: '#C8102E',
       };
@@ -120,6 +121,15 @@ export function getStageConfig(stage: string): StageConfig {
         headline: 'En Route to Delivery Location',
         message:
           'Your shipment is actively moving through the carrier logistics network. Real-time tracking is updated as the vehicle progresses.',
+        stepIndex: 3,
+        accentColor: '#2563EB',
+      };
+    case 'out_for_delivery':
+      return {
+        badge: 'OUT FOR DELIVERY',
+        headline: 'Out For Doorstep Delivery Today',
+        message:
+          'Your equipment package is out for delivery with our delivery executive today. Please keep your contact phone accessible for verification and smooth handover.',
         stepIndex: 3,
         accentColor: '#2563EB',
       };
@@ -752,4 +762,443 @@ export async function sendOrderStatusEmail(
     };
   }
 }
+
+/**
+ * Build HTML for Store Administrator Alert Email
+ * Sent to hello.orientalsports@gmail.com whenever a new order is received.
+ */
+export function generateAdminAlertEmailHtml(order: OrderEmailData): string {
+  const orderNumber = order.order_number || 'OS-ORDER';
+  const customerName =
+    order.customer_name ||
+    order.shipping_address?.name ||
+    order.shipping_address?.fullName ||
+    'Customer';
+  const customerPhone =
+    order.customer_phone ||
+    order.shipping_address?.phone ||
+    order.shipping_address?.phoneNumber ||
+    'Not provided';
+  const customerEmail =
+    order.customer_email ||
+    (order.shipping_address as any)?.email ||
+    'Not provided';
+
+  const addr = order.shipping_address || {};
+  const isPickup =
+    addr.street?.toLowerCase().includes('camp store') ||
+    addr.addressLine1?.toLowerCase().includes('camp store') ||
+    addr.street?.toLowerCase().includes('mg road');
+
+  const streetAddress = [addr.street || addr.addressLine1, addr.apartment || addr.addressLine2]
+    .filter(Boolean)
+    .join(', ');
+  const cityStatePin = [addr.locality, addr.city, addr.state, addr.pincode || addr.postalCode]
+    .filter(Boolean)
+    .join(', ');
+
+  const items = order.items && order.items.length > 0 ? order.items : [];
+  const orderDate = order.created_at
+    ? new Date(order.created_at).toLocaleString('en-IN', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      })
+    : new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+
+  const rawPhoneDigits = customerPhone.replace(/\D/g, '');
+  const cleanPhone = rawPhoneDigits.slice(-10);
+  const whatsappUrl = cleanPhone
+    ? `https://wa.me/91${cleanPhone}?text=Hello%20${encodeURIComponent(customerName)},%20this%20is%20Oriental%20Sports%20Camp%20Pune%20regarding%20your%20Order%20${encodeURIComponent(orderNumber)}.`
+    : '';
+
+  const adminOrderUrl = `https://admin.orientalsports.in/orders/${order.id || order.order_number}`;
+
+  const itemsHtml = items
+    .map((it, idx) => {
+      const lineTotal = (it.price || 0) * (it.quantity || 1);
+      const variant = [it.selected_variant, it.selected_size].filter(Boolean).join(' · ');
+      const bgColor = idx % 2 === 0 ? '#181818' : '#141414';
+
+      return `
+        <tr style="background-color: ${bgColor}; border-bottom: 1px solid #222222;">
+          <td style="padding: 12px 14px; color: #FFFFFF; font-size: 13px; font-weight: 600; line-height: 1.4; vertical-align: top; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            ${it.product_name}
+            ${
+              variant
+                ? `<div style="font-size: 11px; color: #E5A93C; font-weight: 500; margin-top: 3px;">Spec: ${variant}</div>`
+                : ''
+            }
+          </td>
+          <td align="center" style="padding: 12px 8px; color: #CCCCCC; font-size: 13px; font-weight: 700; vertical-align: top; font-family: monospace;">
+            ${it.quantity}
+          </td>
+          <td align="right" style="padding: 12px 8px; color: #CCCCCC; font-size: 13px; vertical-align: top; font-family: monospace;">
+            ${formatINR(it.price)}
+          </td>
+          <td align="right" style="padding: 12px 14px; color: #FFFFFF; font-size: 13px; font-weight: 700; vertical-align: top; font-family: monospace;">
+            ${formatINR(lineTotal)}
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Order Alert: ${orderNumber}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0A0A0A; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #FFFFFF;">
+  <div style="max-width: 620px; margin: 0 auto; padding: 24px 16px;">
+    <!-- Alert Header Banner -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #111111; border: 1px solid #282828; border-top: 4px solid #C8102E;">
+      <tr>
+        <td style="padding: 24px 28px 20px 28px; background: linear-gradient(180deg, #1A1A1A 0%, #111111 100%);">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <span style="display: inline-block; background-color: #C8102E; color: #FFFFFF; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px;">
+                  ⚡ NEW ORDER RECEIVED
+                </span>
+                <h1 style="margin: 12px 0 4px 0; font-size: 24px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em;">
+                  Order ${orderNumber}
+                </h1>
+                <div style="font-size: 13px; color: #AAAAAA;">
+                  Logged on ${orderDate} · Total: <strong style="color: #FFFFFF; font-size: 15px; font-family: monospace;">${formatINR(order.total_amount)}</strong>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Customer Contact Dossier -->
+      <tr>
+        <td style="padding: 20px 28px; background-color: #161616; border-top: 1px solid #222222; border-bottom: 1px solid #222222;">
+          <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #C8102E; margin-bottom: 12px;">
+            Customer & Delivery Dossier
+          </div>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13.5px; line-height: 1.5;">
+            <tr>
+              <td style="padding-bottom: 8px; color: #888888; width: 130px;">Athlete Name:</td>
+              <td style="padding-bottom: 8px; color: #FFFFFF; font-weight: 700;">${customerName}</td>
+            </tr>
+            <tr>
+              <td style="padding-bottom: 8px; color: #888888;">Mobile Phone:</td>
+              <td style="padding-bottom: 8px; color: #FFFFFF; font-weight: 700;">
+                <a href="tel:${cleanPhone}" style="color: #60A5FA; text-decoration: none;">+91 ${cleanPhone || customerPhone}</a>
+                ${
+                  whatsappUrl
+                    ? `&nbsp;·&nbsp;<a href="${whatsappUrl}" target="_blank" style="color: #10B981; font-weight: 700; text-decoration: underline;">Chat on WhatsApp →</a>`
+                    : ''
+                }
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-bottom: 8px; color: #888888;">Email Address:</td>
+              <td style="padding-bottom: 8px; color: #CCCCCC;">
+                ${customerEmail !== 'Not provided' ? `<a href="mailto:${customerEmail}" style="color: #60A5FA; text-decoration: none;">${customerEmail}</a>` : customerEmail}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-bottom: 8px; color: #888888;">Delivery Mode:</td>
+              <td style="padding-bottom: 8px; color: #FFFFFF; font-weight: 700;">
+                ${isPickup ? '🏬 Store Counter Pickup (Camp Workshop, MG Road)' : '🚚 Doorstep Courier Delivery'}
+              </td>
+            </tr>
+            <tr>
+              <td style="vertical-align: top; color: #888888;">Delivery Address:</td>
+              <td style="vertical-align: top; color: #CCCCCC; line-height: 1.4;">
+                ${streetAddress ? `<div>${streetAddress}</div>` : ''}
+                ${cityStatePin ? `<div>${cityStatePin}</div>` : ''}
+                ${!streetAddress && !cityStatePin ? '<div>Address will be confirmed via phone before courier pickup.</div>' : ''}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Order Items Table -->
+      <tr>
+        <td style="padding: 24px 28px 16px 28px; background-color: #111111;">
+          <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #888888; margin-bottom: 12px;">
+            Ordered Equipment (${items.length} ${items.length === 1 ? 'Item' : 'Items'})
+          </div>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border: 1px solid #222222;">
+            <thead>
+              <tr style="background-color: #1C1C1C; border-bottom: 1px solid #282828;">
+                <th align="left" style="padding: 10px 14px; font-size: 11px; font-weight: 700; color: #888888; text-transform: uppercase; letter-spacing: 0.08em;">
+                  Item
+                </th>
+                <th align="center" style="padding: 10px 8px; font-size: 11px; font-weight: 700; color: #888888; text-transform: uppercase; letter-spacing: 0.08em; width: 45px;">
+                  Qty
+                </th>
+                <th align="right" style="padding: 10px 8px; font-size: 11px; font-weight: 700; color: #888888; text-transform: uppercase; letter-spacing: 0.08em;">
+                  Price
+                </th>
+                <th align="right" style="padding: 10px 14px; font-size: 11px; font-weight: 700; color: #888888; text-transform: uppercase; letter-spacing: 0.08em;">
+                  Total
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              ${
+                itemsHtml ||
+                `<tr><td colspan="4" style="padding: 16px; text-align: center; color: #888888;">Equipment Package</td></tr>`
+              }
+            </tbody>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Financial Totals -->
+      <tr>
+        <td style="padding: 0 28px 24px 28px; background-color: #111111;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px; color: #CCCCCC; background-color: #161616; border: 1px solid #222222; padding: 14px 18px;">
+            <tr>
+              <td style="padding: 4px 0; color: #888888;">Subtotal</td>
+              <td align="right" style="padding: 4px 0; font-family: monospace; color: #FFFFFF;">
+                ${formatINR(order.subtotal || order.total_amount)}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: #888888;">GST (18% included)</td>
+              <td align="right" style="padding: 4px 0; font-family: monospace; color: #FFFFFF;">
+                ${formatINR(order.tax || 0)}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: #888888;">Courier Delivery</td>
+              <td align="right" style="padding: 4px 0; font-family: monospace; color: #FFFFFF;">
+                ${order.shipping && order.shipping > 0 ? formatINR(order.shipping) : 'FREE'}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: #888888;">Payment Method</td>
+              <td align="right" style="padding: 4px 0; color: #FFFFFF; font-weight: 600;">
+                ${order.payment_method || 'Razorpay / UPI'}
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="border-top: 1px solid #2E2E2E; padding-top: 10px; margin-top: 6px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="font-size: 15px; font-weight: 800; color: #FFFFFF;">Grand Total Settled</td>
+                    <td align="right" style="font-size: 18px; font-weight: 800; color: #10B981; font-family: monospace;">
+                      ${formatINR(order.total_amount)}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- CTA: Open in Admin Portal -->
+      <tr>
+        <td style="padding: 20px 28px; background-color: #161616; border-top: 1px solid #222222; text-align: center;">
+          <a href="${adminOrderUrl}" target="_blank"
+             style="display: inline-block; background-color: #C8102E; color: #FFFFFF; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; padding: 12px 24px; border-radius: 3px;">
+            Open Order in Admin Portal →
+          </a>
+          <div style="font-size: 11px; color: #777777; margin-top: 8px;">
+            Advance status: Confirmed → Processing → Dispatched → Out for Delivery → Delivered
+          </div>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td style="padding: 18px 28px; background-color: #0E0E0E; text-align: center; color: #666666; font-size: 11px;">
+          ORIENTAL SPORTS PUNE · OPERATIONS DESK<br>
+          Shop 247, MG Road, Camp, Pune 411001 · Phone: +91 98909 90022
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>`;
+}
+
+/**
+ * Build plain text version of Admin Alert Email
+ */
+export function generateAdminAlertEmailText(order: OrderEmailData): string {
+  const orderNumber = order.order_number || 'OS-ORDER';
+  const customerName = order.customer_name || 'Customer';
+  const customerPhone = order.customer_phone || 'Not provided';
+  const customerEmail = order.customer_email || 'Not provided';
+  const addr = order.shipping_address || {};
+  const isPickup =
+    addr.street?.toLowerCase().includes('camp store') ||
+    addr.addressLine1?.toLowerCase().includes('camp store');
+
+  let text = `⚡ NEW ORDER RECEIVED — ORIENTAL SPORTS PUNE\n`;
+  text += `==============================================\n\n`;
+  text += `Order Number: ${orderNumber}\n`;
+  text += `Order Date:   ${order.created_at || new Date().toISOString()}\n`;
+  text += `Total Amount: ${formatINR(order.total_amount)}\n\n`;
+
+  text += `CUSTOMER DETAILS:\n`;
+  text += `-----------------\n`;
+  text += `Name:     ${customerName}\n`;
+  text += `Phone:    ${customerPhone}\n`;
+  text += `Email:    ${customerEmail}\n`;
+  text += `Mode:     ${isPickup ? 'Store Counter Pickup' : 'Doorstep Delivery'}\n`;
+  text += `Address:  ${[addr.street || addr.addressLine1, addr.locality, addr.city, addr.state, addr.pincode].filter(Boolean).join(', ')}\n\n`;
+
+  text += `ORDERED ITEMS:\n`;
+  text += `--------------\n`;
+  (order.items || []).forEach((it) => {
+    const spec = [it.selected_variant, it.selected_size].filter(Boolean).join(' · ');
+    text += `- ${it.product_name} (${spec || 'Standard'}) x ${it.quantity} = ${formatINR((it.price || 0) * (it.quantity || 1))}\n`;
+  });
+
+  text += `\nFINANCIALS:\n`;
+  text += `-----------\n`;
+  text += `Subtotal:    ${formatINR(order.subtotal || order.total_amount)}\n`;
+  text += `GST (18%):   ${formatINR(order.tax || 0)}\n`;
+  text += `Delivery:    ${order.shipping && order.shipping > 0 ? formatINR(order.shipping) : 'FREE'}\n`;
+  text += `Grand Total: ${formatINR(order.total_amount)}\n`;
+  text += `Payment:     ${order.payment_method || 'Razorpay / UPI'}\n\n`;
+
+  text += `Manage in Admin Register:\n`;
+  text += `https://admin.orientalsports.in/orders/${order.id || order.order_number}\n`;
+
+  return text;
+}
+
+/**
+ * Dispatch an urgent alert email to the store admin (hello.orientalsports@gmail.com)
+ * when a new customer order is placed.
+ */
+export async function sendAdminNewOrderNotification(
+  order: OrderEmailData
+): Promise<EmailSendResult> {
+  const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL?.trim() || 'hello.orientalsports@gmail.com';
+  const orderNumber = order.order_number || 'OS-ORDER';
+  const customerName = order.customer_name || 'Customer';
+
+  const subject = `⚡ NEW ORDER RECEIVED: #${orderNumber} — ${formatINR(order.total_amount)} (${customerName})`;
+  const htmlContent = generateAdminAlertEmailHtml(order);
+  const textContent = generateAdminAlertEmailText(order);
+
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const fromEmail =
+    process.env.RESEND_FROM_EMAIL?.trim() || 'Oriental Sports <orders@orientalsports.in>';
+
+  if (!apiKey) {
+    console.log('----------------------------------------------------');
+    console.log('[ADMIN EMAIL ALERT — SIMULATED MODE]');
+    console.log(`  To:      ${adminEmail}`);
+    console.log(`  From:    ${fromEmail}`);
+    console.log(`  Subject: ${subject}`);
+    console.log(`  Order:   ${orderNumber}`);
+    console.log(`  Amount:  ${formatINR(order.total_amount)}`);
+    console.log(`  Notice:  RESEND_API_KEY is not set. Real email skipped safely.`);
+    console.log('----------------------------------------------------');
+
+    return {
+      success: true,
+      simulated: true,
+      stage: 'admin_notification',
+      recipient: adminEmail,
+      orderNumber,
+    };
+  }
+
+  try {
+    let res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [adminEmail],
+        subject,
+        html: htmlContent,
+        text: textContent,
+      }),
+    });
+
+    let data = await res.json().catch(() => ({}));
+
+    // If custom domain unverified, fallback to onboarding@resend.dev sending to hello.orientalsports@gmail.com
+    if (!res.ok && (res.status === 403 || data?.name === 'validation_error' || data?.statusCode === 403)) {
+      console.warn(
+        `[Admin Alert] Custom domain unverified in Resend. Falling back to onboarding@resend.dev for store owner ${adminEmail}...`
+      );
+
+      const fallbackRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'Oriental Sports <onboarding@resend.dev>',
+          to: [adminEmail],
+          subject,
+          html: htmlContent,
+          text: textContent,
+        }),
+      });
+
+      const fallbackData = await fallbackRes.json().catch(() => ({}));
+      if (fallbackRes.ok) {
+        console.log(
+          `[Admin Alert] Successfully dispatched new order alert to store owner ${adminEmail} [Resend ID: ${fallbackData?.id}]`
+        );
+        return {
+          success: true,
+          simulated: false,
+          messageId: fallbackData?.id,
+          stage: 'admin_notification',
+          recipient: adminEmail,
+          orderNumber,
+        };
+      }
+    }
+
+    if (!res.ok) {
+      const errMsg = data?.message || data?.error || `Resend API returned HTTP ${res.status}`;
+      console.error(`[Admin Alert] Resend error for order ${orderNumber}:`, errMsg);
+      return {
+        success: false,
+        error: errMsg,
+        orderNumber,
+        stage: 'admin_notification',
+        recipient: adminEmail,
+      };
+    }
+
+    console.log(
+      `[Admin Alert] Successfully dispatched new order notification to ${adminEmail} [Resend ID: ${data?.id}]`
+    );
+
+    return {
+      success: true,
+      simulated: false,
+      messageId: data?.id,
+      stage: 'admin_notification',
+      recipient: adminEmail,
+      orderNumber,
+    };
+  } catch (err: any) {
+    console.error(`[Admin Alert] Error sending admin notification for ${orderNumber}:`, err?.message || err);
+    return {
+      success: false,
+      error: err?.message || 'Network error calling Resend API',
+      orderNumber,
+      stage: 'admin_notification',
+      recipient: adminEmail,
+    };
+  }
+}
+
 

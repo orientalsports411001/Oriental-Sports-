@@ -44,31 +44,40 @@ export default async function OrderDetailPage({
     // Supabase unavailable, fallback to memory orders
   }
 
-  if (!order) {
-    const fallback = getCachedOrders().find((o) => o.id === params.id || o.order_number === params.id);
-    if (!fallback) notFound();
-    order = {
-      ...fallback,
-      subtotal: fallback.subtotal,
-      shipping: fallback.shipping,
-      tax: fallback.tax,
-      total_amount: fallback.total_amount,
-    };
-    items = fallback.items.map((it, idx) => ({
-      id: `it-${idx}`,
-      product_name: it.product_name,
-      price: it.price,
-      quantity: it.quantity,
-      selected_variant: it.selected_variant || 'Standard',
-    }));
+  const cachedMatch = getCachedOrders().find((o) => o.id === params.id || o.order_number === params.id);
+  if (cachedMatch) {
+    if (!order) {
+      order = {
+        ...cachedMatch,
+        subtotal: cachedMatch.subtotal,
+        shipping: cachedMatch.shipping,
+        tax: cachedMatch.tax,
+        total_amount: cachedMatch.total_amount,
+      };
+      items = cachedMatch.items.map((it, idx) => ({
+        id: `it-${idx}`,
+        product_name: it.product_name,
+        price: it.price,
+        quantity: it.quantity,
+        selected_variant: it.selected_variant || 'Standard',
+      }));
+    } else {
+      order.status = cachedMatch.status || order.status;
+      order.tracking_number = cachedMatch.tracking_number || order.tracking_number;
+      order.carrier = cachedMatch.carrier || order.carrier;
+    }
   }
+
+  if (!order) notFound();
 
   const allowedNext = ALLOWED_ORDER_TRANSITIONS[order.status] || [];
   const trackableStatuses = [
     'confirmed',
     'processing',
+    'dispatched',
     'shipped',
     'in_transit',
+    'out_for_delivery',
     'ready_for_pickup',
     'delivered',
   ];
@@ -232,22 +241,43 @@ export default async function OrderDetailPage({
         {/* Status Transition Card */}
         <div className="card" style={{ margin: 0 }}>
           <h2>Order Lifecycle Status</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 14 }}>
+            Manually advance the order stage. Updating status automatically emails the customer and updates their account order tracker.
+          </p>
           {allowedNext.length === 0 ? (
             <p style={{ color: 'var(--muted)' }}>
               This order has reached terminal status: <strong>{order.status}</strong>.
             </p>
           ) : (
             <form action={boundChangeStatus}>
-              <label htmlFor="next_status">Advance Order To Next Stage</label>
+              <label htmlFor="next_status" style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Advance Order To Stage
+              </label>
               <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
                 <select id="next_status" name="next_status" defaultValue={allowedNext[0]} style={{ flex: 1 }}>
-                  {allowedNext.map((s) => (
-                    <option key={s} value={s}>
-                      {s.charAt(0).toUpperCase() + s.slice(1)}
-                    </option>
-                  ))}
+                  {allowedNext.map((s) => {
+                    const statusLabels: Record<string, string> = {
+                      confirmed: 'Confirmed (Order Logged)',
+                      processing: 'Processing (Workshop Inspection)',
+                      dispatched: 'Dispatched (Courier Handover)',
+                      shipped: 'Dispatched / Shipped',
+                      out_for_delivery: 'Out for Delivery (Doorstep Today)',
+                      in_transit: 'In Transit',
+                      ready_for_pickup: 'Ready for Camp Store Pickup',
+                      delivered: 'Delivered & Verified (Handover Complete)',
+                      cancelled: 'Cancelled',
+                    };
+                    const label = statusLabels[s] || (s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' '));
+                    return (
+                      <option key={s} value={s}>
+                        {label}
+                      </option>
+                    );
+                  })}
                 </select>
-                <button type="submit">Update Status</button>
+                <button type="submit" style={{ whiteSpace: 'nowrap' }}>
+                  Update Status
+                </button>
               </div>
             </form>
           )}

@@ -703,16 +703,18 @@ export class AuthService {
       created_at: new Date().toISOString(),
     };
 
-    // Sync to admin backend (both production admin domain and local port)
+    // Sync to admin backend (production domain, custom admin URL, and local dev)
     try {
-      fetch('https://admin.orientalsports.in/api/orders/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(adminPayload),
-      }).catch(() => {});
+      const endpoints = [
+        'https://admin.orientalsports.in/api/orders/sync',
+        (import.meta as any)?.env?.VITE_ADMIN_URL ? `${(import.meta as any).env.VITE_ADMIN_URL}/api/orders/sync` : null,
+        typeof window !== 'undefined' && !window.location.host.includes('orientalsports.in')
+          ? 'http://localhost:3001/api/orders/sync'
+          : null,
+      ].filter(Boolean) as string[];
 
-      if (typeof window !== 'undefined' && !window.location.host.includes('orientalsports.in')) {
-        fetch('http://localhost:3001/api/orders/sync', {
+      for (const endpoint of endpoints) {
+        fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(adminPayload),

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { saveAdminOrder, getCachedOrders, AdminOrder } from '@/lib/catalog-store';
-import { sendOrderStatusEmail } from '@/lib/email';
+import { sendOrderStatusEmail, sendAdminNewOrderNotification } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,12 +78,17 @@ export async function POST(req: Request) {
       created_at: body.created_at || new Date().toISOString(),
     });
 
-    // Send order confirmation / placement email notification (non-blocking)
+    // 1. Send customer confirmation & invoice email notification
     sendOrderStatusEmail({
       order: saved,
       stage: saved.status || 'confirmed',
     }).catch((err) => {
-      console.warn('[Sync Route] Error sending order confirmation email:', err);
+      console.warn('[Sync Route] Error sending customer order confirmation email:', err);
+    });
+
+    // 2. Send instant new order alert email to store admin (hello.orientalsports@gmail.com)
+    sendAdminNewOrderNotification(saved).catch((err) => {
+      console.warn('[Sync Route] Error sending admin new order alert email:', err);
     });
 
     // Also attempt Supabase upsert in background if available
