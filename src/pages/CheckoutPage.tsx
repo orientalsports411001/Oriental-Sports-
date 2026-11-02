@@ -36,7 +36,9 @@ import { sendOrderEmailNotification } from '../services/emailNotification';
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { cart, subtotal, shipping, discount, promoCode, applyPromoCode, clearCart } = useCart();
-  const { user, isAuthenticated, addOrder } = useAuth();
+  const { user, isAuthenticated, addOrder, openAuthModal, setPendingPhone, addAddress } = useAuth();
+
+  const CHECKOUT_DRAFT_KEY = 'oriental_sports_checkout_draft';
 
   const [deliveryMethod, setDeliveryMethod] = useState<'doorstep' | 'camp_pickup'>('doorstep');
   const [promoInput, setPromoInput] = useState('');
@@ -64,6 +66,74 @@ export const CheckoutPage: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showRazorpaySimModal, setShowRazorpaySimModal] = useState(false);
   const [simPaymentMethod, setSimPaymentMethod] = useState<'upi' | 'card' | 'netbanking'>('upi');
+
+  // 1. Restore draft on initial load so cart and address are never lost
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(CHECKOUT_DRAFT_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.form) {
+          setForm((prev) => ({
+            ...prev,
+            ...parsed.form,
+            firstName: parsed.form.firstName || user?.firstName || prev.firstName,
+            lastName: parsed.form.lastName || user?.lastName || prev.lastName,
+            email: parsed.form.email || user?.email || prev.email,
+            phone: parsed.form.phone || user?.phone?.replace('+91', '').trim() || prev.phone,
+          }));
+        }
+        if (parsed?.deliveryMethod) {
+          setDeliveryMethod(parsed.deliveryMethod);
+        }
+      }
+    } catch {}
+  }, []);
+
+  // 2. Auto-save draft on form or deliveryMethod changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        CHECKOUT_DRAFT_KEY,
+        JSON.stringify({ form, deliveryMethod, timestamp: Date.now() })
+      );
+    } catch {}
+  }, [form, deliveryMethod]);
+
+  // 3. When user authenticates: sync profile and auto-save entered address
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setForm((prev) => ({
+        ...prev,
+        firstName: prev.firstName || user.firstName || '',
+        lastName: prev.lastName || user.lastName || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone?.replace('+91', '').trim() || '',
+      }));
+
+      // Automatically save entered address to user account if valid and not already saved
+      if (form.street && form.city && form.pincode) {
+        const alreadyHasAddr = user.addresses?.some(
+          (a) =>
+            a.street.toLowerCase() === form.street.toLowerCase() &&
+            a.pincode === form.pincode
+        );
+        if (!alreadyHasAddr) {
+          addAddress({
+            name: `${form.firstName || user.firstName} ${form.lastName || user.lastName}`.trim(),
+            phone: form.phone || user.phone,
+            street: form.street,
+            locality: form.locality || 'Camp',
+            city: form.city,
+            state: form.state || 'Maharashtra',
+            pincode: form.pincode,
+            type: 'home',
+            isDefault: !user.addresses || user.addresses.length === 0,
+          }).catch(() => {});
+        }
+      }
+    }
+  }, [isAuthenticated, user?.id]);
 
   const finalShipping = deliveryMethod === 'camp_pickup' ? 0 : shipping;
   const grandTotal = Math.max(0, subtotal - discount + finalShipping);
@@ -210,6 +280,22 @@ export const CheckoutPage: React.FC = () => {
   };
 
   const handleProceedToRazorpay = async () => {
+    // 1. If not authenticated, prompt sign in/sign up immediately and preserve draft
+    if (!isAuthenticated) {
+      try {
+        localStorage.setItem(
+          CHECKOUT_DRAFT_KEY,
+          JSON.stringify({ form, deliveryMethod, timestamp: Date.now() })
+        );
+      } catch {}
+
+      if (form.phone) {
+        setPendingPhone(form.phone.replace(/\D/g, '').slice(-10));
+      }
+      openAuthModal('phone', '/checkout');
+      return;
+    }
+
     if (!validateForm()) {
       window.scrollTo({ top: 120, behavior: 'smooth' });
       return;
@@ -355,13 +441,63 @@ export const CheckoutPage: React.FC = () => {
                   <span className="checkout-step-number">1</span>
                   <span>Contact Information</span>
                 </h2>
-                {!isAuthenticated && (
+                {!isAuthenticated ? (
                   <span className="checkout-card-meta">
-                    Guest checkout or <Link to="/account" style={{ color: '#FFFFFF', fontWeight: 600, textDecoration: 'underline' }}>Sign In</Link>
+                    Have an account?{' '}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try {
+                          localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify({ form, deliveryMethod, timestamp: Date.now() }));
+                        } catch {}
+                        if (form.phone) setPendingPhone(form.phone.replace(/\D/g, '').slice(-10));
+                        openAuthModal('phone', '/checkout');
+                      }}
+                      style={{ background: 'none', border: 'none', color: '#FFFFFF', fontWeight: 600, textDecoration: 'underline', cursor: 'pointer', padding: 0 }}
+                    >
+                      Sign In
+                    </button>
+                  </span>
+                ) : (
+                  <span className="checkout-card-meta" style={{ color: '#10B981', fontWeight: 600 }}>
+                    ✓ Signed in as {user?.fullName || user?.firstName}
                   </span>
                 )}
               </div>
 
+              {/* Athlete Name Fields */}
+              <div className="form-row form-row-2">
+                <div className="form-group">
+                  <label className="form-label" htmlFor="fname">First Name *</label>
+                  <input
+                    id="fname"
+                    className={`form-input ${formErrors.firstName ? 'has-error' : ''}`}
+                    placeholder="e.g. Pratik"
+                    value={form.firstName}
+                    onChange={(e) => {
+                      setForm({ ...form, firstName: e.target.value });
+                      if (formErrors.firstName) setFormErrors({ ...formErrors, firstName: '' });
+                    }}
+                  />
+                  {formErrors.firstName && <p className="form-error-text">{formErrors.firstName}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" htmlFor="lname">
+                    <span>Last Name</span>
+                    <span className="form-label-optional">Optional</span>
+                  </label>
+                  <input
+                    id="lname"
+                    className="form-input"
+                    placeholder="e.g. Jadhav"
+                    value={form.lastName}
+                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              {/* Phone & Email Fields */}
               <div className="form-row form-row-2">
                 <div className="form-group">
                   <label className="form-label" htmlFor="phone">
@@ -376,6 +512,7 @@ export const CheckoutPage: React.FC = () => {
                       inputMode="numeric"
                       maxLength={10}
                       className={`form-input form-input-with-prefix ${formErrors.phone ? 'has-error' : ''}`}
+                      placeholder="98765 43210"
                       value={form.phone}
                       onChange={(e) => {
                         const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -495,36 +632,7 @@ export const CheckoutPage: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="form-row form-row-2">
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="fname">First Name *</label>
-                      <input
-                        id="fname"
-                        className={`form-input ${formErrors.firstName ? 'has-error' : ''}`}
-                        placeholder="John"
-                        value={form.firstName}
-                        onChange={(e) => {
-                          setForm({ ...form, firstName: e.target.value });
-                          if (formErrors.firstName) setFormErrors({ ...formErrors, firstName: '' });
-                        }}
-                      />
-                      {formErrors.firstName && <p className="form-error-text">{formErrors.firstName}</p>}
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label" htmlFor="lname">
-                        <span>Last Name</span>
-                        <span className="form-label-optional">Optional</span>
-                      </label>
-                      <input
-                        id="lname"
-                        className="form-input"
-                        placeholder="Doe"
-                        value={form.lastName}
-                        onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                      />
-                    </div>
-                  </div>
+                  {/* Destination Address Fields */}
 
                   <div className="form-row">
                     <div className="form-group">
@@ -660,6 +768,8 @@ export const CheckoutPage: React.FC = () => {
                 <span>
                   {isProcessing
                     ? 'Connecting to Gateway...'
+                    : !isAuthenticated
+                    ? `Sign In to Pay ₹${grandTotal.toLocaleString('en-IN')} with Razorpay`
                     : `Pay ₹${grandTotal.toLocaleString('en-IN')} with Razorpay`}
                 </span>
                 <ChevronRight size={18} />

@@ -34,13 +34,16 @@ export const AuthModal: React.FC = () => {
     if (isAuthModalOpen) {
       setError(null);
       setOtpDigits(['', '', '', '', '', '']);
+      if (pendingPhone) {
+        setPhoneNumber(pendingPhone.replace(/\D/g, '').slice(-10));
+      }
       if (authModalView === 'otp') {
         setStep('otp');
       } else {
         setStep('input');
       }
     }
-  }, [isAuthModalOpen, authModalView]);
+  }, [isAuthModalOpen, authModalView, pendingPhone]);
 
   useEffect(() => {
     let timer: any;
@@ -136,10 +139,25 @@ export const AuthModal: React.FC = () => {
     }
     setIsSubmitting(true);
     try {
+      let draftData = { firstName: '', lastName: '', email: '' };
+      try {
+        const draft = localStorage.getItem('oriental_sports_checkout_draft');
+        if (draft) {
+          const parsed = JSON.parse(draft);
+          if (parsed?.form) {
+            draftData = {
+              firstName: parsed.form.firstName || '',
+              lastName: parsed.form.lastName || '',
+              email: parsed.form.email || '',
+            };
+          }
+        }
+      } catch {}
+
       const success = await verifyOtp(fullOtp, {
-        firstName: firstName.trim() || 'Sports',
-        lastName: lastName.trim() || 'Athlete',
-        email: email.trim() || undefined,
+        firstName: firstName.trim() || draftData.firstName || 'Sports',
+        lastName: lastName.trim() || draftData.lastName || 'Athlete',
+        email: email.trim() || draftData.email || undefined,
       });
       if (!success) {
         setError('Invalid OTP code. For demo use: 123456');
