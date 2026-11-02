@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { getCachedOrders } from '@/lib/catalog-store';
+import { getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
 import { ALLOWED_ORDER_TRANSITIONS } from '@/lib/order-transitions';
 import { changeOrderStatus, updateTracking } from '../actions';
 
@@ -44,7 +44,8 @@ export default async function OrderDetailPage({
     // Supabase unavailable, fallback to memory orders
   }
 
-  const cachedMatch = getCachedOrders().find((o) => o.id === params.id || o.order_number === params.id);
+  const allCached = await getCachedOrdersAsync();
+  const cachedMatch = allCached.find((o) => o.id === params.id || o.order_number === params.id);
   if (cachedMatch) {
     if (!order) {
       order = {

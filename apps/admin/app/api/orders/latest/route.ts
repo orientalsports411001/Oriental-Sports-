@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getCachedOrders } from '@/lib/catalog-store';
+import { getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -21,7 +21,7 @@ export async function GET() {
     let latest: any = null;
 
     // 1. Check local catalog cache first (fastest)
-    const cached = getCachedOrders();
+    const cached = await getCachedOrdersAsync();
     if (cached.length > 0) {
       const sorted = [...cached].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

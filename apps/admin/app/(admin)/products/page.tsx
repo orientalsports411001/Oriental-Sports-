@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { getCachedProducts, CATEGORIES } from '@/lib/catalog-store';
+import { getCachedProducts, getCachedProductsAsync, CATEGORIES } from '@/lib/catalog-store';
 import { deleteProduct } from './actions';
 import { SavedNotificationBanner } from '@/components/products/SavedNotificationBanner';
 import { ProductsCatalogView } from '@/components/products/ProductsCatalogView';
@@ -44,7 +44,7 @@ export default async function ProductsPage({
   }
 
   // Unified catalog store (all 131 items + Supabase DB updates)
-  const allCached = getCachedProducts();
+  const allCached = await getCachedProductsAsync();
 
   // Merge Supabase products with allCached (Supabase overrides by slug/id, while keeping the rest of the 131 products)
   const productMap = new Map<string, any>();

@@ -1,5 +1,5 @@
 import { revalidatePath } from 'next/cache';
-import { getCachedOrders, getCachedProducts } from '@/lib/catalog-store';
+import { getCachedOrders, getCachedOrdersAsync, getCachedProducts, getCachedProductsAsync } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 
 function uniqueProductCount(
@@ -24,9 +24,10 @@ function uniqueProductCount(
 }
 
 export async function getAdminNavCounts(): Promise<{ productsCount: number; ordersCount: number }> {
-  const cachedProducts = getCachedProducts();
+  const cachedProducts = await getCachedProductsAsync();
   let productsCount = cachedProducts.length;
-  let ordersCount = getCachedOrders().length;
+  const cachedOrders = await getCachedOrdersAsync();
+  let ordersCount = cachedOrders.length;
 
   try {
     const admin = createServiceRoleClient();

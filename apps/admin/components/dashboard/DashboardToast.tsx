@@ -2,31 +2,48 @@
 
 import { useEffect, useState } from 'react';
 
-export function DashboardToast({ message }: { message?: string }) {
-  const [visible, setVisible] = useState(Boolean(message));
+export function DashboardToast({ message: initialMessage }: { message?: string }) {
+  const [toastText, setToastText] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!message) return;
+    let msg: string | null = null;
 
-    // Clean ?saved= from browser address bar immediately so reload / hard refresh won't repeat it
-    if (typeof window !== 'undefined' && window.location.search.includes('saved=')) {
+    if (typeof window !== 'undefined') {
+      // 1. Prioritize one-time session flash toast
       try {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('saved');
-        const cleanPath = url.pathname + (url.search ? url.search : '');
-        window.history.replaceState({}, '', cleanPath);
+        const flash = sessionStorage.getItem('os_admin_flash_toast');
+        if (flash) {
+          msg = flash;
+          sessionStorage.removeItem('os_admin_flash_toast');
+        }
       } catch {}
+
+      // 2. If URL had searchParams ?saved=, use it once and IMMEDIATELY clean the address bar
+      if (!msg && initialMessage) {
+        msg = initialMessage;
+      }
+
+      if (window.location.search.includes('saved=')) {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('saved');
+          const cleanPath = url.pathname + (url.search ? url.search : '');
+          window.history.replaceState({}, '', cleanPath);
+        } catch {}
+      }
     }
 
-    // Auto dismiss after 4 seconds
-    const timer = setTimeout(() => {
-      setVisible(false);
-    }, 4000);
+    if (msg) {
+      setToastText(msg);
+      // Auto dismiss after 4 seconds
+      const timer = setTimeout(() => {
+        setToastText(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [initialMessage]);
 
-    return () => clearTimeout(timer);
-  }, [message]);
-
-  if (!visible || !message) return null;
+  if (!toastText) return null;
 
   return (
     <div
@@ -49,11 +66,11 @@ export function DashboardToast({ message }: { message?: string }) {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ fontSize: 18, lineHeight: 1 }}>✓</span>
-        <span>{message}</span>
+        <span>{toastText}</span>
       </div>
       <button
         type="button"
-        onClick={() => setVisible(false)}
+        onClick={() => setToastText(null)}
         style={{
           background: 'transparent',
           border: 'none',
@@ -72,4 +89,3 @@ export function DashboardToast({ message }: { message?: string }) {
     </div>
   );
 }
-

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { saveAdminOrder, getCachedOrders, AdminOrder } from '@/lib/catalog-store';
+import { saveAdminOrder, getCachedOrders, getCachedOrdersAsync, AdminOrder } from '@/lib/catalog-store';
 import { sendOrderStatusEmail, sendAdminNewOrderNotification } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
@@ -23,7 +23,7 @@ export async function GET(req: Request) {
     const phone = searchParams.get('phone');
     const email = searchParams.get('email');
 
-    let orders = getCachedOrders();
+    let orders = await getCachedOrdersAsync();
     if (phone) {
       const cleanPhone = phone.replace(/\D/g, '').slice(-10);
       orders = orders.filter((o) => o.customer_phone?.replace(/\D/g, '').includes(cleanPhone));

@@ -238,10 +238,13 @@ export function ProductForm({ initialData, product: productProp, categories, act
 
     setSavedSuccess(`✓ Saved "${trimmedName}" successfully! Moving to Dashboard...`);
 
-    // Lock button state and immediately navigate to Dashboard
+    // Store one-time flash toast in sessionStorage so it NEVER lingers or repeats on hard refresh
     if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem('os_admin_flash_toast', `Product "${trimmedName}" saved successfully!`);
+      } catch {}
       setTimeout(() => {
-        window.location.href = `${basePath}/dashboard?saved=${encodeURIComponent(`Product "${trimmedName}" saved successfully!`)}`;
+        window.location.href = `${basePath}/dashboard`;
       }, 400);
     }
   };

@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
 import { isTransitionAllowed } from '@/lib/order-transitions';
-import { updateOrder, getCachedOrders } from '@/lib/catalog-store';
+import { updateOrder, getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
 import { sendOrderStatusEmail } from '@/lib/email';
 
 /**
@@ -44,7 +44,7 @@ export async function changeOrderStatus(orderId: string, formData: FormData) {
   }
 
   // Update in local / cached catalog store
-  let cached = getCachedOrders().find((o) => o.id === orderId || o.order_number === orderId);
+  let cached = (await getCachedOrdersAsync()).find((o) => o.id === orderId || o.order_number === orderId);
   if (cached) {
     updateOrder(cached.id, { status: nextStatus as any });
     cached = { ...cached, status: nextStatus as any };
@@ -149,7 +149,7 @@ export async function updateTracking(orderId: string, formData: FormData) {
     if (err?.digest?.startsWith('NEXT_REDIRECT')) throw err;
   }
 
-  const cached = getCachedOrders().find((o) => o.id === orderId || o.order_number === orderId);
+  const cached = (await getCachedOrdersAsync()).find((o) => o.id === orderId || o.order_number === orderId);
   if (cached) {
     updateOrder(cached.id, {
       tracking_number: trackingNumber || undefined,

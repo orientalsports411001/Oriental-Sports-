@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { getCachedProducts, getCachedOrders } from '@/lib/catalog-store';
+import { getCachedProducts, getCachedProductsAsync, getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
 
 import { RevenueSplineChart } from '@/components/dashboard/RevenueSplineChart';
 import { MiniCalendarWidget } from '@/components/dashboard/MiniCalendarWidget';
@@ -42,7 +42,7 @@ export default async function DashboardPage({
   }
 
   // Unified catalog store (all 131 items + Supabase DB overrides)
-  const cachedProducts = getCachedProducts();
+  const cachedProducts = await getCachedProductsAsync();
   const productMap = new Map<string, any>();
   for (const p of cachedProducts) {
     productMap.set(p.id, p);
@@ -88,7 +88,7 @@ export default async function DashboardPage({
     .sort((a, b) => Number(a.stock_quantity ?? 0) - Number(b.stock_quantity ?? 0));
 
   // Merge live database orders with cached / synced store orders (deduplicate by order_number)
-  const cachedOrders = getCachedOrders();
+  const cachedOrders = await getCachedOrdersAsync();
   const allOrders: any[] = [...dbOrders];
   const existingOrderNumbers = new Set(allOrders.map((o) => o.order_number || o.id));
 

@@ -68,6 +68,7 @@ export interface AdminOrder {
 import allProductsData from './all-products.json';
 import fs from 'node:fs';
 import path from 'node:path';
+import { uploadCloudJson, fetchCloudJson } from './cloud-storage';
 
 const TMP_CACHE_FILE = path.join(
   process.platform === 'win32' ? process.env.TEMP || 'C:\\Windows\\Temp' : '/tmp',
@@ -260,6 +261,28 @@ export function getCachedProducts(): AdminProduct[] {
 
   productsCache = unified;
   return unified;
+}
+
+export async function getCachedProductsAsync(): Promise<AdminProduct[]> {
+  try {
+    const cloud = await fetchCloudJson<AdminProduct[]>('os_admin_products');
+    if (Array.isArray(cloud) && cloud.length > 0) {
+      const disk = readDiskCache() || [];
+      const diskIds = new Set(disk.map((d) => d.id || d.slug));
+      let changed = false;
+      for (const item of cloud) {
+        const key = item.id || item.slug;
+        if (key && !diskIds.has(key)) {
+          disk.unshift(item);
+          changed = true;
+        }
+      }
+      if (changed) {
+        writeDiskCache(disk);
+      }
+    }
+  } catch {}
+  return getCachedProducts();
 }
 
 function getRepoRoot(): string {
@@ -456,6 +479,15 @@ export function saveProduct(
 
   writeDiskCache(productsCache);
   syncToCatalogFiles(productsCache, result);
+
+  // Persist custom products to resilient cloud storage
+  try {
+    const customCandidates = productsCache.filter(
+      (p) => !INITIAL_PRODUCTS.some((b) => b.id === p.id && b.slug === p.slug)
+    );
+    uploadCloudJson('os_admin_products', customCandidates).catch(() => {});
+  } catch {}
+
   return result;
 }
 
@@ -521,6 +553,14 @@ export function toggleProductVisibility(
   productsCache = [...current];
   writeDiskCache(productsCache);
   syncToCatalogFiles(productsCache, updated);
+
+  try {
+    const customCandidates = productsCache.filter(
+      (p) => !INITIAL_PRODUCTS.some((b) => b.id === p.id && b.slug === p.slug)
+    );
+    uploadCloudJson('os_admin_products', customCandidates).catch(() => {});
+  } catch {}
+
   return updated;
 }
 
@@ -547,6 +587,27 @@ export function getCachedOrders(): AdminOrder[] {
     ordersCache = Array.from(orderMap.values());
   }
   return ordersCache.filter((o) => !BANNED_DUMMY_ORDERS.has(o.order_number) && !BANNED_DUMMY_ORDERS.has(o.id));
+}
+
+export async function getCachedOrdersAsync(): Promise<AdminOrder[]> {
+  const local = getCachedOrders();
+  if (local.length > 0) return local;
+
+  try {
+    const cloudOrders = await fetchCloudJson<AdminOrder[]>('os_admin_orders');
+    if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
+      const valid = cloudOrders.filter(
+        (o) => !BANNED_DUMMY_ORDERS.has(o.order_number) && !BANNED_DUMMY_ORDERS.has(o.id)
+      );
+      if (valid.length > 0) {
+        ordersCache = valid;
+        writeOrdersDiskCache(valid);
+        return valid;
+      }
+    }
+  } catch {}
+
+  return local;
 }
 
 export function saveAdminOrder(order: Partial<AdminOrder> & { order_number: string }): AdminOrder {
@@ -598,6 +659,7 @@ export function saveAdminOrder(order: Partial<AdminOrder> & { order_number: stri
   }
 
   writeOrdersDiskCache(ordersCache);
+  uploadCloudJson('os_admin_orders', ordersCache).catch(() => {});
   return result;
 }
 
@@ -609,5 +671,6 @@ export function updateOrder(id: string, updates: Partial<AdminOrder>): AdminOrde
   if (index === -1) return null;
   ordersCache[index] = { ...ordersCache[index], ...updates };
   writeOrdersDiskCache(ordersCache);
+  uploadCloudJson('os_admin_orders', ordersCache).catch(() => {});
   return ordersCache[index];
 }

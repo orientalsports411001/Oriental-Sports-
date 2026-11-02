@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { getCachedOrders } from '@/lib/catalog-store';
+import { getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,7 +64,7 @@ export default async function OrdersPage({
   }
 
   // Merge live database orders with cached / synced store orders
-  const cached = getCachedOrders();
+  const cached = await getCachedOrdersAsync();
   const cachedMap = new Map(cached.map((c) => [c.order_number, c]));
 
   // Merge cached updates (status, tracking, customer details) into db orders
