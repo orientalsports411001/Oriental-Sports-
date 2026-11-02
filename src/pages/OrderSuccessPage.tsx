@@ -14,6 +14,7 @@ import { useAuth } from '../context/AuthContext';
 import { Order } from '../types/auth';
 import { STORE_INFO } from '../data/storeInfo';
 import { Img } from '../components/ui/Img';
+import { printOrderInvoice } from '../utils/printInvoice';
 
 export const OrderSuccessPage: React.FC = () => {
   const location = useLocation();
@@ -44,7 +45,7 @@ export const OrderSuccessPage: React.FC = () => {
   }
 
   const handlePrint = () => {
-    window.print();
+    printOrderInvoice(order);
   };
 
   return (

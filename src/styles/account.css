@@ -874,3 +874,10 @@
   color: #FFFFFF;
 }
 
+@media print {
+  header, nav, footer, .account-mobile-bottom-nav, .buyur-sidebar-wrapper, .floating-actions, .mobile-nav-bar, .mobile-bottom-nav, .account-nav-bar, .account-mobile-profile-card, .account-mobile-nav-menu, .account-sidebar {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+

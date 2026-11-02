@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { PRODUCTS } from '../../data/products';
 import { STORE_INFO } from '../../data/storeInfo';
 import { generateOrderTimeline, getOrderStatusLabel } from '../../utils/orderTimeline';
+import { printOrderInvoice } from '../../utils/printInvoice';
 import {
   Package,
   CheckCircle2,
@@ -441,7 +442,10 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
 
             <button
               type="button"
-              onClick={() => setShowInvoiceModal(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                printOrderInvoice(order);
+              }}
               className="btn btn-outline-light btn-sm"
               style={{
                 display: 'inline-flex',
@@ -822,7 +826,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
               <button
                 type="button"
-                onClick={() => window.print()}
+                onClick={() => printOrderInvoice(order)}
                 className="btn btn-outline-light btn-sm"
                 style={{ minHeight: '44px', padding: '8px 16px' }}
               >
