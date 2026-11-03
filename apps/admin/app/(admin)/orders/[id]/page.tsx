@@ -5,6 +5,7 @@ import { requireAdmin } from '@/lib/require-admin';
 import { getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
 import { ALLOWED_ORDER_TRANSITIONS } from '@/lib/order-transitions';
 import { changeOrderStatus, updateTracking } from '../actions';
+import { DashboardToast } from '@/components/dashboard/DashboardToast';
 
 export const dynamic = 'force-dynamic';
 
@@ -117,7 +118,7 @@ export default async function OrderDetailPage({
       </div>
 
       {searchParams.error && <p className="error">{searchParams.error}</p>}
-      {searchParams.saved && <p className="success">Order updated successfully.</p>}
+      <DashboardToast message={searchParams.saved ? 'Order updated successfully.' : undefined} />
 
       {/* Grid: Customer Details & Financial Receipt */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 24 }}>

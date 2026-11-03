@@ -621,7 +621,7 @@ export async function getCachedOrdersAsync(): Promise<AdminOrder[]> {
   return local;
 }
 
-export function saveAdminOrder(order: Partial<AdminOrder> & { order_number: string }): AdminOrder {
+export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number: string }): Promise<AdminOrder> {
   const disk = readOrdersDiskCache();
   if (disk && Array.isArray(disk)) ordersCache = disk;
 
@@ -670,11 +670,15 @@ export function saveAdminOrder(order: Partial<AdminOrder> & { order_number: stri
   }
 
   writeOrdersDiskCache(ordersCache);
-  uploadCloudJson('os_admin_orders', ordersCache).catch(() => {});
+  // Awaited so the serverless function doesn't exit (e.g. via a Server
+  // Action redirect()) before the cross-lambda cloud write lands — a
+  // fire-and-forget upload here was silently dropped on Vercel, leaving
+  // the customer-facing order sync endpoint reading stale data.
+  await uploadCloudJson('os_admin_orders', ordersCache).catch(() => false);
   return result;
 }
 
-export function updateOrder(id: string, updates: Partial<AdminOrder>): AdminOrder | null {
+export async function updateOrder(id: string, updates: Partial<AdminOrder>): Promise<AdminOrder | null> {
   const disk = readOrdersDiskCache();
   if (disk && Array.isArray(disk)) ordersCache = disk;
 
@@ -682,6 +686,6 @@ export function updateOrder(id: string, updates: Partial<AdminOrder>): AdminOrde
   if (index === -1) return null;
   ordersCache[index] = { ...ordersCache[index], ...updates };
   writeOrdersDiskCache(ordersCache);
-  uploadCloudJson('os_admin_orders', ordersCache).catch(() => {});
+  await uploadCloudJson('os_admin_orders', ordersCache).catch(() => false);
   return ordersCache[index];
 }

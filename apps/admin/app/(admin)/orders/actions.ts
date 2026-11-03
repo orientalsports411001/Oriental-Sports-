@@ -46,7 +46,7 @@ export async function changeOrderStatus(orderId: string, formData: FormData) {
   // Update in local / cached catalog store
   let cached = (await getCachedOrdersAsync()).find((o) => o.id === orderId || o.order_number === orderId);
   if (cached) {
-    updateOrder(cached.id, { status: nextStatus as any });
+    await updateOrder(cached.id, { status: nextStatus as any });
     cached = { ...cached, status: nextStatus as any };
   }
 
@@ -151,7 +151,7 @@ export async function updateTracking(orderId: string, formData: FormData) {
 
   const cached = (await getCachedOrdersAsync()).find((o) => o.id === orderId || o.order_number === orderId);
   if (cached) {
-    updateOrder(cached.id, {
+    await updateOrder(cached.id, {
       tracking_number: trackingNumber || undefined,
       carrier: carrier || undefined,
     });

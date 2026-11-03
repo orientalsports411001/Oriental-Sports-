@@ -62,7 +62,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const saved = saveAdminOrder({
+    const saved = await saveAdminOrder({
       id: body.id,
       order_number: body.order_number,
       user_id: body.user_id || 'usr-guest',
