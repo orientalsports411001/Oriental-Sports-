@@ -336,35 +336,158 @@ export function printOrderInvoice(order: Order) {
 </body>
 </html>`;
 
-  // Create isolated invisible iframe to print only the invoice
-  const iframe = document.createElement('iframe');
-  iframe.style.position = 'fixed';
-  iframe.style.right = '0';
-  iframe.style.bottom = '0';
-  iframe.style.width = '0';
-  iframe.style.height = '0';
-  iframe.style.border = '0';
-  document.body.appendChild(iframe);
+  // Extract inner container HTML for direct portal printing fallback
+  const innerContainerMatch = invoiceHtml.match(/<div class="invoice-container">[\s\S]*?<\/div>\s*<\/body>/i);
+  const containerHtml = innerContainerMatch 
+    ? innerContainerMatch[0].replace(/<\/body>/i, '') 
+    : `<div class="invoice-container">${itemsRowsHtml}</div>`;
 
-  const doc = iframe.contentWindow?.document || iframe.contentDocument;
-  if (!doc) return;
-
-  doc.open();
-  doc.write(invoiceHtml);
-  doc.close();
-
-  // Trigger print once iframe resources are rendered
-  setTimeout(() => {
-    try {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-    } catch (e) {
-      console.warn('Iframe print fallback:', e);
-    } finally {
-      // Remove iframe after print dialog completes
+  // 1. Preferred method: Standalone clean print window
+  try {
+    const printWindow = window.open('', '_blank', 'width=850,height=900');
+    if (printWindow && !printWindow.closed) {
+      printWindow.document.open();
+      printWindow.document.write(invoiceHtml);
+      printWindow.document.close();
+      printWindow.focus();
       setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 2000);
+        try {
+          printWindow.print();
+        } catch {}
+      }, 300);
+      return;
     }
-  }, 350);
+  } catch (e) {
+    // Popup blocked, proceed to isolated in-page print portal
+  }
+
+  // 2. Bulletproof Fallback: In-page isolated print container with strict @media print masking
+  try {
+    const existing = document.getElementById('os-print-invoice-portal');
+    if (existing) existing.remove();
+
+    const portal = document.createElement('div');
+    portal.id = 'os-print-invoice-portal';
+    portal.innerHTML = `
+      <style id="os-print-invoice-override">
+        @media screen {
+          #os-print-invoice-portal {
+            display: none !important;
+          }
+        }
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 12mm 15mm;
+          }
+          html, body {
+            background: #FFFFFF !important;
+            color: #111111 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          body > *:not(#os-print-invoice-portal) {
+            display: none !important;
+            visibility: hidden !important;
+          }
+          #os-print-invoice-portal {
+            display: block !important;
+            visibility: visible !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            background: #FFFFFF !important;
+            color: #111111 !important;
+            z-index: 9999999 !important;
+          }
+          #os-print-invoice-portal * {
+            visibility: visible !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .invoice-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            border-bottom: 2px solid #C8102E !important;
+            padding-bottom: 12px !important;
+            margin-bottom: 16px !important;
+          }
+          .brand-title {
+            font-size: 22px !important;
+            font-weight: 900 !important;
+            color: #C8102E !important;
+          }
+          .dossier-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 14px !important;
+            margin-bottom: 16px !important;
+            background: #F8F9FA !important;
+            border: 1px solid #E5E7EB !important;
+            padding: 10px 12px !important;
+          }
+          .items-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin-bottom: 16px !important;
+          }
+          .items-table th {
+            background-color: #F3F4F6 !important;
+            border-bottom: 2px solid #D1D5DB !important;
+            padding: 8px 10px !important;
+            text-align: left !important;
+            font-size: 11px !important;
+            color: #111111 !important;
+          }
+          .items-table td {
+            padding: 9px 10px !important;
+            border-bottom: 1px solid #E5E7EB !important;
+            font-size: 12px !important;
+            color: #111111 !important;
+          }
+          .settlement-area {
+            display: flex !important;
+            justify-content: space-between !important;
+            gap: 20px !important;
+            margin-top: 14px !important;
+          }
+          .payment-note-box {
+            flex: 1 !important;
+            background: #F9FAFB !important;
+            border: 1px solid #E5E7EB !important;
+            padding: 10px 12px !important;
+            font-size: 11px !important;
+            color: #374151 !important;
+          }
+          .totals-table {
+            width: 280px !important;
+            border-collapse: collapse !important;
+          }
+          .totals-table td {
+            padding: 5px 8px !important;
+            font-size: 12px !important;
+          }
+          .grand-total-row td {
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            color: #C8102E !important;
+            border-top: 1.5px solid #111111 !important;
+          }
+        }
+      </style>
+      ${containerHtml}
+    `;
+
+    document.body.appendChild(portal);
+
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        portal.remove();
+      }, 1500);
+    }, 150);
+  } catch (err) {
+    console.error('Print invoice failed:', err);
+  }
 }

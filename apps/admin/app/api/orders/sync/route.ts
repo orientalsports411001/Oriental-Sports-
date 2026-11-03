@@ -24,12 +24,23 @@ export async function GET(req: Request) {
     const email = searchParams.get('email');
 
     let orders = await getCachedOrdersAsync();
-    if (phone) {
-      const cleanPhone = phone.replace(/\D/g, '').slice(-10);
-      orders = orders.filter((o) => o.customer_phone?.replace(/\D/g, '').includes(cleanPhone));
-    }
-    if (email) {
-      orders = orders.filter((o) => o.customer_email?.toLowerCase() === email.toLowerCase());
+    if (phone || email) {
+      const cleanPhone = phone ? phone.replace(/\D/g, '').slice(-10) : '';
+      const cleanEmail = email ? email.toLowerCase().trim() : '';
+
+      orders = orders.filter((o) => {
+        const orderPhone = (o.customer_phone || (o.shipping_address as any)?.phone || '').replace(/\D/g, '');
+        const orderEmail = (o.customer_email || (o.shipping_address as any)?.email || '').toLowerCase().trim();
+
+        const phoneMatches = cleanPhone ? orderPhone.includes(cleanPhone) : false;
+        const emailMatches = cleanEmail ? orderEmail === cleanEmail : false;
+
+        // If both provided, match either phone OR email (customer may use different email on device vs order)
+        if (cleanPhone && cleanEmail) {
+          return phoneMatches || emailMatches;
+        }
+        return phoneMatches || emailMatches;
+      });
     }
 
     return NextResponse.json({ success: true, orders }, { headers: corsHeaders });

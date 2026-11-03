@@ -37,6 +37,19 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
   const { addToCart, openCart } = useCart();
   const { syncOrders, isSyncingOrders } = useAuth();
 
+  const safeTotal = Number(order.totalAmount ?? (order as any).total_amount ?? 0);
+  const safeSubtotal = Number(order.subtotal ?? (order as any).total_amount ?? safeTotal);
+  const safeTax = Number(order.tax ?? Math.round(safeSubtotal * 0.18));
+  const safeShipping = Number(order.shipping ?? 0);
+  const safeItems = Array.isArray(order.items) ? order.items : [];
+  const safeAddr: any = order.shippingAddress || (order as any).shipping_address || {};
+  const safeCustomerName = safeAddr.name || safeAddr.fullName || order.customerName || (order as any).customer_name || 'Customer';
+  const safeLocality = safeAddr.locality || safeAddr.city || 'Camp';
+  const safeStreet = safeAddr.street || safeAddr.addressLine1 || 'Camp Flagship Store';
+  const safeCity = safeAddr.city || 'Pune';
+  const safePincode = safeAddr.pincode || safeAddr.postalCode || '411001';
+  const safePhone = safeAddr.phone || (order as any).customerPhone || (order as any).customer_phone || '';
+
   const handleCopyTracking = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (order.trackingNumber) {
@@ -48,7 +61,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
 
   const handleReorder = (e: React.MouseEvent) => {
     e.stopPropagation();
-    order.items.forEach((item) => {
+    safeItems.forEach((item) => {
       const prod = PRODUCTS.find((p) => p.id === item.productId || p.slug === item.productSlug);
       if (prod) {
         addToCart(prod, item.quantity, item.selectedVariant);
@@ -62,7 +75,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
     setIsLocalSyncing(true);
     setSyncFeedback(null);
     try {
-      await syncOrders(order.shippingAddress?.phone || order.orderNumber);
+      await syncOrders(safePhone || order.orderNumber);
       setSyncFeedback('Updated Just Now');
       setTimeout(() => setSyncFeedback(null), 3500);
     } catch {
@@ -76,24 +89,23 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
   const isPickup = Boolean(
     order.deliveryMethod === 'camp_pickup' ||
       order.deliveryMethod === 'pickup' ||
-      (order.shippingAddress?.street &&
-        (order.shippingAddress.street.toLowerCase().includes('camp') ||
-          order.shippingAddress.street.toLowerCase().includes('pickup') ||
-          order.shippingAddress.street.toLowerCase().includes('shop 247') ||
-          order.shippingAddress.street.toLowerCase().includes('mg road')))
+      (safeStreet.toLowerCase().includes('camp') ||
+        safeStreet.toLowerCase().includes('pickup') ||
+        safeStreet.toLowerCase().includes('shop 247') ||
+        safeStreet.toLowerCase().includes('mg road'))
   );
 
   const effectiveTimeline = generateOrderTimeline(
-    order.status,
-    order.date,
+    order.status || 'confirmed',
+    order.date || new Date().toISOString(),
     order.updatedAt,
     order.trackingNumber,
     order.carrier,
     order.deliveryMethod,
-    order.shippingAddress?.street
+    safeStreet
   );
 
-  const activeLabel = order.statusLabel || getOrderStatusLabel(order.status, isPickup);
+  const activeLabel = order.statusLabel || getOrderStatusLabel(order.status || 'confirmed', isPickup);
 
   const statusColorMap: Record<string, { bg: string; text: string; border: string }> = {
     confirmed: { bg: 'rgba(59, 130, 246, 0.15)', text: '#60A5FA', border: 'rgba(59, 130, 246, 0.3)' },
@@ -110,7 +122,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
   const currentStatusStyle = statusColorMap[order.status] || statusColorMap.confirmed;
 
   const whatsappInquiryUrl = `https://wa.me/${STORE_INFO.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-    `Hello Oriental Sports Camp Pune team! I'm inquiring about my order ${order.orderNumber} (₹${order.totalAmount.toLocaleString('en-IN')}). Could you assist with status updates?`
+    `Hello Oriental Sports Camp Pune team! I'm inquiring about my order ${order.orderNumber} (₹${safeTotal.toLocaleString('en-IN')}). Could you assist with status updates?`
   )}`;
 
   const isSyncBusy = isLocalSyncing;
@@ -156,7 +168,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
               Total Amount
             </div>
             <div style={{ fontSize: '0.875rem', fontWeight: 800, color: '#FFFFFF' }}>
-              ₹{order.totalAmount.toLocaleString('en-IN')}
+              ₹{safeTotal.toLocaleString('en-IN')}
             </div>
           </div>
 
@@ -167,7 +179,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
               {isPickup ? 'Collection Method' : 'Ship To'}
             </div>
             <div style={{ fontSize: '0.875rem', color: '#D1D5DB' }}>
-              {isPickup ? 'Camp Store Pickup' : `${order.shippingAddress.name} (${order.shippingAddress.locality})`}
+              {isPickup ? 'Camp Store Pickup' : `${safeCustomerName} (${safeLocality})`}
             </div>
           </div>
         </div>
@@ -357,7 +369,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
 
         {/* Items List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
-          {order.items.map((item, idx) => (
+          {safeItems.map((item, idx) => (
             <div
               key={idx}
               style={{
@@ -365,7 +377,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                 gap: '16px',
                 alignItems: 'center',
                 paddingBottom: '14px',
-                borderBottom: idx < order.items.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none',
+                borderBottom: idx < safeItems.length - 1 ? '1px solid rgba(255, 255, 255, 0.08)' : 'none',
               }}
             >
               <img
@@ -662,12 +674,12 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                 <strong style={{ color: '#FFFFFF', display: 'block', marginBottom: '6px', fontSize: '0.875rem' }}>
                   {isPickup ? 'Collection Details' : 'Delivery Destination'}
                 </strong>
-                <div style={{ color: '#FFFFFF', fontWeight: 600 }}>{order.shippingAddress.name}</div>
-                <div style={{ color: '#D1D5DB', marginTop: '2px' }}>{order.shippingAddress.street}</div>
+                <div style={{ color: '#FFFFFF', fontWeight: 600 }}>{safeCustomerName}</div>
+                <div style={{ color: '#D1D5DB', marginTop: '2px' }}>{safeStreet}</div>
                 <div style={{ color: '#9CA3AF' }}>
-                  {order.shippingAddress.locality}, {order.shippingAddress.city} - {order.shippingAddress.pincode}
+                  {[safeLocality, safeCity].filter(Boolean).join(', ')} - {safePincode}
                 </div>
-                <div style={{ color: '#9CA3AF', marginTop: '4px' }}>Contact Phone: +91 {order.shippingAddress.phone}</div>
+                {safePhone && <div style={{ color: '#9CA3AF', marginTop: '4px' }}>Contact Phone: {safePhone}</div>}
               </div>
 
               <div>
@@ -675,18 +687,18 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                   Payment & Invoice
                 </strong>
                 <div style={{ color: '#D1D5DB' }}>
-                  Payment Mode: <strong style={{ color: '#FFFFFF' }}>{order.paymentMethod}</strong>
+                  Payment Mode: <strong style={{ color: '#FFFFFF' }}>{order.paymentMethod || 'Razorpay / Online'}</strong>
                 </div>
                 <div style={{ color: '#9CA3AF', marginTop: '2px' }}>
-                  Subtotal: ₹{order.subtotal.toLocaleString('en-IN')}
+                  Subtotal: ₹{safeSubtotal.toLocaleString('en-IN')}
                 </div>
-                <div style={{ color: '#9CA3AF' }}>GST (Included): ₹{order.tax.toLocaleString('en-IN')}</div>
+                <div style={{ color: '#9CA3AF' }}>GST (Included): ₹{safeTax.toLocaleString('en-IN')}</div>
                 <div style={{ color: '#9CA3AF' }}>
                   Shipping:{' '}
-                  {order.shipping === 0 ? (
+                  {safeShipping === 0 ? (
                     <span style={{ color: '#10B981', fontWeight: 700 }}>FREE Expedited</span>
                   ) : (
-                    `₹${order.shipping}`
+                    `₹${safeShipping}`
                   )}
                 </div>
               </div>
@@ -768,12 +780,11 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
 
             <div style={{ marginBottom: '16px', fontSize: '0.8125rem', color: '#D1D5DB' }}>
               <strong style={{ color: '#FFFFFF' }}>Billed To:</strong>
-              <div>{order.shippingAddress.name}</div>
+              <div>{safeCustomerName}</div>
               <div style={{ color: '#9CA3AF' }}>
-                {order.shippingAddress.street}, {order.shippingAddress.locality}, {order.shippingAddress.city} -{' '}
-                {order.shippingAddress.pincode}
+                {[safeStreet, safeLocality, safeCity].filter(Boolean).join(', ')} - {safePincode}
               </div>
-              <div style={{ color: '#9CA3AF' }}>Phone: +91 {order.shippingAddress.phone}</div>
+              {safePhone && <div style={{ color: '#9CA3AF' }}>Phone: {safePhone}</div>}
             </div>
 
             <table
@@ -793,7 +804,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                 </tr>
               </thead>
               <tbody>
-                {order.items.map((it, i) => (
+                {safeItems.map((it, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
                     <td style={{ padding: '8px', color: '#FFFFFF' }}>
                       <strong>{it.productName}</strong>
@@ -803,10 +814,10 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                     </td>
                     <td style={{ textAlign: 'center', padding: '8px', color: '#D1D5DB' }}>{it.quantity}</td>
                     <td style={{ textAlign: 'right', padding: '8px', color: '#D1D5DB' }}>
-                      ₹{it.price.toLocaleString('en-IN')}
+                      ₹{Number(it.price || 0).toLocaleString('en-IN')}
                     </td>
                     <td style={{ textAlign: 'right', padding: '8px', color: '#FFFFFF', fontWeight: 700 }}>
-                      ₹{(it.price * itemQuantity(it)).toLocaleString('en-IN')}
+                      ₹{(Number(it.price || 0) * itemQuantity(it)).toLocaleString('en-IN')}
                     </td>
                   </tr>
                 ))}
@@ -817,7 +828,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                     Total:
                   </td>
                   <td style={{ textAlign: 'right', padding: '8px', fontWeight: 800, color: '#FFFFFF' }}>
-                    ₹{order.totalAmount.toLocaleString('en-IN')}
+                    ₹{safeTotal.toLocaleString('en-IN')}
                   </td>
                 </tr>
               </tfoot>

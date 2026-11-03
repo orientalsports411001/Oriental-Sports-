@@ -591,21 +591,32 @@ export function getCachedOrders(): AdminOrder[] {
 
 export async function getCachedOrdersAsync(): Promise<AdminOrder[]> {
   const local = getCachedOrders();
-  if (local.length > 0) return local;
+  const orderMap = new Map<string, AdminOrder>();
+
+  for (const o of local) {
+    if (!BANNED_DUMMY_ORDERS.has(o.order_number) && !BANNED_DUMMY_ORDERS.has(o.id)) {
+      orderMap.set(o.order_number || o.id, o);
+    }
+  }
 
   try {
     const cloudOrders = await fetchCloudJson<AdminOrder[]>('os_admin_orders');
     if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
-      const valid = cloudOrders.filter(
-        (o) => !BANNED_DUMMY_ORDERS.has(o.order_number) && !BANNED_DUMMY_ORDERS.has(o.id)
-      );
-      if (valid.length > 0) {
-        ordersCache = valid;
-        writeOrdersDiskCache(valid);
-        return valid;
+      for (const o of cloudOrders) {
+        if (!BANNED_DUMMY_ORDERS.has(o.order_number) && !BANNED_DUMMY_ORDERS.has(o.id)) {
+          const existing = orderMap.get(o.order_number || o.id);
+          orderMap.set(o.order_number || o.id, existing ? { ...existing, ...o } : o);
+        }
       }
     }
   } catch {}
+
+  const merged = Array.from(orderMap.values());
+  if (merged.length > 0) {
+    ordersCache = merged;
+    writeOrdersDiskCache(merged);
+    return merged;
+  }
 
   return local;
 }

@@ -16,21 +16,22 @@ const STORAGE_KEY = 'oriental_sports_auth_user_v1';
 const PLACED_ORDERS_STORAGE_KEY = 'oriental_sports_placed_orders_v1';
 
 export const SEED_PRATIK_ORDER: Order = {
-  id: '3b8909d7-8e68-45a7-96a1-945781a94201',
-  orderNumber: 'OS-2026-5625',
-  date: '2026-10-29',
+  id: 'ord-2026-8812',
+  orderNumber: 'OS-2026-8812',
+  date: new Date().toISOString().split('T')[0],
   status: 'confirmed',
   statusLabel: 'Order Confirmed',
-  totalAmount: 4498,
-  subtotal: 4498,
+  totalAmount: 13999,
+  subtotal: 13999,
   shipping: 0,
-  tax: 686,
-  paymentMethod: 'Razorpay (UPI - ID: pay_rzp_58310021)',
+  tax: 2135,
+  paymentMethod: 'Razorpay (UPI)',
   deliveryMethod: 'camp_pickup',
   shippingAddress: {
     id: 'addr_camp_pickup_pratik',
-    name: 'pratik jadhav',
-    phone: '+91 98230 45812',
+    name: 'Pratik Jadhav',
+    phone: '+91 9420434728',
+    email: 'pratikjadhav.job@gmail.com',
     street: 'Shop 247, MG Road (Camp Store Pickup)',
     locality: 'Camp',
     city: 'Pune',
@@ -39,29 +40,31 @@ export const SEED_PRATIK_ORDER: Order = {
     isDefault: true,
     type: 'home',
   },
-  trackingNumber: 'OS-PICKUP-5625',
+  trackingNumber: 'OS-PICKUP-8812',
   carrier: 'Oriental Store Counter (Camp)',
   items: [
     {
-      productId: 'b4b1fb03-512c-47bc-ad78-654cb6b50931',
-      productSlug: 'yonex-astrox-88d-play',
-      productName: 'Yonex Astrox 88D Play Badminton Racket',
-      productImage: '/images/products/yonex_astrox_88d.webp',
-      price: 4498,
+      productId: 'prod-tennis-pro-tour-300g',
+      productSlug: 'pro-tour-300g-high-modulus-graphite-tennis-racket',
+      productName: 'Pro Tour 300g High-Modulus Graphite Tennis Racket',
+      productImage: '/images/products/wilson-blade-98.jpg',
+      price: 13999,
       quantity: 1,
-      selectedVariant: '4U / G5',
+      selectedVariant: '300g Tournament Spec',
     },
   ],
   timeline: generateOrderTimeline(
     'confirmed',
-    '2026-10-29',
+    new Date().toISOString(),
     undefined,
-    'OS-PICKUP-5625',
+    'OS-PICKUP-8812',
     'Oriental Store Counter (Camp)',
     'camp_pickup',
     'Shop 247, MG Road (Camp Store Pickup)'
   ),
 };
+
+const BANNED_LEGACY_ORDERS = new Set(['OS-2026-5625', 'ord-2026-5625']);
 
 export function getStoredPlacedOrders(): Order[] {
   try {
@@ -75,6 +78,7 @@ export function getStoredPlacedOrders(): Order[] {
     // Seed verified placed order
     orderMap.set(SEED_PRATIK_ORDER.orderNumber, SEED_PRATIK_ORDER);
     for (const o of list) {
+      if (BANNED_LEGACY_ORDERS.has(o.orderNumber) || BANNED_LEGACY_ORDERS.has(o.id)) continue;
       orderMap.set(o.orderNumber || o.id, o);
     }
     return Array.from(orderMap.values());
@@ -116,14 +120,20 @@ export class AuthService {
         const backupOrders = getStoredPlacedOrders();
         const orderMap = new Map<string, Order>();
         for (const o of (parsed.orders || [])) {
+          if (BANNED_LEGACY_ORDERS.has(o.orderNumber) || BANNED_LEGACY_ORDERS.has(o.id)) continue;
           orderMap.set(o.orderNumber || o.id, o);
         }
         for (const o of backupOrders) {
+          if (BANNED_LEGACY_ORDERS.has(o.orderNumber) || BANNED_LEGACY_ORDERS.has(o.id)) continue;
           // If phone matches, or if user is Pratik, attach the order
           const userPhone = (parsed.phone || '').replace(/\D/g, '');
           const orderPhone = (o.shippingAddress?.phone || '').replace(/\D/g, '');
           const isPhoneMatch = userPhone && orderPhone && (userPhone.endsWith(orderPhone.slice(-10)) || orderPhone.endsWith(userPhone.slice(-10)));
-          const isEmailMatch = parsed.email && parsed.email.toLowerCase() === 'pratikjadhav8820@gmail.com';
+          const isEmailMatch = parsed.email && (
+            parsed.email.toLowerCase() === 'pratikjadhav8820@gmail.com' ||
+            parsed.email.toLowerCase() === 'pratikjadhav.sae.comp@gmail.com' ||
+            parsed.email.toLowerCase() === 'pratikjadhav.job@gmail.com'
+          );
           const isNameMatch = parsed.fullName && parsed.fullName.toLowerCase().includes('pratik');
 
           if (isPhoneMatch || isEmailMatch || isNameMatch || !parsed.orders || parsed.orders.length === 0) {

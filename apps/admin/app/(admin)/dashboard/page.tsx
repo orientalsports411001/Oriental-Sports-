@@ -103,7 +103,7 @@ export default async function DashboardPage({
 
   // Real orders that count toward gross revenue (verified checkouts)
   const revenueOrders = allOrders.filter((o) =>
-    ['confirmed', 'paid', 'processing', 'shipped', 'delivered'].includes((o.status || '').toLowerCase())
+    ['confirmed', 'paid', 'processing', 'dispatched', 'shipped', 'in_transit', 'out_for_delivery', 'ready_for_pickup', 'delivered'].includes((o.status || '').toLowerCase())
   );
 
   // 1. Calculate Real Gross Revenue (₹)

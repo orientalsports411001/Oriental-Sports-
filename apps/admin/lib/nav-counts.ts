@@ -58,8 +58,8 @@ export async function getAdminNavCounts(): Promise<{ productsCount: number; orde
   try {
     const admin = createServiceRoleClient();
     const { count: dbOrdersCount } = await admin.from('orders').select('id', { count: 'exact', head: true });
-    if (typeof dbOrdersCount === 'number' && dbOrdersCount > 0) {
-      ordersCount = dbOrdersCount;
+    if (typeof dbOrdersCount === 'number') {
+      ordersCount = Math.max(ordersCount, dbOrdersCount);
     }
   } catch {}
 
