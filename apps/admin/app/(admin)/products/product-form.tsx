@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageGallery } from '@/components/products/ImageGallery';
 import { SeoEditor } from '@/components/seo/SeoEditor';
@@ -52,6 +52,10 @@ export function ProductForm({ initialData, product: productProp, categories, act
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedSuccess, setSavedSuccess] = useState<string | null>(null);
+  // A plain state check isn't enough: two rapid clicks can both read
+  // isSubmitting===false before the first click's setState re-renders. A
+  // ref mutates synchronously, so it reliably blocks the second call.
+  const submitLockRef = useRef(false);
 
   // SEO State
   const [seoTitle, setSeoTitle] = useState(data?.seo_title || '');
@@ -122,7 +126,8 @@ export function ProductForm({ initialData, product: productProp, categories, act
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (submitLockRef.current || isSubmitting) return;
+    submitLockRef.current = true;
 
     setSaveError(null);
 
@@ -131,6 +136,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     if (!trimmedName || trimmedName.length < 2) {
       setSaveError('Product Name is required (minimum 2 characters).');
       setActiveTab('details');
+      submitLockRef.current = false;
       return;
     }
 
@@ -138,6 +144,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     if (!trimmedDesc || trimmedDesc.length < 5) {
       setSaveError('Product Description is required (minimum 5 characters).');
       setActiveTab('details');
+      submitLockRef.current = false;
       return;
     }
 
@@ -145,18 +152,21 @@ export function ProductForm({ initialData, product: productProp, categories, act
     if (!price || isNaN(numericPrice) || numericPrice <= 0) {
       setSaveError('Product Price is required and must be a valid number greater than ₹0.');
       setActiveTab('pricing');
+      submitLockRef.current = false;
       return;
     }
 
     if (!images || images.length === 0) {
       setSaveError('At least 1 product image is required. Please upload or add an image in the Media tab.');
       setActiveTab('media');
+      submitLockRef.current = false;
       return;
     }
 
     if (!categorySlug) {
       setSaveError('Please select a Sport Discipline / Category.');
       setActiveTab('details');
+      submitLockRef.current = false;
       return;
     }
 
@@ -172,7 +182,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     formData.set('description', trimmedDesc);
     formData.set('price', String(numericPrice));
     formData.set('compare_at_price', compareAtPrice || '');
-    formData.set('stock_quantity', String(stockQuantity || 10));
+    formData.set('stock_quantity', String(stockQuantity ?? 10));
     formData.set('low_stock_threshold', String(lowStockThreshold || 5));
     formData.set('status', status || 'published');
     const finalImages = images.slice(0, 5);
@@ -202,6 +212,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     ];
 
     let saveSuccess = false;
+    let supabaseSynced = true;
     for (const ep of endpoints) {
       try {
         const res = await fetch(ep, {
@@ -212,6 +223,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
           const resJson = await res.json().catch(() => null);
           if (resJson?.success) {
             saveSuccess = true;
+            supabaseSynced = resJson.supabaseSynced !== false;
             break;
           }
         }
@@ -221,6 +233,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     if (!saveSuccess) {
       setSaveError('Failed to save product to the database. Please check your connection and try again.');
       setIsSubmitting(false);
+      submitLockRef.current = false;
       return;
     }
 
@@ -236,12 +249,16 @@ export function ProductForm({ initialData, product: productProp, categories, act
       } catch {}
     }
 
-    setSavedSuccess(`✓ Saved "${trimmedName}" successfully! Moving to Dashboard...`);
+    const flashMessage = supabaseSynced
+      ? `Product "${trimmedName}" saved successfully!`
+      : `Product "${trimmedName}" saved locally, but live site sync failed — it may take a moment to appear on the storefront.`;
+
+    setSavedSuccess(`${supabaseSynced ? '✓' : '⚠'} ${flashMessage}`);
 
     // Store one-time flash toast in sessionStorage so it NEVER lingers or repeats on hard refresh
     if (typeof window !== 'undefined') {
       try {
-        sessionStorage.setItem('os_admin_flash_toast', `Product "${trimmedName}" saved successfully!`);
+        sessionStorage.setItem('os_admin_flash_toast', flashMessage);
       } catch {}
       setTimeout(() => {
         window.location.href = `${basePath}/dashboard`;

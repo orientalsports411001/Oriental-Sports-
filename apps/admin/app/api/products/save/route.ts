@@ -65,7 +65,8 @@ export async function POST(req: Request) {
     const price = Number(getLatestNonEmpty(formData, 'price')) || 0;
     const compareAtPriceRaw = getLatestNonEmpty(formData, 'compare_at_price');
     const compareAtPrice = compareAtPriceRaw ? Number(compareAtPriceRaw) : null;
-    const stockQuantity = Number(getLatestNonEmpty(formData, 'stock_quantity')) || 10;
+    const stockQuantityRaw = getLatestNonEmpty(formData, 'stock_quantity');
+    const stockQuantity = stockQuantityRaw ? Number(stockQuantityRaw) : 10;
     const lowStockThreshold = Number(getLatestNonEmpty(formData, 'low_stock_threshold')) || 5;
     const status = (getLatestNonEmpty(formData, 'status') || 'published') as 'draft' | 'published' | 'archived';
     const images = parseImages(formData);
@@ -94,6 +95,7 @@ export async function POST(req: Request) {
     });
 
     // In Supabase, if productId is provided, update by id first before attempting slug conflict
+    let supabaseSynced = true;
     try {
       const admin = createServiceRoleClient();
       const isUuid = productId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
@@ -159,55 +161,20 @@ export async function POST(req: Request) {
           { onConflict: 'slug' }
         );
         if (upsertErr) {
-          const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
-          const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
-          await fetch(`${url}/rest/v1/products`, {
-            method: 'POST',
-            headers: {
-              apikey: key,
-              Authorization: `Bearer ${key}`,
-              'Content-Type': 'application/json',
-              Prefer: 'resolution=merge-duplicates',
-            },
-            body: JSON.stringify({
-              ...supaPayload,
-              ...(isUuid ? { id: productId } : {}),
-            }),
-          });
+          console.error('[products/save] Supabase upsert failed, product not synced to live DB:', upsertErr.message);
+          supabaseSynced = false;
         }
       }
-    } catch (e) {
-      try {
-        const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
-        const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
-        await fetch(`${url}/rest/v1/products`, {
-          method: 'POST',
-          headers: {
-            apikey: key,
-            Authorization: `Bearer ${key}`,
-            'Content-Type': 'application/json',
-            Prefer: 'resolution=merge-duplicates',
-          },
-          body: JSON.stringify({
-            name: saved.name,
-            slug: saved.slug,
-            category_slug: saved.category_slug,
-            brand: saved.brand,
-            description: saved.description,
-            price: saved.price,
-            images: saved.images,
-            in_stock: saved.status === 'published' && (saved.stock_quantity ?? 1) > 0,
-            metadata: {
-              status: saved.status,
-              stock_quantity: saved.stock_quantity,
-              low_stock_threshold: saved.low_stock_threshold,
-              seo_title: saved.seo_title,
-              seo_description: saved.seo_description,
-            },
-            updated_at: new Date().toISOString(),
-          }),
-        });
-      } catch {}
+    } catch (e: any) {
+      // createServiceRoleClient() throws when Supabase isn't configured —
+      // the catalog-store write above already succeeded, so the admin UI
+      // still has the product, but the storefront (which reads live
+      // products straight from Supabase) will not see this change until
+      // Supabase is reachable. Reported truthfully in the response instead
+      // of a fallback write with hardcoded credentials that silently no-ops
+      // under RLS and still claims success.
+      console.error('[products/save] Could not sync product to Supabase:', e?.message || e);
+      supabaseSynced = false;
     }
 
     const targetId = saved.id || saved.slug || slug;
@@ -228,7 +195,10 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       product: saved,
-      redirectUrl: `/products/${targetId}/edit?saved=Product+saved+successfully`,
+      supabaseSynced,
+      redirectUrl: supabaseSynced
+        ? `/products/${targetId}/edit?saved=Product+saved+successfully`
+        : `/products/${targetId}/edit?saved=Product+saved+locally%2C+but+live+site+sync+failed+%E2%80%94+retry+shortly`,
     });
   } catch (err: any) {
     console.error('API /api/products/save error:', err);

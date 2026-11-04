@@ -30,7 +30,6 @@ interface OrderTrackerProps {
 export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpanded = false }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [copiedTracking, setCopiedTracking] = useState(false);
-  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [isLocalSyncing, setIsLocalSyncing] = useState(false);
   const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
 
@@ -39,7 +38,11 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
 
   const safeTotal = Number(order.totalAmount ?? (order as any).total_amount ?? 0);
   const safeSubtotal = Number(order.subtotal ?? (order as any).total_amount ?? safeTotal);
-  const safeTax = Number(order.tax ?? Math.round(safeSubtotal * 0.18));
+  const safeDiscount = Number(order.discount ?? 0);
+  // Prices are GST-inclusive, so GST is the portion already embedded in
+  // (subtotal - discount), not an extra 18% on top of it.
+  const safeTax = Number(order.tax ?? Math.round((safeSubtotal - safeDiscount) - (safeSubtotal - safeDiscount) / 1.18));
+  const safeTaxableValue = Math.max(0, safeSubtotal - safeDiscount - safeTax);
   const safeShipping = Number(order.shipping ?? 0);
   const safeItems = Array.isArray(order.items) ? order.items : [];
   const safeAddr: any = order.shippingAddress || (order as any).shipping_address || {};
@@ -78,8 +81,8 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
       await syncOrders(safePhone || order.orderNumber);
       setSyncFeedback('Updated Just Now');
       setTimeout(() => setSyncFeedback(null), 3500);
-    } catch {
-      setSyncFeedback('Up to Date');
+    } catch (err: any) {
+      setSyncFeedback(err?.code === 'SYNC_IN_PROGRESS' ? 'Already Syncing…' : 'Up to Date');
       setTimeout(() => setSyncFeedback(null), 3000);
     } finally {
       setIsLocalSyncing(false);
@@ -412,11 +415,11 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                   </span>
                 )}
                 <div style={{ fontSize: '0.8125rem', color: '#D1D5DB', marginTop: '4px' }}>
-                  Qty: {item.quantity} × ₹{item.price.toLocaleString('en-IN')}
+                  Qty: {Number(item.quantity ?? 1)} × ₹{Number(item.price ?? 0).toLocaleString('en-IN')}
                 </div>
               </div>
               <div style={{ fontWeight: 800, fontSize: '0.9375rem', color: '#FFFFFF', whiteSpace: 'nowrap' }}>
-                ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                ₹{(Number(item.price ?? 0) * Number(item.quantity ?? 1)).toLocaleString('en-IN')}
               </div>
             </div>
           ))}
@@ -690,9 +693,12 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                   Payment Mode: <strong style={{ color: '#FFFFFF' }}>{order.paymentMethod || 'Razorpay / Online'}</strong>
                 </div>
                 <div style={{ color: '#9CA3AF', marginTop: '2px' }}>
-                  Subtotal: ₹{safeSubtotal.toLocaleString('en-IN')}
+                  Taxable Value: ₹{safeTaxableValue.toLocaleString('en-IN')}
                 </div>
-                <div style={{ color: '#9CA3AF' }}>GST (Included): ₹{safeTax.toLocaleString('en-IN')}</div>
+                <div style={{ color: '#9CA3AF' }}>GST @ 18%: ₹{safeTax.toLocaleString('en-IN')}</div>
+                {safeDiscount > 0 && (
+                  <div style={{ color: '#10B981' }}>Discount: −₹{safeDiscount.toLocaleString('en-IN')}</div>
+                )}
                 <div style={{ color: '#9CA3AF' }}>
                   Shipping:{' '}
                   {safeShipping === 0 ? (
@@ -707,158 +713,6 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
         )}
       </div>
 
-      {/* Tax Invoice Modal */}
-      {showInvoiceModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 10000,
-            backgroundColor: 'rgba(0,0,0,0.85)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '16px',
-          }}
-          onClick={() => setShowInvoiceModal(false)}
-        >
-          <div
-            style={{
-              backgroundColor: '#161616',
-              borderRadius: '8px',
-              maxWidth: '600px',
-              width: '100%',
-              padding: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.6)',
-              position: 'relative',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                borderBottom: '2px solid #C8102E',
-                paddingBottom: '16px',
-                marginBottom: '16px',
-              }}
-            >
-              <div>
-                <h3 className="font-display" style={{ margin: 0, fontSize: '1.375rem', color: '#FFFFFF' }}>
-                  ORIENTAL SPORTS
-                </h3>
-                <span style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>
-                  Shop 247, MG Road, New Modikhana, Camp, Pune - 411001
-                </span>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <span
-                  style={{
-                    backgroundColor: '#C8102E',
-                    color: '#FFFFFF',
-                    fontWeight: 800,
-                    fontSize: '0.6875rem',
-                    padding: '2px 8px',
-                    borderRadius: '2px',
-                  }}
-                >
-                  TAX INVOICE
-                </span>
-                <div style={{ fontSize: '0.875rem', fontWeight: 800, marginTop: '4px', color: '#FFFFFF' }}>
-                  {order.orderNumber}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>Date: {order.date}</div>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '16px', fontSize: '0.8125rem', color: '#D1D5DB' }}>
-              <strong style={{ color: '#FFFFFF' }}>Billed To:</strong>
-              <div>{safeCustomerName}</div>
-              <div style={{ color: '#9CA3AF' }}>
-                {[safeStreet, safeLocality, safeCity].filter(Boolean).join(', ')} - {safePincode}
-              </div>
-              {safePhone && <div style={{ color: '#9CA3AF' }}>Phone: {safePhone}</div>}
-            </div>
-
-            <table
-              style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                fontSize: '0.8125rem',
-                marginBottom: '16px',
-              }}
-            >
-              <thead>
-                <tr style={{ backgroundColor: '#202020', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-                  <th style={{ textAlign: 'left', padding: '8px', color: '#FFFFFF' }}>Description</th>
-                  <th style={{ textAlign: 'center', padding: '8px', color: '#FFFFFF' }}>Qty</th>
-                  <th style={{ textAlign: 'right', padding: '8px', color: '#FFFFFF' }}>Rate</th>
-                  <th style={{ textAlign: 'right', padding: '8px', color: '#FFFFFF' }}>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {safeItems.map((it, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                    <td style={{ padding: '8px', color: '#FFFFFF' }}>
-                      <strong>{it.productName}</strong>
-                      {it.selectedVariant && (
-                        <div style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>{it.selectedVariant}</div>
-                      )}
-                    </td>
-                    <td style={{ textAlign: 'center', padding: '8px', color: '#D1D5DB' }}>{it.quantity}</td>
-                    <td style={{ textAlign: 'right', padding: '8px', color: '#D1D5DB' }}>
-                      ₹{Number(it.price || 0).toLocaleString('en-IN')}
-                    </td>
-                    <td style={{ textAlign: 'right', padding: '8px', color: '#FFFFFF', fontWeight: 700 }}>
-                      ₹{(Number(it.price || 0) * itemQuantity(it)).toLocaleString('en-IN')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colSpan={3} style={{ textAlign: 'right', padding: '8px', fontWeight: 700, color: '#9CA3AF' }}>
-                    Total:
-                  </td>
-                  <td style={{ textAlign: 'right', padding: '8px', fontWeight: 800, color: '#FFFFFF' }}>
-                    ₹{safeTotal.toLocaleString('en-IN')}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-              <button
-                type="button"
-                onClick={() => printOrderInvoice(order)}
-                className="btn btn-outline-light btn-sm"
-                style={{ minHeight: '44px', padding: '8px 16px' }}
-              >
-                PRINT / SAVE PDF
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowInvoiceModal(false)}
-                className="btn btn-primary btn-sm"
-                style={{ minHeight: '44px', padding: '8px 16px' }}
-              >
-                CLOSE
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
-
-function itemQuantity(it: any): number {
-  return Number(it.quantity || 1);
-}

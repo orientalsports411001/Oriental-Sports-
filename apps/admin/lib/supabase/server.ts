@@ -33,10 +33,6 @@ export async function createClient() {
   );
 }
 
-if (typeof globalThis !== 'undefined' && !globalThis.WebSocket) {
-  (globalThis as any).WebSocket = class WebSocketStub {};
-}
-
 /**
  * Service-role Supabase client — SERVER ONLY. Bypasses RLS entirely. This is
  * the admin app's primary data-access path: every product/category/order/
@@ -49,12 +45,13 @@ if (typeof globalThis !== 'undefined' && !globalThis.WebSocket) {
  */
 export function createServiceRoleClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
-  const serviceKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.includes('supabase-demo')
-      ? process.env.SUPABASE_SERVICE_ROLE_KEY
-      : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!url || !serviceKey || url.includes('placeholder')) {
+  // Deliberately does NOT fall back to the anon key: anon-key writes get
+  // silently rejected by RLS, which previously showed as a false "saved"
+  // success while nothing actually persisted. Throwing here lets callers'
+  // existing try/catch fall back to the local/cloud catalog cache instead.
+  if (!url || !serviceKey || serviceKey.includes('supabase-demo') || url.includes('placeholder')) {
     throw new Error(
       'Live Supabase backend is not configured or offline. Operating in resilient local catalog mode.'
     );

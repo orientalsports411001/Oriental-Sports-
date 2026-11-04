@@ -17,12 +17,12 @@ import {
 } from 'lucide-react';
 
 interface AdminBottomNavProps {
-  userEmail?: string;
+  userDisplayName?: string;
   ordersCount?: number;
   productsCount?: number;
 }
 
-export function AdminBottomNav({ userEmail, ordersCount = 0, productsCount = 0 }: AdminBottomNavProps) {
+export function AdminBottomNav({ userDisplayName, ordersCount = 0, productsCount = 0 }: AdminBottomNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const liveCounts = useAdminNavCounts(productsCount, ordersCount);
@@ -150,7 +150,7 @@ export function AdminBottomNav({ userEmail, ordersCount = 0, productsCount = 0 }
                   lineHeight: 1,
                 }}
               >
-                {userEmail?.charAt(0).toUpperCase() || 'A'}
+                {userDisplayName?.charAt(0).toUpperCase() || 'A'}
               </div>
             </div>
             <span className="admin-bottom-nav-label">Admin</span>
@@ -207,11 +207,11 @@ export function AdminBottomNav({ userEmail, ordersCount = 0, productsCount = 0 }
                     boxShadow: '0 2px 10px rgba(200, 16, 46, 0.4)',
                   }}
                 >
-                  {userEmail?.charAt(0).toUpperCase() || 'A'}
+                  {userDisplayName?.charAt(0).toUpperCase() || 'A'}
                 </div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 14, color: '#FFFFFF' }}>
-                    {userEmail?.split('@')[0] || 'Admin'}
+                    {userDisplayName || 'Admin'}
                   </div>
                   <div style={{ fontSize: 11, color: '#22C55E', display: 'flex', alignItems: 'center', gap: 4 }}>
                     <ShieldCheck size={12} />

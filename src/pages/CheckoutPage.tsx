@@ -31,7 +31,6 @@ import {
   isLiveRazorpayKey,
   RazorpayOptions,
 } from '../services/razorpay';
-import { sendOrderEmailNotification } from '../services/emailNotification';
 
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
@@ -133,7 +132,11 @@ export const CheckoutPage: React.FC = () => {
         }
       }
     }
-  }, [isAuthenticated, user?.id]);
+    // Re-runs when the address fields change too (not just on the
+    // guest→auth transition) so an already-logged-in user who edits the
+    // address during checkout still gets it saved — the alreadyHasAddr
+    // check above makes re-running safe (no duplicate saves).
+  }, [isAuthenticated, user?.id, form.street, form.city, form.pincode]);
 
   const finalShipping = deliveryMethod === 'camp_pickup' ? 0 : shipping;
   const grandTotal = Math.max(0, subtotal - discount + finalShipping);
@@ -199,8 +202,14 @@ export const CheckoutPage: React.FC = () => {
       totalAmount: grandTotal,
       subtotal: subtotal,
       shipping: finalShipping,
-      tax: Math.round(subtotal * 0.18),
+      discount: discount,
+      // Prices are GST-inclusive ("All taxes & duties included" at checkout),
+      // so GST is the portion already embedded in (subtotal - discount), not
+      // an additional 18% on top — Math.round(subtotal * 0.18) overstated
+      // this by computing tax as if it were added on top instead of inside.
+      tax: Math.round((subtotal - discount) - (subtotal - discount) / 1.18),
       paymentMethod: `Razorpay (${paymentMethodName} - ID: ${paymentId})`,
+      razorpayPaymentId: paymentId,
       shippingAddress: {
         id: `addr_${Date.now()}`,
         name: `${form.firstName} ${form.lastName}`.trim(),
@@ -266,14 +275,14 @@ export const CheckoutPage: React.FC = () => {
     };
 
     await addOrder(newOrder);
+    // Note: addOrder() syncs to the admin backend (POST /api/orders/sync),
+    // which already sends the customer confirmation + admin alert emails —
+    // a second sendOrderEmailNotification() call here used to fire the
+    // exact same two emails again for every single order.
 
-    // Trigger instant order confirmation email notification
-    sendOrderEmailNotification({
-      order: newOrder,
-      stage: 'confirmed',
-      customerEmail: form.email,
-      customerName: `${form.firstName} ${form.lastName}`.trim(),
-    }).catch(() => {});
+    try {
+      localStorage.removeItem(CHECKOUT_DRAFT_KEY);
+    } catch {}
 
     clearCart();
     navigate('/order-success', { state: { order: newOrder } });

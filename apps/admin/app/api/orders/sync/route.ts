@@ -1,47 +1,65 @@
 import { NextResponse } from 'next/server';
 import { saveAdminOrder, getCachedOrders, getCachedOrdersAsync, AdminOrder } from '@/lib/catalog-store';
 import { sendOrderStatusEmail, sendAdminNewOrderNotification } from '@/lib/email';
+import { verifyRazorpayPayment } from '@/lib/razorpay-verify';
 
 export const dynamic = 'force-dynamic';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
+const ALLOWED_ORIGINS = new Set([
+  'https://orientalsports.in',
+  'https://www.orientalsports.in',
+  'http://localhost:5173',
+  'http://localhost:3000',
+]);
 
-export async function OPTIONS() {
+function corsHeadersFor(req: Request) {
+  const origin = req.headers.get('origin') || '';
+  return {
+    'Access-Control-Allow-Origin': ALLOWED_ORIGINS.has(origin) ? origin : 'https://orientalsports.in',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    Vary: 'Origin',
+  };
+}
+
+export async function OPTIONS(req: Request) {
   return new NextResponse(null, {
     status: 200,
-    headers: corsHeaders,
+    headers: corsHeadersFor(req),
   });
 }
 
 export async function GET(req: Request) {
+  const corsHeaders = corsHeadersFor(req);
   try {
     const { searchParams } = new URL(req.url);
     const phone = searchParams.get('phone');
     const email = searchParams.get('email');
 
-    let orders = await getCachedOrdersAsync();
-    if (phone || email) {
-      const cleanPhone = phone ? phone.replace(/\D/g, '').slice(-10) : '';
-      const cleanEmail = email ? email.toLowerCase().trim() : '';
+    const cleanPhone = phone ? phone.replace(/\D/g, '').slice(-10) : '';
+    const cleanEmail = email ? email.toLowerCase().trim() : '';
+    const validPhone = cleanPhone.length === 10 ? cleanPhone : '';
+    const validEmail = cleanEmail.includes('@') ? cleanEmail : '';
 
-      orders = orders.filter((o) => {
-        const orderPhone = (o.customer_phone || (o.shipping_address as any)?.phone || '').replace(/\D/g, '');
-        const orderEmail = (o.customer_email || (o.shipping_address as any)?.email || '').toLowerCase().trim();
-
-        const phoneMatches = cleanPhone ? orderPhone.includes(cleanPhone) : false;
-        const emailMatches = cleanEmail ? orderEmail === cleanEmail : false;
-
-        // If both provided, match either phone OR email (customer may use different email on device vs order)
-        if (cleanPhone && cleanEmail) {
-          return phoneMatches || emailMatches;
-        }
-        return phoneMatches || emailMatches;
-      });
+    // A phone or email identifying the requester is mandatory — without it
+    // this would hand back every customer's name, address and order
+    // history to anyone who calls the endpoint.
+    if (!validPhone && !validEmail) {
+      return NextResponse.json(
+        { success: false, error: 'phone or email is required' },
+        { status: 400, headers: corsHeaders }
+      );
     }
+
+    const allOrders = await getCachedOrdersAsync();
+    const orders = allOrders.filter((o) => {
+      const orderPhone = (o.customer_phone || (o.shipping_address as any)?.phone || '').replace(/\D/g, '').slice(-10);
+      const orderEmail = (o.customer_email || (o.shipping_address as any)?.email || '').toLowerCase().trim();
+
+      const phoneMatches = validPhone ? orderPhone === validPhone : false;
+      const emailMatches = validEmail ? orderEmail === validEmail : false;
+      return phoneMatches || emailMatches;
+    });
 
     return NextResponse.json({ success: true, orders }, { headers: corsHeaders });
   } catch (err: any) {
@@ -53,6 +71,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const corsHeaders = corsHeadersFor(req);
   try {
     const body = await req.json();
     if (!body || !body.order_number) {
@@ -60,6 +79,24 @@ export async function POST(req: Request) {
         { error: 'order_number is required' },
         { status: 400, headers: corsHeaders }
       );
+    }
+
+    // Confirm the payment actually happened before an order gets created —
+    // without this, anyone who can call this endpoint (it's reachable from
+    // the browser) could POST a fabricated order with no payment behind it.
+    // If RAZORPAY_KEY_SECRET isn't provisioned yet, verification is skipped
+    // (reason 'not_configured') rather than blocking checkout entirely, but
+    // any payment lookup failure/mismatch once configured hard-rejects.
+    const verification = await verifyRazorpayPayment(body.razorpay_payment_id, Number(body.total_amount || 0));
+    if (!verification.ok && verification.reason !== 'not_configured') {
+      console.warn('[Sync Route] Rejected order — payment verification failed:', verification.reason, body.order_number);
+      return NextResponse.json(
+        { success: false, error: 'Payment could not be verified', reason: verification.reason },
+        { status: 402, headers: corsHeaders }
+      );
+    }
+    if (verification.reason === 'not_configured') {
+      console.warn('[Sync Route] RAZORPAY_KEY_SECRET not set — payment verification skipped for', body.order_number);
     }
 
     const saved = await saveAdminOrder({
@@ -102,13 +139,16 @@ export async function POST(req: Request) {
       console.warn('[Sync Route] Error sending admin new order alert email:', err);
     });
 
-    // Also attempt Supabase upsert in background if available
+    // Also attempt Supabase upsert in background if available — only with
+    // real configured credentials; no hardcoded prod fallback, so a
+    // misconfigured preview/staging deploy can't silently write to the
+    // production project.
     try {
-      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const supaKey =
         process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.includes('supabase-demo')
           ? process.env.SUPABASE_SERVICE_ROLE_KEY
-          : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+          : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
       if (supaUrl && supaKey) {
         fetch(`${supaUrl}/rest/v1/orders?on_conflict=order_number`, {

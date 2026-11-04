@@ -701,6 +701,7 @@ export class AuthService {
       shipping: order.shipping,
       tax: order.tax,
       payment_method: order.paymentMethod,
+      razorpay_payment_id: (order as any).razorpayPaymentId,
       tracking_number: order.trackingNumber,
       carrier: order.carrier,
       shipping_address: order.shippingAddress,

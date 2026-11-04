@@ -51,6 +51,16 @@ export function printOrderInvoice(order: Order) {
 
   const invoiceNumber = `INV-${order.orderNumber.replace(/[^A-Za-z0-9]/g, '')}`;
 
+  // Prices are GST-inclusive, so GST is the portion already embedded in
+  // (subtotal - discount) — not an addend on top of Subtotal/Shipping,
+  // which previously made the printed rows not reconcile to Grand Total.
+  const invoiceDiscount = Number((order as any).discount || 0);
+  const invoiceSubtotal = Number(order.subtotal || order.totalAmount || 0);
+  const invoiceTax = Number(
+    order.tax ?? Math.round((invoiceSubtotal - invoiceDiscount) - (invoiceSubtotal - invoiceDiscount) / 1.18)
+  );
+  const invoiceTaxableValue = Math.max(0, invoiceSubtotal - invoiceDiscount - invoiceTax);
+
   const itemsRowsHtml = (order.items || [])
     .map((it, idx) => {
       const lineTotal = (it.price || 0) * (it.quantity || 1);
@@ -309,13 +319,18 @@ export function printOrderInvoice(order: Order) {
 
       <table class="totals-table">
         <tr>
-          <td style="color: #6B7280;">Subtotal</td>
-          <td style="text-align: right; font-family: monospace;">₹${Number(order.subtotal || order.totalAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+          <td style="color: #6B7280;">Taxable Value</td>
+          <td style="text-align: right; font-family: monospace;">₹${invoiceTaxableValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
         </tr>
         <tr>
-          <td style="color: #6B7280;">GST (18% Included)</td>
-          <td style="text-align: right; font-family: monospace;">₹${Number(order.tax || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+          <td style="color: #6B7280;">GST @ 18%</td>
+          <td style="text-align: right; font-family: monospace;">₹${invoiceTax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
         </tr>
+        ${invoiceDiscount > 0 ? `
+        <tr>
+          <td style="color: #6B7280;">Discount</td>
+          <td style="text-align: right; font-family: monospace;">−₹${invoiceDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+        </tr>` : ''}
         <tr>
           <td style="color: #6B7280;">Courier / Delivery Fee</td>
           <td style="text-align: right; font-family: monospace;">${order.shipping && order.shipping > 0 ? `₹${Number(order.shipping).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : 'FREE'}</td>
@@ -338,9 +353,18 @@ export function printOrderInvoice(order: Order) {
 
   // Extract inner container HTML for direct portal printing fallback
   const innerContainerMatch = invoiceHtml.match(/<div class="invoice-container">[\s\S]*?<\/div>\s*<\/body>/i);
-  const containerHtml = innerContainerMatch 
-    ? innerContainerMatch[0].replace(/<\/body>/i, '') 
+  const containerHtml = innerContainerMatch
+    ? innerContainerMatch[0].replace(/<\/body>/i, '')
     : `<div class="invoice-container">${itemsRowsHtml}</div>`;
+
+  // Reuse the exact same stylesheet as the preferred print-window path
+  // instead of a hand-duplicated partial copy — the old copy only declared
+  // a subset of classes and targeted a `.items-table` class that doesn't
+  // exist in the markup (the real table is unclassed), so the fallback
+  // printed with no table borders/background/footer styling whenever the
+  // popup window was blocked.
+  const originalStylesMatch = invoiceHtml.match(/<style>([\s\S]*?)<\/style>/i);
+  const originalStyles = originalStylesMatch ? originalStylesMatch[1] : '';
 
   // 1. Preferred method: Standalone clean print window
   try {
@@ -406,74 +430,7 @@ export function printOrderInvoice(order: Order) {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          .invoice-header {
-            display: flex !important;
-            justify-content: space-between !important;
-            border-bottom: 2px solid #C8102E !important;
-            padding-bottom: 12px !important;
-            margin-bottom: 16px !important;
-          }
-          .brand-title {
-            font-size: 22px !important;
-            font-weight: 900 !important;
-            color: #C8102E !important;
-          }
-          .dossier-grid {
-            display: grid !important;
-            grid-template-columns: 1fr 1fr !important;
-            gap: 14px !important;
-            margin-bottom: 16px !important;
-            background: #F8F9FA !important;
-            border: 1px solid #E5E7EB !important;
-            padding: 10px 12px !important;
-          }
-          .items-table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            margin-bottom: 16px !important;
-          }
-          .items-table th {
-            background-color: #F3F4F6 !important;
-            border-bottom: 2px solid #D1D5DB !important;
-            padding: 8px 10px !important;
-            text-align: left !important;
-            font-size: 11px !important;
-            color: #111111 !important;
-          }
-          .items-table td {
-            padding: 9px 10px !important;
-            border-bottom: 1px solid #E5E7EB !important;
-            font-size: 12px !important;
-            color: #111111 !important;
-          }
-          .settlement-area {
-            display: flex !important;
-            justify-content: space-between !important;
-            gap: 20px !important;
-            margin-top: 14px !important;
-          }
-          .payment-note-box {
-            flex: 1 !important;
-            background: #F9FAFB !important;
-            border: 1px solid #E5E7EB !important;
-            padding: 10px 12px !important;
-            font-size: 11px !important;
-            color: #374151 !important;
-          }
-          .totals-table {
-            width: 280px !important;
-            border-collapse: collapse !important;
-          }
-          .totals-table td {
-            padding: 5px 8px !important;
-            font-size: 12px !important;
-          }
-          .grand-total-row td {
-            font-size: 14px !important;
-            font-weight: 800 !important;
-            color: #C8102E !important;
-            border-top: 1.5px solid #111111 !important;
-          }
+          ${originalStyles}
         }
       </style>
       ${containerHtml}

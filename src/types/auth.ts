@@ -54,6 +54,8 @@ export interface Order {
   subtotal: number;
   shipping: number;
   tax: number;
+  discount?: number;
+  razorpayPaymentId?: string;
   paymentMethod: string;
   items: OrderItem[];
   shippingAddress: Address;

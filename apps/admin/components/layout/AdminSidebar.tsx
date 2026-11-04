@@ -6,12 +6,12 @@ import { LogOut } from 'lucide-react';
 import { useAdminNavCounts } from '@/hooks/useAdminNavCounts';
 
 interface AdminSidebarProps {
-  userEmail?: string;
+  userDisplayName?: string;
   ordersCount?: number;
   productsCount?: number;
 }
 
-export function AdminSidebar({ userEmail, ordersCount = 0, productsCount = 0 }: AdminSidebarProps) {
+export function AdminSidebar({ userDisplayName, ordersCount = 0, productsCount = 0 }: AdminSidebarProps) {
   const pathname = usePathname();
   const liveCounts = useAdminNavCounts(productsCount, ordersCount);
 
@@ -178,7 +178,7 @@ export function AdminSidebar({ userEmail, ordersCount = 0, productsCount = 0 }: 
                 boxShadow: '0 0 10px rgba(200, 16, 46, 0.35)',
               }}
             >
-              {userEmail?.charAt(0).toUpperCase() || 'A'}
+              {userDisplayName?.charAt(0).toUpperCase() || 'A'}
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div
@@ -190,9 +190,9 @@ export function AdminSidebar({ userEmail, ordersCount = 0, productsCount = 0 }: 
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
-                title={userEmail}
+                title={userDisplayName}
               >
-                {userEmail || 'Admin'}
+                {userDisplayName || 'Admin'}
               </div>
               <div
                 style={{

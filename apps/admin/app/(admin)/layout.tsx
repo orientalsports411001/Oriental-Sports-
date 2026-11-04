@@ -14,11 +14,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="admin-shell">
       <AdminOrderNotifier />
-      <AdminSidebar userEmail={profile.email} ordersCount={ordersCount} productsCount={productsCount} />
+      <AdminSidebar userDisplayName={profile.full_name} ordersCount={ordersCount} productsCount={productsCount} />
 
       <main className="admin-main">{children}</main>
 
-      <AdminBottomNav userEmail={profile.email} ordersCount={ordersCount} productsCount={productsCount} />
+      <AdminBottomNav userDisplayName={profile.full_name} ordersCount={ordersCount} productsCount={productsCount} />
     </div>
   );
 }

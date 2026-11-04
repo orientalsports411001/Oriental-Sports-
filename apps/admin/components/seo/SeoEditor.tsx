@@ -86,6 +86,14 @@ export function SeoEditor({
   }
 
   function applySuggestions(suggestions: SeoSuggestions) {
+    const hasExistingContent = Boolean(seoTitle.trim() || seoDescription.trim() || ogTitle.trim() || ogDescription.trim());
+    if (hasExistingContent) {
+      const confirmed = window.confirm(
+        'This will overwrite the SEO title, description and OpenGraph fields you already have. Continue?'
+      );
+      if (!confirmed) return;
+    }
+
     if (suggestions.seoTitle) setSeoTitle(suggestions.seoTitle);
     if (suggestions.seoDescription) setSeoDescription(suggestions.seoDescription);
     if (suggestions.ogTitle) setOgTitle(suggestions.ogTitle);
@@ -134,11 +142,15 @@ export function SeoEditor({
 
     try {
       let suggestionsToApply: SeoSuggestions | null = null;
+      let usedFallback = false;
 
-      // 1. Try fast direct API route with 2.5s client timeout
+      // 1. Try the real AI-backed API route. Timeout is kept longer than
+      // the server's own per-provider timeout (apps/admin/lib/ai/seo-provider.ts,
+      // ~3.5s) so a legitimate AI response isn't cut off and silently
+      // replaced by the generic client template before it has a chance to land.
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 2500);
+        const timeout = setTimeout(() => controller.abort(), 5000);
         const res = await fetch('/api/seo/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -150,6 +162,7 @@ export function SeoEditor({
           const data = await res.json();
           if (data.ok && data.suggestions) {
             suggestionsToApply = data.suggestions;
+            usedFallback = Boolean(data.usedFallback);
           }
         }
       } catch {
@@ -159,16 +172,21 @@ export function SeoEditor({
       // 2. Guaranteed instant client fallback (Zero lag, zero failure)
       if (!suggestionsToApply) {
         suggestionsToApply = generateClientSeoSuggestions(payload);
+        usedFallback = true;
       }
 
       // Apply directly to the form and live SERP preview
       applySuggestions(suggestionsToApply);
-      setGenSuccess('✓ SEO metadata generated & applied! Review below or edit any field.');
+      setGenSuccess(
+        usedFallback
+          ? '✓ Generated from a template fallback (AI copywriter was unavailable) — review the fields below closely.'
+          : '✓ SEO metadata generated & applied! Review below or edit any field.'
+      );
     } catch (err: any) {
       // Emergency fallback in case anything threw
       const fallback = generateClientSeoSuggestions(payload);
       applySuggestions(fallback);
-      setGenSuccess('✓ SEO metadata generated & applied!');
+      setGenSuccess('✓ Generated from a template fallback (AI copywriter was unavailable) — review the fields below closely.');
     } finally {
       setPending(false);
     }

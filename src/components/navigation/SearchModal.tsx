@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import { PRODUCTS } from '../../data/products';
+import { getLiveProducts } from '../../data/products';
 import { CATEGORIES } from '../../data/categories';
 import { COURT_SERVICES } from '../../data/courts';
 import { Img } from '../ui/Img';
@@ -42,7 +42,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const hit = (...fields: string[]) => terms.length > 0 && terms.every((t) => fields.some((f) => f.toLowerCase().includes(t)));
 
-  const products = PRODUCTS.filter((p) => hit(p.name, p.category, p.categoryName, p.brand)).slice(0, 5);
+  const products = getLiveProducts().filter((p) => hit(p.name, p.category, p.categoryName, p.brand)).slice(0, 5);
   const sports = CATEGORIES.filter((c) => hit(c.name, c.id)).slice(0, 4);
   const courts = COURT_SERVICES.filter((c) => hit(c.name, c.sport, 'court')).slice(0, 3);
   const nothing = terms.length > 0 && products.length + sports.length + courts.length === 0;

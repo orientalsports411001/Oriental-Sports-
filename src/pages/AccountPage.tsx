@@ -29,7 +29,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
-import { PRODUCTS } from '../data/products';
+import { getAllLiveProducts } from '../data/products';
 import { ProductCard } from '../components/products/ProductCard';
 import { STORE_INFO } from '../data/storeInfo';
 import { OrderTracker } from '../components/account/OrderTracker';
@@ -134,7 +134,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     }
   }, [user]);
 
-  const favoritedProducts = PRODUCTS.filter((p) => wishlist.includes(p.id));
+  const favoritedProducts = getAllLiveProducts().filter((p) => wishlist.includes(p.id));
 
   const handleOpenNewAddress = () => {
     setEditingAddress(null);
@@ -378,7 +378,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
             </h2>
             <button
               type="button"
-              onClick={() => syncOrders()}
+              onClick={() => syncOrders().catch(() => {})}
               disabled={isSyncingOrders}
               title="Sync latest order status directly from Oriental Sports Camp workshop"
               style={{

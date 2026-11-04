@@ -14,7 +14,7 @@ import {
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { PRODUCTS } from '../data/products';
+import { PRODUCTS, getAllLiveProducts, getLiveProducts } from '../data/products';
 import { Img } from '../components/ui/Img';
 import { ProductCard } from '../components/products/ProductCard';
 
@@ -38,14 +38,19 @@ export const WishlistPage: React.FC = () => {
   const [movingId, setMovingId] = useState<string | null>(null);
   const [moveAllStatus, setMoveAllStatus] = useState<string | null>(null);
 
-  // Find products that match wishlist IDs or slugs
+  // Find products that match wishlist IDs or slugs — status-filtered (no
+  // draft/archived product ever shows here), but a merely out-of-stock
+  // wishlisted item still shows so the customer knows it's saved.
   const wishlistedProducts = React.useMemo(() => {
-    return PRODUCTS.filter((p) => wishlist.includes(p.id) || wishlist.includes(p.slug));
+    const live = getAllLiveProducts();
+    return live.filter((p) => wishlist.includes(p.id) || wishlist.includes(p.slug));
   }, [wishlist]);
 
-  // Recommended products for empty state or bottom drawer
+  // Recommended products for empty state or bottom drawer — must actually
+  // be purchasable, so this is stock-filtered too.
   const recommendedProducts = React.useMemo(() => {
-    return PRODUCTS.filter((p) => !wishlist.includes(p.id) && !wishlist.includes(p.slug)).slice(0, 4);
+    const live = getLiveProducts();
+    return live.filter((p) => !wishlist.includes(p.id) && !wishlist.includes(p.slug)).slice(0, 4);
   }, [wishlist]);
 
   // Handle move single item to bag

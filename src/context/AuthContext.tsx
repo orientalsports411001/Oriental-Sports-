@@ -214,7 +214,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isSyncingRef = useRef(false);
 
   const syncOrders = useCallback(async (userIdOrPhone?: string): Promise<Order[]> => {
-    if (isSyncingRef.current) return [];
+    if (isSyncingRef.current) {
+      // A sync is already in flight (another card's click, or a background
+      // sync) — throw instead of silently returning [], so a caller like
+      // OrderTracker's "Refresh Status" button can tell this apart from a
+      // real fetch and not claim a false "Updated Just Now".
+      const err: any = new Error('Sync already in progress');
+      err.code = 'SYNC_IN_PROGRESS';
+      throw err;
+    }
     isSyncingRef.current = true;
     setIsSyncingOrders(true);
     try {

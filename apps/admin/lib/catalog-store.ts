@@ -622,8 +622,11 @@ export async function getCachedOrdersAsync(): Promise<AdminOrder[]> {
 }
 
 export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number: string }): Promise<AdminOrder> {
-  const disk = readOrdersDiskCache();
-  if (disk && Array.isArray(disk)) ordersCache = disk;
+  // Hydrate from the cross-lambda cloud store first — on a cold serverless
+  // instance ordersCache/disk are both empty, and writing straight from
+  // that empty state would overwrite the shared Cloudinary blob with just
+  // this one order, wiping every order synced by other instances.
+  await getCachedOrdersAsync();
 
   const existingIndex = ordersCache.findIndex(
     (o) => (order.id && o.id === order.id) || o.order_number === order.order_number
