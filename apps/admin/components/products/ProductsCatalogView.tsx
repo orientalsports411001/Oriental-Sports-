@@ -49,7 +49,6 @@ export function ProductsCatalogView({
   const searchParams = useSearchParams();
 
   const [products, setProducts] = useState<ProductItem[]>(initialProducts);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || '');
@@ -260,74 +259,6 @@ export function ProductsCatalogView({
     } catch {}
   };
 
-  const handleSetVisibilityAndStock = async (
-    productId: string,
-    targetStatus: 'published' | 'draft' | 'archived',
-    newStock?: number
-  ) => {
-    if (togglingId) return;
-    setTogglingId(productId);
-
-    // 1. Optimistic update in products state
-    setProducts((prev) => {
-      const idx = prev.findIndex((p) => p.id === productId || p.slug === productId);
-      if (idx >= 0) {
-        const copy = [...prev];
-        copy[idx] = {
-          ...copy[idx],
-          status: targetStatus,
-          ...(newStock !== undefined ? { stock_quantity: newStock } : {}),
-        };
-        return copy;
-      }
-      return prev;
-    });
-
-    // 2. Clean up localStorage so it doesn't conflict
-    try {
-      localStorage.removeItem('os_custom_products');
-    } catch {}
-
-    // 3. Broadcast update to multi-tab channel
-    try {
-      const bc = new BroadcastChannel('oriental_sports_catalog');
-      bc.postMessage({
-        type: 'PRODUCT_STATUS_TOGGLED',
-        productId,
-        status: targetStatus,
-        stockQuantity: newStock,
-      });
-      bc.close();
-    } catch {}
-
-    // 4. Send to server API
-    try {
-      await fetch('/api/products/toggle-visibility', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId,
-          status: targetStatus,
-          stockQuantity: newStock,
-        }),
-      });
-    } catch {}
-
-    setTogglingId(null);
-  };
-
-  const handleToggleVisibility = async (productId: string, currentStatus: string) => {
-    const nextStatus = currentStatus === 'published' ? 'draft' : 'published';
-    await handleSetVisibilityAndStock(productId, nextStatus);
-  };
-
-  const handleRestockAndShow = async (productId: string) => {
-    const promptVal = window.prompt('Enter restock quantity units to make product live:', '10');
-    if (promptVal === null) return;
-    const parsed = parseInt(promptVal, 10);
-    const validQty = isNaN(parsed) || parsed <= 0 ? 10 : parsed;
-    await handleSetVisibilityAndStock(productId, 'published', validQty);
-  };
 
   return (
     <div>
@@ -713,118 +644,9 @@ export function ProductsCatalogView({
                         )}
                       </td>
 
-                      {/* Actions with 1-Click Show/Hide and Restock */}
+                      {/* Actions */}
                       <td style={{ textAlign: 'right', padding: '16px 20px' }}>
-                        {/* display: flex + width: 100% (not inline-flex) so that when
-                            buttons wrap onto a second line, justify-content: flex-end
-                            aligns every row to the cell's actual right edge instead of
-                            each wrapped line only right-aligning within its own,
-                            narrower content box (which produced the staggered look). */}
                         <div style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 8 }}>
-                          {/* Out of Stock Quick Actions */}
-                          {isOut && p.status === 'published' && (
-                            <button
-                              type="button"
-                              onClick={() => handleSetVisibilityAndStock(p.id, 'draft')}
-                              disabled={togglingId === p.id}
-                              title="Hide out-of-stock item from customer storefront"
-                              style={{
-                                fontSize: 11,
-                                fontWeight: 700,
-                                padding: '4px 9px',
-                                borderRadius: 8,
-                                background: 'rgba(239, 68, 68, 0.12)',
-                                color: '#FF6B6B',
-                                border: '1px solid rgba(239, 68, 68, 0.3)',
-                                cursor: 'pointer',
-                                whiteSpace: 'nowrap',
-                                transition: 'all 0.15s ease',
-                              }}
-                            >
-                              Hide Out of Stock
-                            </button>
-                          )}
-
-                          {isOut && (p.status === 'draft' || p.status === 'archived') && (
-                            <button
-                              type="button"
-                              onClick={() => handleRestockAndShow(p.id)}
-                              disabled={togglingId === p.id}
-                              title="Restock units and make live on storefront"
-                              style={{
-                                fontSize: 11,
-                                fontWeight: 700,
-                                padding: '4px 9px',
-                                borderRadius: 8,
-                                background: 'rgba(212, 248, 0, 0.12)',
-                                color: '#D4F800',
-                                border: '1px solid rgba(212, 248, 0, 0.35)',
-                                cursor: 'pointer',
-                                whiteSpace: 'nowrap',
-                                transition: 'all 0.15s ease',
-                              }}
-                            >
-                              + Restock & Show
-                            </button>
-                          )}
-
-                          {/* 1-Click Show / Hide Button */}
-                          {p.status === 'published' ? (
-                            <button
-                              type="button"
-                              onClick={() => handleToggleVisibility(p.id, p.status)}
-                              disabled={togglingId === p.id}
-                              title="Hide product from storefront"
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 5,
-                                padding: '5px 11px',
-                                fontSize: 12,
-                                fontWeight: 600,
-                                borderRadius: 8,
-                                background: 'rgba(255, 255, 255, 0.05)',
-                                color: 'var(--muted)',
-                                border: '1px solid rgba(255, 255, 255, 0.12)',
-                                cursor: 'pointer',
-                                transition: 'all 0.15s ease',
-                              }}
-                            >
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                <line x1="1" y1="1" x2="23" y2="23"></line>
-                              </svg>
-                              Hide
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => handleToggleVisibility(p.id, p.status)}
-                              disabled={togglingId === p.id}
-                              title="Publish and make visible on customer storefront"
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 5,
-                                padding: '5px 11px',
-                                fontSize: 12,
-                                fontWeight: 700,
-                                borderRadius: 8,
-                                background: 'rgba(34, 197, 94, 0.12)',
-                                color: 'var(--success)',
-                                border: '1px solid rgba(34, 197, 94, 0.3)',
-                                cursor: 'pointer',
-                                transition: 'all 0.15s ease',
-                              }}
-                            >
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                              </svg>
-                              Show
-                            </button>
-                          )}
-
                           <Link
                             href={`/products/${p.id}/edit`}
                             style={{
