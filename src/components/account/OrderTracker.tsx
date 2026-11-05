@@ -8,6 +8,7 @@ import { STORE_INFO } from '../../data/storeInfo';
 import { generateOrderTimeline, getOrderStatusLabel } from '../../utils/orderTimeline';
 import { printOrderInvoice } from '../../utils/printInvoice';
 import { OrderStatusStepper } from '../orders/OrderStatusStepper';
+import { FALLBACK_IMAGE } from '../../data/media';
 import {
   Package,
   CheckCircle2,
@@ -406,6 +407,13 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
                   borderRadius: '4px',
                   backgroundColor: '#1E1E1E',
                   flexShrink: 0,
+                }}
+                onError={(e) => {
+                  const el = e.currentTarget;
+                  if (!el.dataset.fallback) {
+                    el.dataset.fallback = '1';
+                    el.src = FALLBACK_IMAGE;
+                  }
                 }}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
