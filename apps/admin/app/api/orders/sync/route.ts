@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { saveAdminOrder, getCachedOrders, getCachedOrdersAsync, AdminOrder } from '@/lib/catalog-store';
 import { sendOrderStatusEmail, sendAdminNewOrderNotification } from '@/lib/email';
 import { verifyRazorpayPayment } from '@/lib/razorpay-verify';
+import { createServiceRoleClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,14 +53,83 @@ export async function GET(req: Request) {
     }
 
     const allOrders = await getCachedOrdersAsync();
-    const orders = allOrders.filter((o) => {
-      const orderPhone = (o.customer_phone || (o.shipping_address as any)?.phone || '').replace(/\D/g, '').slice(-10);
-      const orderEmail = (o.customer_email || (o.shipping_address as any)?.email || '').toLowerCase().trim();
-
+    const matches = (customerPhone?: string, customerEmail?: string, addr?: any) => {
+      const orderPhone = (customerPhone || addr?.phone || '').replace(/\D/g, '').slice(-10);
+      const orderEmail = (customerEmail || addr?.email || '').toLowerCase().trim();
       const phoneMatches = validPhone ? orderPhone === validPhone : false;
       const emailMatches = validEmail ? orderEmail === validEmail : false;
       return phoneMatches || emailMatches;
-    });
+    };
+
+    const orderMap = new Map<string, AdminOrder>();
+    for (const o of allOrders) {
+      if (matches(o.customer_phone, o.customer_email, o.shipping_address)) {
+        orderMap.set(o.order_number || o.id, o);
+      }
+    }
+
+    // Also check Supabase directly — changeOrderStatus()/updateTracking()
+    // update Supabase first and only mirror into this cache when the order
+    // is already present there. If an order was created by a path that
+    // never wrote it into the cache (or the mirror write raced/failed),
+    // this cache-only read would keep serving a stale status forever even
+    // though Supabase has the real one. Merge it in, preferring whichever
+    // side was updated more recently.
+    try {
+      const admin = createServiceRoleClient();
+      const orConditions: string[] = [];
+      if (validPhone) orConditions.push(`customer_phone.ilike.%${validPhone}%`);
+      if (validEmail) orConditions.push(`customer_email.eq.${validEmail}`);
+      if (orConditions.length > 0) {
+        const { data: dbOrders } = await admin
+          .from('orders')
+          .select('*, order_items(*)')
+          .or(orConditions.join(','));
+
+        for (const dbOrder of dbOrders || []) {
+          if (!matches(dbOrder.customer_phone, dbOrder.customer_email, dbOrder.shipping_address)) continue;
+          const key = dbOrder.order_number || dbOrder.id;
+          const existing = orderMap.get(key);
+          const dbUpdatedAt = new Date(dbOrder.updated_at || dbOrder.created_at || 0).getTime();
+          const cacheUpdatedAt = existing ? new Date((existing as any).updated_at || existing.created_at || 0).getTime() : -1;
+
+          if (!existing || dbUpdatedAt >= cacheUpdatedAt) {
+            orderMap.set(key, {
+              ...(existing || {}),
+              id: dbOrder.id,
+              order_number: dbOrder.order_number,
+              user_id: dbOrder.user_id || existing?.user_id || 'usr-guest',
+              customer_name: dbOrder.customer_name || existing?.customer_name || 'Customer',
+              customer_email: dbOrder.customer_email || existing?.customer_email || '',
+              customer_phone: dbOrder.customer_phone || existing?.customer_phone || '',
+              status: dbOrder.status || existing?.status || 'confirmed',
+              total_amount: Number(dbOrder.total_amount ?? existing?.total_amount ?? 0),
+              subtotal: Number(dbOrder.subtotal ?? existing?.subtotal ?? 0),
+              shipping: Number(dbOrder.shipping ?? existing?.shipping ?? 0),
+              tax: Number(dbOrder.tax ?? existing?.tax ?? 0),
+              payment_method: dbOrder.payment_method || existing?.payment_method || 'Razorpay / UPI',
+              tracking_number: dbOrder.tracking_number || existing?.tracking_number,
+              carrier: dbOrder.carrier || existing?.carrier,
+              created_at: dbOrder.created_at || existing?.created_at || new Date().toISOString(),
+              shipping_address: dbOrder.shipping_address || existing?.shipping_address,
+              items:
+                dbOrder.order_items && dbOrder.order_items.length > 0
+                  ? dbOrder.order_items.map((it: any) => ({
+                      product_name: it.product_name,
+                      price: it.price,
+                      quantity: it.quantity,
+                      selected_variant: it.selected_variant,
+                    }))
+                  : existing?.items || [],
+            } as AdminOrder);
+          }
+        }
+      }
+    } catch {
+      // Supabase unavailable — cache-only result still returned below.
+    }
+
+    const orders = Array.from(orderMap.values());
 
     return NextResponse.json({ success: true, orders }, { headers: corsHeaders });
   } catch (err: any) {

@@ -5,6 +5,7 @@ import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
 import { isTransitionAllowed, getOrderStatusLabel } from '@/lib/order-transitions';
 import { updateOrder, getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
+import { healOrderCacheFromSupabase } from '@/lib/order-cache-heal';
 import { sendOrderStatusEmail } from '@/lib/email';
 
 /**
@@ -48,6 +49,13 @@ export async function changeOrderStatus(orderId: string, formData: FormData) {
   if (cached) {
     await updateOrder(cached.id, { status: nextStatus as any });
     cached = { ...cached, status: nextStatus as any };
+  } else {
+    // The order was never mirrored into this cache (e.g. created by a path
+    // that only wrote to Supabase) — the customer-facing /api/orders/sync
+    // GET reads this cache first, so without self-healing it here, the
+    // status change would never reach the customer even though Supabase
+    // itself is correct.
+    cached = (await healOrderCacheFromSupabase(orderId, { status: nextStatus as any })) || undefined;
   }
 
   // Send stage update email to customer
@@ -149,12 +157,19 @@ export async function updateTracking(orderId: string, formData: FormData) {
     if (err?.digest?.startsWith('NEXT_REDIRECT')) throw err;
   }
 
-  const cached = (await getCachedOrdersAsync()).find((o) => o.id === orderId || o.order_number === orderId);
+  let cached = (await getCachedOrdersAsync()).find((o) => o.id === orderId || o.order_number === orderId);
   if (cached) {
     await updateOrder(cached.id, {
       tracking_number: trackingNumber || undefined,
       carrier: carrier || undefined,
     });
+    cached = { ...cached, tracking_number: trackingNumber || cached.tracking_number, carrier: carrier || cached.carrier };
+  } else {
+    cached =
+      (await healOrderCacheFromSupabase(orderId, {
+        tracking_number: trackingNumber || undefined,
+        carrier: carrier || undefined,
+      })) || undefined;
   }
 
   // Send dispatch tracking update email to customer

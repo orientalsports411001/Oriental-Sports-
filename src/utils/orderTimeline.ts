@@ -124,88 +124,75 @@ export function generateOrderTimeline(
     ];
   }
 
-  // Determine stage rank (1: confirmed, 2: processing, 3: dispatched/ready, 4: delivered)
-  let activeRank = 1;
-  if (norm === 'confirmed') activeRank = 1;
-  else if (norm === 'processing') activeRank = 2;
-  else if (norm === 'shipped' || norm === 'in_transit' || norm === 'out_for_delivery' || norm === 'ready_for_pickup') {
-    activeRank = 3;
-  } else if (norm === 'delivered') {
-    activeRank = 4;
+  const dateFor = (rank: number, activeRank: number, readyLabel?: string) =>
+    activeRank === rank ? (readyLabel ?? updatedDateLabel) : activeRank > rank ? 'Completed' : 'Upcoming';
+
+  const step = (rank: number, activeRank: number, status: OrderStatus, title: string, description: string, date: string): TrackingStep => ({
+    status,
+    title,
+    description,
+    date,
+    completed: activeRank >= rank,
+    current: activeRank === rank,
+  });
+
+  if (isPickup) {
+    // Pickup sequence (4 stages) — no courier/delivery steps at all, since
+    // the order never leaves the store.
+    let activeRank = 1;
+    if (norm === 'processing') activeRank = 2;
+    else if (norm === 'ready_for_pickup' || norm === 'shipped' || norm === 'in_transit' || norm === 'out_for_delivery') activeRank = 3;
+    else if (norm === 'delivered') activeRank = 4;
+
+    return [
+      step(1, activeRank, 'confirmed', 'Order Confirmed', 'Order verified & payment booked into Oriental Sports workshop roster.', createdDateLabel),
+      step(
+        2,
+        activeRank,
+        'processing',
+        'Workshop Inspection & Stringing Prep',
+        'Frame tension check & master stringer inspection at Shop 247, MG Road.',
+        dateFor(2, activeRank)
+      ),
+      step(
+        3,
+        activeRank,
+        'ready_for_pickup',
+        'Ready for Camp Store Collection',
+        'Package is staged at Oriental Sports Camp flagship counter (Shop 247, MG Road, Camp). Bring order ID for verification.',
+        dateFor(3, activeRank, 'Ready at Counter')
+      ),
+      step(4, activeRank, 'delivered', 'Collected / Handed Over', 'Handed over to customer at Oriental Sports Camp Store counter.', dateFor(4, activeRank)),
+    ];
   }
 
-  // Build the 4 sequential milestones
-  // Step 1: Confirmed
-  const step1: TrackingStep = {
-    status: 'confirmed',
-    title: 'Order Confirmed',
-    description: 'Order verified & payment booked into Oriental Sports workshop roster.',
-    date: createdDateLabel,
-    completed: activeRank >= 1,
-    current: activeRank === 1,
-  };
+  // Doorstep delivery sequence (5 stages) — dispatch and out-for-delivery
+  // are distinct steps, matching the admin's own separate status options.
+  let activeRank = 1;
+  if (norm === 'processing') activeRank = 2;
+  else if (norm === 'shipped' || norm === 'in_transit') activeRank = 3;
+  else if (norm === 'out_for_delivery' || norm === 'ready_for_pickup') activeRank = 4;
+  else if (norm === 'delivered') activeRank = 5;
 
-  // Step 2: Processing / Workshop prep
-  const step2: TrackingStep = {
-    status: 'processing',
-    title: 'Workshop Inspection & Stringing Prep',
-    description: isPickup
-      ? 'Frame tension check & master stringer inspection at Shop 247, MG Road.'
-      : 'Equipment inspection, precision string tension calibration & export-grade packaging.',
-    date: activeRank === 2 ? updatedDateLabel : activeRank > 2 ? 'Completed' : 'Upcoming',
-    completed: activeRank >= 2,
-    current: activeRank === 2,
-  };
-
-  // Step 3: Logistics / Pickup ready / Out for Delivery
-  const step3Title = isPickup
-    ? 'Ready for Camp Store Collection'
-    : norm === 'out_for_delivery'
-    ? 'Out for Delivery Today'
-    : norm === 'in_transit'
-    ? 'In Transit'
-    : 'Dispatched via Courier';
-
-  const step3Description = isPickup
-    ? 'Package is staged at Oriental Sports Camp flagship counter (Shop 247, MG Road, Camp). Bring order ID for verification.'
-    : norm === 'out_for_delivery'
-    ? (carrier ? `${carrier} delivery executive is out for doorstep delivery today.` : 'Delivery executive is out for doorstep delivery today.')
-    : carrier
+  const dispatchDescription = carrier
     ? `Handed over to ${carrier}${trackingNumber ? ` (AWB: ${trackingNumber})` : ''} for expedited dispatch.`
     : 'Handed over to logistics carrier partner for expedited dispatch.';
+  const outForDeliveryDescription = carrier
+    ? `${carrier} delivery executive is out for doorstep delivery today.`
+    : 'Delivery executive is out for doorstep delivery today.';
 
-  const step3Date =
-    activeRank === 3
-      ? isPickup
-        ? 'Ready at Counter'
-        : updatedDateLabel
-      : activeRank > 3
-      ? 'Completed'
-      : 'Upcoming';
-
-  const step3: TrackingStep = {
-    status: isPickup ? 'ready_for_pickup' : (norm === 'in_transit' ? 'in_transit' : 'shipped'),
-    title: step3Title,
-    description: step3Description,
-    date: step3Date,
-    completed: activeRank >= 3,
-    current: activeRank === 3,
-  };
-
-  // Step 4: Handed Over / Delivered
-  const step4Title = isPickup ? 'Collected / Handed Over' : 'Delivered / Handed Over';
-  const step4Description = isPickup
-    ? 'Handed over to customer at Oriental Sports Camp Store counter.'
-    : 'Delivered securely to your specified delivery address.';
-
-  const step4: TrackingStep = {
-    status: 'delivered',
-    title: step4Title,
-    description: step4Description,
-    date: activeRank === 4 ? updatedDateLabel : 'Upcoming',
-    completed: activeRank >= 4,
-    current: activeRank === 4,
-  };
-
-  return [step1, step2, step3, step4];
+  return [
+    step(1, activeRank, 'confirmed', 'Order Confirmed', 'Order verified & payment booked into Oriental Sports workshop roster.', createdDateLabel),
+    step(
+      2,
+      activeRank,
+      'processing',
+      'Workshop Inspection & Packaging',
+      'Equipment inspection, precision string tension calibration & export-grade packaging.',
+      dateFor(2, activeRank)
+    ),
+    step(3, activeRank, 'shipped', 'Dispatched via Courier', dispatchDescription, dateFor(3, activeRank)),
+    step(4, activeRank, 'out_for_delivery', 'Out for Delivery', outForDeliveryDescription, dateFor(4, activeRank, 'Out Today')),
+    step(5, activeRank, 'delivered', 'Delivered', 'Delivered securely to your specified delivery address.', dateFor(5, activeRank)),
+  ];
 }

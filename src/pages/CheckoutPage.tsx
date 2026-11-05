@@ -25,6 +25,7 @@ import { STORE_INFO } from '../data/storeInfo';
 import { Img } from '../components/ui/Img';
 import { Logo } from '../components/brand/Logo';
 import { Order } from '../types/auth';
+import { generateOrderTimeline } from '../utils/orderTimeline';
 import {
   loadRazorpayScript,
   getRazorpayKey,
@@ -242,43 +243,7 @@ export const CheckoutPage: React.FC = () => {
         selectedVariant: item.selectedVariant,
         selectedSize: item.selectedSize,
       })),
-      timeline: [
-        {
-          status: 'confirmed',
-          title: 'Order Confirmed',
-          description: `Payment of ₹${grandTotal.toLocaleString('en-IN')} verified via Razorpay (${paymentId}).`,
-          date: 'Just now',
-          completed: true,
-          current: true,
-        },
-        {
-          status: 'processing',
-          title: 'Quality Check & Workshop Assembly',
-          description: 'Inspected by master stringer & equipment craftsman at Shop 247, MG Road.',
-          date: 'Upcoming',
-          completed: false,
-          current: false,
-        },
-        {
-          status: 'shipped',
-          title: deliveryMethod === 'camp_pickup' ? 'Ready for Counter Pickup' : 'Dispatched via Courier',
-          description:
-            deliveryMethod === 'camp_pickup'
-              ? 'Ready at Shop 247, MG Road, Camp, Pune.'
-              : 'Out for fast doorstep delivery in Pune.',
-          date: 'Upcoming',
-          completed: false,
-          current: false,
-        },
-        {
-          status: 'delivered',
-          title: 'Delivered / Collected',
-          description: 'Handed over to customer.',
-          date: 'Upcoming',
-          completed: false,
-          current: false,
-        },
-      ],
+      timeline: generateOrderTimeline('confirmed', new Date().toISOString(), undefined, undefined, undefined, deliveryMethod),
     };
 
     await addOrder(newOrder);
