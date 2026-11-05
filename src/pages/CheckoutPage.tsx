@@ -133,11 +133,13 @@ export const CheckoutPage: React.FC = () => {
         }
       }
     }
-    // Re-runs when the address fields change too (not just on the
-    // guest→auth transition) so an already-logged-in user who edits the
-    // address during checkout still gets it saved — the alreadyHasAddr
-    // check above makes re-running safe (no duplicate saves).
-  }, [isAuthenticated, user?.id, form.street, form.city, form.pincode]);
+    // Deliberately only [isAuthenticated, user?.id] — NOT the address
+    // fields. Watching form.street/city/pincode re-ran this on every
+    // keystroke, and since addAddress() is async, user.addresses hadn't
+    // updated yet by the next keystroke, so the alreadyHasAddr check never
+    // matched a half-typed pincode ("4", "41", "411", ...) and saved a new
+    // address on every character typed.
+  }, [isAuthenticated, user?.id]);
 
   const finalShipping = deliveryMethod === 'camp_pickup' ? 0 : shipping;
   const grandTotal = Math.max(0, subtotal - discount + finalShipping);
