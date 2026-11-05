@@ -84,14 +84,19 @@ export function generateOrderTimeline(
   shippingStreet?: string
 ): TrackingStep[] {
   const norm = normalizeOrderStatus(status);
+  // deliveryMethod is the authoritative source (set at checkout). The
+  // address-text fallback only runs when it's absent (legacy/admin-synced
+  // orders) and must match the store's literal pickup-counter address, not
+  // loose tokens like "camp" or "mg road" — "Camp" is a real, common Pune
+  // locality name, so a loose match misclassified doorstep customers who
+  // simply live there as pickup orders.
   const isPickup =
     deliveryMethod === 'camp_pickup' ||
     deliveryMethod === 'pickup' ||
-    (shippingStreet &&
-      (shippingStreet.toLowerCase().includes('camp') ||
-        shippingStreet.toLowerCase().includes('pickup') ||
-        shippingStreet.toLowerCase().includes('shop 247') ||
-        shippingStreet.toLowerCase().includes('mg road')));
+    (!deliveryMethod &&
+      shippingStreet &&
+      (shippingStreet.toLowerCase().includes('shop 247') ||
+        shippingStreet.toLowerCase().includes('camp store pickup')));
 
   const createdDateLabel = formatStepDate(createdAt, 'Order Logged');
   const updatedDateLabel = formatStepDate(updatedAt, 'Recently Updated');

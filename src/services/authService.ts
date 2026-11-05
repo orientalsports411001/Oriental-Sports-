@@ -941,11 +941,14 @@ export class AuthService {
 
       const normStatus = normalizeOrderStatus(adminRow.status);
       const addr = adminRow.shipping_address || {};
+      // "Camp" alone is a real, common Pune locality name, not just the
+      // store's pickup-counter address — match the literal pickup address
+      // string, not a loose "camp" token, or doorstep customers who live
+      // in the Camp area get misclassified as pickup orders.
+      const addrText = `${addr.street || ''} ${addr.addressLine1 || ''}`.toLowerCase();
       const deliveryMethod =
         adminRow.delivery_method ||
-        (addr.street?.toLowerCase().includes('camp') || addr.addressLine1?.toLowerCase().includes('camp')
-          ? 'camp_pickup'
-          : 'doorstep');
+        (addrText.includes('shop 247') || addrText.includes('camp store pickup') ? 'camp_pickup' : 'doorstep');
       const isPickup = deliveryMethod === 'camp_pickup';
       const statusLabel = getOrderStatusLabel(normStatus, isPickup);
       const timeline = generateOrderTimeline(

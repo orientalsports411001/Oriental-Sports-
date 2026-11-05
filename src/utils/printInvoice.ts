@@ -6,12 +6,17 @@ import { Order } from '../types/auth';
  * Guaranteed zero website navigation, zero headers, zero dark backgrounds.
  */
 export function printOrderInvoice(order: Order) {
+  // deliveryMethod is authoritative; the address-text fallback (legacy
+  // orders without it) must match the store's literal pickup-counter
+  // address — "Camp"/"MG Road" alone are real, common Pune locality names
+  // and false-positive for doorstep customers who live there.
   const isPickup =
     order.deliveryMethod === 'camp_pickup' ||
     order.deliveryMethod === 'pickup' ||
-    (order.shippingAddress?.street &&
-      (order.shippingAddress.street.toLowerCase().includes('camp') ||
-        order.shippingAddress.street.toLowerCase().includes('mg road')));
+    (!order.deliveryMethod &&
+      order.shippingAddress?.street &&
+      (order.shippingAddress.street.toLowerCase().includes('shop 247') ||
+        order.shippingAddress.street.toLowerCase().includes('camp store pickup')));
 
   const customerName =
     order.shippingAddress?.name ||

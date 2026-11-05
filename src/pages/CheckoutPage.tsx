@@ -203,6 +203,13 @@ export const CheckoutPage: React.FC = () => {
       subtotal: subtotal,
       shipping: finalShipping,
       discount: discount,
+      // Authoritative source for pickup-vs-doorstep display logic
+      // (OrderTracker/generateOrderTimeline) — without this, the only
+      // fallback is guessing from the address text, which false-positives
+      // for any doorstep customer who happens to live in Pune's "Camp"
+      // locality (a real, common area name, not just the store's own
+      // pickup-counter address).
+      deliveryMethod,
       // Prices are GST-inclusive ("All taxes & duties included" at checkout),
       // so GST is the portion already embedded in (subtotal - discount), not
       // an additional 18% on top — Math.round(subtotal * 0.18) overstated

@@ -94,13 +94,16 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
     }
   };
 
+  // deliveryMethod is authoritative; the address-text fallback (for orders
+  // that predate that field) must match the store's literal pickup-counter
+  // address, not loose tokens like "camp"/"mg road" — "Camp" is a real,
+  // common Pune locality, so a loose match misclassified doorstep
+  // customers who live there as pickup orders.
   const isPickup = Boolean(
     order.deliveryMethod === 'camp_pickup' ||
       order.deliveryMethod === 'pickup' ||
-      (safeStreet.toLowerCase().includes('camp') ||
-        safeStreet.toLowerCase().includes('pickup') ||
-        safeStreet.toLowerCase().includes('shop 247') ||
-        safeStreet.toLowerCase().includes('mg road'))
+      (!order.deliveryMethod &&
+        (safeStreet.toLowerCase().includes('shop 247') || safeStreet.toLowerCase().includes('camp store pickup')))
   );
 
   const effectiveTimeline = generateOrderTimeline(
