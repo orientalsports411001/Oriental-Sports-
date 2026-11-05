@@ -36,7 +36,7 @@ export const IMAGES = {
   // ---- Local photography ----------------------------------------------------
   badmintonSmash: local('/images/hero/hero_train_perform', 'Badminton player jumping for a smash under arena lights', [800, 1376], '72% 30%'),
   courtDusk: local('/images/hero/hero_court_build', 'Floodlit outdoor hard court at dusk, fenced on all sides', [640, 992], '58% 55%'),
-  athleteBatRacquet: local('/images/hero/hero_gear_pune', 'Player holding a cricket bat and a tennis racquet on a floodlit court', [800, 1376], '70% 35%'),
+  athleteBatRacquet: local('/images/hero/hero_gear_pune', 'Young female tennis player in action on a floodlit court at dusk', [800, 1376], 'center 40%'),
   pickleballNet: local('/images/categories/pickleball_category', 'Pickleball paddle and ball beside the net on a blue court', [700, 1200], '55% 70%'),
 
   // ---- Sport photography (Unsplash) -----------------------------------------
