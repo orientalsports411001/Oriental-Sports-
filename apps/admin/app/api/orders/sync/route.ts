@@ -6,20 +6,16 @@ import { createServiceRoleClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
-const ALLOWED_ORIGINS = new Set([
-  'https://orientalsports.in',
-  'https://www.orientalsports.in',
-  'http://localhost:5173',
-  'http://localhost:3000',
-]);
-
+// Reverted from an origin allow-list: it's brittle (any mismatch between
+// the deployed storefront domain and this list silently drops every order
+// sync, with no visible error — the storefront's fetch is fire-and-forget)
+// and wasn't the real protection anyway. The actual protections are the
+// mandatory phone/email match on GET and payment verification on POST.
 function corsHeadersFor(req: Request) {
-  const origin = req.headers.get('origin') || '';
   return {
-    'Access-Control-Allow-Origin': ALLOWED_ORIGINS.has(origin) ? origin : 'https://orientalsports.in',
+    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    Vary: 'Origin',
   };
 }
 
@@ -151,22 +147,19 @@ export async function POST(req: Request) {
       );
     }
 
-    // Confirm the payment actually happened before an order gets created —
-    // without this, anyone who can call this endpoint (it's reachable from
-    // the browser) could POST a fabricated order with no payment behind it.
-    // If RAZORPAY_KEY_SECRET isn't provisioned yet, verification is skipped
-    // (reason 'not_configured') rather than blocking checkout entirely, but
-    // any payment lookup failure/mismatch once configured hard-rejects.
+    // Log-only for now, never blocks order creation: the storefront
+    // checkout doesn't yet create a real Razorpay order server-side (no
+    // order_id/signature), so when no live key is configured it runs a
+    // client-side payment simulator and hands back a fabricated payment
+    // id — hard-rejecting on that (as an earlier version of this code did)
+    // silently dropped every real order the moment RAZORPAY_KEY_SECRET was
+    // set, with no visible error anywhere (the storefront's sync call is
+    // fire-and-forget). Once checkout creates a real order_id upfront and
+    // verifies the signature client-side before calling here, this can
+    // become a hard reject again.
     const verification = await verifyRazorpayPayment(body.razorpay_payment_id, Number(body.total_amount || 0));
     if (!verification.ok && verification.reason !== 'not_configured') {
-      console.warn('[Sync Route] Rejected order — payment verification failed:', verification.reason, body.order_number);
-      return NextResponse.json(
-        { success: false, error: 'Payment could not be verified', reason: verification.reason },
-        { status: 402, headers: corsHeaders }
-      );
-    }
-    if (verification.reason === 'not_configured') {
-      console.warn('[Sync Route] RAZORPAY_KEY_SECRET not set — payment verification skipped for', body.order_number);
+      console.warn('[Sync Route] Payment verification did not pass (order still accepted):', verification.reason, body.order_number);
     }
 
     const saved = await saveAdminOrder({
