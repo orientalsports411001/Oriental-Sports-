@@ -18,6 +18,7 @@ import {
   Clock,
   Phone,
   Check,
+  X,
 } from 'lucide-react';
 import { useCart, getItemUnitPrice } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -36,7 +37,8 @@ import {
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { cart, subtotal, shipping, discount, promoCode, applyPromoCode, clearCart } = useCart();
-  const { user, isAuthenticated, addOrder, openAuthModal, setPendingPhone, addAddress } = useAuth();
+  const { user, isAuthenticated, addOrder, openAuthModal, setPendingPhone, addAddress, deleteAddress } = useAuth();
+  const [deletingAddrId, setDeletingAddrId] = useState<string | null>(null);
 
   const CHECKOUT_DRAFT_KEY = 'oriental_sports_checkout_draft';
 
@@ -591,24 +593,58 @@ export const CheckoutPage: React.FC = () => {
                       </label>
                       <div className="saved-addresses-list">
                         {user.addresses.map((addr) => (
-                          <div
-                            key={addr.id}
-                            className={`saved-address-chip ${form.street === addr.street ? 'is-active' : ''}`}
-                            onClick={() => {
-                              const [first, ...rest] = (addr.name || '').split(' ');
-                              setForm({
-                                ...form,
-                                firstName: first || form.firstName,
-                                lastName: rest.join(' ') || form.lastName,
-                                phone: addr.phone.replace('+91', '').trim(),
-                                street: addr.street,
-                                locality: addr.locality,
-                                pincode: addr.pincode,
-                                city: addr.city,
-                              });
-                            }}
-                          >
-                            <strong>{addr.type.toUpperCase()}:</strong> {addr.street}, {addr.locality}, {addr.city} {addr.pincode}
+                          <div key={addr.id} style={{ position: 'relative' }}>
+                            <div
+                              className={`saved-address-chip ${form.street === addr.street ? 'is-active' : ''}`}
+                              style={{ paddingRight: '40px' }}
+                              onClick={() => {
+                                const [first, ...rest] = (addr.name || '').split(' ');
+                                setForm({
+                                  ...form,
+                                  firstName: first || form.firstName,
+                                  lastName: rest.join(' ') || form.lastName,
+                                  phone: addr.phone.replace('+91', '').trim(),
+                                  street: addr.street,
+                                  locality: addr.locality,
+                                  pincode: addr.pincode,
+                                  city: addr.city,
+                                });
+                              }}
+                            >
+                              <strong>{addr.type.toUpperCase()}:</strong> {addr.street}, {addr.locality}, {addr.city} {addr.pincode}
+                            </div>
+                            <button
+                              type="button"
+                              title="Remove this saved address"
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (deletingAddrId) return;
+                                setDeletingAddrId(addr.id);
+                                try {
+                                  await deleteAddress(addr.id);
+                                } finally {
+                                  setDeletingAddrId(null);
+                                }
+                              }}
+                              disabled={deletingAddrId === addr.id}
+                              style={{
+                                position: 'absolute',
+                                top: '8px',
+                                right: '8px',
+                                width: '28px',
+                                height: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: 'transparent',
+                                border: 'none',
+                                borderRadius: '6px',
+                                color: '#9CA3AF',
+                                cursor: deletingAddrId === addr.id ? 'wait' : 'pointer',
+                              }}
+                            >
+                              <X size={14} />
+                            </button>
                           </div>
                         ))}
                       </div>
