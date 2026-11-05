@@ -977,7 +977,7 @@ export class AuthService {
           productId: it.product_id || it.productId || 'prod_gen',
           productSlug: it.product_slug || it.productSlug || 'equipment',
           productName: it.product_name || it.productName || 'Sports Equipment',
-          productImage: it.product_image || it.productImage || '/images/products/yonex_astrox_88d.webp',
+          productImage: it.product_image || it.productImage || '/images/products/cricket_bat_willow.webp',
           price: Number(it.price || 0),
           quantity: Number(it.quantity || 1),
           selectedVariant: it.selected_variant || it.selectedVariant,
