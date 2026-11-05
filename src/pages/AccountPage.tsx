@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   User,
   Package,
@@ -44,6 +44,7 @@ interface AccountPageProps {
 }
 
 export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
+  const { orderId } = useParams<{ orderId?: string }>();
   const {
     user,
     isAuthenticated,
@@ -368,7 +369,52 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
   // ==========================================================================
 
   // Orders Tab View
-  const renderOrdersContent = () => (
+  const renderOrdersContent = () => {
+    // Focused single-order "Track Order" view when navigated via a specific
+    // order's link (/account/orders/:orderId) — shows just that order
+    // instead of the full list.
+    if (orderId) {
+      const trackedOrder = user.orders.find((o) => o.id === orderId || o.orderNumber === orderId);
+      return (
+        <div>
+          <Link
+            to="/account/orders"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.8125rem',
+              fontWeight: 700,
+              color: '#9CA3AF',
+              textDecoration: 'none',
+              marginBottom: '18px',
+            }}
+          >
+            <ArrowLeft size={14} />
+            <span>All Orders</span>
+          </Link>
+
+          {trackedOrder ? (
+            <OrderTracker order={trackedOrder} defaultExpanded showTrackLink={false} />
+          ) : (
+            <div
+              style={{
+                backgroundColor: '#121214',
+                padding: '40px 24px',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                textAlign: 'center',
+                color: '#9CA3AF',
+              }}
+            >
+              We couldn't find that order on your account.
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
         <div>
@@ -465,7 +511,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
         </div>
       )}
     </div>
-  );
+    );
+  };
 
   // Addresses Tab View
   const renderAddressesContent = () => (

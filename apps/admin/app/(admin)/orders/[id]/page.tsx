@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
 import { getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
-import { ALLOWED_ORDER_TRANSITIONS } from '@/lib/order-transitions';
+import { ALLOWED_ORDER_TRANSITIONS, getOrderStatusLabel } from '@/lib/order-transitions';
 import { changeOrderStatus, updateTracking } from '../actions';
 import { DashboardToast } from '@/components/dashboard/DashboardToast';
 
@@ -118,7 +118,7 @@ export default async function OrderDetailPage({
       </div>
 
       {searchParams.error && <p className="error">{searchParams.error}</p>}
-      <DashboardToast message={searchParams.saved ? 'Order updated successfully.' : undefined} />
+      <DashboardToast message={searchParams.saved || undefined} />
 
       {/* Grid: Customer Details & Financial Receipt */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 24 }}>
@@ -257,25 +257,11 @@ export default async function OrderDetailPage({
               </label>
               <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
                 <select id="next_status" name="next_status" defaultValue={allowedNext[0]} style={{ flex: 1 }}>
-                  {allowedNext.map((s) => {
-                    const statusLabels: Record<string, string> = {
-                      confirmed: 'Confirmed (Order Logged)',
-                      processing: 'Processing (Workshop Inspection)',
-                      dispatched: 'Dispatched (Courier Handover)',
-                      shipped: 'Dispatched / Shipped',
-                      out_for_delivery: 'Out for Delivery (Doorstep Today)',
-                      in_transit: 'In Transit',
-                      ready_for_pickup: 'Ready for Camp Store Pickup',
-                      delivered: 'Delivered & Verified (Handover Complete)',
-                      cancelled: 'Cancelled',
-                    };
-                    const label = statusLabels[s] || (s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' '));
-                    return (
-                      <option key={s} value={s}>
-                        {label}
-                      </option>
-                    );
-                  })}
+                  {allowedNext.map((s) => (
+                    <option key={s} value={s}>
+                      {getOrderStatusLabel(s)}
+                    </option>
+                  ))}
                 </select>
                 <button type="submit" style={{ whiteSpace: 'nowrap' }}>
                   Update Status

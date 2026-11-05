@@ -23,3 +23,19 @@ export function isTransitionAllowed(from: string, to: string): boolean {
   if (from === to) return false;
   return ALLOWED_ORDER_TRANSITIONS[from]?.includes(to) ?? false;
 }
+
+export const ORDER_STATUS_LABELS: Record<string, string> = {
+  confirmed: 'Confirmed (Order Logged)',
+  processing: 'Processing (Workshop Inspection)',
+  dispatched: 'Dispatched (Courier Handover)',
+  shipped: 'Dispatched / Shipped',
+  out_for_delivery: 'Out for Delivery (Doorstep Today)',
+  in_transit: 'In Transit',
+  ready_for_pickup: 'Ready for Camp Store Pickup',
+  delivered: 'Delivered & Verified (Handover Complete)',
+  cancelled: 'Cancelled',
+};
+
+export function getOrderStatusLabel(status: string): string {
+  return ORDER_STATUS_LABELS[status] || (status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' '));
+}

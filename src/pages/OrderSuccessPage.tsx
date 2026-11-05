@@ -15,6 +15,7 @@ import { Order } from '../types/auth';
 import { STORE_INFO } from '../data/storeInfo';
 import { Img } from '../components/ui/Img';
 import { printOrderInvoice } from '../utils/printInvoice';
+import { OrderStatusStepper } from '../components/orders/OrderStatusStepper';
 
 export const OrderSuccessPage: React.FC = () => {
   const location = useLocation();
@@ -73,6 +74,17 @@ export const OrderSuccessPage: React.FC = () => {
           <div className="order-success-reference-chip">
             <span>Order Reference:</span>
             <span className="order-success-ref-num">{order.orderNumber}</span>
+          </div>
+        </section>
+
+        {/* 1b. Order Status Stepper */}
+        <section className="order-success-card" style={{ padding: '24px 22px' }}>
+          <div className="order-success-card-header">
+            <Package size={18} color="var(--blood-crimson, #c8102e)" />
+            <h2 className="order-success-card-title">Order Status</h2>
+          </div>
+          <div style={{ marginTop: '18px' }}>
+            <OrderStatusStepper timeline={order.timeline} compact />
           </div>
         </section>
 

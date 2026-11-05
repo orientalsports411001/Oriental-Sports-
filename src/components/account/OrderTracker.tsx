@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Order } from '../../types/auth';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -6,6 +7,7 @@ import { PRODUCTS } from '../../data/products';
 import { STORE_INFO } from '../../data/storeInfo';
 import { generateOrderTimeline, getOrderStatusLabel } from '../../utils/orderTimeline';
 import { printOrderInvoice } from '../../utils/printInvoice';
+import { OrderStatusStepper } from '../orders/OrderStatusStepper';
 import {
   Package,
   CheckCircle2,
@@ -25,9 +27,11 @@ import {
 interface OrderTrackerProps {
   order: Order;
   defaultExpanded?: boolean;
+  /** Shows a "Track Order" link to the single-order view at /account/orders/:id. Off when already rendering that focused view. */
+  showTrackLink?: boolean;
 }
 
-export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpanded = false }) => {
+export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpanded = false, showTrackLink = true }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [copiedTracking, setCopiedTracking] = useState(false);
   const [isLocalSyncing, setIsLocalSyncing] = useState(false);
@@ -288,6 +292,15 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
             <span style={{ fontWeight: 800, fontSize: '1rem', color: '#FFFFFF', letterSpacing: '0.02em' }}>
               {order.orderNumber}
             </span>
+            {showTrackLink && (
+              <Link
+                to={`/account/orders/${order.id}`}
+                onClick={(e) => e.stopPropagation()}
+                style={{ fontSize: '0.75rem', fontWeight: 700, color: '#FF4D6D', textDecoration: 'none' }}
+              >
+                Track Order →
+              </Link>
+            )}
           </div>
 
           {order.trackingNumber && (
@@ -534,130 +547,8 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
             </div>
 
             {/* Timeline Stepper */}
-            <div style={{ position: 'relative', paddingLeft: '32px', marginBottom: '28px' }}>
-              {/* Stepper connecting line */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '11px',
-                  top: '10px',
-                  bottom: '14px',
-                  width: '2px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                }}
-              />
-
-              {effectiveTimeline.map((step, sIdx) => {
-                const isPast = step.completed;
-                const isCurr = step.current;
-
-                return (
-                  <div
-                    key={sIdx}
-                    style={{
-                      position: 'relative',
-                      marginBottom: sIdx === effectiveTimeline.length - 1 ? 0 : '24px',
-                    }}
-                  >
-                    {/* Circle Node */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        left: '-32px',
-                        top: '1px',
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '50%',
-                        backgroundColor: isCurr
-                          ? '#C8102E'
-                          : isPast
-                          ? '#10B981'
-                          : '#1E1E1E',
-                        border: isCurr
-                          ? '2px solid #FFFFFF'
-                          : isPast
-                          ? 'none'
-                          : '1px solid rgba(255, 255, 255, 0.2)',
-                        boxShadow: isCurr
-                          ? '0 0 14px rgba(200, 16, 46, 0.65), 0 0 0 3px rgba(200, 16, 46, 0.35)'
-                          : 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#FFFFFF',
-                        zIndex: 2,
-                      }}
-                    >
-                      {isPast && !isCurr ? (
-                        <Check size={14} strokeWidth={2.5} />
-                      ) : isCurr ? (
-                        <Clock size={13} strokeWidth={2.5} />
-                      ) : (
-                        <div
-                          style={{
-                            width: '6px',
-                            height: '6px',
-                            borderRadius: '50%',
-                            backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                          }}
-                        />
-                      )}
-                    </div>
-
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span
-                          style={{
-                            fontWeight: 700,
-                            fontSize: '0.875rem',
-                            color: isCurr ? '#FF4D6D' : isPast ? '#FFFFFF' : '#71717A',
-                          }}
-                        >
-                          {step.title}
-                        </span>
-
-                        {isCurr && (
-                          <span
-                            style={{
-                              fontSize: '0.625rem',
-                              fontWeight: 800,
-                              backgroundColor: '#C8102E',
-                              color: '#FFFFFF',
-                              padding: '2px 8px',
-                              borderRadius: '9999px',
-                              letterSpacing: '0.06em',
-                              textTransform: 'uppercase',
-                            }}
-                          >
-                            Active Stage
-                          </span>
-                        )}
-
-                        <span
-                          style={{
-                            fontSize: '0.75rem',
-                            color: isCurr ? '#E5E7EB' : isPast ? '#9CA3AF' : '#52525B',
-                            fontWeight: isCurr ? 600 : 400,
-                          }}
-                        >
-                          {step.date}
-                        </span>
-                      </div>
-
-                      <p
-                        style={{
-                          margin: '4px 0 0 0',
-                          fontSize: '0.8125rem',
-                          color: isCurr ? '#D1D5DB' : isPast ? '#9CA3AF' : '#52525B',
-                          lineHeight: 1.45,
-                        }}
-                      >
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+            <div style={{ marginBottom: '28px' }}>
+              <OrderStatusStepper timeline={effectiveTimeline} />
             </div>
 
             {/* Delivery destination & payment breakdown card */}

@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { isTransitionAllowed } from '@/lib/order-transitions';
+import { isTransitionAllowed, getOrderStatusLabel } from '@/lib/order-transitions';
 import { updateOrder, getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
 import { sendOrderStatusEmail } from '@/lib/email';
 
@@ -106,7 +106,7 @@ export async function changeOrderStatus(orderId: string, formData: FormData) {
     console.warn('[changeOrderStatus] Email dispatch warning (safe):', emailErr);
   }
 
-  redirect(`/orders/${orderId}?saved=1`);
+  redirect(`/orders/${orderId}?saved=${encodeURIComponent(`Stage updated to "${getOrderStatusLabel(nextStatus)}". Customer notified by email.`)}`);
 }
 
 export async function updateTracking(orderId: string, formData: FormData) {
@@ -191,5 +191,5 @@ export async function updateTracking(orderId: string, formData: FormData) {
     console.warn('[updateTracking] Dispatch email warning (safe):', trackingEmailErr);
   }
 
-  redirect(`/orders/${orderId}?saved=1`);
+  redirect(`/orders/${orderId}?saved=${encodeURIComponent('Tracking details updated. Customer notified by email.')}`);
 }

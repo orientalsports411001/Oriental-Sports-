@@ -1773,6 +1773,19 @@ if (typeof window !== 'undefined') {
   } catch (err) {
     console.warn('Realtime subscription notice:', err);
   }
+
+  // Safety-net poll: realtime broadcast depends on external config (Supabase
+  // Realtime enabled for the products table, correct keys deployed) that
+  // isn't verifiable from here. If it silently fails, catalog edits would
+  // never reach an already-open tab. This keeps "instant" honest as
+  // "within ~45s" even when realtime isn't delivering.
+  setInterval(() => {
+    fetchLiveSupabaseProducts()
+      .then(() => {
+        window.dispatchEvent(new CustomEvent('os_catalog_updated'));
+      })
+      .catch(() => {});
+  }, 45000);
 }
 
 export function getAllLiveProducts(): Product[] {
