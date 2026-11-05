@@ -715,7 +715,12 @@ export function ProductsCatalogView({
 
                       {/* Actions with 1-Click Show/Hide and Restock */}
                       <td style={{ textAlign: 'right', padding: '16px 20px' }}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 8 }}>
+                        {/* display: flex + width: 100% (not inline-flex) so that when
+                            buttons wrap onto a second line, justify-content: flex-end
+                            aligns every row to the cell's actual right edge instead of
+                            each wrapped line only right-aligning within its own,
+                            narrower content box (which produced the staggered look). */}
+                        <div style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 8 }}>
                           {/* Out of Stock Quick Actions */}
                           {isOut && p.status === 'published' && (
                             <button
