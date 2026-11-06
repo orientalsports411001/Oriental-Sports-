@@ -638,6 +638,12 @@ export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number
     const updated: AdminOrder = {
       ...ordersCache[existingIndex],
       ...order,
+      // Keep the original id once set, even if the caller passed a
+      // different one (e.g. Supabase's own id for the same order_number).
+      // Changing it here silently breaks any link/notification already
+      // generated from the old id (404 on click) the moment this order is
+      // next updated.
+      id: ordersCache[existingIndex].id,
     };
     ordersCache[existingIndex] = updated;
     result = updated;

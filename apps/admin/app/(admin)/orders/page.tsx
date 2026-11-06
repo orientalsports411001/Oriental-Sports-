@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
 import { getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
+import { RefreshOrdersButton } from '@/components/orders/RefreshOrdersButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -151,6 +152,8 @@ export default async function OrdersPage({
             Live customer purchase feed, address verification, and delivery dispatch.
           </p>
         </div>
+
+        <RefreshOrdersButton />
       </div>
 
       {/* Clean Search & Filter Form (No decorative icons) */}
