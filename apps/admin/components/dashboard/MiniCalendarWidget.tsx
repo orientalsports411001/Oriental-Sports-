@@ -1,28 +1,86 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
+import Link from 'next/link';
 
-export function MiniCalendarWidget() {
-  const [selectedDay, setSelectedDay] = useState<number>(23);
+export interface CalendarDispatchOrder {
+  id: string;
+  order_number: string;
+  customer_name: string;
+  total_amount: number;
+  status: string;
+  /** ISO timestamp the order reached its current dispatch stage (falls back to placed-on date). */
+  date: string;
+}
 
-  // October 2026 calendar structure
-  // Oct 1, 2026 is Thursday (Index 4: Su=0, Mo=1, Tu=2, We=3, Th=4, Fr=5, Sa=6)
-  const startDayOffset = 4;
-  const daysInMonth = 31;
-  const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+interface MiniCalendarWidgetProps {
+  dispatches: CalendarDispatchOrder[];
+}
 
-  // Event dots on specific dates
-  const eventDays = [5, 12, 18, 20, 22, 23, 27];
+const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const MONTH_LABELS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
-  const calendarCells = [];
-  // Empty leading cells
-  for (let i = 0; i < startDayOffset; i++) {
-    calendarCells.push(null);
-  }
-  // Month days
-  for (let d = 1; d <= daysInMonth; d++) {
-    calendarCells.push(d);
-  }
+function pad2(n: number) {
+  return String(n).padStart(2, '0');
+}
+
+function dateKey(d: Date) {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
+export function MiniCalendarWidget({ dispatches }: MiniCalendarWidgetProps) {
+  // Real "today", computed once per mount — not a hardcoded date.
+  const [today] = useState(() => new Date());
+  const [viewYear, setViewYear] = useState(() => today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(() => today.getMonth()); // 0-indexed
+  const [selectedDate, setSelectedDate] = useState(() => dateKey(today));
+
+  const dispatchesByDay = useMemo(() => {
+    const map = new Map<string, CalendarDispatchOrder[]>();
+    for (const d of dispatches) {
+      const parsed = new Date(d.date);
+      if (Number.isNaN(parsed.getTime())) continue;
+      const key = dateKey(parsed);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(d);
+    }
+    return map;
+  }, [dispatches]);
+
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const startDayOffset = new Date(viewYear, viewMonth, 1).getDay();
+  const todayKey = dateKey(today);
+
+  const calendarCells: (number | null)[] = [];
+  for (let i = 0; i < startDayOffset; i++) calendarCells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) calendarCells.push(d);
+
+  const goToMonth = (deltaMonths: number) => {
+    const d = new Date(viewYear, viewMonth + deltaMonths, 1);
+    setViewYear(d.getFullYear());
+    setViewMonth(d.getMonth());
+  };
+
+  const selectedDispatches = dispatchesByDay.get(selectedDate) || [];
+  const selectedDateObj = new Date(`${selectedDate}T00:00:00`);
+
+  const navButtonStyle: CSSProperties = {
+    width: 28,
+    height: 28,
+    borderRadius: '50%',
+    background: 'var(--stone)',
+    border: 'none',
+    padding: 0,
+    display: 'grid',
+    placeItems: 'center',
+    color: 'var(--ink)',
+    cursor: 'pointer',
+    fontSize: 14,
+    fontWeight: 700,
+  };
 
   return (
     <div
@@ -43,53 +101,18 @@ export function MiniCalendarWidget() {
       >
         <div>
           <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--ink)' }}>
-            October, 2026
+            {MONTH_LABELS[viewMonth]}, {viewYear}
           </div>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--subtle)', letterSpacing: '0.04em' }}>
             CAMP PUNE LOGISTICS
           </div>
         </div>
 
-        {/* Prev / Next Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <button
-            type="button"
-            aria-label="Previous Month"
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              background: 'var(--stone)',
-              border: 'none',
-              padding: 0,
-              display: 'grid',
-              placeItems: 'center',
-              color: 'var(--ink)',
-              cursor: 'pointer',
-              fontSize: 14,
-              fontWeight: 700,
-            }}
-          >
+          <button type="button" aria-label="Previous Month" onClick={() => goToMonth(-1)} style={navButtonStyle}>
             ‹
           </button>
-          <button
-            type="button"
-            aria-label="Next Month"
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              background: 'var(--stone)',
-              border: 'none',
-              padding: 0,
-              display: 'grid',
-              placeItems: 'center',
-              color: 'var(--ink)',
-              cursor: 'pointer',
-              fontSize: 14,
-              fontWeight: 700,
-            }}
-          >
+          <button type="button" aria-label="Next Month" onClick={() => goToMonth(1)} style={navButtonStyle}>
             ›
           </button>
         </div>
@@ -104,7 +127,7 @@ export function MiniCalendarWidget() {
           marginBottom: 8,
         }}
       >
-        {daysOfWeek.map((dow, idx) => (
+        {WEEKDAY_LABELS.map((dow, idx) => (
           <div
             key={idx}
             style={{
@@ -134,18 +157,20 @@ export function MiniCalendarWidget() {
             return <div key={`empty-${idx}`} style={{ height: 32 }} />;
           }
 
-          const isSelected = day === selectedDay;
-          const hasEvent = eventDays.includes(day);
+          const key = `${viewYear}-${pad2(viewMonth + 1)}-${pad2(day)}`;
+          const isSelected = key === selectedDate;
+          const isToday = key === todayKey;
+          const hasEvent = dispatchesByDay.has(key);
 
           return (
             <button
               key={`day-${day}`}
               type="button"
-              onClick={() => setSelectedDay(day)}
+              onClick={() => setSelectedDate(key)}
               style={{
                 height: 32,
                 borderRadius: '50%',
-                border: 'none',
+                border: isToday && !isSelected ? '1px solid var(--blood-crimson)' : 'none',
                 background: isSelected ? 'var(--blood-crimson)' : 'transparent',
                 color: isSelected ? '#FFFFFF' : 'var(--ink)',
                 fontWeight: isSelected ? 700 : hasEvent ? 600 : 500,
@@ -197,46 +222,51 @@ export function MiniCalendarWidget() {
           }}
         >
           <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--muted)' }}>
-            Dispatches on Oct {selectedDay}
+            Dispatches on {MONTH_LABELS[selectedDateObj.getMonth()].slice(0, 3)} {selectedDateObj.getDate()}
           </span>
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 600,
-              padding: '2px 7px',
-              borderRadius: 9999,
-              background: 'rgba(38, 41, 46, 0.08)',
-              color: 'var(--ink-heading)',
-            }}
-          >
-            2 Active
-          </span>
+          {selectedDispatches.length > 0 && (
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 600,
+                padding: '2px 7px',
+                borderRadius: 9999,
+                background: 'rgba(38, 41, 46, 0.08)',
+                color: 'var(--ink-heading)',
+              }}
+            >
+              {selectedDispatches.length} Active
+            </span>
+          )}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div
-            style={{
-              fontSize: 12,
-              color: 'var(--ink)',
-              padding: '6px 0',
-              borderBottom: '1px solid rgba(38, 41, 46, 0.06)',
-            }}
-          >
-            <div style={{ fontWeight: 600, lineHeight: 1.2, color: 'var(--ink-heading)' }}>Camp Flagship Sports House</div>
-            <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>OS-2026-5625 · Yonex Astrox 88D Play · ₹4,498</div>
+        {selectedDispatches.length === 0 ? (
+          <p style={{ margin: 0, fontSize: 12, color: 'var(--subtle)' }}>
+            No orders reached a dispatch stage on this day.
+          </p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {selectedDispatches.map((d, idx) => (
+              <Link
+                key={d.id}
+                href={`/orders/${d.id}`}
+                style={{
+                  fontSize: 12,
+                  color: 'var(--ink)',
+                  padding: '6px 0',
+                  textDecoration: 'none',
+                  display: 'block',
+                  borderBottom: idx < selectedDispatches.length - 1 ? '1px solid rgba(38, 41, 46, 0.06)' : 'none',
+                }}
+              >
+                <div style={{ fontWeight: 600, lineHeight: 1.2, color: 'var(--ink-heading)' }}>{d.customer_name}</div>
+                <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>
+                  {d.order_number} · {d.status.replace(/_/g, ' ')} · ₹{d.total_amount.toLocaleString('en-IN')}
+                </div>
+              </Link>
+            ))}
           </div>
-
-          <div
-            style={{
-              fontSize: 12,
-              color: 'var(--ink)',
-              paddingTop: 2,
-            }}
-          >
-            <div style={{ fontWeight: 600, lineHeight: 1.2, color: 'var(--ink-heading)' }}>MG Road Stringing Desk</div>
-            <div style={{ fontSize: 10.5, color: 'var(--subtle)' }}>Ready for Customer Counter Collection</div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

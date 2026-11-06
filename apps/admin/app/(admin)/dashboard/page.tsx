@@ -27,7 +27,7 @@ export default async function DashboardPage({
       resOrders,
     ] = await Promise.all([
       admin.from('products').select('*'),
-      admin.from('orders').select('id, order_number, status, total_amount, created_at, user_id, shipping_address, payment_method').order('created_at', { ascending: false }).limit(100),
+      admin.from('orders').select('id, order_number, status, total_amount, created_at, updated_at, user_id, shipping_address, payment_method').order('created_at', { ascending: false }).limit(100),
     ]);
 
     dbProducts = (resProducts.data || []).map((p: any) => ({
@@ -125,6 +125,33 @@ export default async function DashboardPage({
   ).length;
 
   const recentOrders = allOrders.slice(0, 6);
+
+  // Orders that have actually left confirmation/processing and entered some
+  // stage of physical dispatch — what the calendar widget below means by
+  // "dispatch". Dated by the last status change when known (updated_at),
+  // falling back to when the order was placed.
+  const DISPATCH_STAGE_STATUSES = new Set([
+    'dispatched',
+    'shipped',
+    'in_transit',
+    'out_for_delivery',
+    'ready_for_pickup',
+    'delivered',
+  ]);
+  const calendarDispatches = allOrders
+    .filter((o) => DISPATCH_STAGE_STATUSES.has((o.status || '').toLowerCase()))
+    .map((o) => ({
+      id: o.id,
+      order_number: o.order_number,
+      customer_name:
+        o.customer_name ||
+        (o.shipping_address as any)?.name ||
+        (o.shipping_address as any)?.fullName ||
+        'Athlete Customer',
+      total_amount: Number(o.total_amount || 0),
+      status: o.status,
+      date: o.updated_at || o.created_at,
+    }));
 
   return (
     <div style={{ maxWidth: 1420, margin: '0 auto' }}>
@@ -506,7 +533,7 @@ export default async function DashboardPage({
         {/* Right Column (Mini Calendar + Inventory Health Alert) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
           {/* 1. Interactive Mini Calendar Widget */}
-          <MiniCalendarWidget />
+          <MiniCalendarWidget dispatches={calendarDispatches} />
 
           {/* 2. Interactive Low Stock Warnings Card */}
           <LowStockCard items={lowStock} />
