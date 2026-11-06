@@ -74,8 +74,11 @@ export async function GET(req: Request) {
     try {
       const admin = createServiceRoleClient();
       const orConditions: string[] = [];
-      if (validPhone) orConditions.push(`customer_phone.ilike.%${validPhone}%`);
-      if (validEmail) orConditions.push(`customer_email.eq.${validEmail}`);
+      // orders has no customer_phone/customer_email columns — contact
+      // details live in the shipping_address jsonb. Filtering on the
+      // nonexistent columns made this whole query fail silently.
+      if (validPhone) orConditions.push(`shipping_address->>phone.ilike.%${validPhone}%`);
+      if (validEmail) orConditions.push(`shipping_address->>email.ilike.${validEmail}`);
       if (orConditions.length > 0) {
         const { data: dbOrders } = await admin
           .from('orders')

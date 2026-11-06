@@ -15,56 +15,10 @@ import {
 const STORAGE_KEY = 'oriental_sports_auth_user_v1';
 const PLACED_ORDERS_STORAGE_KEY = 'oriental_sports_placed_orders_v1';
 
-export const SEED_PRATIK_ORDER: Order = {
-  id: 'ord-2026-8812',
-  orderNumber: 'OS-2026-8812',
-  date: new Date().toISOString().split('T')[0],
-  status: 'confirmed',
-  statusLabel: 'Order Confirmed',
-  totalAmount: 13999,
-  subtotal: 13999,
-  shipping: 0,
-  tax: 2135,
-  paymentMethod: 'Razorpay (UPI)',
-  deliveryMethod: 'camp_pickup',
-  shippingAddress: {
-    id: 'addr_camp_pickup_pratik',
-    name: 'Pratik Jadhav',
-    phone: '+91 9420434728',
-    email: 'pratikjadhav.job@gmail.com',
-    street: 'Shop 247, MG Road (Camp Store Pickup)',
-    locality: 'Camp',
-    city: 'Pune',
-    state: 'Maharashtra',
-    pincode: '411001',
-    isDefault: true,
-    type: 'home',
-  },
-  trackingNumber: 'OS-PICKUP-8812',
-  carrier: 'Oriental Store Counter (Camp)',
-  items: [
-    {
-      productId: 'prod-tennis-pro-tour-300g',
-      productSlug: 'pro-tour-300g-high-modulus-graphite-tennis-racket',
-      productName: 'Pro Tour 300g High-Modulus Graphite Tennis Racket',
-      productImage: '/images/products/wilson-blade-98.jpg',
-      price: 13999,
-      quantity: 1,
-      selectedVariant: '300g Tournament Spec',
-    },
-  ],
-  timeline: generateOrderTimeline(
-    'confirmed',
-    new Date().toISOString(),
-    undefined,
-    'OS-PICKUP-8812',
-    'Oriental Store Counter (Camp)',
-    'camp_pickup',
-    'Shop 247, MG Road (Camp Store Pickup)'
-  ),
-};
-
-const BANNED_LEGACY_ORDERS = new Set(['OS-2026-5625', 'ord-2026-5625']);
+// OS-2026-8812 was a hardcoded demo order that used to be injected into every
+// browser's order list (and from there synced into the admin panel as if it
+// were a real purchase). Banned so copies already in localStorage are purged.
+const BANNED_LEGACY_ORDERS = new Set(['OS-2026-5625', 'ord-2026-5625', 'OS-2026-8812', 'ord-2026-8812']);
 
 export function getStoredPlacedOrders(): Order[] {
   try {
@@ -75,15 +29,13 @@ export function getStoredPlacedOrders(): Order[] {
       if (Array.isArray(parsed)) list = parsed;
     }
     const orderMap = new Map<string, Order>();
-    // Seed verified placed order
-    orderMap.set(SEED_PRATIK_ORDER.orderNumber, SEED_PRATIK_ORDER);
     for (const o of list) {
       if (BANNED_LEGACY_ORDERS.has(o.orderNumber) || BANNED_LEGACY_ORDERS.has(o.id)) continue;
       orderMap.set(o.orderNumber || o.id, o);
     }
     return Array.from(orderMap.values());
   } catch {
-    return [SEED_PRATIK_ORDER];
+    return [];
   }
 }
 
@@ -938,6 +890,7 @@ export class AuthService {
     for (const adminRow of remoteAdminOrders) {
       const key = adminRow.order_number || adminRow.id;
       if (!key) continue;
+      if (BANNED_LEGACY_ORDERS.has(adminRow.order_number) || BANNED_LEGACY_ORDERS.has(adminRow.id)) continue;
 
       const normStatus = normalizeOrderStatus(adminRow.status);
       const addr = adminRow.shipping_address || {};
@@ -1017,11 +970,7 @@ export class AuthService {
             type: 'home',
           },
           items:
-            items.length > 0
-              ? items
-              : SEED_PRATIK_ORDER.orderNumber === adminRow.order_number
-              ? SEED_PRATIK_ORDER.items
-              : [],
+            items,
           timeline,
           updatedAt: adminRow.updated_at,
         };

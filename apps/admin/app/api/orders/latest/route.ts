@@ -34,7 +34,9 @@ export async function GET() {
       const admin = createServiceRoleClient();
       const { data: dbLatest } = await admin
         .from('orders')
-        .select('id, order_number, customer_name, total_amount, status, created_at, shipping_address')
+        // orders has no customer_name column (name lives in shipping_address);
+        // selecting it made this whole query fail silently.
+        .select('id, order_number, total_amount, status, created_at, shipping_address')
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();

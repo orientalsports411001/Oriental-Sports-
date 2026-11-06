@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface LatestOrderInfo {
@@ -58,96 +58,84 @@ function playOrderChime() {
   }
 }
 
+const SEEN_KEY = 'os_seen_order_numbers_v2';
+const WATERMARK_KEY = 'os_latest_order_created_at_v2';
+
+function loadSeen(): Set<string> {
+  try {
+    const raw = localStorage.getItem(SEEN_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return new Set(Array.isArray(list) ? list : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveSeen(seen: Set<string>) {
+  try {
+    localStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(seen).slice(-200)));
+  } catch {}
+}
+
+/**
+ * An order is announced only if (a) it was never announced/seen before in
+ * this browser and (b) it was created after the newest order seen so far.
+ * The old "latest order number changed" check re-announced old orders every
+ * time a stale read flipped the "latest" back and forth between two orders.
+ */
 export function AdminOrderNotifier() {
   const [activeAlert, setActiveAlert] = useState<LatestOrderInfo | null>(null);
-  const lastKnownOrderRef = useRef<string | null>(null);
-  const isInitialFetchRef = useRef(true);
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
     let isCancelled = false;
-
-    // Retrieve initial known order number from sessionStorage to avoid duplicate chimes on reloads
+    const seen = loadSeen();
+    let watermark = 0;
     try {
-      const stored = sessionStorage.getItem('os_last_known_order');
-      if (stored) lastKnownOrderRef.current = stored;
+      watermark = Number(localStorage.getItem(WATERMARK_KEY) || 0);
     } catch {}
+    let primed = watermark > 0;
+
+    const consider = (latest: LatestOrderInfo, announce: boolean) => {
+      const key = latest.order_number || latest.id;
+      const createdAt = new Date(latest.created_at).getTime() || 0;
+      const isNew = !seen.has(key) && createdAt > watermark;
+
+      seen.add(key);
+      saveSeen(seen);
+      if (createdAt > watermark) {
+        watermark = createdAt;
+        try {
+          localStorage.setItem(WATERMARK_KEY, String(watermark));
+        } catch {}
+      }
+      if (!isNew || !announce) return;
+
+      playOrderChime();
+      setActiveAlert(latest);
+      window.dispatchEvent(new CustomEvent('os_catalog_updated'));
+    };
 
     const checkLatestOrder = async () => {
       try {
         const res = await fetch('/api/orders/latest', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
-
         if (isCancelled || !data?.success || !data.latestOrder) return;
-
-        const latest: LatestOrderInfo = data.latestOrder;
-        const currentId = latest.order_number || latest.id;
-
-        if (isInitialFetchRef.current) {
-          isInitialFetchRef.current = false;
-          if (!lastKnownOrderRef.current) {
-            lastKnownOrderRef.current = currentId;
-            try {
-              sessionStorage.setItem('os_last_known_order', currentId);
-            } catch {}
-          }
-          return;
-        }
-
-        // New order detected!
-        if (lastKnownOrderRef.current && currentId !== lastKnownOrderRef.current) {
-          lastKnownOrderRef.current = currentId;
-          try {
-            sessionStorage.setItem('os_last_known_order', currentId);
-          } catch {}
-
-          // Play chime sound
-          playOrderChime();
-
-          // Show alert banner
-          setActiveAlert(latest);
-
-          // Broadcast update so sidebar and order lists update in real-time
-          window.dispatchEvent(new CustomEvent('os_catalog_updated'));
-          try {
-            const bc = new BroadcastChannel('oriental_sports_catalog');
-            bc.postMessage({ type: 'NEW_ORDER', order: latest });
-            setTimeout(() => bc.close(), 1000);
-          } catch {}
-        }
-      } catch (err) {
+        // First run in a fresh browser: record the current latest silently.
+        consider(data.latestOrder, primed);
+        primed = true;
+      } catch {
         // Safe network error swallow
       }
     };
 
-    // Initial check
     checkLatestOrder();
-
-    // Poll every 7 seconds
     timer = setInterval(checkLatestOrder, 7000);
-
-    // Listen for BroadcastChannel events if orders were placed from same origin
-    let bc: BroadcastChannel | null = null;
-    try {
-      bc = new BroadcastChannel('oriental_sports_catalog');
-      bc.onmessage = (event) => {
-        if (event.data?.type === 'NEW_ORDER' && event.data.order) {
-          const ord = event.data.order;
-          if (ord.order_number !== lastKnownOrderRef.current) {
-            lastKnownOrderRef.current = ord.order_number;
-            playOrderChime();
-            setActiveAlert(ord);
-            window.dispatchEvent(new CustomEvent('os_catalog_updated'));
-          }
-        }
-      };
-    } catch {}
 
     return () => {
       isCancelled = true;
       if (timer) clearInterval(timer);
-      bc?.close();
     };
   }, []);
 

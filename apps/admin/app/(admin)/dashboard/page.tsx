@@ -27,7 +27,7 @@ export default async function DashboardPage({
       resOrders,
     ] = await Promise.all([
       admin.from('products').select('*'),
-      admin.from('orders').select('id, order_number, status, total_amount, created_at, user_id, shipping_address, customer_name, customer_email, payment_method').order('created_at', { ascending: false }).limit(100),
+      admin.from('orders').select('id, order_number, status, total_amount, created_at, user_id, shipping_address, payment_method').order('created_at', { ascending: false }).limit(100),
     ]);
 
     dbProducts = (resProducts.data || []).map((p: any) => ({

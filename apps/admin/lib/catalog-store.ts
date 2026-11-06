@@ -47,6 +47,8 @@ export interface AdminOrder {
   tracking_number?: string;
   carrier?: string;
   created_at: string;
+  /** Stamped on every admin-side change; used to pick the newest copy when merging local and cloud state. */
+  updated_at?: string;
   shipping_address: {
     fullName: string;
     phone: string;
@@ -74,6 +76,9 @@ const TMP_CACHE_FILE = path.join(
   process.platform === 'win32' ? process.env.TEMP || 'C:\\Windows\\Temp' : '/tmp',
   'os-admin-products-cache.json'
 );
+
+// Overridable only so tests can run against a throwaway blob.
+const ORDERS_BLOB_ID = process.env.OS_ORDERS_BLOB_ID || 'os_admin_orders';
 
 const TMP_ORDERS_CACHE_FILE = path.join(
   process.platform === 'win32' ? process.env.TEMP || 'C:\\Windows\\Temp' : '/tmp',
@@ -110,6 +115,9 @@ const BANNED_DUMMY_ORDERS = new Set([
   'ord-2026-1005',
   'ord-2026-5625',
   'OS-2026-5625',
+  // Hardcoded storefront demo order (was injected into every browser and synced here as if real).
+  'OS-2026-8812',
+  'ord-2026-8812',
 ]);
 
 function readOrdersDiskCache(): AdminOrder[] | null {
@@ -589,7 +597,13 @@ export function getCachedOrders(): AdminOrder[] {
   return ordersCache.filter((o) => !BANNED_DUMMY_ORDERS.has(o.order_number) && !BANNED_DUMMY_ORDERS.has(o.id));
 }
 
-export async function getCachedOrdersAsync(): Promise<AdminOrder[]> {
+/**
+ * @param exact  Resolve the cloud blob's exact current version (Admin API)
+ *   instead of the CDN URL. Required before any read-modify-write: a stale
+ *   view re-uploaded as the whole list silently erases every order it
+ *   doesn't contain (this is how real orders were disappearing).
+ */
+export async function getCachedOrdersAsync(opts: { exact?: boolean } = {}): Promise<AdminOrder[]> {
   const local = getCachedOrders();
   const orderMap = new Map<string, AdminOrder>();
 
@@ -600,12 +614,22 @@ export async function getCachedOrdersAsync(): Promise<AdminOrder[]> {
   }
 
   try {
-    const cloudOrders = await fetchCloudJson<AdminOrder[]>('os_admin_orders');
+    const cloudOrders = await fetchCloudJson<AdminOrder[]>(ORDERS_BLOB_ID, { exact: opts.exact });
     if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
       for (const o of cloudOrders) {
         if (!BANNED_DUMMY_ORDERS.has(o.order_number) && !BANNED_DUMMY_ORDERS.has(o.id)) {
-          const existing = orderMap.get(o.order_number || o.id);
-          orderMap.set(o.order_number || o.id, existing ? { ...existing, ...o } : o);
+          const key = o.order_number || o.id;
+          const existing = orderMap.get(key);
+          if (!existing) {
+            orderMap.set(key, o);
+          } else {
+            // Newest copy wins; on a tie (or no timestamps) the cloud copy
+            // wins, as before. A stale cloud read must never clobber a newer
+            // local status change.
+            const localTs = new Date(existing.updated_at || 0).getTime();
+            const cloudTs = new Date(o.updated_at || 0).getTime();
+            orderMap.set(key, localTs > cloudTs ? { ...o, ...existing } : { ...existing, ...o });
+          }
         }
       }
     }
@@ -626,7 +650,7 @@ export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number
   // instance ordersCache/disk are both empty, and writing straight from
   // that empty state would overwrite the shared Cloudinary blob with just
   // this one order, wiping every order synced by other instances.
-  await getCachedOrdersAsync();
+  await getCachedOrdersAsync({ exact: true });
 
   const existingIndex = ordersCache.findIndex(
     (o) => (order.id && o.id === order.id) || o.order_number === order.order_number
@@ -644,6 +668,13 @@ export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number
       // generated from the old id (404 on click) the moment this order is
       // next updated.
       id: ordersCache[existingIndex].id,
+      // Storefront re-syncs and Supabase heals must not roll a status the
+      // admin already advanced back to its creation value.
+      status:
+        ordersCache[existingIndex].updated_at && order.status === 'confirmed'
+          ? ordersCache[existingIndex].status
+          : order.status ?? ordersCache[existingIndex].status,
+      updated_at: now,
     };
     ordersCache[existingIndex] = updated;
     result = updated;
@@ -683,18 +714,20 @@ export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number
   // Action redirect()) before the cross-lambda cloud write lands — a
   // fire-and-forget upload here was silently dropped on Vercel, leaving
   // the customer-facing order sync endpoint reading stale data.
-  await uploadCloudJson('os_admin_orders', ordersCache).catch(() => false);
+  await uploadCloudJson(ORDERS_BLOB_ID, ordersCache).catch(() => false);
   return result;
 }
 
 export async function updateOrder(id: string, updates: Partial<AdminOrder>): Promise<AdminOrder | null> {
-  const disk = readOrdersDiskCache();
-  if (disk && Array.isArray(disk)) ordersCache = disk;
+  // Hydrate from the shared cloud store (not just this instance's /tmp disk,
+  // which can be stale on a warm serverless instance) before modifying and
+  // re-uploading the whole list.
+  await getCachedOrdersAsync({ exact: true });
 
   const index = ordersCache.findIndex((o) => o.id === id || o.order_number === id);
   if (index === -1) return null;
-  ordersCache[index] = { ...ordersCache[index], ...updates };
+  ordersCache[index] = { ...ordersCache[index], ...updates, updated_at: new Date().toISOString() };
   writeOrdersDiskCache(ordersCache);
-  await uploadCloudJson('os_admin_orders', ordersCache).catch(() => false);
+  await uploadCloudJson(ORDERS_BLOB_ID, ordersCache).catch(() => false);
   return ordersCache[index];
 }
