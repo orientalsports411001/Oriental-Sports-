@@ -42,9 +42,9 @@ export const IMAGES = {
   // ---- Sport photography (Unsplash) -----------------------------------------
   // Three new Hero slides (tennis, table tennis, cricket) replacing the
   // single "Gear" slide with a rotation — each image verified by hand for a
-  // clean, dynamic action shot with no visible tournament sponsor branding.
+  // clean, dynamic action shot.
   heroTennisAction: unsplash('1709403552725-97e0ba206cb8', 'Female tennis player leaping to return a shot on a blue hard court', 'center 32%'),
-  heroTableTennisDuel: unsplash('1461748659110-16121c049d52', 'Two players mid-rally at a table tennis table indoors'),
+  heroTableTennisDuel: unsplash('1659303388053-6078a001ea21', 'Table tennis player returning a shot at the net, ball in flight', 'center 40%'),
   cricketStrike: unsplash('1593341646782-e0b495cff86d', 'Batsman driving a cricket ball, dust flying off the pitch', 'center 40%'),
   cricketStadium: unsplash('1540747913346-19e32dc3e97e', 'Cricket stadium under floodlights during an evening match'),
   cricketBall: unsplash('1690111354184-cceee42df518', 'Worn red leather cricket ball on grass'),
