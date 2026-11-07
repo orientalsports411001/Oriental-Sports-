@@ -16,56 +16,61 @@ export default async function OrdersPage({
   let orders: any[] = [];
   let profileMap = new Map();
 
-  try {
-    const admin = createServiceRoleClient();
-    let query = admin
-      .from('orders')
-      .select('id, order_number, status, total_amount, payment_method, shipping_address, created_at, user_id');
+  // Supabase and the Cloudinary-backed orders cache are independent data
+  // sources — fetching them one after another adds a full extra network
+  // round trip to every orders-list load for no reason. Run them together.
+  const [, cached] = await Promise.all([
+    (async () => {
+      try {
+        const admin = createServiceRoleClient();
+        let query = admin
+          .from('orders')
+          .select('id, order_number, status, total_amount, payment_method, shipping_address, created_at, user_id');
 
-    if (searchParams.status) {
-      query = query.eq('status', searchParams.status);
-    }
-    if (searchParams.from) {
-      query = query.gte('created_at', searchParams.from);
-    }
-    if (searchParams.to) {
-      query = query.lte('created_at', searchParams.to);
-    }
+        if (searchParams.status) {
+          query = query.eq('status', searchParams.status);
+        }
+        if (searchParams.from) {
+          query = query.gte('created_at', searchParams.from);
+        }
+        if (searchParams.to) {
+          query = query.lte('created_at', searchParams.to);
+        }
 
-    if (searchParams.q) {
-      const q = searchParams.q.trim();
-      const { data: matchingProfiles } = await admin
-        .from('profiles')
-        .select('id')
-        .or(`email.ilike.%${q}%,first_name.ilike.%${q}%,last_name.ilike.%${q}%,phone.ilike.%${q}%`);
-      const profileIds = (matchingProfiles || []).map((p) => p.id);
+        if (searchParams.q) {
+          const q = searchParams.q.trim();
+          const { data: matchingProfiles } = await admin
+            .from('profiles')
+            .select('id')
+            .or(`email.ilike.%${q}%,first_name.ilike.%${q}%,last_name.ilike.%${q}%,phone.ilike.%${q}%`);
+          const profileIds = (matchingProfiles || []).map((p) => p.id);
 
-      if (profileIds.length > 0) {
-        query = query.or(`order_number.ilike.%${q}%,user_id.in.(${profileIds.join(',')})`);
-      } else {
-        query = query.ilike('order_number', `%${q}%`);
+          if (profileIds.length > 0) {
+            query = query.or(`order_number.ilike.%${q}%,user_id.in.(${profileIds.join(',')})`);
+          } else {
+            query = query.ilike('order_number', `%${q}%`);
+          }
+        }
+
+        const { data: dbOrders } = await query.order('created_at', { ascending: false }).limit(100);
+
+        if (dbOrders && dbOrders.length > 0) {
+          orders = dbOrders;
+          const userIds = Array.from(new Set(orders.map((o) => o.user_id).filter(Boolean)));
+          if (userIds.length > 0) {
+            const { data: profiles } = await admin
+              .from('profiles')
+              .select('id, email, first_name, last_name, phone')
+              .in('id', userIds as string[]);
+            profileMap = new Map((profiles || []).map((p) => [p.id, p]));
+          }
+        }
+      } catch (err) {
+        // Supabase fallback
       }
-    }
-
-    const { data: dbOrders } = await query.order('created_at', { ascending: false }).limit(100);
-
-    if (dbOrders && dbOrders.length > 0) {
-      orders = dbOrders;
-      const userIds = Array.from(new Set(orders.map((o) => o.user_id).filter(Boolean)));
-      if (userIds.length > 0) {
-        const { data: profiles } = await admin
-          .from('profiles')
-          .select('id, email, first_name, last_name, phone')
-          .in('id', userIds as string[]);
-        profileMap = new Map((profiles || []).map((p) => [p.id, p]));
-      }
-    }
-  } catch (err) {
-    // Supabase fallback
-  }
-
-  // Merge live database orders with cached / synced store orders
-  const cached = await getCachedOrdersAsync();
+    })(),
+    getCachedOrdersAsync(),
+  ]);
   const cachedMap = new Map(cached.map((c) => [c.order_number, c]));
 
   // Merge cached updates (status, tracking, customer details) into db orders

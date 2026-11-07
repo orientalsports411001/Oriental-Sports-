@@ -18,33 +18,39 @@ export default async function ProductsPage({
   let dbProducts: any[] = [];
   let categories: { slug: string; name: string }[] = CATEGORIES;
 
-  try {
-    const admin = createServiceRoleClient();
-    const [resProducts, resCategories] = await Promise.all([
-      admin.from('products').select('*'),
-      admin.from('categories').select('slug, name').order('name'),
-    ]);
+  // Supabase and the Cloudinary-backed catalog cache are independent data
+  // sources — fetching them one after another (as this used to) adds a full
+  // extra network round trip to every page load for no reason. Run them
+  // together instead.
+  const [, allCached] = await Promise.all([
+    (async () => {
+      try {
+        const admin = createServiceRoleClient();
+        const [resProducts, resCategories] = await Promise.all([
+          admin.from('products').select('*'),
+          admin.from('categories').select('slug, name').order('name'),
+        ]);
 
-    if (resProducts.data && resProducts.data.length > 0) {
-      dbProducts = resProducts.data.map((p: any) => ({
-        ...p,
-        status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
-        stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
-        low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
-        is_featured: Boolean(p.metadata?.is_featured ?? p.is_featured),
-        seo_title: p.metadata?.seo_title ?? p.seo_title,
-        seo_description: p.metadata?.seo_description ?? p.seo_description,
-      }));
-    }
-    if (resCategories.data && resCategories.data.length > 0) {
-      categories = resCategories.data;
-    }
-  } catch (err) {
-    // Supabase fallback
-  }
-
-  // Unified catalog store (all 131 items + Supabase DB updates)
-  const allCached = await getCachedProductsAsync();
+        if (resProducts.data && resProducts.data.length > 0) {
+          dbProducts = resProducts.data.map((p: any) => ({
+            ...p,
+            status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
+            stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
+            low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
+            is_featured: Boolean(p.metadata?.is_featured ?? p.is_featured),
+            seo_title: p.metadata?.seo_title ?? p.seo_title,
+            seo_description: p.metadata?.seo_description ?? p.seo_description,
+          }));
+        }
+        if (resCategories.data && resCategories.data.length > 0) {
+          categories = resCategories.data;
+        }
+      } catch (err) {
+        // Supabase fallback
+      }
+    })(),
+    getCachedProductsAsync(),
+  ]);
 
   // Merge Supabase products with allCached (Supabase overrides by slug/id, while keeping the rest of the 131 products)
   const productMap = new Map<string, any>();

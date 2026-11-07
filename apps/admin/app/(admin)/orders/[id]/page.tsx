@@ -18,34 +18,43 @@ export default async function OrderDetailPage({
 }) {
   await requireAdmin();
 
-  let order: any = null;
-  let items: any[] = [];
-  let customerProfile: { email: string | null; first_name: string | null; last_name: string | null; phone: string | null } | null = null;
+  type CustomerProfile = { email: string | null; first_name: string | null; last_name: string | null; phone: string | null } | null;
 
-  try {
-    const admin = createServiceRoleClient();
-    const [{ data: dbOrder }, { data: dbItems }] = await Promise.all([
-      admin.from('orders').select('*').eq('id', params.id).maybeSingle(),
-      admin.from('order_items').select('*').eq('order_id', params.id),
-    ]);
+  // Supabase and the Cloudinary-backed orders cache are independent data
+  // sources — fetching them one after another adds a full extra network
+  // round trip to every order-detail load for no reason. Run them together.
+  const [supabaseResult, allCached] = await Promise.all([
+    (async (): Promise<{ order: any; items: any[]; customerProfile: CustomerProfile }> => {
+      try {
+        const admin = createServiceRoleClient();
+        const [{ data: dbOrder }, { data: dbItems }] = await Promise.all([
+          admin.from('orders').select('*').eq('id', params.id).maybeSingle(),
+          admin.from('order_items').select('*').eq('order_id', params.id),
+        ]);
 
-    if (dbOrder) {
-      order = dbOrder;
-      items = dbItems || [];
-      if (order.user_id) {
-        const { data: profile } = await admin
-          .from('profiles')
-          .select('email, first_name, last_name, phone')
-          .eq('id', order.user_id)
-          .maybeSingle();
-        customerProfile = profile;
+        if (dbOrder) {
+          let customerProfile: CustomerProfile = null;
+          if (dbOrder.user_id) {
+            const { data: profile } = await admin
+              .from('profiles')
+              .select('email, first_name, last_name, phone')
+              .eq('id', dbOrder.user_id)
+              .maybeSingle();
+            customerProfile = profile;
+          }
+          return { order: dbOrder, items: dbItems || [], customerProfile };
+        }
+      } catch (err) {
+        // Supabase unavailable, fallback to memory orders
       }
-    }
-  } catch (err) {
-    // Supabase unavailable, fallback to memory orders
-  }
+      return { order: null, items: [], customerProfile: null };
+    })(),
+    getCachedOrdersAsync(),
+  ]);
 
-  const allCached = await getCachedOrdersAsync();
+  let order: any = supabaseResult.order;
+  let items: any[] = supabaseResult.items;
+  const customerProfile: CustomerProfile = supabaseResult.customerProfile;
   const cachedMatch = allCached.find((o) => o.id === params.id || o.order_number === params.id);
   if (cachedMatch) {
     if (!order) {

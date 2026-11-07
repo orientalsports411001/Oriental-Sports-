@@ -20,29 +20,34 @@ export default async function DashboardPage({
   let dbProducts: any[] = [];
   let dbOrders: any[] = [];
 
-  try {
-    const admin = createServiceRoleClient();
-    const [
-      resProducts,
-      resOrders,
-    ] = await Promise.all([
-      admin.from('products').select('*'),
-      admin.from('orders').select('id, order_number, status, total_amount, created_at, updated_at, user_id, shipping_address, payment_method').order('created_at', { ascending: false }).limit(100),
-    ]);
+  // Supabase and the Cloudinary-backed catalog/orders caches are
+  // independent data sources — fetching them one after another (as this
+  // used to) adds two full extra network round trips to every dashboard
+  // load. Kick off all three together.
+  const [, cachedProducts, cachedOrders] = await Promise.all([
+    (async () => {
+      try {
+        const admin = createServiceRoleClient();
+        const [resProducts, resOrders] = await Promise.all([
+          admin.from('products').select('*'),
+          admin.from('orders').select('id, order_number, status, total_amount, created_at, updated_at, user_id, shipping_address, payment_method').order('created_at', { ascending: false }).limit(100),
+        ]);
 
-    dbProducts = (resProducts.data || []).map((p: any) => ({
-      ...p,
-      status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
-      stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
-      low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
-    }));
-    dbOrders = resOrders.data || [];
-  } catch (err) {
-    // Supabase endpoint fallback
-  }
+        dbProducts = (resProducts.data || []).map((p: any) => ({
+          ...p,
+          status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
+          stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
+          low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
+        }));
+        dbOrders = resOrders.data || [];
+      } catch (err) {
+        // Supabase endpoint fallback
+      }
+    })(),
+    getCachedProductsAsync(),
+    getCachedOrdersAsync(),
+  ]);
 
-  // Unified catalog store (all 131 items + Supabase DB overrides)
-  const cachedProducts = await getCachedProductsAsync();
   const productMap = new Map<string, any>();
   for (const p of cachedProducts) {
     productMap.set(p.id, p);
@@ -88,7 +93,7 @@ export default async function DashboardPage({
     .sort((a, b) => Number(a.stock_quantity ?? 0) - Number(b.stock_quantity ?? 0));
 
   // Merge live database orders with cached / synced store orders (deduplicate by order_number)
-  const cachedOrders = await getCachedOrdersAsync();
+  // (cachedOrders was already fetched above, in parallel with Supabase.)
   const allOrders: any[] = [...dbOrders];
   const existingOrderNumbers = new Set(allOrders.map((o) => o.order_number || o.id));
 
