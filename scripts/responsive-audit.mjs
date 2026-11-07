@@ -28,7 +28,8 @@ const SHORT_VIEWPORTS = [
   { name: '1920_browser_scaled', width: 1817, height: 700 },
 ];
 
-const HERO_SLIDES = ['gear', 'courts', 'store'];
+// Keep in sync with the `id`s in SLIDES, src/components/home/Hero.tsx.
+const HERO_SLIDES = ['tennis', 'table-tennis', 'cricket', 'courts', 'store'];
 const HERO_MIN_GAP = 16;
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';

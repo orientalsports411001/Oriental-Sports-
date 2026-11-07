@@ -1,7 +1,7 @@
 # Oriental Sports — Responsive & Zero-Overflow Audit
 
-**Audit Date**: 2026-10-27T19:32:14.142Z  
-**Target URL**: http://localhost:3000
+**Audit Date**: 2026-11-07T18:45:52.660Z  
+**Target URL**: http://localhost:3001
 
 ---
 

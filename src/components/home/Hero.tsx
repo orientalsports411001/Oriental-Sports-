@@ -3,28 +3,36 @@ import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { IMAGES, MediaImage } from '../../data/media';
 import { STORE_INFO } from '../../data/storeInfo';
-import { CATEGORIES } from '../../data/categories';
 import { Img } from '../ui/Img';
 import { RevealLines, EASE_OUT } from '../motion/Reveal';
 import { useStoreStatus } from '../../utils/storeHours';
 import { MagneticButton } from '../ui/MagneticButton';
 
 /**
- * HERO — three slides, each with its own composition.
- *  gear   → photograph, headline bottom-left
- *  courts → photograph, headline top-left over the evening sky
- *  store  → light editorial split: the address set as a shop sign
+ * HERO — five slides, each with its own composition.
+ *  tennis / table-tennis / cricket → the "Gear" layout (photograph, headline
+ *                                     bottom-left), rotating through three
+ *                                     sports actually sold in-store so the
+ *                                     Gear tab isn't a single static photo
+ *  courts                          → photograph, headline top-left over the
+ *                                     evening sky
+ *  store                           → light editorial split: the address set
+ *                                     as a shop sign
  *
- * The tab bar names all three offerings at once, so the first viewport
- * always says GEAR + COURTS + where to find us. Autoplay progress is a CSS
+ * The tab bar names every slide at once. Autoplay progress is a CSS
  * animation; its end event advances the slide, so hover/focus/pause stay in
  * sync without timers. Swipe, arrow keys and a pause button are supported.
+ *
+ * Boxing was considered for this rotation (per the original request) and
+ * dropped: this store carries no boxing equipment or category, so a "Shop
+ * gear" CTA under a boxing photo would send customers to an empty search —
+ * cricket, the store's largest category, took its place instead.
  */
 
 type Action = { label: string; to?: string; href?: string };
 
 interface Slide {
-  id: 'gear' | 'courts' | 'store';
+  id: 'tennis' | 'table-tennis' | 'cricket' | 'courts' | 'store';
   tab: string;
   tabNote: string;
   eyebrow: string;
@@ -38,14 +46,36 @@ interface Slide {
 
 const SLIDES: Slide[] = [
   {
-    id: 'gear',
-    tab: 'Gear',
-    tabNote: 'Racquets, bats, paddles, fitness',
+    id: 'tennis',
+    tab: 'Tennis',
+    tabNote: 'Racquets, balls, grips, restringing',
     eyebrow: 'Sports goods · MG Road, Camp',
-    lines: ['Gear for', 'the game.'],
-    lead: `Racquets, bats, paddles and fitness equipment across ${CATEGORIES.length} sports. Racquet stringing and bat knocking-in are done at the store.`,
-    image: IMAGES.badmintonSmash,
-    primary: { label: 'Shop gear', to: '/shop' },
+    lines: ['Strung for', 'the serve.'],
+    lead: 'Tour-level racquets, pressurized balls and grips — professional restringing done at the store.',
+    image: IMAGES.heroTennisAction,
+    primary: { label: 'Shop tennis', to: '/shop/tennis' },
+    secondary: { label: 'Shop by sport', to: '/shop' },
+  },
+  {
+    id: 'table-tennis',
+    tab: 'Table tennis',
+    tabNote: 'Tables, blades, rubbers',
+    eyebrow: 'Sports goods · MG Road, Camp',
+    lines: ['Built for', 'the rally.'],
+    lead: 'ITTF-approved tournament tables, carbon blades and offensive rubbers for every level.',
+    image: IMAGES.heroTableTennisDuel,
+    primary: { label: 'Shop table tennis', to: '/shop/table-tennis' },
+    secondary: { label: 'Shop by sport', to: '/shop' },
+  },
+  {
+    id: 'cricket',
+    tab: 'Cricket',
+    tabNote: 'Bats, pads, gloves, balls',
+    eyebrow: 'Sports goods · MG Road, Camp',
+    lines: ['Willow for', 'the wicket.'],
+    lead: 'English and Kashmir willow bats, pads, gloves and match balls. Bat knocking-in done at the store.',
+    image: IMAGES.cricketStrike,
+    primary: { label: 'Shop cricket', to: '/shop/cricket' },
     secondary: { label: 'Shop by sport', to: '/shop' },
   },
   {
