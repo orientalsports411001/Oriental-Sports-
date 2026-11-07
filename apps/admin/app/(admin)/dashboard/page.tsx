@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { getCachedProducts, getCachedProductsAsync, getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
+import { getCachedProducts, getCachedProductsAsync, getCachedOrders, getCachedOrdersAsync, getDeletedProductKeysAsync, filterDeletedProducts } from '@/lib/catalog-store';
 
 import { RevenueSplineChart } from '@/components/dashboard/RevenueSplineChart';
 import { MiniCalendarWidget } from '@/components/dashboard/MiniCalendarWidget';
@@ -24,7 +24,7 @@ export default async function DashboardPage({
   // independent data sources — fetching them one after another (as this
   // used to) adds two full extra network round trips to every dashboard
   // load. Kick off all three together.
-  const [, cachedProducts, cachedOrders] = await Promise.all([
+  const [, cachedProducts, cachedOrders, deletedProductKeys] = await Promise.all([
     (async () => {
       try {
         const admin = createServiceRoleClient();
@@ -46,7 +46,14 @@ export default async function DashboardPage({
     })(),
     getCachedProductsAsync(),
     getCachedOrdersAsync(),
+    getDeletedProductKeysAsync(),
   ]);
+
+  // A product deleted in the admin can still physically exist in Supabase
+  // if that delete failed silently (e.g. a bad service-role key) — without
+  // this, the still-present Supabase row gets merged right back into these
+  // stats/lists on every single dashboard load.
+  dbProducts = filterDeletedProducts(dbProducts, deletedProductKeys);
 
   const productMap = new Map<string, any>();
   for (const p of cachedProducts) {

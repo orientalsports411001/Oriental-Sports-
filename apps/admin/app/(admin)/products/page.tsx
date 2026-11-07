@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { getCachedProducts, getCachedProductsAsync, CATEGORIES } from '@/lib/catalog-store';
+import { getCachedProducts, getCachedProductsAsync, getDeletedProductKeysAsync, filterDeletedProducts, CATEGORIES } from '@/lib/catalog-store';
 import { deleteProduct } from './actions';
 import { SavedNotificationBanner } from '@/components/products/SavedNotificationBanner';
 import { ProductsCatalogView } from '@/components/products/ProductsCatalogView';
@@ -22,7 +22,7 @@ export default async function ProductsPage({
   // sources — fetching them one after another (as this used to) adds a full
   // extra network round trip to every page load for no reason. Run them
   // together instead.
-  const [, allCached] = await Promise.all([
+  const [, allCached, deletedKeys] = await Promise.all([
     (async () => {
       try {
         const admin = createServiceRoleClient();
@@ -50,7 +50,14 @@ export default async function ProductsPage({
       }
     })(),
     getCachedProductsAsync(),
+    getDeletedProductKeysAsync(),
   ]);
+
+  // A product deleted here can still physically exist in Supabase if that
+  // delete failed silently (e.g. a bad service-role key) — without this,
+  // the still-present Supabase row gets merged right back into the list
+  // below on every single page load.
+  dbProducts = filterDeletedProducts(dbProducts, deletedKeys);
 
   // Merge Supabase products with allCached (Supabase overrides by slug/id, while keeping the rest of the 131 products)
   const productMap = new Map<string, any>();

@@ -536,26 +536,41 @@ export async function deleteProduct(productId: string) {
 
   try {
     const admin = createServiceRoleClient();
-    const { data: orderItem } = await admin
+    const { data: orderItem, error: orderItemErr } = await admin
       .from('order_items')
       .select('id')
       .eq('product_id', productId)
       .limit(1)
       .maybeSingle();
+    if (orderItemErr) {
+      console.error('[deleteProduct] Could not check order history, assuming none:', orderItemErr.message);
+    }
 
     if (orderItem) {
-      await admin
+      const { error: archiveErr } = await admin
         .from('products')
         .update({ status: 'archived', updated_at: new Date().toISOString() })
         .eq('id', productId);
+      if (archiveErr) {
+        console.error('[deleteProduct] Supabase archive failed:', archiveErr.message);
+      }
       shouldArchive = true;
     } else {
-      await admin.from('products').delete().eq('id', productId);
-      removeProduct(productId);
+      const { error: deleteErr } = await admin.from('products').delete().eq('id', productId);
+      if (deleteErr) {
+        // The admin's own catalog cache is still updated below (and
+        // tombstoned there), so the product disappears from this app
+        // either way — but a failed Supabase delete here means it will
+        // reappear on the live storefront, which reads straight from
+        // Supabase. Logged loudly since the UI has no other way to surface
+        // this short of hard-failing the whole delete.
+        console.error('[deleteProduct] Supabase delete failed, product cache-deleted locally only:', deleteErr.message);
+      }
+      await removeProduct(productId);
     }
   } catch (err) {
     if (isRedirectError(err)) throw err;
-    removeProduct(productId);
+    await removeProduct(productId);
   }
 
   await broadcastRealtimeEvent('product_deleted', { productId });

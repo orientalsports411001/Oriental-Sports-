@@ -80,6 +80,15 @@ const TMP_CACHE_FILE = path.join(
 // Overridable only so tests can run against a throwaway blob.
 const ORDERS_BLOB_ID = process.env.OS_ORDERS_BLOB_ID || 'os_admin_orders';
 
+// A durable record of product ids/slugs deleted from the admin. Needed
+// because removeProduct()'s own Supabase delete can fail silently (e.g. an
+// invalid service-role key returns 401, which the caller never checks) —
+// without a separate tombstone that every product read filters against, a
+// product deleted here keeps reappearing on the next page load the moment
+// its still-intact Supabase row gets merged back in.
+const DELETED_PRODUCTS_BLOB_ID = process.env.OS_DELETED_PRODUCTS_BLOB_ID || 'os_deleted_products';
+let deletedProductKeysCache = new Set<string>();
+
 const TMP_ORDERS_CACHE_FILE = path.join(
   process.platform === 'win32' ? process.env.TEMP || 'C:\\Windows\\Temp' : '/tmp',
   'os-admin-orders-cache.json'
@@ -271,26 +280,66 @@ export function getCachedProducts(): AdminProduct[] {
   return unified;
 }
 
-export async function getCachedProductsAsync(): Promise<AdminProduct[]> {
+/**
+ * The durable set of deleted product ids/slugs — see DELETED_PRODUCTS_BLOB_ID
+ * above. Exported so pages can also filter a *direct* Supabase product read
+ * against it: this cache only prunes products that flow through this
+ * module, but a page that queries Supabase on its own would otherwise
+ * resurrect a "deleted" product whenever its Supabase row wasn't actually
+ * removed (the exact failure mode a bad service-role key causes).
+ */
+export async function getDeletedProductKeysAsync(): Promise<Set<string>> {
   try {
-    const cloud = await fetchCloudJson<AdminProduct[]>('os_admin_products');
-    if (Array.isArray(cloud) && cloud.length > 0) {
-      const disk = readDiskCache() || [];
-      const diskIds = new Set(disk.map((d) => d.id || d.slug));
-      let changed = false;
-      for (const item of cloud) {
-        const key = item.id || item.slug;
-        if (key && !diskIds.has(key)) {
-          disk.unshift(item);
-          changed = true;
-        }
-      }
-      if (changed) {
-        writeDiskCache(disk);
-      }
+    const cloud = await fetchCloudJson<string[]>(DELETED_PRODUCTS_BLOB_ID);
+    if (Array.isArray(cloud)) {
+      deletedProductKeysCache = new Set(cloud);
     }
   } catch {}
-  return getCachedProducts();
+  return deletedProductKeysCache;
+}
+
+async function markProductsDeleted(keys: (string | undefined)[]) {
+  const current = await getDeletedProductKeysAsync();
+  for (const k of keys) {
+    if (k) current.add(k);
+  }
+  deletedProductKeysCache = current;
+  await uploadCloudJson(DELETED_PRODUCTS_BLOB_ID, Array.from(current)).catch(() => false);
+}
+
+export function filterDeletedProducts<T extends { id?: string; slug?: string }>(
+  products: T[],
+  deletedKeys: Set<string>
+): T[] {
+  if (deletedKeys.size === 0) return products;
+  return products.filter((p) => !(p.id && deletedKeys.has(p.id)) && !(p.slug && deletedKeys.has(p.slug)));
+}
+
+export async function getCachedProductsAsync(): Promise<AdminProduct[]> {
+  const [, deletedKeys] = await Promise.all([
+    (async () => {
+      try {
+        const cloud = await fetchCloudJson<AdminProduct[]>('os_admin_products');
+        if (Array.isArray(cloud) && cloud.length > 0) {
+          const disk = readDiskCache() || [];
+          const diskIds = new Set(disk.map((d) => d.id || d.slug));
+          let changed = false;
+          for (const item of cloud) {
+            const key = item.id || item.slug;
+            if (key && !diskIds.has(key)) {
+              disk.unshift(item);
+              changed = true;
+            }
+          }
+          if (changed) {
+            writeDiskCache(disk);
+          }
+        }
+      } catch {}
+    })(),
+    getDeletedProductKeysAsync(),
+  ]);
+  return filterDeletedProducts(getCachedProducts(), deletedKeys);
 }
 
 function getRepoRoot(): string {
@@ -499,12 +548,21 @@ export function saveProduct(
   return result;
 }
 
-export function removeProduct(id: string): boolean {
+export async function removeProduct(id: string): Promise<boolean> {
+  // Hydrate from the shared cloud cache first — unlike saveProduct() and
+  // toggleProductVisibility(), this never used to push its result back to
+  // Cloudinary at all, so a delete only ever affected this one serverless
+  // instance's ephemeral disk cache: the very next request (or any request
+  // routed to a different instance) re-read the untouched cloud blob and the
+  // "deleted" product came right back.
+  await getCachedProductsAsync();
+
   const disk = readDiskCache();
   if (disk) productsCache = disk;
 
+  const removedProduct = productsCache.find((p) => p.id === id || p.slug === id);
   const initialLength = productsCache.length;
-  productsCache = productsCache.filter((p) => p.id !== id);
+  productsCache = productsCache.filter((p) => p.id !== id && p.slug !== id);
   writeDiskCache(productsCache);
 
   try {
@@ -530,6 +588,18 @@ export function removeProduct(id: string): boolean {
       }
     }
   } catch {}
+
+  // Push the pruned list (and a tombstone for the deleted id/slug) to the
+  // shared cloud store so the deletion survives across serverless instances
+  // and future requests — the actual fix for "I deleted it and it's still
+  // there".
+  try {
+    const customCandidates = productsCache.filter(
+      (p) => !INITIAL_PRODUCTS.some((b) => b.id === p.id && b.slug === p.slug)
+    );
+    await uploadCloudJson('os_admin_products', customCandidates).catch(() => false);
+  } catch {}
+  await markProductsDeleted([id, removedProduct?.id, removedProduct?.slug]);
 
   return productsCache.length < initialLength;
 }
