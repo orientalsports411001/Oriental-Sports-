@@ -1,8 +1,10 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { EASE_OUT } from './components/motion/Reveal';
 
 import { Header } from './components/navigation/Header';
 import { CartDrawer } from './components/navigation/CartDrawer';
@@ -97,6 +99,7 @@ const AuthOAuthWatcher: React.FC = () => {
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isCheckout = location.pathname === '/checkout';
+  const reduced = useReducedMotion();
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: isCheckout ? 'var(--charcoal)' : 'var(--obsidian)' }}>
@@ -107,6 +110,17 @@ const AppContent: React.FC = () => {
 
       <main id="main" style={{ flex: 1 }}>
         <Suspense fallback={<PageSkeleton />}>
+          {/* Opening animation on every navigation: a fresh key per route
+              remounts this div, replaying the fade + rise. No AnimatePresence
+              (no exit animation) — kept simple since only an "opening"
+              animation was asked for, and the old page unmounting instantly
+              underneath the new one's fade-in isn't visible either way. */}
+          <motion.div
+            key={location.pathname}
+            initial={reduced ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: EASE_OUT }}
+          >
           <Routes>
             {/* Core Commerce & Content */}
             <Route path="/" element={<HomePage />} />
@@ -154,6 +168,7 @@ const AppContent: React.FC = () => {
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+          </motion.div>
         </Suspense>
       </main>
 
