@@ -1704,7 +1704,6 @@
 .ecom-account-hero {
   padding: 40px 0 28px;
   border-bottom: 1px solid var(--border-color);
-  background: radial-gradient(circle at 15% 30%, rgba(200, 16, 46, 0.1) 0%, transparent 65%);
 }
 
 .ecom-account-crumbs {

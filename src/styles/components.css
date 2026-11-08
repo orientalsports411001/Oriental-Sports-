@@ -9,7 +9,7 @@
   z-index: 300;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle at 50% 50%, rgba(200, 16, 46, 0.22) 0%, var(--obsidian) 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.06) 0%, var(--obsidian) 70%);
   cursor: pointer;
   clip-path: inset(0 0 0 0);
   transition: clip-path 520ms var(--ease-in-out);

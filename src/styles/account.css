@@ -20,7 +20,6 @@
   align-items: center;
   justify-content: center;
   padding: clamp(24px, 5vw, 64px) 16px;
-  background: radial-gradient(circle at 50% 18%, rgba(168, 27, 43, 0.08) 0%, transparent 60%);
 }
 
 .account-auth-card {
