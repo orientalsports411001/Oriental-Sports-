@@ -40,6 +40,8 @@ interface Slide {
   lead: string;
   image: MediaImage;
   video?: string;
+  /** Poster shown before the video has data / if it never plays. Defaults to `image.src` when omitted — set this whenever the video's actual content doesn't match that image. */
+  videoPoster?: string;
   primary: Action;
   secondary: Action;
 }
@@ -86,7 +88,8 @@ const SLIDES: Slide[] = [
     lines: ['Courts for', 'the city.'],
     lead: 'Turnkey court construction — surface, fencing, lighting and line marking — for clubs, schools, societies and homes.',
     image: IMAGES.courtDusk,
-    video: '/videos/courts-hero.webm',
+    video: '/videos/tennis-hero.webm',
+    videoPoster: '/images/hero/hero_tennis_video_poster.webp',
     primary: { label: 'Plan a court', to: '/courts' },
     secondary: { label: 'WhatsApp us', href: STORE_INFO.whatsappUrl },
   },
@@ -229,7 +232,7 @@ export const Hero: React.FC = () => {
                     loop
                     muted
                     playsInline
-                    poster={s.image.src}
+                    poster={s.videoPoster || s.image.src}
                     preload="metadata"
                     aria-hidden="true"
                   >

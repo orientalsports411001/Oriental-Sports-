@@ -38,6 +38,10 @@ courts_screenshots2/
 # Temporary root audits and build artifacts
 /*.png
 /*.webp
+# Raw source video dropped at repo root for transcoding into public/videos/*
+# — never commit the original (100MB+); only the compressed output ships.
+/*.mp4
+/*.mov
 /buyur-images.json
 *.tsbuildinfo
 artifacts/
