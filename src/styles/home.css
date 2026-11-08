@@ -7,17 +7,15 @@
    HERO
    ========================================================================== */
 /*
- * Slides and the tab bar share one grid cell. The hero is at least one
- * viewport tall, and grows with the tallest slide instead of letting copy
- * slide under the tabs. --tabs-h is exact (tab height + bottom padding), so
- * the copy's bottom padding always clears the tab bar.
+ * Single full-bleed video hero, no carousel/tabs — simplified from a 5-slide
+ * rotation per explicit request (just the video and a short text overlay,
+ * no other slides, no CTA links). `.hero-slide`/`.hero-media` etc. are kept
+ * as the one markup layer (reused as-is, not slide-specific anymore) so the
+ * video/scrim/copy positioning didn't need rebuilding from scratch.
  */
 .hero {
   --px: 0px;
   --py: 0px;
-  --tab-h: 44px;
-  --tabs-pad: clamp(14px, 2.6vh, 28px);
-  --tabs-h: calc(var(--tab-h) + var(--tabs-pad));
   position: relative;
   display: grid;
   grid-template: 1fr / minmax(0, 1fr);
@@ -28,9 +26,6 @@
   color: var(--text-primary);
   touch-action: pan-y;
   isolation: isolate;
-}
-@media (min-width: 1024px) {
-  .hero { --tab-h: 44px; }
 }
 
 .hero-slide {
@@ -65,7 +60,8 @@
   transition: transform 900ms var(--ease-out);
 }
 
-.hero-video {
+.hero-video,
+.hero-video-fallback {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -76,7 +72,7 @@
   pointer-events: none;
 }
 
-/* Slow settle while a slide is on screen — restrained depth, never a loop. */
+/* Slow settle while the hero is on screen — restrained depth, never a loop. */
 .hero-media-inner img {
   transform: scale(1.07);
   transition: transform 8s cubic-bezier(0.2, 0.6, 0.3, 1);
@@ -91,26 +87,11 @@
   z-index: 2;
 }
 
-/* Scrims: cinematic blood-red atmosphere + dramatic contrast.
-   tennis/table-tennis/cricket share the former "gear" slide's treatment —
-   they're the same bottom-left-copy layout, just a rotating photo. */
-.hero-slide--tennis .hero-media::after,
-.hero-slide--table-tennis .hero-media::after,
-.hero-slide--cricket .hero-media::after {
+/* Scrim: dark gradient so the white headline stays readable over the video. */
+.hero-slide--tennis .hero-media::after {
   background:
     linear-gradient(90deg, rgba(5, 5, 5, 0.94) 0%, rgba(5, 5, 5, 0.6) 42%, rgba(5, 5, 5, 0.1) 75%),
     linear-gradient(0deg, rgba(5, 5, 5, 0.88) 0%, rgba(5, 5, 5, 0) 45%);
-}
-.hero-slide--courts .hero-media::after {
-  background:
-    linear-gradient(180deg, rgba(5, 5, 5, 0.8) 0%, rgba(5, 5, 5, 0.1) 48%),
-    linear-gradient(0deg, rgba(5, 5, 5, 0.92) 0%, rgba(5, 5, 5, 0) 48%);
-}
-.hero-slide--store .hero-media::after {
-  display: block;
-  background:
-    linear-gradient(90deg, rgba(5, 5, 5, 0.88) 0%, transparent 60%),
-    linear-gradient(0deg, rgba(5, 5, 5, 0.85) 0%, transparent 40%);
 }
 
 .hero-content {
@@ -121,7 +102,7 @@
   flex-direction: column;
   justify-content: flex-end;
   padding-top: clamp(28px, 6vh, 72px);
-  padding-bottom: calc(var(--tabs-h) + clamp(20px, 4vh, 48px));
+  padding-bottom: clamp(36px, 7vh, 72px);
 }
 
 .hero-copy { max-width: 820px; }
@@ -134,218 +115,14 @@
   margin: 18px 0 22px;
 }
 
-.hero-lead {
-  font-size: var(--fs-lead);
-  line-height: 1.5;
-  max-width: 27em;
-  color: rgba(246, 243, 234, 0.9);
-}
-
-.hero-status { margin-top: 16px; font-weight: 600; }
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 14px 24px;
-  margin-top: 28px;
-}
-
-.hero-actions .btn {
-  border-radius: 9999px;
-  min-height: 52px;
-  padding: 0 34px;
-  font-size: 0.875rem;
-  letter-spacing: 0.08em;
-}
-
-.hero-actions .link-arrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 50px;
-  padding: 0 24px;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #FFFFFF;
-  text-decoration: none;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  font-size: 0.8125rem;
-  text-transform: uppercase;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.hero-actions .link-arrow::after {
-  display: none;
-}
-.hero-actions .link-arrow:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.55);
-  transform: translateY(-2px);
-  color: #FFFFFF;
-}
-
-/* Courts: headline hangs from the top over the sky; actions sit at the foot. */
-.hero-slide--courts .hero-copy {
-  height: 100%;
-  max-width: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 24px;
-}
-.hero-slide--courts .hero-title { margin-bottom: 0; }
-.hero-slide--courts .hero-foot { max-width: 560px; }
-
-/* Camp store slide: obsidian athletic editorial */
-.hero-slide--store { background: var(--obsidian); color: #FFFFFF; }
-.hero-slide--store .hero-media { left: auto; width: 50%; bottom: var(--tabs-h); }
-.hero-slide--store .hero-content { justify-content: center; padding-top: 24px; }
-.hero-slide--store .hero-copy { max-width: calc(50% - 32px); }
-.hero-slide--store .eyebrow { color: var(--blood-highlight); }
-.hero-slide--store .hero-lead { color: var(--text-secondary); }
-.hero-slide--store .hero-title { font-size: clamp(3.2rem, min(8.4vw, 12svh), 8.5rem); }
-
-/* Tabs — editorial slide navigation with active progress timer. */
-.hero-tabs {
-  grid-area: 1 / 1;
-  align-self: end;
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding-bottom: var(--tabs-pad);
-  transition: color var(--t-3) var(--ease-out);
-}
-
-.hero-tablist {
-  /* Widened from 3 tabs' worth of space to fit 5 (tennis/table tennis/
-     cricket/courts/store) without the per-tab column shrinking too far —
-     minmax(0, 1fr) columns mean this can never overflow, only get tighter. */
-  flex: 0 1 clamp(320px, 58vw, 640px);
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(10px, 1.6vw, 24px);
-}
-
-.hero-tab {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 8px;
-  min-height: var(--tab-h);
-  padding: 4px 0;
-  text-align: left;
-  color: inherit;
-  opacity: 0.6;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: opacity var(--t-2) ease;
-}
-.hero-tab:hover,
-.hero-tab.is-active { opacity: 1; }
-
-.hero-tab-label {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  line-height: 1.2;
-}
-
-.hero-tab-track {
-  position: relative;
-  width: 100%;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 1px;
-  overflow: hidden;
-}
-
-.hero-tab-fill {
-  position: absolute;
-  inset: 0;
-  background: var(--blood-crimson);
-  box-shadow: 0 0 10px var(--blood-crimson);
-  transform: scaleX(0);
-  transform-origin: left;
-}
-.hero-tab.is-active .hero-tab-fill {
-  animation-name: hero-progress;
-  animation-timing-function: linear;
-  animation-fill-mode: forwards;
-}
-
-@keyframes hero-progress {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
-.hero--store .hero-tabs { color: var(--text-primary); }
-.hero--store .hero-tab-track { background: rgba(255, 255, 255, 0.2); }
-
 @media (max-width: 767px) {
   .hero {
     --hero-h: clamp(560px, calc(100svh - var(--header-h)), 880px);
     min-height: var(--hero-h);
   }
-  .hero-tabs { gap: 12px; }
-  /* 5 tabs don't fit a fixed-column grid on a 320-430px phone without
-     shrinking each one past a readable, tappable width ("mobile is NOT a
-     shrunk desktop" — AGENTS.md). Scroll horizontally instead; each tab
-     keeps a real minimum width and its full 44px touch-target height. */
-  .hero-tablist {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    gap: 18px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding-block: 2px;
-  }
-  .hero-tablist::-webkit-scrollbar { display: none; }
-  .hero-tab { flex: 0 0 auto; min-width: 84px; gap: 6px; }
-  .hero-tab-label { font-size: 0.75rem; }
-  .hero-actions { gap: 12px 24px; margin-top: 22px; }
-
-  .hero-slide--tennis .hero-media::after,
-  .hero-slide--table-tennis .hero-media::after,
-  .hero-slide--cricket .hero-media::after {
+  .hero-slide--tennis .hero-media::after {
     background: linear-gradient(0deg, rgba(17, 17, 17, 0.92) 0%, rgba(17, 17, 17, 0.6) 42%, rgba(17, 17, 17, 0.08) 72%);
   }
-  .hero-slide--courts .hero-media::after {
-    background:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 38%),
-      linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 34%, rgba(0, 0, 0, 0) 56%);
-  }
-
-  /* Photo band on top; the sign starts beneath it rather than stacking from the foot. */
-  .hero-slide--store { --band-h: clamp(132px, calc(var(--hero-h) * 0.27), 240px); }
-  .hero-slide--store .hero-media { width: 100%; top: 0; bottom: auto; height: var(--band-h); }
-  .hero-slide--store .hero-media-inner { inset: 0 -20px -20px -20px; }
-  .hero-slide--store img { object-position: 70% 0% !important; }
-  .hero-slide--store .hero-content { justify-content: flex-start; padding-top: calc(var(--band-h) + 22px); }
-  .hero-slide--store .hero-copy { max-width: none; }
-  .hero-slide--store .hero-title { font-size: clamp(2.9rem, 13vw, 4.75rem); margin: 12px 0 14px; }
-}
-
-@media (max-width: 767px) and (max-height: 720px) {
-  .hero-slide--store .hero-lead,
-  .hero-slide--tennis .hero-lead,
-  .hero-slide--table-tennis .hero-lead,
-  .hero-slide--cricket .hero-lead { display: none; }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .hero-slide--store .hero-media { width: 46%; }
-  .hero-slide--store .hero-copy { max-width: calc(54% - 24px); }
 }
 
 /* ==========================================================================

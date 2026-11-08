@@ -13,13 +13,14 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.orientalsports.in/" />
 
-    <!-- First hero slide (LCP) — must match IMAGES.heroTennisAction's unsplash()
-         URLs in src/data/media.ts exactly, or this preload fetches a resource
-         the page never requests and the real LCP image loads unpreloaded. -->
-    <link rel="preconnect" href="https://images.unsplash.com">
-    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1709403552725-97e0ba206cb8?auto=format&fit=crop&w=1400&q=72"
-      imagesrcset="https://images.unsplash.com/photo-1709403552725-97e0ba206cb8?auto=format&fit=crop&w=480&q=72 480w, https://images.unsplash.com/photo-1709403552725-97e0ba206cb8?auto=format&fit=crop&w=800&q=72 800w, https://images.unsplash.com/photo-1709403552725-97e0ba206cb8?auto=format&fit=crop&w=1200&q=72 1200w, https://images.unsplash.com/photo-1709403552725-97e0ba206cb8?auto=format&fit=crop&w=1800&q=72 1800w"
-      imagesizes="100vw" fetchpriority="high" />
+    <!-- Hero poster (LCP candidate): shown instantly on first paint and for
+         prefers-reduced-motion visitors who never get the <video> at all.
+         Must match Hero.tsx's VIDEO_POSTER constant. The video itself is
+         intentionally NOT preloaded here — it's 6MB and already has
+         preload="metadata" on the <video> tag; eagerly fetching the whole
+         file via a preload link would compete with critical CSS/JS instead
+         of after it. -->
+    <link rel="preload" as="image" href="/images/hero/hero_tennis_video_poster.webp" fetchpriority="high" />
 
     <!-- Archivo (variable width + weight): condensed black for display, normal width for text -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

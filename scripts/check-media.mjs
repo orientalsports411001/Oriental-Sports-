@@ -22,7 +22,10 @@ async function checkMedia() {
   });
 
   try {
-    const response = await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 20000 });
+    // 'networkidle' never resolves on a page with a continuously-streaming
+    // autoplay video (the Hero) — Playwright's own docs call this out as a
+    // known anti-pattern, not something to work around on the page itself.
+    const response = await page.goto(BASE_URL, { waitUntil: 'load', timeout: 20000 });
     console.log(`  HTTP Response Status: ${response?.status()}`);
 
     // Scroll down to trigger lazy loading across all sections

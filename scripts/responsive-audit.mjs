@@ -28,8 +28,6 @@ const SHORT_VIEWPORTS = [
   { name: '1920_browser_scaled', width: 1817, height: 700 },
 ];
 
-// Keep in sync with the `id`s in SLIDES, src/components/home/Hero.tsx.
-const HERO_SLIDES = ['tennis', 'table-tennis', 'cricket', 'courts', 'store'];
 const HERO_MIN_GAP = 16;
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
@@ -118,9 +116,10 @@ async function runAudit() {
     }
   }
 
-  // Hero composition: on every slide the copy must sit inside the hero and
-  // clear the tab bar, and the hero must not change height between slides.
-  console.log(`\n🎞  Hero collision audit (all slides, standard + short viewports)...\n`);
+  // Hero composition: the single-video hero's copy must sit fully inside
+  // the hero with real clearance from its bottom edge (no tab bar/carousel
+  // to clear anymore — simplified from a 5-slide rotation to one video).
+  console.log(`\n🎞  Hero composition audit (standard + short viewports)...\n`);
   const heroResults = [];
   for (const vp of [...VIEWPORTS, ...SHORT_VIEWPORTS]) {
     const context = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, reducedMotion: 'reduce' });
@@ -149,27 +148,17 @@ async function runAudit() {
         null,
         { timeout: 5000 }
       );
-      const heights = [];
-      for (const id of HERO_SLIDES) {
-        await page.evaluate((id) => document.querySelector(`#hero-tab-${id}`).click(), id);
-        await page.waitForTimeout(150);
-        const m = await page.evaluate((id) => {
-          const hero = document.querySelector('.hero').getBoundingClientRect();
-          const slide = document.querySelector(`#hero-slide-${id}`);
-          const copy = slide.querySelector('.hero-copy').getBoundingClientRect();
-          const actions = slide.querySelector('.hero-actions').getBoundingClientRect();
-          const tabs = document.querySelector('.hero-tablist').getBoundingClientRect();
-          return {
-            heroH: Math.round(hero.height),
-            copyTop: Math.round(copy.top - hero.top),
-            gap: Math.round(tabs.top - actions.bottom),
-          };
-        }, id);
-        heights.push(m.heroH);
-        if (m.copyTop < 0) issues.push(`${id}: copy clipped ${-m.copyTop}px above the hero`);
-        if (m.gap < HERO_MIN_GAP) issues.push(`${id}: actions ${m.gap}px from tab bar (min ${HERO_MIN_GAP})`);
-      }
-      if (new Set(heights).size > 1) issues.push(`hero height changes between slides: ${heights.join(' / ')}`);
+      const m = await page.evaluate(() => {
+        const hero = document.querySelector('.hero').getBoundingClientRect();
+        const copy = document.querySelector('.hero-copy').getBoundingClientRect();
+        return {
+          heroH: Math.round(hero.height),
+          copyTop: Math.round(copy.top - hero.top),
+          bottomGap: Math.round(hero.bottom - copy.bottom),
+        };
+      });
+      if (m.copyTop < 0) issues.push(`copy clipped ${-m.copyTop}px above the hero`);
+      if (m.bottomGap < HERO_MIN_GAP) issues.push(`copy only ${m.bottomGap}px from the hero's bottom edge (min ${HERO_MIN_GAP})`);
     } catch (err) {
       issues.push(`error: ${err.message}`);
     } finally {
