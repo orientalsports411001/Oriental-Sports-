@@ -181,7 +181,7 @@ a:hover {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 20px;
+    border-radius: 9999px;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
     padding: 4px 6px;
     width: 100%;
@@ -200,7 +200,7 @@ a:hover {
     background: linear-gradient(135deg, #A81B2B 0%, #821320 100%);
     border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 8px rgba(168, 27, 43, 0.4);
-    border-radius: 14px;
+    border-radius: 9999px;
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
     z-index: 1;
@@ -218,7 +218,7 @@ a:hover {
     border: none;
     cursor: pointer;
     padding: 6px 2px 5px;
-    border-radius: 14px;
+    border-radius: 9999px;
     color: var(--muted);
     transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     min-height: 48px;
