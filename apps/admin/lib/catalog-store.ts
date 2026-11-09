@@ -353,12 +353,7 @@ async function getCachedProductsAsyncImpl(): Promise<AdminProduct[]> {
 }
 export const getCachedProductsAsync = cache(getCachedProductsAsyncImpl);
 
-/**
- * Raw `products` table rows straight from Supabase, with no field-mapping
- * applied (each caller maps metadata → flat fields differently). Memoized
- * per-request: the dashboard, products list, and nav-count badge all used to
- * run their own full-table `select('*')` on every single page load.
- */
+/** Full rows including `images`: only for pages that actually render product photos. */
 export const getLiveSupabaseProducts = cache(async (): Promise<any[]> => {
   try {
     const admin = createServiceRoleClient();

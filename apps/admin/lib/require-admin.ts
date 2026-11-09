@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
@@ -19,10 +20,10 @@ export function isAuthorizedAdminEmail(email?: string | null): boolean {
  * Server-side admin check without redirection.
  * Safe to use inside Server Actions (where redirect() crashes RPC calls).
  */
-export async function checkAdmin(): Promise<
+export const checkAdmin = cache(async (): Promise<
   | { ok: true; user: { id: string; email: string }; profile: { id: string; role: string; email: string; full_name: string } }
   | { ok: false; error: string; reason: 'unauthenticated' | 'forbidden' }
-> {
+> => {
   try {
     const supabase = await createClient();
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -61,7 +62,7 @@ export async function checkAdmin(): Promise<
   } catch (err: any) {
     return { ok: false, error: err?.message || 'Admin authorization failed.', reason: 'unauthenticated' };
   }
-}
+});
 
 /**
  * Server-side admin gate with redirect. Call this at the top of every protected

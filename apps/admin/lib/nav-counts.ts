@@ -1,5 +1,5 @@
 import { revalidatePath } from 'next/cache';
-import { getCachedOrdersAsync, getCachedProductsAsync, getLiveSupabaseProducts } from '@/lib/catalog-store';
+import { getCachedOrdersAsync, getCachedProductsAsync } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 
 function uniqueProductCount(
@@ -24,18 +24,15 @@ function uniqueProductCount(
 }
 
 async function resolveProductsCount(cachedProducts: { id?: string; slug?: string }[]): Promise<number> {
-  // getLiveSupabaseProducts() is memoized per-request (see catalog-store.ts) —
-  // the dashboard/products pages already need this exact same full-table
-  // read, so this no longer costs its own Supabase round trip.
-  const dbProducts = await getLiveSupabaseProducts();
-  if (dbProducts.length > 0) {
-    return uniqueProductCount(cachedProducts, dbProducts);
-  }
+  // Runs on every navigation via /api/products/count, so it must never select `images`.
+  try {
+    const admin = createServiceRoleClient();
+    const { data: dbProducts } = await admin.from('products').select('id, slug');
+    if (Array.isArray(dbProducts) && dbProducts.length > 0) {
+      return uniqueProductCount(cachedProducts, dbProducts);
+    }
+  } catch {}
 
-  // Direct PostgREST fallback — only when the primary read above genuinely
-  // came back empty/failed, not just whenever the merged count happens to
-  // equal the cached length (that's the common, successful case, and used
-  // to trigger a second full-table fetch on every single page load).
   try {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';

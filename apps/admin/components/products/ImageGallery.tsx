@@ -14,15 +14,6 @@ function resolveImageUrl(url: string): string {
   return url.startsWith('/') ? `${SITE_URL}${url}` : url;
 }
 
-function readFileAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(new Error('Failed to process image file.'));
-    reader.readAsDataURL(file);
-  });
-}
-
 export type GalleryImage = {
   url: string;
   publicId?: string;
@@ -98,26 +89,8 @@ export function ImageGallery({
 
       setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 30 } : u)));
 
-      // If Cloudinary is not configured or returned local fallback, upload directly to local API
       if (signed.local) {
-        const localFormData = new FormData();
-        localFormData.append('file', file);
-
-        const localRes = await fetch(`${basePath}/api/upload`, {
-          method: 'POST',
-          body: localFormData,
-        });
-
-        if (!localRes.ok) {
-          const body = await localRes.json().catch(() => ({}));
-          throw new Error(body.error || `Local upload failed (${localRes.status}).`);
-        }
-
-        const localResult = await localRes.json();
-        setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 100 } : u)));
-        addImageSafely({ url: localResult.secure_url, publicId: localResult.public_id });
-        setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
-        return;
+        throw new Error('Image hosting is not configured on the server, so this photo was not saved.');
       }
 
       const formData = new FormData();
@@ -136,23 +109,6 @@ export function ImageGallery({
       setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 90 } : u)));
 
       if (!uploadRes.ok) {
-        // If Cloudinary rejects upload (e.g. "cloud_name is disabled"), seamlessly fallback to local asset storage
-        const localFormData = new FormData();
-        localFormData.append('file', file);
-
-        const localRes = await fetch(`${basePath}/api/upload`, {
-          method: 'POST',
-          body: localFormData,
-        });
-
-        if (localRes.ok) {
-          const localResult = await localRes.json();
-          setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 100 } : u)));
-          addImageSafely({ url: localResult.secure_url, publicId: localResult.public_id });
-          setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
-          return;
-        }
-
         const body = await uploadRes.json().catch(() => ({}));
         throw new Error(body?.error?.message || `Upload failed (${uploadRes.status}).`);
       }
@@ -161,15 +117,8 @@ export function ImageGallery({
       addImageSafely({ url: result.secure_url, publicId: result.public_id });
       setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
     } catch (err: any) {
-      console.warn('Server upload was rejected or serverless filesystem unavailable. Activating instant client-side asset reader fallback:', err);
-      try {
-        const clientDataUrl = await readFileAsDataUrl(file);
-        setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 100 } : u)));
-        addImageSafely({ url: clientDataUrl, publicId: `client_${Date.now()}` });
-        setUploads((prev) => prev.filter((u) => u.fileName !== file.name));
-      } catch (readErr: any) {
-        setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 0, error: readErr?.message || 'Could not process image.' } : u)));
-      }
+      // Never fall back to a base64 data URL: it gets stored in the products table and slows every read.
+      setUploads((prev) => prev.map((u) => (u.fileName === file.name ? { ...u, progress: 0, error: err?.message || 'Upload failed. Please try again.' } : u)));
     }
   }, [addImageSafely]);
 

@@ -17,9 +17,6 @@ export default async function ProductsPage({
 
   let categories: { slug: string; name: string }[] = CATEGORIES;
 
-  // getLiveSupabaseProducts() is memoized per-request (lib/catalog-store.ts) —
-  // the shared admin layout already reads the full products table for the
-  // nav badge counts, so this reuses that instead of querying it again.
   const [rawDbProducts, , allCached, deletedKeys] = await Promise.all([
     getLiveSupabaseProducts(),
     (async () => {
