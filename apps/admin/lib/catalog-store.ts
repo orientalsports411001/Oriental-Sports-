@@ -70,7 +70,9 @@ export interface AdminOrder {
 import allProductsData from './all-products.json';
 import fs from 'node:fs';
 import path from 'node:path';
+import { cache } from 'react';
 import { uploadCloudJson, fetchCloudJson } from './cloud-storage';
+import { createServiceRoleClient } from './supabase/server';
 
 const TMP_CACHE_FILE = path.join(
   process.platform === 'win32' ? process.env.TEMP || 'C:\\Windows\\Temp' : '/tmp',
@@ -288,7 +290,13 @@ export function getCachedProducts(): AdminProduct[] {
  * resurrect a "deleted" product whenever its Supabase row wasn't actually
  * removed (the exact failure mode a bad service-role key causes).
  */
-export async function getDeletedProductKeysAsync(): Promise<Set<string>> {
+/**
+ * Wrapped in React's per-request `cache()` below: every admin page and the
+ * shared layout call this (directly or via getCachedProductsAsync), and
+ * without memoization each one fired its own round trip to Cloudinary for
+ * the exact same blob on every single request.
+ */
+async function getDeletedProductKeysAsyncImpl(): Promise<Set<string>> {
   try {
     const cloud = await fetchCloudJson<string[]>(DELETED_PRODUCTS_BLOB_ID);
     if (Array.isArray(cloud)) {
@@ -297,6 +305,7 @@ export async function getDeletedProductKeysAsync(): Promise<Set<string>> {
   } catch {}
   return deletedProductKeysCache;
 }
+export const getDeletedProductKeysAsync = cache(getDeletedProductKeysAsyncImpl);
 
 async function markProductsDeleted(keys: (string | undefined)[]) {
   const current = await getDeletedProductKeysAsync();
@@ -315,7 +324,8 @@ export function filterDeletedProducts<T extends { id?: string; slug?: string }>(
   return products.filter((p) => !(p.id && deletedKeys.has(p.id)) && !(p.slug && deletedKeys.has(p.slug)));
 }
 
-export async function getCachedProductsAsync(): Promise<AdminProduct[]> {
+/** Wrapped in React's per-request `cache()` below — see getDeletedProductKeysAsyncImpl. */
+async function getCachedProductsAsyncImpl(): Promise<AdminProduct[]> {
   const [, deletedKeys] = await Promise.all([
     (async () => {
       try {
@@ -341,6 +351,24 @@ export async function getCachedProductsAsync(): Promise<AdminProduct[]> {
   ]);
   return filterDeletedProducts(getCachedProducts(), deletedKeys);
 }
+export const getCachedProductsAsync = cache(getCachedProductsAsyncImpl);
+
+/**
+ * Raw `products` table rows straight from Supabase, with no field-mapping
+ * applied (each caller maps metadata → flat fields differently). Memoized
+ * per-request: the dashboard, products list, and nav-count badge all used to
+ * run their own full-table `select('*')` on every single page load.
+ */
+export const getLiveSupabaseProducts = cache(async (): Promise<any[]> => {
+  try {
+    const admin = createServiceRoleClient();
+    const { data, error } = await admin.from('products').select('*');
+    if (error || !Array.isArray(data)) return [];
+    return data;
+  } catch {
+    return [];
+  }
+});
 
 function getRepoRoot(): string {
   const candidates = [
@@ -673,7 +701,14 @@ export function getCachedOrders(): AdminOrder[] {
  *   view re-uploaded as the whole list silently erases every order it
  *   doesn't contain (this is how real orders were disappearing).
  */
-export async function getCachedOrdersAsync(opts: { exact?: boolean } = {}): Promise<AdminOrder[]> {
+/**
+ * Wrapped in React's per-request `cache()` below. Every call site that reads
+ * (not read-modify-writes) calls this with no arguments, so they all share
+ * one memoized Cloudinary round trip per request; `{ exact: true }` callers
+ * (save/update paths, which must never act on a stale version) pass an
+ * explicit argument and so get their own uncached call, as before.
+ */
+async function getCachedOrdersAsyncImpl(opts: { exact?: boolean } = {}): Promise<AdminOrder[]> {
   const local = getCachedOrders();
   const orderMap = new Map<string, AdminOrder>();
 
@@ -714,6 +749,7 @@ export async function getCachedOrdersAsync(opts: { exact?: boolean } = {}): Prom
 
   return local;
 }
+export const getCachedOrdersAsync = cache(getCachedOrdersAsyncImpl);
 
 export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number: string }): Promise<AdminOrder> {
   // Hydrate from the cross-lambda cloud store first — on a cold serverless

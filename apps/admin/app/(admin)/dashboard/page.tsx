@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { getCachedProducts, getCachedProductsAsync, getCachedOrders, getCachedOrdersAsync, getDeletedProductKeysAsync, filterDeletedProducts } from '@/lib/catalog-store';
+import { getCachedProductsAsync, getCachedOrdersAsync, getDeletedProductKeysAsync, filterDeletedProducts, getLiveSupabaseProducts } from '@/lib/catalog-store';
 
 import { RevenueSplineChart } from '@/components/dashboard/RevenueSplineChart';
 import { MiniCalendarWidget } from '@/components/dashboard/MiniCalendarWidget';
@@ -17,28 +17,23 @@ export default async function DashboardPage({
 }) {
   await requireAdmin();
 
-  let dbProducts: any[] = [];
   let dbOrders: any[] = [];
 
-  // Supabase and the Cloudinary-backed catalog/orders caches are
-  // independent data sources — fetching them one after another (as this
-  // used to) adds two full extra network round trips to every dashboard
-  // load. Kick off all three together.
-  const [, cachedProducts, cachedOrders, deletedProductKeys] = await Promise.all([
+  // getLiveSupabaseProducts() is memoized per-request (lib/catalog-store.ts),
+  // so this no longer duplicates the full products table read the shared
+  // admin layout already did for the nav badge counts. Orders still get
+  // their own query here — the layout only needs a cheap head-count of
+  // orders, not the full rows this page renders.
+  const [rawDbProducts, , cachedProducts, cachedOrders, deletedProductKeys] = await Promise.all([
+    getLiveSupabaseProducts(),
     (async () => {
       try {
         const admin = createServiceRoleClient();
-        const [resProducts, resOrders] = await Promise.all([
-          admin.from('products').select('*'),
-          admin.from('orders').select('id, order_number, status, total_amount, created_at, updated_at, user_id, shipping_address, payment_method').order('created_at', { ascending: false }).limit(100),
-        ]);
-
-        dbProducts = (resProducts.data || []).map((p: any) => ({
-          ...p,
-          status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
-          stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
-          low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
-        }));
+        const resOrders = await admin
+          .from('orders')
+          .select('id, order_number, status, total_amount, created_at, updated_at, user_id, shipping_address, payment_method')
+          .order('created_at', { ascending: false })
+          .limit(100);
         dbOrders = resOrders.data || [];
       } catch (err) {
         // Supabase endpoint fallback
@@ -48,6 +43,13 @@ export default async function DashboardPage({
     getCachedOrdersAsync(),
     getDeletedProductKeysAsync(),
   ]);
+
+  let dbProducts: any[] = rawDbProducts.map((p: any) => ({
+    ...p,
+    status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
+    stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
+    low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
+  }));
 
   // A product deleted in the admin can still physically exist in Supabase
   // if that delete failed silently (e.g. a bad service-role key) — without

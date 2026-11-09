@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { getCachedProducts, getCachedProductsAsync, getDeletedProductKeysAsync, filterDeletedProducts, CATEGORIES } from '@/lib/catalog-store';
+import { getCachedProductsAsync, getDeletedProductKeysAsync, filterDeletedProducts, CATEGORIES, getLiveSupabaseProducts } from '@/lib/catalog-store';
 import { deleteProduct } from './actions';
 import { SavedNotificationBanner } from '@/components/products/SavedNotificationBanner';
 import { ProductsCatalogView } from '@/components/products/ProductsCatalogView';
@@ -15,33 +15,17 @@ export default async function ProductsPage({
 }) {
   await requireAdmin();
 
-  let dbProducts: any[] = [];
   let categories: { slug: string; name: string }[] = CATEGORIES;
 
-  // Supabase and the Cloudinary-backed catalog cache are independent data
-  // sources — fetching them one after another (as this used to) adds a full
-  // extra network round trip to every page load for no reason. Run them
-  // together instead.
-  const [, allCached, deletedKeys] = await Promise.all([
+  // getLiveSupabaseProducts() is memoized per-request (lib/catalog-store.ts) —
+  // the shared admin layout already reads the full products table for the
+  // nav badge counts, so this reuses that instead of querying it again.
+  const [rawDbProducts, , allCached, deletedKeys] = await Promise.all([
+    getLiveSupabaseProducts(),
     (async () => {
       try {
         const admin = createServiceRoleClient();
-        const [resProducts, resCategories] = await Promise.all([
-          admin.from('products').select('*'),
-          admin.from('categories').select('slug, name').order('name'),
-        ]);
-
-        if (resProducts.data && resProducts.data.length > 0) {
-          dbProducts = resProducts.data.map((p: any) => ({
-            ...p,
-            status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
-            stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
-            low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
-            is_featured: Boolean(p.metadata?.is_featured ?? p.is_featured),
-            seo_title: p.metadata?.seo_title ?? p.seo_title,
-            seo_description: p.metadata?.seo_description ?? p.seo_description,
-          }));
-        }
+        const resCategories = await admin.from('categories').select('slug, name').order('name');
         if (resCategories.data && resCategories.data.length > 0) {
           categories = resCategories.data;
         }
@@ -52,6 +36,16 @@ export default async function ProductsPage({
     getCachedProductsAsync(),
     getDeletedProductKeysAsync(),
   ]);
+
+  let dbProducts: any[] = rawDbProducts.map((p: any) => ({
+    ...p,
+    status: p.metadata?.status ?? p.status ?? (p.in_stock === false ? 'draft' : 'published'),
+    stock_quantity: Number(p.metadata?.stock_quantity ?? p.stock_quantity ?? 50),
+    low_stock_threshold: Number(p.metadata?.low_stock_threshold ?? p.low_stock_threshold ?? 5),
+    is_featured: Boolean(p.metadata?.is_featured ?? p.is_featured),
+    seo_title: p.metadata?.seo_title ?? p.seo_title,
+    seo_description: p.metadata?.seo_description ?? p.seo_description,
+  }));
 
   // A product deleted here can still physically exist in Supabase if that
   // delete failed silently (e.g. a bad service-role key) — without this,

@@ -1,5 +1,5 @@
 import { revalidatePath } from 'next/cache';
-import { getCachedOrders, getCachedOrdersAsync, getCachedProducts, getCachedProductsAsync } from '@/lib/catalog-store';
+import { getCachedOrdersAsync, getCachedProductsAsync, getLiveSupabaseProducts } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 
 function uniqueProductCount(
@@ -23,45 +23,55 @@ function uniqueProductCount(
   return count;
 }
 
-export async function getAdminNavCounts(): Promise<{ productsCount: number; ordersCount: number }> {
-  const cachedProducts = await getCachedProductsAsync();
-  let productsCount = cachedProducts.length;
-  const cachedOrders = await getCachedOrdersAsync();
-  let ordersCount = cachedOrders.length;
+async function resolveProductsCount(cachedProducts: { id?: string; slug?: string }[]): Promise<number> {
+  // getLiveSupabaseProducts() is memoized per-request (see catalog-store.ts) —
+  // the dashboard/products pages already need this exact same full-table
+  // read, so this no longer costs its own Supabase round trip.
+  const dbProducts = await getLiveSupabaseProducts();
+  if (dbProducts.length > 0) {
+    return uniqueProductCount(cachedProducts, dbProducts);
+  }
 
+  // Direct PostgREST fallback — only when the primary read above genuinely
+  // came back empty/failed, not just whenever the merged count happens to
+  // equal the cached length (that's the common, successful case, and used
+  // to trigger a second full-table fetch on every single page load).
   try {
-    const admin = createServiceRoleClient();
-    const { data: dbProducts } = await admin.from('products').select('id, slug');
-    if (Array.isArray(dbProducts) && dbProducts.length > 0) {
-      productsCount = uniqueProductCount(cachedProducts, dbProducts);
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+    const res = await fetch(`${url}/rest/v1/products?select=id,slug`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return uniqueProductCount(cachedProducts, data);
+      }
     }
   } catch {}
 
-  // Direct PostgREST fallback if client failed or returned 131
-  if (productsCount === cachedProducts.length) {
-    try {
-      const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
-      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
-      const res = await fetch(`${url}/rest/v1/products?select=id,slug`, {
-        headers: { apikey: key, Authorization: `Bearer ${key}` },
-        cache: 'no-store',
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          productsCount = uniqueProductCount(cachedProducts, data);
-        }
-      }
-    } catch {}
-  }
+  return cachedProducts.length;
+}
 
+async function resolveOrdersCount(cachedCount: number): Promise<number> {
   try {
     const admin = createServiceRoleClient();
     const { count: dbOrdersCount } = await admin.from('orders').select('id', { count: 'exact', head: true });
     if (typeof dbOrdersCount === 'number') {
-      ordersCount = Math.max(ordersCount, dbOrdersCount);
+      return Math.max(cachedCount, dbOrdersCount);
     }
   } catch {}
+  return cachedCount;
+}
+
+export async function getAdminNavCounts(): Promise<{ productsCount: number; ordersCount: number }> {
+  const [cachedProducts, cachedOrders] = await Promise.all([getCachedProductsAsync(), getCachedOrdersAsync()]);
+
+  const [productsCount, ordersCount] = await Promise.all([
+    resolveProductsCount(cachedProducts),
+    resolveOrdersCount(cachedOrders.length),
+  ]);
 
   return { productsCount, ordersCount };
 }
