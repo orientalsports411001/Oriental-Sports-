@@ -1,9 +1,11 @@
 'use client';
 
+import { useLayoutEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut } from 'lucide-react';
+import { LogOut, LayoutDashboard, Package, Layers, ClipboardList } from 'lucide-react';
 import { useAdminNavCounts } from '@/hooks/useAdminNavCounts';
+import { slidePill, snapPill, type PillEdges } from '@/lib/sidebar-pill';
 
 interface AdminSidebarProps {
   userDisplayName?: string;
@@ -16,11 +18,36 @@ export function AdminSidebar({ userDisplayName, ordersCount = 0, productsCount =
   const liveCounts = useAdminNavCounts(productsCount, ordersCount);
 
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/products', label: 'Products', badge: liveCounts.productsCount > 0 ? String(liveCounts.productsCount) : undefined },
-    { href: '/categories', label: 'Disciplines' },
-    { href: '/orders', label: 'Orders', badge: liveCounts.ordersCount > 0 ? String(liveCounts.ordersCount) : undefined },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/products', label: 'Products', icon: Package, badge: liveCounts.productsCount > 0 ? String(liveCounts.productsCount) : undefined },
+    { href: '/categories', label: 'Disciplines', icon: Layers },
+    { href: '/orders', label: 'Orders', icon: ClipboardList, badge: liveCounts.ordersCount > 0 ? String(liveCounts.ordersCount) : undefined },
   ];
+
+  const activeItem = navItems.find(
+    (item) => pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
+  );
+  const activeHref = activeItem?.href ?? navItems[0].href;
+
+  const itemRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
+  const pillRef = useRef<HTMLDivElement>(null);
+  const pillState = useRef<PillEdges | null>(null);
+
+  useLayoutEffect(() => {
+    const pill = pillRef.current;
+    const target = itemRefs.current.get(activeHref);
+    if (pill && target) slidePill(pill, target, pillState);
+  }, [activeHref]);
+
+  useLayoutEffect(() => {
+    const onResize = () => {
+      const pill = pillRef.current;
+      const target = itemRefs.current.get(activeHref);
+      if (pill && target) snapPill(pill, target, pillState);
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [activeHref]);
 
   return (
     <aside className="buyur-sidebar-wrapper">
@@ -91,34 +118,41 @@ export function AdminSidebar({ userDisplayName, ordersCount = 0, productsCount =
           </Link>
         </div>
 
-        {/* Pure Typographic Navigation (Zero AI icons) - Desktop */}
-        <div className="desktop-sidebar-nav-stack" style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+        {/* Primary Navigation (Desktop) — sliding pill indicator behind the active item */}
+        <div className="desktop-sidebar-nav-stack admin-nav-stack" style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, position: 'relative' }}>
+          <div ref={pillRef} className="admin-nav-pill" aria-hidden="true" style={{ opacity: 0 }} />
+
           {navItems.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href !== '/dashboard' && pathname.startsWith(item.href));
+            const isActive = item.href === activeHref;
+            const Icon = item.icon;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                ref={(el) => {
+                  if (el) itemRefs.current.set(item.href, el);
+                }}
+                className="admin-nav-item"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '10px 16px',
                   borderRadius: 9999,
-                  background: isActive ? 'var(--blood-crimson)' : 'transparent',
                   color: isActive ? '#FFFFFF' : '#A3A3A3',
                   fontWeight: isActive ? 700 : 500,
                   fontSize: 13.5,
                   textDecoration: 'none',
                   minHeight: 42,
-                  boxShadow: isActive ? '0 4px 14px rgba(200, 16, 46, 0.35)' : 'none',
-                  transition: 'background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
+                  position: 'relative',
+                  zIndex: 1,
                 }}
               >
-                <span>{item.label}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Icon size={16} strokeWidth={isActive ? 2.3 : 1.8} />
+                  <span>{item.label}</span>
+                </span>
 
                 {item.badge && (
                   <span
@@ -129,6 +163,7 @@ export function AdminSidebar({ userDisplayName, ordersCount = 0, productsCount =
                       borderRadius: 9999,
                       background: isActive ? 'rgba(0, 0, 0, 0.28)' : '#1C1C1C',
                       color: isActive ? '#FFFFFF' : '#737373',
+                      transition: 'background 0.2s ease, color 0.2s ease',
                     }}
                   >
                     {item.badge}

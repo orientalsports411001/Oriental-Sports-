@@ -120,6 +120,26 @@ a:hover {
   max-width: 1480px;
 }
 
+/* ---- Sidebar Nav — GSAP Sliding Pill Indicator --------------------------- */
+.admin-nav-pill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #A81B2B 0%, #821320 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 14px rgba(168, 27, 43, 0.35);
+  pointer-events: none;
+  z-index: 0;
+  will-change: clip-path;
+}
+
+.admin-nav-item {
+  transition: color 0.2s ease;
+}
+
+.admin-nav-item:hover {
+  color: #FFFFFF !important;
+}
+
 /* ---- Floating Bottom Mobile Dock (Matches Main Website) ----------------- */
 .admin-bottom-nav-dock {
   display: none;
@@ -288,6 +308,12 @@ a:hover {
   border: 1px solid var(--line);
   box-sizing: border-box;
   color: var(--ink);
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.admin-card:hover {
+  border-color: rgba(168, 27, 43, 0.3);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 640px) {
