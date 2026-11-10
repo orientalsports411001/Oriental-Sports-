@@ -20,8 +20,15 @@ function fallbackTitle(product: Product): string {
 }
 
 function fallbackDescription(product: Product): string {
-  if (product.description) return product.description.slice(0, 160);
-  return `${product.name}${product.brand ? ` by ${product.brand}` : ''} — available at ${SITE_NAME}, Camp, Pune.`;
+  const cleaned = (product.description || '').replace(/\s+/g, ' ').trim();
+  if (cleaned) {
+    if (cleaned.length <= 155) return cleaned;
+    const cut = cleaned.slice(0, 155);
+    return `${cut.slice(0, cut.lastIndexOf(' ') > 100 ? cut.lastIndexOf(' ') : 155)}…`;
+  }
+  const price = product.price ? ` for ₹${Math.round(product.price).toLocaleString('en-IN')}` : '';
+  const brand = product.brand ? ` by ${product.brand}` : '';
+  return `Buy ${product.name}${brand} in ${product.categoryName}${price} at ${SITE_NAME}, Pune.`;
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
