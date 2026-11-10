@@ -1,8 +1,15 @@
 import crypto from 'node:crypto';
 
 const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'kvdrimse';
-const apiKey = process.env.CLOUDINARY_API_KEY || '229393163346172';
-const apiSecret = process.env.CLOUDINARY_API_SECRET || 'ARP9LG7XKb4or8YuKGbla17SL5s';
+
+function credentials() {
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  if (!apiKey || !apiSecret) {
+    throw new Error('CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET must be set.');
+  }
+  return { apiKey, apiSecret };
+}
 
 /**
  * Freshness rules (all measured against this Cloudinary account):
@@ -23,6 +30,7 @@ const versionMemo = new Map<string, { version: number; at: number }>();
 let adminApiBackoffUntil = 0;
 
 function basicAuth() {
+  const { apiKey, apiSecret } = credentials();
   return 'Basic ' + Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
 }
 
@@ -57,6 +65,7 @@ async function exactVersion(publicId: string): Promise<number | null> {
  */
 export async function uploadCloudJson(publicId: string, data: any): Promise<boolean> {
   try {
+    const { apiKey, apiSecret } = credentials();
     const timestamp = Math.floor(Date.now() / 1000);
     // Signed params must be alphabetically ordered.
     const toSign = `invalidate=true&overwrite=true&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;

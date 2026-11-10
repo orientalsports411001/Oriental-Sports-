@@ -1,22 +1,24 @@
 import { NextResponse } from 'next/server';
-import { getCachedOrders, getCachedOrdersAsync } from '@/lib/catalog-store';
+import { getCachedOrdersAsync } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import { checkAdmin } from '@/lib/require-admin';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+const noStoreHeaders = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
 };
 
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 200, headers: corsHeaders });
-}
-
 export async function GET() {
+  const admin = await checkAdmin();
+  if (!admin.ok) {
+    return NextResponse.json(
+      { success: false, error: admin.error },
+      { status: admin.reason === 'forbidden' ? 403 : 401, headers: noStoreHeaders }
+    );
+  }
+
   try {
     let latest: any = null;
 
@@ -49,7 +51,7 @@ export async function GET() {
     } catch {}
 
     if (!latest) {
-      return NextResponse.json({ success: true, latestOrder: null, totalOrders: 0 }, { headers: corsHeaders });
+      return NextResponse.json({ success: true, latestOrder: null, totalOrders: 0 }, { headers: noStoreHeaders });
     }
 
     return NextResponse.json(
@@ -73,12 +75,12 @@ export async function GET() {
           created_at: latest.created_at || new Date().toISOString(),
         },
       },
-      { headers: corsHeaders }
+      { headers: noStoreHeaders }
     );
   } catch (err: any) {
     return NextResponse.json(
       { success: false, error: err?.message || 'Failed to fetch latest order' },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: noStoreHeaders }
     );
   }
 }
