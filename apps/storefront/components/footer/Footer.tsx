@@ -30,6 +30,7 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
       { label: 'About', to: '/about' },
       { label: 'Visit the store', to: '/visit' },
       { label: 'Contact', to: '/contact' },
+      { label: 'FAQ', to: '/faq' },
       { label: 'Account', to: '/account' },
       { label: 'Wishlist', to: '/wishlist' },
     ],

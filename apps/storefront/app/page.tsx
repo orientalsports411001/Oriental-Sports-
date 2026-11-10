@@ -12,6 +12,8 @@ export default async function Page() {
     '@type': 'SportingGoodsStore',
     name: SITE_NAME,
     url: SITE_URL,
+    logo: `${SITE_URL}/brand/oriental-sports-wordmark.png`,
+    image: `${SITE_URL}/brand/oriental-sports-wordmark.png`,
     telephone: STORE_INFO.displayPhone,
     email: STORE_INFO.email,
     address: {
@@ -22,6 +24,27 @@ export default async function Page() {
       addressRegion: 'Maharashtra',
       addressCountry: 'IN',
     },
+    // Mirrors STORE_INFO.hours / STORE_SCHEDULE (data/storeInfo.ts) — update both together.
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        opens: '10:30',
+        closes: '20:30',
+      },
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: 'Sunday',
+        opens: '11:00',
+        closes: '18:00',
+      },
+    ],
+    paymentAccepted: 'Cards, UPI, Net Banking, Wallets',
+    areaServed: {
+      '@type': 'City',
+      name: 'Pune',
+    },
+    additionalType: 'https://schema.org/SportsActivityLocation',
   };
 
   const websiteJsonLd = {
@@ -29,6 +52,14 @@ export default async function Page() {
     '@type': 'WebSite',
     name: SITE_NAME,
     url: SITE_URL,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
   };
 
   return (

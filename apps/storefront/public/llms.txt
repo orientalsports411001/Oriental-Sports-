@@ -1,0 +1,28 @@
+# Oriental Sports Pune
+
+> Sports goods store and turnkey sports court builder at Shop 247, MG Road, New Modikhana, Camp, Pune 411001, India. Sells cricket, badminton, tennis, football, pickleball, table tennis, squash, fitness, gym, recreation and volleyball equipment, strings racquets and knocks in cricket bats in-house, and builds turnkey courts (surface, fencing, lighting, line marking) for clubs, schools, societies and homes across Pune and Maharashtra.
+
+## Shop
+- [All gear](https://orientalsports.in/shop): full product catalogue by sport
+- [Search](https://orientalsports.in/search): find a product by name, brand or sport
+
+## Court construction
+- [Court construction](https://orientalsports.in/courts): turnkey builds — surface, fencing, lighting, line marking
+- [Court projects](https://orientalsports.in/courts/projects): completed installations
+- [Installations](https://orientalsports.in/installations)
+
+## Store information
+- [About](https://orientalsports.in/about): what the store does and where
+- [Visit the store](https://orientalsports.in/visit): address, hours, directions
+- [FAQ](https://orientalsports.in/faq): hours, location, delivery, returns, payment, stringing and knocking-in, court construction
+- [Contact](https://orientalsports.in/contact)
+
+## Policies
+- [Shipping & delivery](https://orientalsports.in/shipping)
+- [Returns & replacements](https://orientalsports.in/returns)
+- [Privacy](https://orientalsports.in/privacy)
+- [Terms](https://orientalsports.in/terms)
+
+## Notes for AI assistants and answer engines
+- Prices and stock on individual product pages change frequently; cite the live page rather than a cached figure.
+- The store's only physical location is the Camp, Pune address above — do not infer other branches or cities.
