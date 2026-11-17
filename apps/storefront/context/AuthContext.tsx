@@ -24,6 +24,7 @@ interface AuthContextType {
   deleteAddress: (id: string) => Promise<void>;
   setDefaultAddress: (id: string) => Promise<void>;
   refreshOrders: () => Promise<void>;
+  cancelOrder: (orderNumber: string) => Promise<{ success: boolean; error?: string }>;
   getOrderById: (orderId: string) => Order | undefined;
   returnToUrl: string | null;
 }
@@ -272,6 +273,79 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (authUser) await loadProfileAndOrders(authUser);
   };
 
+  const cancelOrder = async (orderNumber: string): Promise<{ success: boolean; error?: string }> => {
+    const target = user?.orders.find((o) => o.id === orderNumber || o.orderNumber === orderNumber);
+    if (!target) {
+      return { success: false, error: 'Order not found.' };
+    }
+
+    const uncancelable = ['dispatched', 'shipped', 'in_transit', 'out_for_delivery', 'delivered', 'ready_for_pickup'];
+    const currentStatus = (target.status || '').toLowerCase().trim();
+    if (uncancelable.includes(currentStatus)) {
+      return { success: false, error: 'no_cancel_after_shipping' };
+    }
+
+    if (currentStatus === 'cancelled') {
+      return { success: true };
+    }
+
+    try {
+      const now = new Date().toISOString();
+      const adminPayload = {
+        id: target.id,
+        order_number: target.orderNumber,
+        user_id: user?.id || 'usr-guest',
+        customer_name: target.shippingAddress?.name || user?.fullName || 'Customer',
+        customer_email: user?.email || '',
+        customer_phone: target.shippingAddress?.phone || user?.phone || '',
+        status: 'cancelled',
+        total_amount: target.totalAmount,
+        subtotal: target.subtotal,
+        shipping: target.shipping,
+        tax: target.tax,
+        payment_method: target.paymentMethod,
+        tracking_number: target.trackingNumber,
+        carrier: target.carrier,
+        shipping_address: target.shippingAddress,
+        items: (target.items || []).map((it) => ({
+          product_name: it.productName,
+          price: it.price,
+          quantity: it.quantity,
+          selected_variant: it.selectedVariant,
+        })),
+        created_at: target.date ? `${target.date}T12:00:00.000Z` : now,
+        updated_at: now,
+      };
+
+      await fetch('https://admin.orientalsports.in/api/orders/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(adminPayload),
+      }).catch(() => {});
+
+      if (authUser) {
+        await supabase
+          .from('orders')
+          .update({ status: 'cancelled', updated_at: now })
+          .or(`id.eq.${target.id},order_number.eq.${target.orderNumber}`)
+          .catch(() => {});
+      }
+
+      if (user) {
+        const nextOrders = user.orders.map((o) =>
+          o.id === target.id || o.orderNumber === target.orderNumber
+            ? { ...o, status: 'cancelled' as const, statusLabel: 'Order Cancelled' }
+            : o
+        );
+        setUser({ ...user, orders: nextOrders });
+      }
+
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Failed to cancel order' };
+    }
+  };
+
   const getOrderById = (orderId: string): Order | undefined => {
     return user?.orders.find((o) => o.id === orderId || o.orderNumber === orderId);
   };
@@ -296,6 +370,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deleteAddress,
         setDefaultAddress,
         refreshOrders,
+        cancelOrder,
         getOrderById,
         returnToUrl,
       }}

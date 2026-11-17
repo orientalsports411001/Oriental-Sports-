@@ -61,7 +61,6 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
     deleteAddress,
     setDefaultAddress,
     syncOrders,
-    isSyncingOrders,
   } = useAuth();
 
   const { wishlist } = useWishlist();
@@ -422,34 +421,6 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
             <h2 style={{ fontSize: '1.375rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
               Orders & Deliveries ({user.orders.length})
             </h2>
-            <button
-              type="button"
-              onClick={() => syncOrders().catch(() => {})}
-              disabled={isSyncingOrders}
-              title="Sync latest order status directly from Oriental Sports Camp workshop"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '6px',
-                padding: '4px 10px',
-                color: '#E5E7EB',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                cursor: isSyncingOrders ? 'wait' : 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <RefreshCw
-                size={12}
-                style={{
-                  animation: isSyncingOrders ? 'spin 0.9s linear infinite' : 'none',
-                }}
-              />
-              <span>{isSyncingOrders ? 'Syncing...' : 'Sync with Admin'}</span>
-            </button>
           </div>
           <span style={{ fontSize: '0.8125rem', color: '#9CA3AF' }}>
             Equipment dispatches, Camp store collections, and workshop stringing tickets

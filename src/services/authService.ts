@@ -762,9 +762,9 @@ export class AuthService {
   static async cancelOrder(orderNumber: string): Promise<{ success: boolean; error?: string }> {
     const current = this.getCurrentUser();
     const stored = getStoredPlacedOrders();
-    const target = stored.find(
-      (o) => o.orderNumber === orderNumber || o.id === orderNumber
-    );
+    const target =
+      stored.find((o) => o.orderNumber === orderNumber || o.id === orderNumber) ||
+      (current?.orders || []).find((o) => o.orderNumber === orderNumber || o.id === orderNumber);
 
     if (!target) {
       return { success: false, error: 'Order not found.' };
