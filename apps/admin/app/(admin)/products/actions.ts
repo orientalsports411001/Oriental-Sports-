@@ -228,24 +228,26 @@ export async function createProduct(formData: FormData) {
   } catch (err) {
     if (isRedirectError(err)) throw err;
     console.warn('[createProduct] Supabase insert notice:', err);
-    // Save to local fallback store
-    const saved = saveProduct({
-      name: fields.name,
-      slug: fields.slug,
-      brand: fields.brand,
-      category_slug: fields.categorySlug,
-      description: fields.description,
-      price: fields.price,
-      compare_at_price: fields.compareAtPrice,
-      images: fields.images,
-      status,
-      stock_quantity: fields.stockQuantity,
-      low_stock_threshold: fields.lowStockThreshold,
-      seo_title: fields.seoTitle,
-      seo_description: fields.seoDescription,
-    });
-    createdId = saved.id;
   }
+
+  // Always mirror to durable cloud storage so both Supabase and Cloudinary stay in sync
+  const saved = saveProduct({
+    id: createdId,
+    name: fields.name,
+    slug: fields.slug,
+    brand: fields.brand,
+    category_slug: fields.categorySlug,
+    description: fields.description,
+    price: fields.price,
+    compare_at_price: fields.compareAtPrice,
+    images: fields.images,
+    status,
+    stock_quantity: fields.stockQuantity,
+    low_stock_threshold: fields.lowStockThreshold,
+    seo_title: fields.seoTitle,
+    seo_description: fields.seoDescription,
+  });
+  if (!createdId) createdId = saved.id;
 
   if (publishError) {
     redirect(`/products/${createdId}/edit?error=${encodeURIComponent(publishError)}`);

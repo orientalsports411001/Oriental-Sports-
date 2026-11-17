@@ -371,9 +371,8 @@ export function ProductsCatalogView({
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            overflowX: 'auto',
+            flexWrap: 'wrap',
             paddingBottom: 12,
-            scrollbarWidth: 'none',
           }}
         >
           <button

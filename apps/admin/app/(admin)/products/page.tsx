@@ -25,10 +25,24 @@ export default async function ProductsPage({
         const resCategories = await admin.from('categories').select('slug, name').order('name');
         if (resCategories.data && resCategories.data.length > 0) {
           categories = resCategories.data;
+          return;
         }
-      } catch (err) {
-        // Supabase fallback
-      }
+      } catch (err) {}
+
+      try {
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+        const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+        const res = await fetch(`${url}/rest/v1/categories?select=slug,name&order=name`, {
+          headers: { apikey: key, Authorization: `Bearer ${key}` },
+          cache: 'no-store',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            categories = data;
+          }
+        }
+      } catch {}
     })(),
     getCachedProductsAsync(),
     getDeletedProductKeysAsync(),

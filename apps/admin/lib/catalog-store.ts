@@ -358,11 +358,25 @@ export const getLiveSupabaseProducts = cache(async (): Promise<any[]> => {
   try {
     const admin = createServiceRoleClient();
     const { data, error } = await admin.from('products').select('*');
-    if (error || !Array.isArray(data)) return [];
-    return data;
-  } catch {
-    return [];
-  }
+    if (!error && Array.isArray(data) && data.length > 0) return data;
+  } catch {}
+
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+    const res = await fetch(`${url}/rest/v1/products?select=*&order=created_at.desc`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch {}
+
+  return [];
 });
 
 function getRepoRoot(): string {

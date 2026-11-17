@@ -1705,13 +1705,48 @@ export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
           const low_stock_threshold = Number(p.metadata?.low_stock_threshold ?? 5);
           const inStock = status === 'published' && stock_quantity > 0;
           const slug = p.slug || 'product';
+          const cat = (p.category_slug || 'accessories') as SportCategory;
+          const categoryNameMap: Record<string, string> = {
+            cricket: 'Cricket',
+            badminton: 'Badminton',
+            football: 'Football',
+            tennis: 'Tennis',
+            pickleball: 'Pickleball',
+            'table-tennis': 'Table Tennis',
+            'gym-equipment': 'Gym & Strength',
+            fitness: 'Fitness & Recovery',
+            recreation: 'Recreation',
+            accessories: 'Accessories & Protection',
+          };
+          const categoryName = categoryNameMap[cat] || (cat.charAt(0).toUpperCase() + cat.slice(1));
+          
+          const defaultSubcategoryMap: Record<string, { id: string; name: string }> = {
+            tennis: { id: 'tennis-rackets', name: 'Tennis Racquets' },
+            cricket: { id: 'cricket-bats', name: 'Cricket Bats' },
+            badminton: { id: 'badminton-racquets', name: 'Badminton Racquets' },
+            football: { id: 'footballs', name: 'Footballs' },
+            pickleball: { id: 'pickleball-paddles', name: 'Pickleball Paddles' },
+            'table-tennis': { id: 'table-tennis-tables', name: 'Table Tennis Tables' },
+            'gym-equipment': { id: 'gym-strength', name: 'Gym & Strength' },
+            fitness: { id: 'fitness-recovery', name: 'Fitness & Recovery' },
+            recreation: { id: 'recreation', name: 'Recreation' },
+            accessories: { id: 'accessories', name: 'Accessories' },
+          };
+
+          const defaultSub = defaultSubcategoryMap[cat] || { id: cat, name: categoryName };
+          const subcategory = p.subcategory || defaultSub.id;
+          const subcategoryName = p.subcategoryName || defaultSub.name;
+          const productType = (p.productType || (cat === 'cricket' ? 'bat' : cat === 'badminton' || cat === 'tennis' ? 'racket' : cat === 'football' ? 'ball' : 'gear')) as any;
+
           return {
             id: p.id || `prod-${slug}`,
             slug,
             name: p.name || 'Product',
-            category: (p.category_slug || 'accessories') as any,
-            categoryName: (p.category_slug ? p.category_slug.toUpperCase() : 'Sports Gear'),
-            productType: (p.category_slug === 'cricket' ? 'bat' : p.category_slug === 'football' ? 'ball' : 'gear') as any,
+            category: cat,
+            categoryName,
+            subcategory,
+            subcategoryName,
+            productType,
             brand: p.brand || 'Oriental Sports',
             price: Number(p.price) || 0,
             originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
@@ -1882,8 +1917,37 @@ export function getAllLiveProducts(): Product[] {
       const isAlreadyMapped = Boolean(p.category && p.inStock !== undefined);
       if (isAlreadyMapped) return { ...p, status: 'published' } as Product;
 
-      const cat = p.category_slug || p.category || 'accessories';
-      const catName = p.categoryName || (cat.charAt(0).toUpperCase() + cat.slice(1));
+      const cat = (p.category_slug || p.category || 'accessories') as SportCategory;
+      const categoryNameMap: Record<string, string> = {
+        cricket: 'Cricket',
+        badminton: 'Badminton',
+        football: 'Football',
+        tennis: 'Tennis',
+        pickleball: 'Pickleball',
+        'table-tennis': 'Table Tennis',
+        'gym-equipment': 'Gym & Strength',
+        fitness: 'Fitness & Recovery',
+        recreation: 'Recreation',
+        accessories: 'Accessories & Protection',
+      };
+      const catName = p.categoryName || categoryNameMap[cat] || (cat.charAt(0).toUpperCase() + cat.slice(1));
+
+      const defaultSubcategoryMap: Record<string, { id: string; name: string }> = {
+        tennis: { id: 'tennis-rackets', name: 'Tennis Racquets' },
+        cricket: { id: 'cricket-bats', name: 'Cricket Bats' },
+        badminton: { id: 'badminton-racquets', name: 'Badminton Racquets' },
+        football: { id: 'footballs', name: 'Footballs' },
+        pickleball: { id: 'pickleball-paddles', name: 'Pickleball Paddles' },
+        'table-tennis': { id: 'table-tennis-tables', name: 'Table Tennis Tables' },
+        'gym-equipment': { id: 'gym-strength', name: 'Gym & Strength' },
+        fitness: { id: 'fitness-recovery', name: 'Fitness & Recovery' },
+        recreation: { id: 'recreation', name: 'Recreation' },
+        accessories: { id: 'accessories', name: 'Accessories' },
+      };
+
+      const defaultSub = defaultSubcategoryMap[cat] || { id: cat, name: catName };
+      const subcategory = p.subcategory || defaultSub.id;
+      const subcategoryName = p.subcategoryName || defaultSub.name;
       const inStockVal =
         p.inStock !== undefined
           ? p.inStock
@@ -1897,9 +1961,11 @@ export function getAllLiveProducts(): Product[] {
         id: p.id || `prod-${stableSlug}`,
         slug: stableSlug,
         name: p.name || 'Product',
-        category: cat as any,
+        category: cat,
         categoryName: catName,
-        productType: (p.productType || (cat === 'cricket' ? 'bat' : cat === 'football' ? 'ball' : 'gear')) as any,
+        subcategory,
+        subcategoryName,
+        productType: (p.productType || (cat === 'cricket' ? 'bat' : cat === 'badminton' || cat === 'tennis' ? 'racket' : cat === 'football' ? 'ball' : 'gear')) as any,
         brand: p.brand || 'Oriental Sports',
         price: Number(p.price) || 0,
         originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
