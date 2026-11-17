@@ -23,6 +23,9 @@ import {
   RefreshCw,
   MapPin,
   AlertCircle,
+  XCircle,
+  Truck,
+  X,
 } from 'lucide-react';
 
 interface OrderTrackerProps {
@@ -38,8 +41,14 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
   const [isLocalSyncing, setIsLocalSyncing] = useState(false);
   const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
 
+  const [showConfirmCancelModal, setShowConfirmCancelModal] = useState(false);
+  const [showBlockedCancelModal, setShowBlockedCancelModal] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+  const [cancelSuccessFeedback, setCancelSuccessFeedback] = useState<string | null>(null);
+
   const { addToCart, openCart } = useCart();
-  const { syncOrders, isSyncingOrders } = useAuth();
+  const { syncOrders, isSyncingOrders, cancelOrder } = useAuth();
 
   const safeTotal = Number(order.totalAmount ?? (order as any).total_amount ?? 0);
   const safeSubtotal = Number(order.subtotal ?? (order as any).total_amount ?? safeTotal);
@@ -91,6 +100,43 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
       setTimeout(() => setSyncFeedback(null), 3000);
     } finally {
       setIsLocalSyncing(false);
+    }
+  };
+
+  const isShippedOrDispatched = (status?: string) => {
+    const norm = normalizeOrderStatus(status || order.status);
+    return ['shipped', 'in_transit', 'out_for_delivery', 'delivered', 'ready_for_pickup'].includes(norm);
+  };
+
+  const handleCancelClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCancelError(null);
+    if (isShippedOrDispatched(order.status)) {
+      setShowBlockedCancelModal(true);
+    } else {
+      setShowConfirmCancelModal(true);
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    setIsCancelling(true);
+    setCancelError(null);
+    try {
+      const res = await cancelOrder(order.orderNumber || order.id);
+      if (res.success) {
+        setShowConfirmCancelModal(false);
+        setCancelSuccessFeedback('Order cancelled successfully.');
+        setTimeout(() => setCancelSuccessFeedback(null), 4000);
+      } else if (res.error === 'no_cancel_after_shipping') {
+        setShowConfirmCancelModal(false);
+        setShowBlockedCancelModal(true);
+      } else {
+        setCancelError(res.error || 'Failed to cancel order.');
+      }
+    } catch (err: any) {
+      setCancelError(err?.message || 'Network error while cancelling order.');
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -449,6 +495,27 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
           ))}
         </div>
 
+        {/* Cancellation Success Feedback */}
+        {cancelSuccessFeedback && (
+          <div
+            style={{
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              marginBottom: '14px',
+              fontSize: '0.8125rem',
+              color: '#34D399',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <Check size={16} />
+            <span>{cancelSuccessFeedback}</span>
+          </div>
+        )}
+
         {/* Action bar */}
         <div
           style={{
@@ -498,6 +565,54 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
               <FileText size={14} />
               <span>TAX INVOICE</span>
             </button>
+
+            {/* Cancel Order Action */}
+            {order.status === 'cancelled' ? (
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  color: '#9CA3AF',
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '4px',
+                  padding: '8px 12px',
+                  minHeight: '44px',
+                }}
+              >
+                <XCircle size={14} color="#9CA3AF" />
+                <span>CANCELLED</span>
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={handleCancelClick}
+                className="btn btn-outline-danger btn-sm"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  minHeight: '44px',
+                  padding: '8px 14px',
+                  color: '#EF4444',
+                  backgroundColor: 'rgba(239, 68, 68, 0.06)',
+                  border: '1px solid rgba(239, 68, 68, 0.35)',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <XCircle size={14} />
+                <span>CANCEL ORDER</span>
+              </button>
+            )}
           </div>
 
           <a
@@ -615,6 +730,309 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
         )}
       </div>
 
+      {/* =====================================================================
+          CONFIRM CANCELLATION MODAL (Before Shipping)
+         ===================================================================== */}
+      {showConfirmCancelModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-confirm-title"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.78)',
+            backdropFilter: 'blur(5px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '16px',
+          }}
+          onClick={() => !isCancelling && setShowConfirmCancelModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#181818',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: '8px',
+              width: '100%',
+              maxWidth: '480px',
+              padding: '24px',
+              color: '#FFFFFF',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#EF4444',
+                  }}
+                >
+                  <AlertCircle size={20} />
+                </div>
+                <div>
+                  <h3 id="cancel-confirm-title" style={{ margin: 0, fontSize: '1.0625rem', fontWeight: 800 }}>
+                    Cancel Order?
+                  </h3>
+                  <span style={{ fontSize: '0.75rem', color: '#9CA3AF', fontFamily: 'monospace' }}>
+                    {order.orderNumber}
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => !isCancelling && setShowConfirmCancelModal(false)}
+                disabled={isCancelling}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#9CA3AF',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  minHeight: '44px',
+                  minWidth: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.875rem', color: '#D1D5DB', lineHeight: 1.5, margin: '0 0 16px 0' }}>
+              Are you sure you want to cancel this order? Equipment reservation at our Camp workshop will be released, and your payment will be refunded to your original payment method.
+            </p>
+
+            <div
+              style={{
+                backgroundColor: '#121212',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '6px',
+                padding: '12px 14px',
+                marginBottom: '20px',
+                fontSize: '0.8125rem',
+              }}
+            >
+              <div style={{ color: '#9CA3AF', marginBottom: '4px' }}>Items to be cancelled:</div>
+              <div style={{ color: '#FFFFFF', fontWeight: 600 }}>
+                {safeItems.map((it) => it.productName).join(', ') || 'Oriental Sports Equipment'}
+              </div>
+              <div style={{ color: '#FFFFFF', fontWeight: 700, marginTop: '6px' }}>
+                Refund Total: ₹{safeTotal.toLocaleString('en-IN')}
+              </div>
+            </div>
+
+            {cancelError && (
+              <div
+                style={{
+                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '4px',
+                  padding: '10px 12px',
+                  color: '#EF4444',
+                  fontSize: '0.8125rem',
+                  marginBottom: '16px',
+                }}
+              >
+                {cancelError}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setShowConfirmCancelModal(false)}
+                disabled={isCancelling}
+                className="btn btn-outline-light btn-sm"
+                style={{
+                  minHeight: '44px',
+                  padding: '10px 18px',
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                }}
+              >
+                Keep Order
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmCancel}
+                disabled={isCancelling}
+                className="btn btn-primary btn-sm"
+                style={{
+                  minHeight: '44px',
+                  padding: '10px 18px',
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                  backgroundColor: '#C8102E',
+                  borderColor: '#C8102E',
+                  color: '#FFFFFF',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                {isCancelling ? (
+                  <>
+                    <RefreshCw size={14} className="spin" />
+                    <span>Cancelling...</span>
+                  </>
+                ) : (
+                  <span>Confirm Cancellation</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          BLOCKED CANCELLATION MODAL (After Shipping)
+         ===================================================================== */}
+      {showBlockedCancelModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-blocked-title"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.78)',
+            backdropFilter: 'blur(5px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '16px',
+          }}
+          onClick={() => setShowBlockedCancelModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#181818',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: '8px',
+              width: '100%',
+              maxWidth: '480px',
+              padding: '24px',
+              color: '#FFFFFF',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#F59E0B',
+                  }}
+                >
+                  <Truck size={20} />
+                </div>
+                <div>
+                  <h3 id="cancel-blocked-title" style={{ margin: 0, fontSize: '1.0625rem', fontWeight: 800 }}>
+                    Cancellation Not Available
+                  </h3>
+                  <span style={{ fontSize: '0.75rem', color: '#9CA3AF', fontFamily: 'monospace' }}>
+                    {order.orderNumber}
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBlockedCancelModal(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#9CA3AF',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  minHeight: '44px',
+                  minWidth: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div
+              style={{
+                backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                border: '1px solid rgba(245, 158, 11, 0.25)',
+                borderRadius: '6px',
+                padding: '12px 14px',
+                marginBottom: '16px',
+                fontSize: '0.875rem',
+                lineHeight: 1.5,
+                color: '#FEF3C7',
+              }}
+            >
+              <strong style={{ display: 'block', marginBottom: '2px', color: '#FBBF24' }}>
+                No cancellations after shipping
+              </strong>
+              This order has already been dispatched with <strong>{order.carrier || 'DTDC Express Pune'}</strong>{order.trackingNumber ? ` (AWB: ${order.trackingNumber})` : ''} and is currently in transit.
+            </div>
+
+            <p style={{ fontSize: '0.8125rem', color: '#9CA3AF', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+              Per Oriental Sports dispatch policy, shipments cannot be intercepted or cancelled once handed over to the courier. If you need a replacement, return, or stringing modification upon delivery, please contact our Camp Store team.
+            </p>
+
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setShowBlockedCancelModal(false)}
+                className="btn btn-outline-light btn-sm"
+                style={{
+                  minHeight: '44px',
+                  padding: '10px 18px',
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                }}
+              >
+                Understood
+              </button>
+              <a
+                href={whatsappInquiryUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-primary btn-sm"
+                style={{
+                  minHeight: '44px',
+                  padding: '10px 18px',
+                  fontSize: '0.8125rem',
+                  fontWeight: 700,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <MessageCircle size={14} />
+                <span>Camp Store Support</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

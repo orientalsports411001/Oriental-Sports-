@@ -29,6 +29,7 @@ interface AuthContextType {
   getOrderById: (orderId: string) => Order | undefined;
   addOrder: (order: Order) => Promise<Order>;
   syncOrders: (userIdOrPhone?: string) => Promise<Order[]>;
+  cancelOrder: (orderNumber: string) => Promise<{ success: boolean; error?: string }>;
   isSyncingOrders: boolean;
   returnToUrl: string | null;
 }
@@ -211,6 +212,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved;
   };
 
+  const cancelOrder = async (orderNumber: string): Promise<{ success: boolean; error?: string }> => {
+    const result = await AuthService.cancelOrder(orderNumber);
+    if (result.success) {
+      setUser(AuthService.getCurrentUser());
+    }
+    return result;
+  };
+
   const isSyncingRef = useRef(false);
 
   const syncOrders = useCallback(async (userIdOrPhone?: string): Promise<Order[]> => {
@@ -267,6 +276,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setDefaultAddress,
         getOrderById,
         addOrder,
+        cancelOrder,
         syncOrders,
         isSyncingOrders,
         returnToUrl,

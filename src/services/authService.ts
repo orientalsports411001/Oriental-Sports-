@@ -754,6 +754,141 @@ export class AuthService {
   }
 
   /**
+   * Customer-initiated order cancellation.
+   * Only permitted before shipping/dispatch (confirmed, processing, paid).
+   * Once dispatched, shipped, in_transit, out_for_delivery, delivered, or ready_for_pickup,
+   * cancellation is blocked and returns error: 'no_cancel_after_shipping'.
+   */
+  static async cancelOrder(orderNumber: string): Promise<{ success: boolean; error?: string }> {
+    const current = this.getCurrentUser();
+    const stored = getStoredPlacedOrders();
+    const target = stored.find(
+      (o) => o.orderNumber === orderNumber || o.id === orderNumber
+    );
+
+    if (!target) {
+      return { success: false, error: 'Order not found.' };
+    }
+
+    const uncancelableStatuses = new Set([
+      'dispatched',
+      'shipped',
+      'in_transit',
+      'out_for_delivery',
+      'delivered',
+      'ready_for_pickup',
+    ]);
+
+    const norm = normalizeOrderStatus(target.status);
+    if (uncancelableStatuses.has(norm) || uncancelableStatuses.has((target.status || '').toLowerCase().trim())) {
+      return { success: false, error: 'no_cancel_after_shipping' };
+    }
+
+    if (norm === 'cancelled' || target.status === 'cancelled') {
+      return { success: true };
+    }
+
+    const now = new Date().toISOString();
+    const updatedOrder: Order = {
+      ...target,
+      status: 'cancelled',
+      statusLabel: 'Order Cancelled',
+      timeline: generateOrderTimeline(
+        'cancelled',
+        target.date,
+        now,
+        target.trackingNumber,
+        target.carrier,
+        target.deliveryMethod,
+        target.shippingAddress?.street
+      ),
+      updatedAt: now,
+    };
+
+    // Update local storage
+    saveStoredPlacedOrder(updatedOrder);
+
+    // Update current session user
+    if (current) {
+      current.orders = (current.orders || []).map((o) =>
+        o.orderNumber === orderNumber || o.id === orderNumber ? updatedOrder : o
+      );
+      this.saveUser(current);
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('oriental_orders_updated', { detail: getStoredPlacedOrders() })
+      );
+    }
+
+    // Sync cancelled status to Admin Backend (triggers status change + cancellation email)
+    const adminPayload = {
+      id: updatedOrder.id,
+      order_number: updatedOrder.orderNumber,
+      user_id: current?.id || 'usr-guest',
+      customer_name: updatedOrder.shippingAddress?.name || current?.fullName || 'Customer',
+      customer_email:
+        (updatedOrder as any).customerEmail ||
+        (updatedOrder.shippingAddress as any)?.email ||
+        current?.email ||
+        '',
+      customer_phone: updatedOrder.shippingAddress?.phone || current?.phone || '',
+      status: 'cancelled',
+      total_amount: updatedOrder.totalAmount,
+      subtotal: updatedOrder.subtotal,
+      shipping: updatedOrder.shipping,
+      tax: updatedOrder.tax,
+      payment_method: updatedOrder.paymentMethod,
+      razorpay_payment_id: (updatedOrder as any).razorpayPaymentId,
+      tracking_number: updatedOrder.trackingNumber,
+      carrier: updatedOrder.carrier,
+      shipping_address: updatedOrder.shippingAddress,
+      items: (updatedOrder.items || []).map((it) => ({
+        product_name: it.productName,
+        price: it.price,
+        quantity: it.quantity,
+        selected_variant: it.selectedVariant,
+      })),
+      created_at: updatedOrder.date ? `${updatedOrder.date}T12:00:00.000Z` : now,
+      updated_at: now,
+    };
+
+    const endpoints = [
+      'https://admin.orientalsports.in/api/orders/sync',
+      (import.meta as any)?.env?.VITE_ADMIN_URL ? `${(import.meta as any).env.VITE_ADMIN_URL}/api/orders/sync` : null,
+      typeof window !== 'undefined' && !window.location.host.includes('orientalsports.in')
+        ? 'http://localhost:3001/api/orders/sync'
+        : null,
+    ].filter(Boolean) as string[];
+
+    try {
+      await Promise.allSettled(
+        endpoints.map((ep) =>
+          fetch(ep, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(adminPayload),
+            keepalive: true,
+          })
+        )
+      );
+    } catch {}
+
+    // Update Supabase if live
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase
+          .from('orders')
+          .update({ status: 'cancelled', updated_at: now })
+          .eq('order_number', updatedOrder.orderNumber);
+      } catch {}
+    }
+
+    return { success: true };
+  }
+
+  /**
    * Synchronizes user orders from remote admin API and Supabase database.
    * Merges remote status updates, tracking numbers, carriers, and timelines
    * into local storage and the active user session.

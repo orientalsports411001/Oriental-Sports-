@@ -760,21 +760,23 @@ export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number
 
   let result: AdminOrder;
   if (existingIndex >= 0) {
+    const existing = ordersCache[existingIndex];
     const updated: AdminOrder = {
-      ...ordersCache[existingIndex],
+      ...existing,
       ...order,
       // Keep the original id once set, even if the caller passed a
       // different one (e.g. Supabase's own id for the same order_number).
-      // Changing it here silently breaks any link/notification already
-      // generated from the old id (404 on click) the moment this order is
-      // next updated.
-      id: ordersCache[existingIndex].id,
+      id: existing.id,
+      items: order.items && order.items.length > 0 ? order.items : existing.items,
+      shipping_address: order.shipping_address || existing.shipping_address,
+      total_amount: order.total_amount ? Number(order.total_amount) : existing.total_amount,
+      subtotal: order.subtotal ? Number(order.subtotal) : existing.subtotal,
       // Storefront re-syncs and Supabase heals must not roll a status the
       // admin already advanced back to its creation value.
       status:
-        ordersCache[existingIndex].updated_at && order.status === 'confirmed'
-          ? ordersCache[existingIndex].status
-          : order.status ?? ordersCache[existingIndex].status,
+        existing.updated_at && order.status === 'confirmed'
+          ? existing.status
+          : order.status ?? existing.status,
       updated_at: now,
     };
     ordersCache[existingIndex] = updated;
