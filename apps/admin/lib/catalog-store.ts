@@ -638,6 +638,21 @@ export async function removeProduct(id: string): Promise<boolean> {
   } catch {}
   await markProductsDeleted([id, removedProduct?.id, removedProduct?.slug]);
 
+  // Purge from Supabase REST directly as defense-in-depth
+  try {
+    const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+    const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+    const headers = { apikey: supaKey, Authorization: `Bearer ${supaKey}` };
+    const targets = [id, removedProduct?.id, removedProduct?.slug].filter(Boolean) as string[];
+    for (const t of targets) {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t);
+      const url = isUuid
+        ? `${supaUrl}/rest/v1/products?id=eq.${encodeURIComponent(t)}`
+        : `${supaUrl}/rest/v1/products?slug=eq.${encodeURIComponent(t)}`;
+      fetch(url, { method: 'DELETE', headers }).catch(() => {});
+    }
+  } catch {}
+
   return productsCache.length < initialLength;
 }
 

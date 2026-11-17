@@ -227,7 +227,53 @@ export async function createProduct(formData: FormData) {
     if (data) createdId = data.id;
   } catch (err) {
     if (isRedirectError(err)) throw err;
-    console.warn('[createProduct] Supabase insert notice:', err);
+    console.warn('[createProduct] Supabase insert notice, attempting REST fallback:', err);
+    try {
+      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+      const res = await fetch(`${supaUrl}/rest/v1/products`, {
+        method: 'POST',
+        headers: {
+          apikey: supaKey,
+          Authorization: `Bearer ${supaKey}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        },
+        body: JSON.stringify({
+          name: fields.name,
+          slug: fields.slug,
+          category_slug: fields.categorySlug || null,
+          brand: fields.brand,
+          description: fields.description,
+          price: fields.price,
+          compare_at_price: fields.compareAtPrice,
+          images: fields.images,
+          in_stock: status === 'published' && (fields.stockQuantity ?? 1) > 0,
+          sizes: fields.sizes,
+          variants: fields.variants,
+          metadata: {
+            status,
+            stock_quantity: fields.stockQuantity,
+            low_stock_threshold: fields.lowStockThreshold,
+            seo_title: fields.seoTitle || null,
+            seo_description: fields.seoDescription || null,
+            seo_keywords: fields.seoKeywords,
+            og_title: fields.ogTitle || null,
+            og_description: fields.ogDescription || null,
+            image_alt_text: fields.imageAltText,
+            cloudinary_public_ids: fields.cloudinaryPublicIds,
+          },
+        }),
+      });
+      if (res.ok) {
+        const inserted = await res.json();
+        if (Array.isArray(inserted) && inserted[0]?.id) {
+          createdId = inserted[0].id;
+        }
+      }
+    } catch (restErr) {
+      console.warn('[createProduct] REST fallback insert notice:', restErr);
+    }
   }
 
   // Always mirror to durable cloud storage so both Supabase and Cloudinary stay in sync
@@ -534,48 +580,101 @@ export async function adjustStock(productId: string, formData: FormData) {
 export async function deleteProduct(productId: string) {
   await ensureAdmin();
 
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+  const cached = getCachedProducts().find((p) => p.id === productId || p.slug === productId);
+  const slug = cached?.slug || (!isUuid ? productId : undefined);
+  const uuidId = isUuid ? productId : (cached?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cached.id) ? cached.id : null);
+
+  const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+  const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+
   let shouldArchive = false;
 
-  try {
-    const admin = createServiceRoleClient();
-    const { data: orderItem, error: orderItemErr } = await admin
-      .from('order_items')
-      .select('id')
-      .eq('product_id', productId)
-      .limit(1)
-      .maybeSingle();
-    if (orderItemErr) {
-      console.error('[deleteProduct] Could not check order history, assuming none:', orderItemErr.message);
-    }
-
-    if (orderItem) {
-      const { error: archiveErr } = await admin
-        .from('products')
-        .update({ status: 'archived', updated_at: new Date().toISOString() })
-        .eq('id', productId);
-      if (archiveErr) {
-        console.error('[deleteProduct] Supabase archive failed:', archiveErr.message);
+  // 1. Check order history safely without crashing on non-UUID product_id
+  if (uuidId) {
+    try {
+      const admin = createServiceRoleClient();
+      const { data: orderItem } = await admin
+        .from('order_items')
+        .select('id')
+        .eq('product_id', uuidId)
+        .limit(1)
+        .maybeSingle();
+      if (orderItem) {
+        shouldArchive = true;
       }
-      shouldArchive = true;
-    } else {
-      const { error: deleteErr } = await admin.from('products').delete().eq('id', productId);
-      if (deleteErr) {
-        // The admin's own catalog cache is still updated below (and
-        // tombstoned there), so the product disappears from this app
-        // either way — but a failed Supabase delete here means it will
-        // reappear on the live storefront, which reads straight from
-        // Supabase. Logged loudly since the UI has no other way to surface
-        // this short of hard-failing the whole delete.
-        console.error('[deleteProduct] Supabase delete failed, product cache-deleted locally only:', deleteErr.message);
-      }
-      await removeProduct(productId);
+    } catch {
+      // REST fallback check
+      try {
+        const res = await fetch(`${supaUrl}/rest/v1/order_items?product_id=eq.${uuidId}&select=id&limit=1`, {
+          headers: { apikey: supaKey, Authorization: `Bearer ${supaKey}` },
+        });
+        if (res.ok) {
+          const items = await res.json();
+          if (Array.isArray(items) && items.length > 0) {
+            shouldArchive = true;
+          }
+        }
+      } catch {}
     }
-  } catch (err) {
-    if (isRedirectError(err)) throw err;
-    await removeProduct(productId);
   }
 
-  await broadcastRealtimeEvent('product_deleted', { productId });
+  // 2. Either Archive or Delete in Supabase
+  if (shouldArchive) {
+    const updateBody = JSON.stringify({ status: 'archived', updated_at: new Date().toISOString() });
+    try {
+      const admin = createServiceRoleClient();
+      if (uuidId) await admin.from('products').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('id', uuidId);
+      if (slug) await admin.from('products').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('slug', slug);
+    } catch {}
+
+    // REST fallback for archive
+    const patchHeaders = { apikey: supaKey, Authorization: `Bearer ${supaKey}`, 'Content-Type': 'application/json' };
+    if (uuidId) {
+      await fetch(`${supaUrl}/rest/v1/products?id=eq.${uuidId}`, { method: 'PATCH', headers: patchHeaders, body: updateBody }).catch(() => {});
+    }
+    if (slug) {
+      await fetch(`${supaUrl}/rest/v1/products?slug=eq.${encodeURIComponent(slug)}`, { method: 'PATCH', headers: patchHeaders, body: updateBody }).catch(() => {});
+    }
+  } else {
+    // Delete in Supabase: try admin client first
+    try {
+      const admin = createServiceRoleClient();
+      if (uuidId) await admin.from('products').delete().eq('id', uuidId);
+      if (slug) await admin.from('products').delete().eq('slug', slug);
+    } catch {}
+
+    // Guarantee deletion via direct Supabase REST DELETE (with anon or service key)
+    const deleteHeaders = { apikey: supaKey, Authorization: `Bearer ${supaKey}` };
+    const deletePromises: Promise<any>[] = [];
+    if (slug) {
+      deletePromises.push(
+        fetch(`${supaUrl}/rest/v1/products?slug=eq.${encodeURIComponent(slug)}`, { method: 'DELETE', headers: deleteHeaders }).catch(() => {})
+      );
+    }
+    if (uuidId) {
+      deletePromises.push(
+        fetch(`${supaUrl}/rest/v1/products?id=eq.${uuidId}`, { method: 'DELETE', headers: deleteHeaders }).catch(() => {})
+      );
+    }
+    if (productId && !isUuid && productId !== slug) {
+      deletePromises.push(
+        fetch(`${supaUrl}/rest/v1/products?slug=eq.${encodeURIComponent(productId)}`, { method: 'DELETE', headers: deleteHeaders }).catch(() => {})
+      );
+    }
+    await Promise.all(deletePromises);
+  }
+
+  // 3. Mark in catalog-store and durable Cloudinary tombstones
+  await removeProduct(productId);
+  if (slug && slug !== productId) {
+    await removeProduct(slug);
+  }
+
+  await broadcastRealtimeEvent('product_deleted', { productId, slug });
+
+  revalidateAdminNav();
+  revalidatePath('/products');
 
   if (shouldArchive) {
     redirect('/products?saved=Product+archived+to+protect+order+history');

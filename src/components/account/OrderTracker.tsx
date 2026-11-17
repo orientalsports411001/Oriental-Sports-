@@ -5,7 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { PRODUCTS } from '../../data/products';
 import { STORE_INFO } from '../../data/storeInfo';
-import { generateOrderTimeline, getOrderStatusLabel } from '../../utils/orderTimeline';
+import { generateOrderTimeline, getOrderStatusLabel, normalizeOrderStatus } from '../../utils/orderTimeline';
 import { printOrderInvoice } from '../../utils/printInvoice';
 import { OrderStatusStepper } from '../orders/OrderStatusStepper';
 import { FALLBACK_IMAGE } from '../../data/media';

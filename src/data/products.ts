@@ -1,4 +1,4 @@
-import { Product } from '../types';
+import { Product, SportCategory } from '../types';
 import { supabase } from '../lib/supabase';
 import { GYM_PRODUCTS } from './gymProducts';
 import { EXERCISE_BIKES } from './exerciseBikes';
@@ -1682,10 +1682,56 @@ export const PRODUCTS: Product[] = [
 ];
 
 let supabaseLiveItems: Product[] = [];
+let cloudDeletedSlugs = new Set<string>();
+
+export async function fetchDeletedProductsTombstone(): Promise<Set<string>> {
+  try {
+    const res = await fetch('https://res.cloudinary.com/kvdrimse/raw/upload/os_deleted_products', {
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const arr = await res.json();
+      if (Array.isArray(arr)) {
+        arr.forEach((item) => {
+          if (typeof item === 'string' && item.trim()) {
+            cloudDeletedSlugs.add(item.toLowerCase().trim());
+          }
+        });
+        if (typeof window !== 'undefined') {
+          try {
+            const raw = localStorage.getItem('os_deleted_products');
+            const localArr: string[] = raw ? JSON.parse(raw) : [];
+            const merged = Array.from(new Set([...localArr, ...arr]));
+            localStorage.setItem('os_deleted_products', JSON.stringify(merged));
+
+            // Clean custom products in localStorage if any match deleted
+            const custRaw = localStorage.getItem('os_custom_products');
+            if (custRaw) {
+              const cust = JSON.parse(custRaw);
+              if (Array.isArray(cust)) {
+                const cleaned = cust.filter(
+                  (p: any) =>
+                    !cloudDeletedSlugs.has(String(p.id || '').toLowerCase().trim()) &&
+                    !cloudDeletedSlugs.has(String(p.slug || '').toLowerCase().trim()) &&
+                    !cloudDeletedSlugs.has(String(p.name || '').toLowerCase().trim())
+                );
+                if (cleaned.length !== cust.length) {
+                  localStorage.setItem('os_custom_products', JSON.stringify(cleaned));
+                }
+              }
+            }
+          } catch {}
+        }
+      }
+    }
+  } catch {}
+  return cloudDeletedSlugs;
+}
 
 export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
   if (typeof window === 'undefined') return [];
   try {
+    await fetchDeletedProductsTombstone().catch(() => {});
     const supaUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
     const supaKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
     if (!supaUrl || !supaKey) return [];
@@ -1698,7 +1744,16 @@ export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data)) {
-        supabaseLiveItems = data.map((p: any): Product => {
+        const activeData = data.filter((p: any) => {
+          const id = String(p.id || '').toLowerCase().trim();
+          const slug = String(p.slug || '').toLowerCase().trim();
+          const name = String(p.name || '').toLowerCase().trim();
+          if (id && cloudDeletedSlugs.has(id)) return false;
+          if (slug && cloudDeletedSlugs.has(slug)) return false;
+          if (name && cloudDeletedSlugs.has(name)) return false;
+          return true;
+        });
+        supabaseLiveItems = activeData.map((p: any): Product => {
           const status: 'draft' | 'published' | 'archived' =
             p.metadata?.status || (p.in_stock ? 'published' : 'draft');
           const stock_quantity = Number(p.metadata?.stock_quantity ?? (p.in_stock ? 10 : 0));
@@ -1772,7 +1827,9 @@ export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
 }
 
 if (typeof window !== 'undefined') {
-  fetchLiveSupabaseProducts().catch(() => {});
+  fetchDeletedProductsTombstone()
+    .then(() => fetchLiveSupabaseProducts())
+    .catch(() => {});
 
   // Supabase Realtime subscription on public.products and oriental_sports_sync broadcast channel
   try {
@@ -1785,7 +1842,8 @@ if (typeof window !== 'undefined') {
           'postgres_changes',
           { event: '*', schema: 'public', table: 'products' },
           () => {
-            fetchLiveSupabaseProducts()
+            fetchDeletedProductsTombstone()
+              .then(() => fetchLiveSupabaseProducts())
               .then(() => {
                 window.dispatchEvent(new CustomEvent('os_catalog_updated'));
               })
@@ -1796,7 +1854,8 @@ if (typeof window !== 'undefined') {
           'broadcast',
           { event: '*' },
           () => {
-            fetchLiveSupabaseProducts()
+            fetchDeletedProductsTombstone()
+              .then(() => fetchLiveSupabaseProducts())
               .then(() => {
                 window.dispatchEvent(new CustomEvent('os_catalog_updated'));
               })
@@ -1815,7 +1874,8 @@ if (typeof window !== 'undefined') {
   // never reach an already-open tab. This keeps "instant" honest as
   // "within ~45s" even when realtime isn't delivering.
   setInterval(() => {
-    fetchLiveSupabaseProducts()
+    fetchDeletedProductsTombstone()
+      .then(() => fetchLiveSupabaseProducts())
       .then(() => {
         window.dispatchEvent(new CustomEvent('os_catalog_updated'));
       })
@@ -1830,7 +1890,10 @@ export function getAllLiveProducts(): Product[] {
   try {
     const deletedRaw = localStorage.getItem('os_deleted_products');
     const deletedArr: string[] = deletedRaw ? JSON.parse(deletedRaw) : [];
-    const deletedSet = new Set(deletedArr.map((x) => String(x).toLowerCase().trim()));
+    const deletedSet = new Set([
+      ...deletedArr.map((x) => String(x).toLowerCase().trim()),
+      ...Array.from(cloudDeletedSlugs),
+    ]);
 
     const isDeleted = (p: { id?: string; slug?: string; name?: string }) => {
       if (p.id && deletedSet.has(p.id.toLowerCase().trim())) return true;
@@ -2075,22 +2138,27 @@ if (typeof window !== 'undefined') {
           localStorage.setItem('os_custom_products', JSON.stringify(stored));
         } catch {}
         window.dispatchEvent(new CustomEvent('os_catalog_updated'));
-      } else if (event.data?.type === 'PRODUCT_DELETED' && event.data?.id) {
+      } else if (event.data?.type === 'PRODUCT_DELETED' && (event.data?.id || event.data?.slug)) {
         try {
-          const id = event.data.id;
+          const id = event.data.id ? String(event.data.id).toLowerCase().trim() : '';
+          const slug = event.data.slug ? String(event.data.slug).toLowerCase().trim() : '';
+          if (id) cloudDeletedSlugs.add(id);
+          if (slug) cloudDeletedSlugs.add(slug);
+
           const raw = localStorage.getItem('os_custom_products') || '[]';
-          const stored = JSON.parse(raw).filter((x: any) => x.id !== id && x.slug !== id);
+          const stored = JSON.parse(raw).filter((x: any) => x.id !== id && x.slug !== id && x.slug !== slug);
           localStorage.setItem('os_custom_products', JSON.stringify(stored));
           const delRaw = localStorage.getItem('os_deleted_products') || '[]';
-          const delList = JSON.parse(delRaw);
-          if (!delList.includes(id)) {
-            delList.push(id);
-            localStorage.setItem('os_deleted_products', JSON.stringify(delList));
-          }
+          const delList: string[] = JSON.parse(delRaw);
+          if (id && !delList.includes(id)) delList.push(id);
+          if (slug && !delList.includes(slug)) delList.push(slug);
+          localStorage.setItem('os_deleted_products', JSON.stringify(delList));
         } catch {}
+        fetchDeletedProductsTombstone().catch(() => {});
         window.dispatchEvent(new CustomEvent('os_catalog_updated'));
       } else if (event.data?.type === 'CATALOG_SYNC_REQUESTED' || event.data?.type === 'PRODUCT_UPDATED') {
-        fetchLiveSupabaseProducts()
+        fetchDeletedProductsTombstone()
+          .then(() => fetchLiveSupabaseProducts())
           .then(() => {
             window.dispatchEvent(new CustomEvent('os_catalog_updated'));
           })
