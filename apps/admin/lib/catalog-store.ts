@@ -746,7 +746,14 @@ async function getCachedOrdersAsyncImpl(opts: { exact?: boolean } = {}): Promise
 }
 export const getCachedOrdersAsync = cache(getCachedOrdersAsyncImpl);
 
-export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number: string }): Promise<AdminOrder> {
+export type SaveAdminOrderResult = AdminOrder & {
+  isNew: boolean;
+  statusChanged: boolean;
+};
+
+export async function saveAdminOrder(
+  order: Partial<AdminOrder> & { order_number: string }
+): Promise<SaveAdminOrderResult> {
   // Hydrate from the cross-lambda cloud store first — on a cold serverless
   // instance ordersCache/disk are both empty, and writing straight from
   // that empty state would overwrite the shared Cloudinary blob with just
@@ -759,8 +766,14 @@ export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number
   const now = new Date().toISOString();
 
   let result: AdminOrder;
+  let isNew = false;
+  let statusChanged = false;
+
   if (existingIndex >= 0) {
     const existing = ordersCache[existingIndex];
+    const targetStatus = order.status || existing.status;
+    statusChanged = Boolean(targetStatus && targetStatus !== existing.status);
+
     const updated: AdminOrder = {
       ...existing,
       ...order,
@@ -782,6 +795,7 @@ export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number
     ordersCache[existingIndex] = updated;
     result = updated;
   } else {
+    isNew = true;
     const newOrder: AdminOrder = {
       id: order.id || `ord-${Date.now()}`,
       order_number: order.order_number,
@@ -818,7 +832,7 @@ export async function saveAdminOrder(order: Partial<AdminOrder> & { order_number
   // fire-and-forget upload here was silently dropped on Vercel, leaving
   // the customer-facing order sync endpoint reading stale data.
   await uploadCloudJson(ORDERS_BLOB_ID, ordersCache).catch(() => false);
-  return result;
+  return Object.assign(result, { isNew, statusChanged });
 }
 
 export async function updateOrder(id: string, updates: Partial<AdminOrder>): Promise<AdminOrder | null> {

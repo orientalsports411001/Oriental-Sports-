@@ -193,16 +193,23 @@ export async function POST(req: Request) {
     });
 
     // 1. Send customer confirmation email & store admin alert (awaited so serverless lambdas do not terminate early)
-    try {
-      await Promise.allSettled([
-        sendOrderStatusEmail({
-          order: saved,
-          stage: saved.status || 'confirmed',
-        }),
-        sendAdminNewOrderNotification(saved),
-      ]);
-    } catch (err) {
-      console.warn('[Sync Route] Error dispatching order emails:', err);
+    // ONLY send if this is a genuinely new order OR if its stage/status changed (e.g. cancelled).
+    // Never send duplicate emails on background re-syncs or existing unchanged orders!
+    if (saved.isNew || saved.statusChanged) {
+      try {
+        const promises: Promise<any>[] = [
+          sendOrderStatusEmail({
+            order: saved,
+            stage: saved.status || 'confirmed',
+          }),
+        ];
+        if (saved.isNew) {
+          promises.push(sendAdminNewOrderNotification(saved));
+        }
+        await Promise.allSettled(promises);
+      } catch (err) {
+        console.warn('[Sync Route] Error dispatching order emails:', err);
+      }
     }
 
     // Also attempt Supabase upsert in background if available — only with

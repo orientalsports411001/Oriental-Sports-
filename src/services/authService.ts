@@ -1116,64 +1116,6 @@ export class AuthService {
       }
     }
 
-    // 5. Self-heal: If user has local placed orders not yet recorded in the remote admin register, push them
-    try {
-      const remoteOrderNumbers = new Set(
-        remoteAdminOrders.map((ro) => ro.order_number || ro.id).filter(Boolean)
-      );
-      for (const localOrder of existingOrders) {
-        const orderNum = localOrder.orderNumber || localOrder.id;
-        if (orderNum && !remoteOrderNumbers.has(orderNum) && !BANNED_LEGACY_ORDERS.has(orderNum)) {
-          const healPayload = {
-            id: localOrder.id,
-            order_number: localOrder.orderNumber,
-            user_id: current?.id || 'usr-guest',
-            customer_name: localOrder.shippingAddress?.name || current?.fullName || 'Customer',
-            customer_email:
-              (localOrder as any).customerEmail ||
-              (localOrder.shippingAddress as any)?.email ||
-              current?.email ||
-              '',
-            customer_phone: localOrder.shippingAddress?.phone || current?.phone || '',
-            status: localOrder.status || 'confirmed',
-            total_amount: localOrder.totalAmount,
-            subtotal: localOrder.subtotal,
-            shipping: localOrder.shipping,
-            tax: localOrder.tax,
-            payment_method: localOrder.paymentMethod,
-            razorpay_payment_id: (localOrder as any).razorpayPaymentId,
-            tracking_number: localOrder.trackingNumber,
-            carrier: localOrder.carrier,
-            shipping_address: localOrder.shippingAddress,
-            items: (localOrder.items || []).map((it) => ({
-              product_name: it.productName,
-              price: it.price,
-              quantity: it.quantity,
-              selected_variant: it.selectedVariant,
-            })),
-            created_at: localOrder.date ? `${localOrder.date}T12:00:00.000Z` : new Date().toISOString(),
-          };
-
-          const endpoints = [
-            'https://admin.orientalsports.in/api/orders/sync',
-            (import.meta as any)?.env?.VITE_ADMIN_URL ? `${(import.meta as any).env.VITE_ADMIN_URL}/api/orders/sync` : null,
-            typeof window !== 'undefined' && !window.location.host.includes('orientalsports.in')
-              ? 'http://localhost:3001/api/orders/sync'
-              : null,
-          ].filter(Boolean) as string[];
-
-          for (const ep of endpoints) {
-            fetch(ep, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(healPayload),
-              keepalive: true,
-            }).catch(() => {});
-          }
-        }
-      }
-    } catch {}
-
     const mergedOrders = Array.from(orderMap.values());
 
     // Save to backup storage
