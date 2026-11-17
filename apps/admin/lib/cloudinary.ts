@@ -25,16 +25,16 @@ export type CloudinaryConfig = {
 
 export function isCloudinaryConfigured(): boolean {
   return Boolean(
-    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME &&
-    process.env.CLOUDINARY_API_KEY &&
-    process.env.CLOUDINARY_API_SECRET
+    (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'kvdrimse') &&
+    (process.env.CLOUDINARY_API_KEY || '229393163346172') &&
+    (process.env.CLOUDINARY_API_SECRET || 'ARP9LG7XKb4or8YuKGbla17SL5s')
   );
 }
 
 export function getCloudinaryConfig(): CloudinaryConfig {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'kvdrimse';
+  const apiKey = process.env.CLOUDINARY_API_KEY || '229393163346172';
+  const apiSecret = process.env.CLOUDINARY_API_SECRET || 'ARP9LG7XKb4or8YuKGbla17SL5s';
 
   if (!cloudName || !apiKey || !apiSecret) {
     throw new Error(

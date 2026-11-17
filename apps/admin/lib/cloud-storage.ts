@@ -3,8 +3,8 @@ import crypto from 'node:crypto';
 const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'kvdrimse';
 
 function credentials() {
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const apiKey = process.env.CLOUDINARY_API_KEY || '229393163346172';
+  const apiSecret = process.env.CLOUDINARY_API_SECRET || 'ARP9LG7XKb4or8YuKGbla17SL5s';
   if (!apiKey || !apiSecret) {
     throw new Error('CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET must be set.');
   }

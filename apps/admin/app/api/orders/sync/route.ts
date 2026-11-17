@@ -192,18 +192,18 @@ export async function POST(req: Request) {
       created_at: body.created_at || new Date().toISOString(),
     });
 
-    // 1. Send customer confirmation & invoice email notification
-    sendOrderStatusEmail({
-      order: saved,
-      stage: saved.status || 'confirmed',
-    }).catch((err) => {
-      console.warn('[Sync Route] Error sending customer order confirmation email:', err);
-    });
-
-    // 2. Send instant new order alert email to store admin (hello.orientalsports@gmail.com)
-    sendAdminNewOrderNotification(saved).catch((err) => {
-      console.warn('[Sync Route] Error sending admin new order alert email:', err);
-    });
+    // 1. Send customer confirmation email & store admin alert (awaited so serverless lambdas do not terminate early)
+    try {
+      await Promise.allSettled([
+        sendOrderStatusEmail({
+          order: saved,
+          stage: saved.status || 'confirmed',
+        }),
+        sendAdminNewOrderNotification(saved),
+      ]);
+    } catch (err) {
+      console.warn('[Sync Route] Error dispatching order emails:', err);
+    }
 
     // Also attempt Supabase upsert in background if available — only with
     // real configured credentials; no hardcoded prod fallback, so a
@@ -217,7 +217,7 @@ export async function POST(req: Request) {
           : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
       if (supaUrl && supaKey) {
-        fetch(`${supaUrl}/rest/v1/orders?on_conflict=order_number`, {
+        await fetch(`${supaUrl}/rest/v1/orders?on_conflict=order_number`, {
           method: 'POST',
           headers: {
             apikey: supaKey,
