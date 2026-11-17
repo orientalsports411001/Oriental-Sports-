@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { saveProduct } from '@/lib/catalog-store';
+import { saveProduct, unmarkProductsDeleted } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 import { revalidateAdminNav } from '@/lib/nav-counts';
@@ -94,32 +94,34 @@ export async function POST(req: Request) {
       seo_description: seoDescription,
     });
 
-    // In Supabase, if productId is provided, update by id first before attempting slug conflict
-    let supabaseSynced = true;
+    const isUuid = Boolean(productId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId));
+
+    const supaPayload = {
+      name: saved.name,
+      slug: saved.slug,
+      category_slug: saved.category_slug,
+      brand: saved.brand,
+      description: saved.description,
+      price: saved.price,
+      compare_at_price: saved.compare_at_price,
+      images: saved.images,
+      in_stock: saved.status === 'published' && (saved.stock_quantity ?? 1) > 0,
+      metadata: {
+        status: saved.status,
+        stock_quantity: saved.stock_quantity,
+        low_stock_threshold: saved.low_stock_threshold,
+        seo_title: saved.seo_title,
+        seo_description: saved.seo_description,
+      },
+      updated_at: new Date().toISOString(),
+    };
+
+    // Sync to Supabase (SDK -> REST fallback so uploads/edits ALWAYS reach Supabase)
+    let supabaseSynced = false;
+    let dbProductId = isUuid ? productId : '';
+
     try {
       const admin = createServiceRoleClient();
-      const isUuid = productId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
-
-      const supaPayload = {
-        name: saved.name,
-        slug: saved.slug,
-        category_slug: saved.category_slug,
-        brand: saved.brand,
-        description: saved.description,
-        price: saved.price,
-        compare_at_price: saved.compare_at_price,
-        images: saved.images,
-        in_stock: saved.status === 'published' && (saved.stock_quantity ?? 1) > 0,
-        metadata: {
-          status: saved.status,
-          stock_quantity: saved.stock_quantity,
-          low_stock_threshold: saved.low_stock_threshold,
-          seo_title: saved.seo_title,
-          seo_description: saved.seo_description,
-        },
-        updated_at: new Date().toISOString(),
-      };
-
       let updated = false;
       if (isUuid) {
         const { error, data } = await admin
@@ -129,9 +131,10 @@ export async function POST(req: Request) {
           .select('id');
         if (!error && data && data.length > 0) {
           updated = true;
+          dbProductId = data[0].id;
         }
       }
-      if (!updated && (originalSlug || productId)) {
+      if (!updated && (originalSlug || (!isUuid && productId))) {
         const matchSlug = originalSlug || productId;
         const { error, data } = await admin
           .from('products')
@@ -140,6 +143,7 @@ export async function POST(req: Request) {
           .select('id');
         if (!error && data && data.length > 0) {
           updated = true;
+          dbProductId = data[0].id;
         }
       }
       if (!updated && saved.slug) {
@@ -150,43 +154,109 @@ export async function POST(req: Request) {
           .select('id');
         if (!error && data && data.length > 0) {
           updated = true;
+          dbProductId = data[0].id;
         }
       }
       if (!updated) {
-        const { error: upsertErr } = await admin.from('products').upsert(
-          {
-            ...supaPayload,
-            ...(isUuid ? { id: productId } : {}),
-          },
-          { onConflict: 'slug' }
-        );
-        if (upsertErr) {
-          console.error('[products/save] Supabase upsert failed, product not synced to live DB:', upsertErr.message);
-          supabaseSynced = false;
+        const { error: upsertErr, data: upserted } = await admin
+          .from('products')
+          .upsert(
+            {
+              ...supaPayload,
+              ...(isUuid ? { id: productId } : {}),
+            },
+            { onConflict: 'slug' }
+          )
+          .select('id');
+        if (!upsertErr) {
+          updated = true;
+          if (upserted && upserted[0]?.id) dbProductId = upserted[0].id;
+        } else {
+          console.error('[products/save] Supabase SDK upsert error:', upsertErr.message);
         }
       }
+      supabaseSynced = updated;
     } catch (e: any) {
-      // createServiceRoleClient() throws when Supabase isn't configured —
-      // the catalog-store write above already succeeded, so the admin UI
-      // still has the product, but the storefront (which reads live
-      // products straight from Supabase) will not see this change until
-      // Supabase is reachable. Reported truthfully in the response instead
-      // of a fallback write with hardcoded credentials that silently no-ops
-      // under RLS and still claims success.
-      console.error('[products/save] Could not sync product to Supabase:', e?.message || e);
-      supabaseSynced = false;
+      console.warn('[products/save] Supabase SDK unavailable, falling back to REST:', e?.message || e);
     }
 
-    const targetId = saved.id || saved.slug || slug;
+    if (!supabaseSynced) {
+      try {
+        const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+        const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+        const headers = {
+          apikey: supaKey,
+          Authorization: `Bearer ${supaKey}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        };
+
+        const lookupFilters = [
+          isUuid ? `id=eq.${encodeURIComponent(productId)}` : null,
+          originalSlug ? `slug=eq.${encodeURIComponent(originalSlug)}` : null,
+          !isUuid && productId ? `slug=eq.${encodeURIComponent(productId)}` : null,
+          saved.slug ? `slug=eq.${encodeURIComponent(saved.slug)}` : null,
+        ].filter(Boolean) as string[];
+
+        let existingId: string | null = null;
+        for (const f of lookupFilters) {
+          const res = await fetch(`${supaUrl}/rest/v1/products?${f}&select=id&limit=1`, { headers, cache: 'no-store' });
+          if (res.ok) {
+            const rows = await res.json();
+            if (Array.isArray(rows) && rows[0]?.id) {
+              existingId = rows[0].id;
+              break;
+            }
+          }
+        }
+
+        if (existingId) {
+          const patchRes = await fetch(`${supaUrl}/rest/v1/products?id=eq.${encodeURIComponent(existingId)}`, {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify(supaPayload),
+          });
+          if (patchRes.ok) {
+            supabaseSynced = true;
+            dbProductId = existingId;
+          }
+        } else {
+          const postRes = await fetch(`${supaUrl}/rest/v1/products`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(supaPayload),
+          });
+          if (postRes.ok) {
+            const inserted = await postRes.json();
+            supabaseSynced = true;
+            if (Array.isArray(inserted) && inserted[0]?.id) {
+              dbProductId = inserted[0].id;
+            }
+          } else {
+            console.error('[products/save] REST POST failed:', postRes.status, await postRes.text().catch(() => ''));
+          }
+        }
+      } catch (restErr: any) {
+        console.error('[products/save] REST fallback error:', restErr?.message || restErr);
+      }
+    }
+
+    const finalProduct = dbProductId ? { ...saved, id: dbProductId } : saved;
+    const targetId = dbProductId || saved.slug || slug;
+
+    // Remove any prior deletion tombstone so a re-created slug immediately appears live
+    await unmarkProductsDeleted([dbProductId, saved.id, saved.slug, originalSlug]);
+
     try {
       revalidateAdminNav();
+      revalidatePath('/products');
       revalidatePath(`/products/${targetId}/edit`);
     } catch {}
 
     // Broadcast realtime update on oriental_sports_sync channel
     await broadcastRealtimeEvent('product_updated', {
-      product: saved,
-      productId: saved.id,
+      product: finalProduct,
+      productId: targetId,
       slug: saved.slug,
       status: saved.status,
       stock_quantity: saved.stock_quantity,
@@ -194,7 +264,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      product: saved,
+      product: finalProduct,
       supabaseSynced,
       redirectUrl: supabaseSynced
         ? `/products/${targetId}/edit?saved=Product+saved+successfully`

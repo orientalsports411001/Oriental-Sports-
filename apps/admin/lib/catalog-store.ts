@@ -300,7 +300,7 @@ async function getDeletedProductKeysAsyncImpl(): Promise<Set<string>> {
   try {
     const cloud = await fetchCloudJson<string[]>(DELETED_PRODUCTS_BLOB_ID);
     if (Array.isArray(cloud)) {
-      deletedProductKeysCache = new Set(cloud);
+      deletedProductKeysCache = new Set(cloud.map((k) => String(k).toLowerCase().trim()).filter(Boolean));
     }
   } catch {}
   return deletedProductKeysCache;
@@ -308,12 +308,37 @@ async function getDeletedProductKeysAsyncImpl(): Promise<Set<string>> {
 export const getDeletedProductKeysAsync = cache(getDeletedProductKeysAsyncImpl);
 
 async function markProductsDeleted(keys: (string | undefined)[]) {
-  const current = await getDeletedProductKeysAsync();
+  const exact = await fetchCloudJson<string[]>(DELETED_PRODUCTS_BLOB_ID, { exact: true });
+  const current = new Set<string>(
+    Array.isArray(exact)
+      ? exact.map((k) => String(k).toLowerCase().trim()).filter(Boolean)
+      : Array.from(deletedProductKeysCache)
+  );
   for (const k of keys) {
-    if (k) current.add(k);
+    if (k && k.trim()) current.add(k.toLowerCase().trim());
   }
   deletedProductKeysCache = current;
   await uploadCloudJson(DELETED_PRODUCTS_BLOB_ID, Array.from(current)).catch(() => false);
+}
+
+export async function unmarkProductsDeleted(keys: (string | undefined)[]) {
+  const normalized = keys.filter((k): k is string => Boolean(k && k.trim())).map((k) => k.toLowerCase().trim());
+  if (normalized.length === 0) return;
+
+  const exact = await fetchCloudJson<string[]>(DELETED_PRODUCTS_BLOB_ID, { exact: true });
+  const current = new Set<string>(
+    Array.isArray(exact)
+      ? exact.map((k) => String(k).toLowerCase().trim()).filter(Boolean)
+      : Array.from(deletedProductKeysCache)
+  );
+  let changed = false;
+  for (const k of normalized) {
+    if (current.delete(k)) changed = true;
+  }
+  if (changed) {
+    deletedProductKeysCache = current;
+    await uploadCloudJson(DELETED_PRODUCTS_BLOB_ID, Array.from(current)).catch(() => false);
+  }
 }
 
 export function filterDeletedProducts<T extends { id?: string; slug?: string }>(
@@ -321,35 +346,22 @@ export function filterDeletedProducts<T extends { id?: string; slug?: string }>(
   deletedKeys: Set<string>
 ): T[] {
   if (deletedKeys.size === 0) return products;
-  return products.filter((p) => !(p.id && deletedKeys.has(p.id)) && !(p.slug && deletedKeys.has(p.slug)));
+  return products.filter((p) => {
+    const idKey = p.id ? String(p.id).toLowerCase().trim() : '';
+    const slugKey = p.slug ? String(p.slug).toLowerCase().trim() : '';
+    return !(idKey && deletedKeys.has(idKey)) && !(slugKey && deletedKeys.has(slugKey));
+  });
 }
 
-/** Wrapped in React's per-request `cache()` below — see getDeletedProductKeysAsyncImpl. */
+/**
+ * Returns the canonical base catalog (131 static products) minus durable
+ * Cloudinary tombstones. Live / created / edited products come exclusively
+ * from Supabase (`getLiveSupabaseProducts()`), ensuring 1:1 parity with the
+ * storefront (`orientalsports.in`) with zero shadow-blob or /tmp drift.
+ */
 async function getCachedProductsAsyncImpl(): Promise<AdminProduct[]> {
-  const [, deletedKeys] = await Promise.all([
-    (async () => {
-      try {
-        const cloud = await fetchCloudJson<AdminProduct[]>('os_admin_products');
-        if (Array.isArray(cloud) && cloud.length > 0) {
-          const disk = readDiskCache() || [];
-          const diskIds = new Set(disk.map((d) => d.id || d.slug));
-          let changed = false;
-          for (const item of cloud) {
-            const key = item.id || item.slug;
-            if (key && !diskIds.has(key)) {
-              disk.unshift(item);
-              changed = true;
-            }
-          }
-          if (changed) {
-            writeDiskCache(disk);
-          }
-        }
-      } catch {}
-    })(),
-    getDeletedProductKeysAsync(),
-  ]);
-  return filterDeletedProducts(getCachedProducts(), deletedKeys);
+  const deletedKeys = await getDeletedProductKeysAsync();
+  return filterDeletedProducts(INITIAL_PRODUCTS, deletedKeys);
 }
 export const getCachedProductsAsync = cache(getCachedProductsAsyncImpl);
 
@@ -574,26 +586,10 @@ export function saveProduct(
   writeDiskCache(productsCache);
   syncToCatalogFiles(productsCache, result);
 
-  // Persist custom products to resilient cloud storage
-  try {
-    const customCandidates = productsCache.filter(
-      (p) => !INITIAL_PRODUCTS.some((b) => b.id === p.id && b.slug === p.slug)
-    );
-    uploadCloudJson('os_admin_products', customCandidates).catch(() => {});
-  } catch {}
-
   return result;
 }
 
 export async function removeProduct(id: string): Promise<boolean> {
-  // Hydrate from the shared cloud cache first — unlike saveProduct() and
-  // toggleProductVisibility(), this never used to push its result back to
-  // Cloudinary at all, so a delete only ever affected this one serverless
-  // instance's ephemeral disk cache: the very next request (or any request
-  // routed to a different instance) re-read the untouched cloud blob and the
-  // "deleted" product came right back.
-  await getCachedProductsAsync();
-
   const disk = readDiskCache();
   if (disk) productsCache = disk;
 
@@ -626,16 +622,6 @@ export async function removeProduct(id: string): Promise<boolean> {
     }
   } catch {}
 
-  // Push the pruned list (and a tombstone for the deleted id/slug) to the
-  // shared cloud store so the deletion survives across serverless instances
-  // and future requests — the actual fix for "I deleted it and it's still
-  // there".
-  try {
-    const customCandidates = productsCache.filter(
-      (p) => !INITIAL_PRODUCTS.some((b) => b.id === p.id && b.slug === p.slug)
-    );
-    await uploadCloudJson('os_admin_products', customCandidates).catch(() => false);
-  } catch {}
   await markProductsDeleted([id, removedProduct?.id, removedProduct?.slug]);
 
   // Purge from Supabase REST directly as defense-in-depth
@@ -644,13 +630,15 @@ export async function removeProduct(id: string): Promise<boolean> {
     const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
     const headers = { apikey: supaKey, Authorization: `Bearer ${supaKey}` };
     const targets = [id, removedProduct?.id, removedProduct?.slug].filter(Boolean) as string[];
-    for (const t of targets) {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t);
-      const url = isUuid
-        ? `${supaUrl}/rest/v1/products?id=eq.${encodeURIComponent(t)}`
-        : `${supaUrl}/rest/v1/products?slug=eq.${encodeURIComponent(t)}`;
-      fetch(url, { method: 'DELETE', headers }).catch(() => {});
-    }
+    await Promise.all(
+      targets.map((t) => {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t);
+        const url = isUuid
+          ? `${supaUrl}/rest/v1/products?id=eq.${encodeURIComponent(t)}`
+          : `${supaUrl}/rest/v1/products?slug=eq.${encodeURIComponent(t)}`;
+        return fetch(url, { method: 'DELETE', headers }).catch(() => {});
+      })
+    );
   } catch {}
 
   return productsCache.length < initialLength;
@@ -683,13 +671,6 @@ export function toggleProductVisibility(
   productsCache = [...current];
   writeDiskCache(productsCache);
   syncToCatalogFiles(productsCache, updated);
-
-  try {
-    const customCandidates = productsCache.filter(
-      (p) => !INITIAL_PRODUCTS.some((b) => b.id === p.id && b.slug === p.slug)
-    );
-    uploadCloudJson('os_admin_products', customCandidates).catch(() => {});
-  } catch {}
 
   return updated;
 }

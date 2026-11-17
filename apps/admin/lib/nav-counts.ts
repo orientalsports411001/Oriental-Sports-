@@ -1,5 +1,10 @@
 import { revalidatePath } from 'next/cache';
-import { getCachedOrdersAsync, getCachedProductsAsync } from '@/lib/catalog-store';
+import {
+  getCachedOrdersAsync,
+  getCachedProductsAsync,
+  getDeletedProductKeysAsync,
+  filterDeletedProducts,
+} from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 
 function uniqueProductCount(
@@ -10,8 +15,8 @@ function uniqueProductCount(
   let count = 0;
 
   const add = (id?: string | null, slug?: string | null) => {
-    const idKey = id ? `id:${id}` : '';
-    const slugKey = slug ? `slug:${slug}` : '';
+    const idKey = id ? `id:${String(id).toLowerCase().trim()}` : '';
+    const slugKey = slug ? `slug:${String(slug).toLowerCase().trim()}` : '';
     if ((idKey && seen.has(idKey)) || (slugKey && seen.has(slugKey))) return;
     if (idKey) seen.add(idKey);
     if (slugKey) seen.add(slugKey);
@@ -23,13 +28,17 @@ function uniqueProductCount(
   return count;
 }
 
-async function resolveProductsCount(cachedProducts: { id?: string; slug?: string }[]): Promise<number> {
+async function resolveProductsCount(
+  cachedProducts: { id?: string; slug?: string }[],
+  deletedKeys: Set<string>
+): Promise<number> {
   // Runs on every navigation via /api/products/count, so it must never select `images`.
   try {
     const admin = createServiceRoleClient();
     const { data: dbProducts } = await admin.from('products').select('id, slug');
-    if (Array.isArray(dbProducts) && dbProducts.length > 0) {
-      return uniqueProductCount(cachedProducts, dbProducts);
+    if (Array.isArray(dbProducts)) {
+      const activeDb = filterDeletedProducts(dbProducts, deletedKeys);
+      return uniqueProductCount(cachedProducts, activeDb);
     }
   } catch {}
 
@@ -42,8 +51,9 @@ async function resolveProductsCount(cachedProducts: { id?: string; slug?: string
     });
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        return uniqueProductCount(cachedProducts, data);
+      if (Array.isArray(data)) {
+        const activeDb = filterDeletedProducts(data, deletedKeys);
+        return uniqueProductCount(cachedProducts, activeDb);
       }
     }
   } catch {}
@@ -63,10 +73,14 @@ async function resolveOrdersCount(cachedCount: number): Promise<number> {
 }
 
 export async function getAdminNavCounts(): Promise<{ productsCount: number; ordersCount: number }> {
-  const [cachedProducts, cachedOrders] = await Promise.all([getCachedProductsAsync(), getCachedOrdersAsync()]);
+  const [cachedProducts, cachedOrders, deletedKeys] = await Promise.all([
+    getCachedProductsAsync(),
+    getCachedOrdersAsync(),
+    getDeletedProductKeysAsync(),
+  ]);
 
   const [productsCount, ordersCount] = await Promise.all([
-    resolveProductsCount(cachedProducts),
+    resolveProductsCount(cachedProducts, deletedKeys),
     resolveOrdersCount(cachedOrders.length),
   ]);
 

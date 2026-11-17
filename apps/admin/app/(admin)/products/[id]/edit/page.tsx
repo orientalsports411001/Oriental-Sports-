@@ -54,7 +54,36 @@ export default async function EditProductPage({
     }
     if (dbCategories && dbCategories.length > 0) categories = dbCategories;
   } catch (err) {
-    // Supabase unavailable, fallback to memory store
+    // Supabase service role unavailable, try REST fallback with anon key
+  }
+
+  if (!product) {
+    try {
+      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+      const supaKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+      const filter = isUuid
+        ? `id=eq.${encodeURIComponent(params.id)}`
+        : `slug=eq.${encodeURIComponent(params.id)}`;
+      const res = await fetch(`${supaUrl}/rest/v1/products?${filter}&select=*&limit=1`, {
+        headers: { apikey: supaKey, Authorization: `Bearer ${supaKey}` },
+        cache: 'no-store',
+      });
+      if (res.ok) {
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows[0]) {
+          const dbProduct = rows[0];
+          product = {
+            ...dbProduct,
+            status: dbProduct.metadata?.status ?? dbProduct.status ?? (dbProduct.in_stock === false ? 'draft' : 'published'),
+            stock_quantity: Number(dbProduct.metadata?.stock_quantity ?? dbProduct.stock_quantity ?? 50),
+            low_stock_threshold: Number(dbProduct.metadata?.low_stock_threshold ?? dbProduct.low_stock_threshold ?? 5),
+            is_featured: Boolean(dbProduct.metadata?.is_featured ?? dbProduct.is_featured),
+            seo_title: dbProduct.metadata?.seo_title ?? dbProduct.seo_title,
+            seo_description: dbProduct.metadata?.seo_description ?? dbProduct.seo_description,
+          };
+        }
+      }
+    } catch {}
   }
 
   if (!product) {

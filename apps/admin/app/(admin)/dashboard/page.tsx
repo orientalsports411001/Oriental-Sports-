@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
-import { getCachedProductsAsync, getCachedOrdersAsync, getDeletedProductKeysAsync, filterDeletedProducts } from '@/lib/catalog-store';
+import { getCachedProductsAsync, getCachedOrdersAsync, getDeletedProductKeysAsync, filterDeletedProducts, getLiveSupabaseProducts } from '@/lib/catalog-store';
 
 import { RevenueSplineChart } from '@/components/dashboard/RevenueSplineChart';
 import { MiniCalendarWidget } from '@/components/dashboard/MiniCalendarWidget';
@@ -17,23 +17,18 @@ export default async function DashboardPage({
 }) {
   await requireAdmin();
 
-  let rawDbProducts: any[] = [];
   let dbOrders: any[] = [];
 
-  const [, cachedProducts, cachedOrders, deletedProductKeys] = await Promise.all([
+  const [rawDbProducts, , cachedProducts, cachedOrders, deletedProductKeys] = await Promise.all([
+    getLiveSupabaseProducts(),
     (async () => {
       try {
         const admin = createServiceRoleClient();
-        const [resProducts, resOrders] = await Promise.all([
-          // This page only needs stock figures; `images` can be megabytes of base64.
-          admin.from('products').select('id, slug, name, in_stock, metadata'),
-          admin
-            .from('orders')
-            .select('id, order_number, status, total_amount, created_at, updated_at, user_id, shipping_address, payment_method')
-            .order('created_at', { ascending: false })
-            .limit(100),
-        ]);
-        rawDbProducts = resProducts.data || [];
+        const resOrders = await admin
+          .from('orders')
+          .select('id, order_number, status, total_amount, created_at, updated_at, user_id, shipping_address, payment_method')
+          .order('created_at', { ascending: false })
+          .limit(100);
         dbOrders = resOrders.data || [];
       } catch (err) {
         // Supabase endpoint fallback

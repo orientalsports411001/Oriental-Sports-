@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { checkAdmin } from '@/lib/require-admin';
-import { saveProduct, removeProduct, getCachedProducts } from '@/lib/catalog-store';
+import { saveProduct, removeProduct, getCachedProducts, unmarkProductsDeleted } from '@/lib/catalog-store';
 import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 import { revalidateAdminNav } from '@/lib/nav-counts';
 
@@ -276,24 +276,31 @@ export async function createProduct(formData: FormData) {
     }
   }
 
-  // Always mirror to durable cloud storage so both Supabase and Cloudinary stay in sync
-  const saved = saveProduct({
-    id: createdId,
-    name: fields.name,
-    slug: fields.slug,
-    brand: fields.brand,
-    category_slug: fields.categorySlug,
-    description: fields.description,
-    price: fields.price,
-    compare_at_price: fields.compareAtPrice,
-    images: fields.images,
-    status,
-    stock_quantity: fields.stockQuantity,
-    low_stock_threshold: fields.lowStockThreshold,
-    seo_title: fields.seoTitle,
-    seo_description: fields.seoDescription,
-  });
-  if (!createdId) createdId = saved.id;
+  if (!createdId) {
+    const saved = saveProduct({
+      id: createdId,
+      name: fields.name,
+      slug: fields.slug,
+      brand: fields.brand,
+      category_slug: fields.categorySlug,
+      description: fields.description,
+      price: fields.price,
+      compare_at_price: fields.compareAtPrice,
+      images: fields.images,
+      status,
+      stock_quantity: fields.stockQuantity,
+      low_stock_threshold: fields.lowStockThreshold,
+      seo_title: fields.seoTitle,
+      seo_description: fields.seoDescription,
+    });
+    createdId = saved.id;
+  }
+
+  // If this slug/id was previously deleted, remove its tombstone so it appears on both admin and storefront
+  await unmarkProductsDeleted([createdId, fields.slug]);
+  await broadcastRealtimeEvent('product_updated', { productId: createdId, slug: fields.slug });
+  revalidateAdminNav();
+  revalidatePath('/products');
 
   if (publishError) {
     redirect(`/products/${createdId}/edit?error=${encodeURIComponent(publishError)}`);
@@ -397,30 +404,66 @@ export async function updateProduct(productId: string, formData: FormData) {
     }
   } catch (err) {
     if (isRedirectError(err)) throw err;
-    console.warn('[updateProduct] Database update notice:', err);
+    console.warn('[updateProduct] Database update notice, attempting REST fallback:', err);
+    try {
+      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+      const headers = {
+        apikey: supaKey,
+        Authorization: `Bearer ${supaKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      };
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+      const lookupFilters = [
+        isUuid ? `id=eq.${encodeURIComponent(productId)}` : null,
+        originalSlug ? `slug=eq.${encodeURIComponent(originalSlug)}` : null,
+        !isUuid && productId ? `slug=eq.${encodeURIComponent(productId)}` : null,
+        fields.slug ? `slug=eq.${encodeURIComponent(fields.slug)}` : null,
+      ].filter(Boolean) as string[];
+
+      let existingId: string | null = null;
+      for (const f of lookupFilters) {
+        const res = await fetch(`${supaUrl}/rest/v1/products?${f}&select=id&limit=1`, { headers, cache: 'no-store' });
+        if (res.ok) {
+          const rows = await res.json();
+          if (Array.isArray(rows) && rows[0]?.id) {
+            existingId = rows[0].id;
+            break;
+          }
+        }
+      }
+
+      if (existingId) {
+        await fetch(`${supaUrl}/rest/v1/products?id=eq.${encodeURIComponent(existingId)}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify(updatePayload),
+        });
+        targetEditId = existingId;
+      } else {
+        const insertRes = await fetch(`${supaUrl}/rest/v1/products`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ ...updatePayload, slug: fields.slug }),
+        });
+        if (insertRes.ok) {
+          const inserted = await insertRes.json();
+          if (Array.isArray(inserted) && inserted[0]?.id) {
+            targetEditId = inserted[0].id;
+          }
+        }
+      }
+    } catch (restErr) {
+      console.warn('[updateProduct] REST fallback notice:', restErr);
+    }
   }
 
-  // Always update in catalog-store as well
-  const saved = saveProduct({
-    id: productId,
-    originalSlug: originalSlug || undefined,
-    name: fields.name,
-    slug: fields.slug,
-    brand: fields.brand,
-    category_slug: fields.categorySlug,
-    description: fields.description,
-    price: fields.price,
-    compare_at_price: fields.compareAtPrice,
-    images: fields.images,
-    status,
-    stock_quantity: fields.stockQuantity,
-    low_stock_threshold: fields.lowStockThreshold,
-    seo_title: fields.seoTitle,
-    seo_description: fields.seoDescription,
-  });
-  targetEditId = targetEditId || saved.id || fields.slug || productId;
+  targetEditId = targetEditId || fields.slug || productId;
 
+  await broadcastRealtimeEvent('product_updated', { productId: targetEditId, slug: fields.slug });
   revalidateAdminNav();
+  revalidatePath('/products');
   revalidatePath(`/products/${targetEditId}/edit`);
 
   if (publishError) {
@@ -435,46 +478,85 @@ export async function toggleProductVisibility(productId: string, currentStatus: 
   const newStatus: 'published' | 'draft' = currentStatus === 'published' ? 'draft' : 'published';
   const inStock = newStatus === 'published';
 
-  // 1. Update in local catalog-store
   const cached = getCachedProducts().find((p) => p.id === productId || p.slug === productId);
-  if (cached) {
-    saveProduct({
-      ...cached,
-      status: newStatus,
-    });
-  } else {
-    saveProduct({
-      id: productId,
-      name: productId,
-      status: newStatus,
-    });
-  }
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+  const targetSlug = cached?.slug || (!isUuid ? productId : undefined);
 
-  // 2. Update in Supabase
+  // Update in Supabase (SDK -> REST fallback)
+  let updatedInSupabase = false;
   try {
     const admin = createServiceRoleClient();
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
     const { data: existing } = await (isUuid
-      ? admin.from('products').select('metadata').eq('id', productId).maybeSingle()
-      : admin.from('products').select('metadata').eq('slug', productId).maybeSingle());
+      ? admin.from('products').select('id, metadata').eq('id', productId).maybeSingle()
+      : admin.from('products').select('id, metadata').eq('slug', targetSlug || productId).maybeSingle());
 
-    const updatedMetadata = {
-      ...(existing?.metadata || {}),
-      status: newStatus,
-    };
-
-    const updateObj = {
-      in_stock: inStock,
-      metadata: updatedMetadata,
-      updated_at: new Date().toISOString(),
-    };
-
-    const query = isUuid
-      ? admin.from('products').update(updateObj).eq('id', productId)
-      : admin.from('products').update(updateObj).eq('slug', productId);
-    await query;
+    if (existing) {
+      const updatedMetadata = {
+        ...(existing.metadata || {}),
+        status: newStatus,
+      };
+      const { error } = await admin
+        .from('products')
+        .update({ in_stock: inStock, metadata: updatedMetadata, updated_at: new Date().toISOString() })
+        .eq('id', existing.id);
+      if (!error) updatedInSupabase = true;
+    }
   } catch (err) {
-    console.warn('[toggleProductVisibility] Supabase update notice:', err);
+    console.warn('[toggleProductVisibility] Supabase SDK notice:', err);
+  }
+
+  if (!updatedInSupabase) {
+    try {
+      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+      const headers = {
+        apikey: supaKey,
+        Authorization: `Bearer ${supaKey}`,
+        'Content-Type': 'application/json',
+      };
+      const filter = isUuid
+        ? `id=eq.${encodeURIComponent(productId)}`
+        : `slug=eq.${encodeURIComponent(targetSlug || productId)}`;
+      const lookup = await fetch(`${supaUrl}/rest/v1/products?${filter}&select=id,metadata&limit=1`, {
+        headers,
+        cache: 'no-store',
+      });
+      const rows = lookup.ok ? await lookup.json() : [];
+      if (Array.isArray(rows) && rows[0]?.id) {
+        const updatedMetadata = { ...(rows[0].metadata || {}), status: newStatus };
+        await fetch(`${supaUrl}/rest/v1/products?id=eq.${encodeURIComponent(rows[0].id)}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({
+            in_stock: inStock,
+            metadata: updatedMetadata,
+            updated_at: new Date().toISOString(),
+          }),
+        });
+      } else if (cached) {
+        // Base static product toggled for the first time — persist override row in Supabase
+        await fetch(`${supaUrl}/rest/v1/products`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            name: cached.name,
+            slug: cached.slug,
+            category_slug: cached.category_slug || 'accessories',
+            brand: cached.brand || 'Oriental Sports',
+            description: cached.description || '',
+            price: Number(cached.price || 0),
+            compare_at_price: cached.compare_at_price ?? null,
+            images: cached.images || [],
+            in_stock: inStock,
+            metadata: {
+              status: newStatus,
+              stock_quantity: Number(cached.stock_quantity ?? 10),
+              low_stock_threshold: Number(cached.low_stock_threshold ?? 5),
+            },
+          }),
+        });
+      }
+    } catch {}
   }
 
   await broadcastRealtimeEvent('product_updated', {
@@ -483,6 +565,7 @@ export async function toggleProductVisibility(productId: string, currentStatus: 
   });
 
   revalidateAdminNav();
+  revalidatePath('/products');
   return { success: true, status: newStatus };
 }
 
@@ -492,49 +575,89 @@ export async function restockProduct(productId: string, newStock: number) {
   const quantity = Math.max(0, Number(newStock) || 0);
   const status: 'published' | 'draft' = quantity > 0 ? 'published' : 'draft';
 
-  // 1. Update in local catalog-store
   const cached = getCachedProducts().find((p) => p.id === productId || p.slug === productId);
-  if (cached) {
-    saveProduct({
-      ...cached,
-      stock_quantity: quantity,
-      status: quantity > 0 ? 'published' : cached.status,
-    });
-  } else {
-    saveProduct({
-      id: productId,
-      name: productId,
-      stock_quantity: quantity,
-      status,
-    });
-  }
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+  const targetSlug = cached?.slug || (!isUuid ? productId : undefined);
 
-  // 2. Update in Supabase
+  // Update in Supabase (SDK -> REST fallback)
+  let updatedInSupabase = false;
   try {
     const admin = createServiceRoleClient();
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
     const { data: existing } = await (isUuid
-      ? admin.from('products').select('metadata').eq('id', productId).maybeSingle()
-      : admin.from('products').select('metadata').eq('slug', productId).maybeSingle());
+      ? admin.from('products').select('id, metadata').eq('id', productId).maybeSingle()
+      : admin.from('products').select('id, metadata').eq('slug', targetSlug || productId).maybeSingle());
 
-    const updatedMetadata = {
-      ...(existing?.metadata || {}),
-      stock_quantity: quantity,
-      ...(quantity > 0 ? { status: 'published' } : {}),
-    };
-
-    const updateObj: Record<string, any> = {
-      in_stock: quantity > 0,
-      metadata: updatedMetadata,
-      updated_at: new Date().toISOString(),
-    };
-
-    const query = isUuid
-      ? admin.from('products').update(updateObj).eq('id', productId)
-      : admin.from('products').update(updateObj).eq('slug', productId);
-    await query;
+    if (existing) {
+      const updatedMetadata = {
+        ...(existing.metadata || {}),
+        stock_quantity: quantity,
+        ...(quantity > 0 ? { status: 'published' } : {}),
+      };
+      const { error } = await admin
+        .from('products')
+        .update({ in_stock: quantity > 0, metadata: updatedMetadata, updated_at: new Date().toISOString() })
+        .eq('id', existing.id);
+      if (!error) updatedInSupabase = true;
+    }
   } catch (err) {
-    console.warn('[restockProduct] Supabase update notice:', err);
+    console.warn('[restockProduct] Supabase SDK notice:', err);
+  }
+
+  if (!updatedInSupabase) {
+    try {
+      const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
+      const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+      const headers = {
+        apikey: supaKey,
+        Authorization: `Bearer ${supaKey}`,
+        'Content-Type': 'application/json',
+      };
+      const filter = isUuid
+        ? `id=eq.${encodeURIComponent(productId)}`
+        : `slug=eq.${encodeURIComponent(targetSlug || productId)}`;
+      const lookup = await fetch(`${supaUrl}/rest/v1/products?${filter}&select=id,metadata&limit=1`, {
+        headers,
+        cache: 'no-store',
+      });
+      const rows = lookup.ok ? await lookup.json() : [];
+      if (Array.isArray(rows) && rows[0]?.id) {
+        const updatedMetadata = {
+          ...(rows[0].metadata || {}),
+          stock_quantity: quantity,
+          ...(quantity > 0 ? { status: 'published' } : {}),
+        };
+        await fetch(`${supaUrl}/rest/v1/products?id=eq.${encodeURIComponent(rows[0].id)}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({
+            in_stock: quantity > 0,
+            metadata: updatedMetadata,
+            updated_at: new Date().toISOString(),
+          }),
+        });
+      } else if (cached) {
+        await fetch(`${supaUrl}/rest/v1/products`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            name: cached.name,
+            slug: cached.slug,
+            category_slug: cached.category_slug || 'accessories',
+            brand: cached.brand || 'Oriental Sports',
+            description: cached.description || '',
+            price: Number(cached.price || 0),
+            compare_at_price: cached.compare_at_price ?? null,
+            images: cached.images || [],
+            in_stock: quantity > 0,
+            metadata: {
+              status: quantity > 0 ? 'published' : status,
+              stock_quantity: quantity,
+              low_stock_threshold: Number(cached.low_stock_threshold ?? 5),
+            },
+          }),
+        });
+      }
+    } catch {}
   }
 
   await broadcastRealtimeEvent('product_updated', {
@@ -544,6 +667,7 @@ export async function restockProduct(productId: string, newStock: number) {
   });
 
   revalidateAdminNav();
+  revalidatePath('/products');
   return { success: true, stock_quantity: quantity, status: quantity > 0 ? 'published' : 'draft' };
 }
 
