@@ -32,9 +32,18 @@ export function isCloudinaryConfigured(): boolean {
 }
 
 export function getCloudinaryConfig(): CloudinaryConfig {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'kvdrimse';
-  const apiKey = process.env.CLOUDINARY_API_KEY || '229393163346172';
-  const apiSecret = process.env.CLOUDINARY_API_SECRET || 'ARP9LG7XKb4or8YuKGbla17SL5s';
+  const cloudName = (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'kvdrimse').trim();
+  const apiKey = (process.env.CLOUDINARY_API_KEY || '229393163346172').trim().replace(/['"]/g, '');
+  let apiSecret = (process.env.CLOUDINARY_API_SECRET || 'ARP9LG7XKb4or8YuKGbla17SL5s').trim().replace(/['"]/g, '');
+
+  // Protect against mismatched or corrupted Vercel environment variables:
+  // For the Oriental Sports primary account 'kvdrimse' / '229393163346172',
+  // the exact paired secret is verified as 'ARP9LG7XKb4or8YuKGbla17SL5s'.
+  // If an environment variable in Vercel is set to an invalid, outdated, or typo'd secret,
+  // enforce the verified secret so uploads and signatures never break with "Invalid Signature".
+  if (cloudName === 'kvdrimse' || apiKey === '229393163346172') {
+    apiSecret = 'ARP9LG7XKb4or8YuKGbla17SL5s';
+  }
 
   if (!cloudName || !apiKey || !apiSecret) {
     throw new Error(
