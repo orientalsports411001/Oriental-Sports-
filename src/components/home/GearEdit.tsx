@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PRODUCTS } from '../../data/products';
+import { getLiveProducts } from '../../data/products';
 import { Product } from '../../types';
 import { ProductCard } from '../products/ProductCard';
 import { SpotlightCard } from '../ui/SpotlightCard';
@@ -15,7 +15,11 @@ import { Reveal, RevealLines, Stagger, StaggerItem } from '../motion/Reveal';
 
 // The four pieces photographed in the studio — consistent staging, real prices.
 const EDIT_IDS = ['prod-crick-01', 'prod-ten-01', 'prod-pb-01', 'prod-bad-01'];
-const EDIT = EDIT_IDS.map((id) => PRODUCTS.find((p) => p.id === id)).filter((p): p is Product => Boolean(p));
+
+function getEditProducts(): Product[] {
+  const live = getLiveProducts();
+  return EDIT_IDS.map((id) => live.find((p) => p.id === id)).filter((p): p is Product => Boolean(p));
+}
 
 const SERVICES = [
   { name: 'Racquet stringing', note: 'Badminton, tennis and squash' },
@@ -23,7 +27,17 @@ const SERVICES = [
   { name: 'Fitting advice', note: 'Grips, weights and sizes, in person' },
 ];
 
-export const GearEdit: React.FC = () => (
+export const GearEdit: React.FC = () => {
+  const [editProducts, setEditProducts] = useState<Product[]>(() => getEditProducts());
+
+  useEffect(() => {
+    const sync = () => setEditProducts(getEditProducts());
+    sync();
+    window.addEventListener('os_catalog_updated', sync);
+    return () => window.removeEventListener('os_catalog_updated', sync);
+  }, []);
+
+  return (
   <section className="gear-edit section" aria-labelledby="gear-edit-title">
     <div className="container gear-grid">
       <div className="gear-intro">
@@ -53,7 +67,7 @@ export const GearEdit: React.FC = () => (
       </div>
 
       <Stagger as="ul" className="gear-products" stagger={0.08} amount={0.1}>
-        {EDIT.map((product) => (
+        {editProducts.map((product) => (
           <StaggerItem as="li" key={product.id} className="gear-product">
             <SpotlightCard className="w-full h-full">
               <ProductCard product={product} sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 78vw" />
@@ -63,6 +77,7 @@ export const GearEdit: React.FC = () => (
       </Stagger>
     </div>
   </section>
-);
+  );
+};
 
 export default GearEdit;

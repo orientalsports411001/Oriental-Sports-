@@ -1692,6 +1692,7 @@ export async function fetchDeletedProductsTombstone(): Promise<Set<string>> {
     if (res.ok) {
       const arr = await res.json();
       if (Array.isArray(arr)) {
+        const prevSize = cloudDeletedSlugs.size;
         arr.forEach((item) => {
           if (typeof item === 'string' && item.trim()) {
             cloudDeletedSlugs.add(item.toLowerCase().trim());
@@ -1721,6 +1722,9 @@ export async function fetchDeletedProductsTombstone(): Promise<Set<string>> {
               }
             }
           } catch {}
+          if (cloudDeletedSlugs.size > prevSize) {
+            window.dispatchEvent(new CustomEvent('os_catalog_updated'));
+          }
         }
       }
     }

@@ -582,11 +582,31 @@ export async function deleteProduct(productId: string) {
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
   const cached = getCachedProducts().find((p) => p.id === productId || p.slug === productId);
-  const slug = cached?.slug || (!isUuid ? productId : undefined);
-  const uuidId = isUuid ? productId : (cached?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cached.id) ? cached.id : null);
+  let slug = cached?.slug || (!isUuid ? productId : undefined);
+  let uuidId = isUuid ? productId : (cached?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cached.id) ? cached.id : null);
 
   const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
   const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_WAr2l8gZ0bvYJSY0x1murQ_OGSoDB50';
+
+  // Resolve both id and slug from Supabase if either is missing (e.g. cold serverless instance)
+  if (!slug || !uuidId) {
+    try {
+      const filter = isUuid
+        ? `id=eq.${encodeURIComponent(productId)}`
+        : `slug=eq.${encodeURIComponent(slug || productId)}`;
+      const lookupRes = await fetch(`${supaUrl}/rest/v1/products?${filter}&select=id,slug&limit=1`, {
+        headers: { apikey: supaKey, Authorization: `Bearer ${supaKey}` },
+        cache: 'no-store',
+      });
+      if (lookupRes.ok) {
+        const rows = await lookupRes.json();
+        if (Array.isArray(rows) && rows[0]) {
+          if (rows[0].id && !uuidId) uuidId = rows[0].id;
+          if (rows[0].slug && !slug) slug = rows[0].slug;
+        }
+      }
+    } catch {}
+  }
 
   let shouldArchive = false;
 
