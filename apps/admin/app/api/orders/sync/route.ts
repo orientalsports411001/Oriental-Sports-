@@ -253,10 +253,12 @@ export async function POST(req: Request) {
 
     // Push to every open admin tab right away instead of waiting for the next poll.
     if (saved.isNew || saved.statusChanged) {
-      await broadcastRealtimeEvent(saved.isNew ? 'order_created' : 'order_updated', {
-        order_number: saved.order_number,
-        status: saved.status,
-      });
+      // Own topic: the products page already owns 'oriental_sports_sync'.
+      await broadcastRealtimeEvent(
+        saved.isNew ? 'order_created' : 'order_updated',
+        { order_number: saved.order_number, status: saved.status },
+        'oriental_sports_orders'
+      );
     }
 
     return NextResponse.json({ success: true, order: saved }, { headers: corsHeaders });

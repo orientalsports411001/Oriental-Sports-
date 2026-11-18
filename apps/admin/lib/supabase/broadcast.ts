@@ -4,7 +4,11 @@
  * Node.js server routes, route handlers, and server actions without requiring
  * external WebSocket dependencies.
  */
-export async function broadcastRealtimeEvent(event: string, payload: Record<string, any>) {
+export async function broadcastRealtimeEvent(
+  event: string,
+  payload: Record<string, any>,
+  topic: string = 'oriental_sports_sync'
+) {
   try {
     const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tvfzfvurqewgvnnhhhad.supabase.co';
     const supaKey =
@@ -24,7 +28,7 @@ export async function broadcastRealtimeEvent(event: string, payload: Record<stri
       body: JSON.stringify({
         messages: [
           {
-            topic: 'oriental_sports_sync',
+            topic,
             event,
             payload,
           },

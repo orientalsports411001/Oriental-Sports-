@@ -140,8 +140,16 @@ export function AdminOrderNotifier() {
     try {
       supabase = createClient();
       channel = supabase
-        .channel('oriental_sports_sync')
-        .on('broadcast', { event: 'order_created' }, () => checkLatestOrder())
+        // Dedicated channel: 'oriental_sports_sync' is used by the products page, and a
+        // channel cannot take new listeners once subscribed.
+        .channel('oriental_sports_orders')
+        .on('broadcast', { event: 'order_created' }, () => {
+          checkLatestOrder();
+          window.dispatchEvent(new CustomEvent('os_orders_changed'));
+        })
+        .on('broadcast', { event: 'order_updated' }, () => {
+          window.dispatchEvent(new CustomEvent('os_orders_changed'));
+        })
         .subscribe();
     } catch {
       // Realtime unavailable: the fallback poll above still covers it.
