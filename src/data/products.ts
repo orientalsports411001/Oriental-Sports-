@@ -1692,18 +1692,26 @@ let cloudDeletedSlugs = new Set<string>();
  * so returning visitors get correct first paint before the network fetch.
  */
 const CATALOG_STATE_KEY = 'os_live_catalog';
+const CATALOG_ROWS_KEY = 'os_live_rows';
 const catalogState = { seeded: false, slugs: new Set<string>() };
-if (typeof window !== 'undefined') {
-  try {
-    const raw = localStorage.getItem(CATALOG_STATE_KEY);
-    if (raw) {
-      const saved = JSON.parse(raw);
-      if (saved?.seeded && Array.isArray(saved.slugs) && saved.slugs.length > 0) {
-        catalogState.seeded = true;
-        catalogState.slugs = new Set<string>(saved.slugs);
-      }
-    }
-  } catch {}
+
+/** A seeded row's `metadata.storefront` is just the bundled product, so it is
+ *  dropped before caching and restored on read. Keeps the cache ~8x smaller. */
+function stripRows(rows: any[]): any[] {
+  return rows.map((r) => {
+    if (!r?.metadata?.storefront) return r;
+    const { storefront, ...metadata } = r.metadata;
+    return { ...r, metadata: { ...metadata, sf: 1 } };
+  });
+}
+function restoreRows(rows: any[]): any[] {
+  return rows.map((r) => {
+    if (!r?.metadata?.sf) return r;
+    const base = PRODUCTS.find((b) => b.slug === r.slug);
+    if (!base) return r;
+    const { sf, ...metadata } = r.metadata;
+    return { ...r, metadata: { ...metadata, storefront: base } };
+  });
 }
 
 export async function fetchDeletedProductsTombstone(): Promise<Set<string>> {
@@ -1769,145 +1777,170 @@ export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
       },
     });
     if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        // An empty answer is never trusted as "everything was deleted".
-        const seeded = data.length > 0 && data.some((p: any) => p?.metadata?.storefront);
-        if (seeded) {
-          catalogState.seeded = true;
-          catalogState.slugs = new Set<string>(data.map((p: any) => String(p.slug || '')).filter(Boolean));
-          cloudDeletedSlugs.clear();
-          try {
-            localStorage.setItem(
-              CATALOG_STATE_KEY,
-              JSON.stringify({ seeded: true, slugs: Array.from(catalogState.slugs) })
-            );
-            localStorage.removeItem('os_deleted_products');
-            localStorage.removeItem('os_custom_products');
-          } catch {}
-        }
-        const activeData = data.filter((p: any) => {
-          if (seeded) return true;
-          const id = String(p.id || '').toLowerCase().trim();
-          const slug = String(p.slug || '').toLowerCase().trim();
-          const name = String(p.name || '').toLowerCase().trim();
-          if (id && cloudDeletedSlugs.has(id)) return false;
-          if (slug && cloudDeletedSlugs.has(slug)) return false;
-          if (name && cloudDeletedSlugs.has(name)) return false;
-          return true;
-        });
-        supabaseLiveItems = activeData.map((p: any): Product => {
-          const status: 'draft' | 'published' | 'archived' =
-            p.metadata?.status || (p.in_stock ? 'published' : 'draft');
-          const stock_quantity = Number(p.metadata?.stock_quantity ?? (p.in_stock ? 10 : 0));
-          const low_stock_threshold = Number(p.metadata?.low_stock_threshold ?? 5);
-          const inStock = status === 'published' && stock_quantity > 0;
-          const slug = p.slug || 'product';
-          const cat = (p.category_slug || 'accessories') as SportCategory;
-          const categoryNameMap: Record<string, string> = {
-            cricket: 'Cricket',
-            badminton: 'Badminton',
-            football: 'Football',
-            tennis: 'Tennis',
-            pickleball: 'Pickleball',
-            'table-tennis': 'Table Tennis',
-            'gym-equipment': 'Gym & Strength',
-            fitness: 'Fitness & Recovery',
-            recreation: 'Recreation',
-            accessories: 'Accessories & Protection',
-          };
-          const categoryName = categoryNameMap[cat] || (cat.charAt(0).toUpperCase() + cat.slice(1));
-          
-          const defaultSubcategoryMap: Record<string, { id: string; name: string }> = {
-            tennis: { id: 'tennis-rackets', name: 'Tennis Racquets' },
-            cricket: { id: 'cricket-bats', name: 'Cricket Bats' },
-            badminton: { id: 'badminton-racquets', name: 'Badminton Racquets' },
-            football: { id: 'footballs', name: 'Footballs' },
-            pickleball: { id: 'pickleball-paddles', name: 'Pickleball Paddles' },
-            'table-tennis': { id: 'table-tennis-tables', name: 'Table Tennis Tables' },
-            'gym-equipment': { id: 'gym-strength', name: 'Gym & Strength' },
-            fitness: { id: 'fitness-recovery', name: 'Fitness & Recovery' },
-            recreation: { id: 'recreation', name: 'Recreation' },
-            accessories: { id: 'accessories', name: 'Accessories' },
-          };
-
-          const defaultSub = defaultSubcategoryMap[cat] || { id: cat, name: categoryName };
-          const subcategory = p.subcategory || defaultSub.id;
-          const subcategoryName = p.subcategoryName || defaultSub.name;
-          const productType = (p.productType || (cat === 'cricket' ? 'bat' : cat === 'badminton' || cat === 'tennis' ? 'racket' : cat === 'football' ? 'ball' : 'gear')) as any;
-
-          const row: Product = {
-            id: p.id || `prod-${slug}`,
-            slug,
-            name: p.name || 'Product',
-            category: cat,
-            categoryName,
-            subcategory,
-            subcategoryName,
-            productType,
-            brand: p.brand || 'Oriental Sports',
-            price: Number(p.price) || 0,
-            originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
-            rating: p.rating ?? 4.9,
-            reviewsCount: p.review_count ?? p.reviewsCount ?? 12,
-            inStock,
-            status,
-            stock_quantity,
-            low_stock_threshold,
-            images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
-            description: p.description || '',
-            features: Array.isArray(p.features) ? p.features : [p.description || ''],
-            specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },
-            variants: p.variants,
-            sizes: p.sizes,
-          };
-
-          // Seeded built-in product: start from its full original record
-          // (id, specs, features, sub-category, badges...) and overlay only
-          // the fields the admin can edit, so nothing is lost or reshuffled.
-          const sf = p.metadata?.storefront as Product | undefined;
-          if (!sf) return row;
-          const sameCategory = sf.category === cat;
-          // Postgres jsonb does not keep object key order, so put the specs
-          // back in their original display order (Brand, Model, ...).
-          const refSpecs = PRODUCTS.find((b) => b.slug === slug)?.specs;
-          const specs: Record<string, string> =
-            refSpecs && sf.specs
-              ? Object.fromEntries([
-                  ...Object.keys(refSpecs).filter((k) => k in sf.specs).map((k) => [k, sf.specs[k]]),
-                  ...Object.keys(sf.specs).filter((k) => !(k in refSpecs)).map((k) => [k, sf.specs[k]]),
-                ])
-              : sf.specs;
-          return {
-            ...sf,
-            specs,
-            slug,
-            name: row.name,
-            brand: row.brand,
-            price: row.price,
-            originalPrice: row.originalPrice,
-            images: row.images,
-            description: row.description || sf.description,
-            variants: row.variants && row.variants.length > 0 ? row.variants : sf.variants,
-            sizes: row.sizes && row.sizes.length > 0 ? row.sizes : sf.sizes,
-            category: cat,
-            categoryName: sameCategory ? sf.categoryName : row.categoryName,
-            subcategory: sameCategory ? sf.subcategory : row.subcategory,
-            subcategoryName: sameCategory ? sf.subcategoryName : row.subcategoryName,
-            inStock: row.inStock,
-            status: row.status,
-            stock_quantity: row.stock_quantity,
-            low_stock_threshold: row.low_stock_threshold,
-          } as Product;
-        });
-        window.dispatchEvent(new CustomEvent('os_catalog_updated'));
-      }
+      applySupabaseRows(await res.json(), true);
     }
   } catch {}
   return supabaseLiveItems;
 }
 
+/**
+ * Turn raw `products` rows into the live catalog. Runs from the network fetch
+ * and, at startup, from the cached rows in localStorage so a returning visitor
+ * sees admin-created products on first paint instead of after a round trip.
+ */
+function applySupabaseRows(data: any[], persist: boolean): void {
+  // An empty answer is never trusted as "everything was deleted".
+  if (!Array.isArray(data) || data.length === 0) return;
+    const seeded = data.some((p: any) => p?.metadata?.storefront);
+    if (seeded) {
+      catalogState.seeded = true;
+      catalogState.slugs = new Set<string>(data.map((p: any) => String(p.slug || '')).filter(Boolean));
+      cloudDeletedSlugs.clear();
+      if (persist) {
+        try {
+          localStorage.setItem(
+            CATALOG_STATE_KEY,
+            JSON.stringify({ seeded: true, slugs: Array.from(catalogState.slugs) })
+          );
+          localStorage.setItem(CATALOG_ROWS_KEY, JSON.stringify(stripRows(data)));
+          localStorage.removeItem('os_deleted_products');
+          localStorage.removeItem('os_custom_products');
+        } catch {}
+      }
+    }
+    const activeData = data.filter((p: any) => {
+      if (seeded) return true;
+      const id = String(p.id || '').toLowerCase().trim();
+      const slug = String(p.slug || '').toLowerCase().trim();
+      const name = String(p.name || '').toLowerCase().trim();
+      if (id && cloudDeletedSlugs.has(id)) return false;
+      if (slug && cloudDeletedSlugs.has(slug)) return false;
+      if (name && cloudDeletedSlugs.has(name)) return false;
+      return true;
+    });
+    supabaseLiveItems = activeData.map((p: any): Product => {
+      const status: 'draft' | 'published' | 'archived' =
+        p.metadata?.status || (p.in_stock ? 'published' : 'draft');
+      const stock_quantity = Number(p.metadata?.stock_quantity ?? (p.in_stock ? 10 : 0));
+      const low_stock_threshold = Number(p.metadata?.low_stock_threshold ?? 5);
+      const inStock = status === 'published' && stock_quantity > 0;
+      const slug = p.slug || 'product';
+      const cat = (p.category_slug || 'accessories') as SportCategory;
+      const categoryNameMap: Record<string, string> = {
+        cricket: 'Cricket',
+        badminton: 'Badminton',
+        football: 'Football',
+        tennis: 'Tennis',
+        pickleball: 'Pickleball',
+        'table-tennis': 'Table Tennis',
+        'gym-equipment': 'Gym & Strength',
+        fitness: 'Fitness & Recovery',
+        recreation: 'Recreation',
+        accessories: 'Accessories & Protection',
+      };
+      const categoryName = categoryNameMap[cat] || (cat.charAt(0).toUpperCase() + cat.slice(1));
+      
+      const defaultSubcategoryMap: Record<string, { id: string; name: string }> = {
+        tennis: { id: 'tennis-rackets', name: 'Tennis Racquets' },
+        cricket: { id: 'cricket-bats', name: 'Cricket Bats' },
+        badminton: { id: 'badminton-racquets', name: 'Badminton Racquets' },
+        football: { id: 'footballs', name: 'Footballs' },
+        pickleball: { id: 'pickleball-paddles', name: 'Pickleball Paddles' },
+        'table-tennis': { id: 'table-tennis-tables', name: 'Table Tennis Tables' },
+        'gym-equipment': { id: 'gym-strength', name: 'Gym & Strength' },
+        fitness: { id: 'fitness-recovery', name: 'Fitness & Recovery' },
+        recreation: { id: 'recreation', name: 'Recreation' },
+        accessories: { id: 'accessories', name: 'Accessories' },
+      };
+
+      const defaultSub = defaultSubcategoryMap[cat] || { id: cat, name: categoryName };
+      const subcategory = p.subcategory || defaultSub.id;
+      const subcategoryName = p.subcategoryName || defaultSub.name;
+      const productType = (p.productType || (cat === 'cricket' ? 'bat' : cat === 'badminton' || cat === 'tennis' ? 'racket' : cat === 'football' ? 'ball' : 'gear')) as any;
+
+      const row: Product = {
+        id: p.id || `prod-${slug}`,
+        slug,
+        name: p.name || 'Product',
+        category: cat,
+        categoryName,
+        subcategory,
+        subcategoryName,
+        productType,
+        brand: p.brand || 'Oriental Sports',
+        price: Number(p.price) || 0,
+        originalPrice: p.compare_at_price ? Number(p.compare_at_price) : undefined,
+        rating: p.rating ?? 4.9,
+        reviewsCount: p.review_count ?? p.reviewsCount ?? 12,
+        inStock,
+        status,
+        stock_quantity,
+        low_stock_threshold,
+        images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
+        description: p.description || '',
+        features: Array.isArray(p.features) ? p.features : [p.description || ''],
+        specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },
+        variants: p.variants,
+        sizes: p.sizes,
+      };
+
+      // Seeded built-in product: start from its full original record
+      // (id, specs, features, sub-category, badges...) and overlay only
+      // the fields the admin can edit, so nothing is lost or reshuffled.
+      const sf = p.metadata?.storefront as Product | undefined;
+      if (!sf) return row;
+      const sameCategory = sf.category === cat;
+      // Postgres jsonb does not keep object key order, so put the specs
+      // back in their original display order (Brand, Model, ...).
+      const refSpecs = PRODUCTS.find((b) => b.slug === slug)?.specs;
+      const specs: Record<string, string> =
+        refSpecs && sf.specs
+          ? Object.fromEntries([
+              ...Object.keys(refSpecs).filter((k) => k in sf.specs).map((k) => [k, sf.specs[k]]),
+              ...Object.keys(sf.specs).filter((k) => !(k in refSpecs)).map((k) => [k, sf.specs[k]]),
+            ])
+          : sf.specs;
+      return {
+        ...sf,
+        specs,
+        slug,
+        name: row.name,
+        brand: row.brand,
+        price: row.price,
+        originalPrice: row.originalPrice,
+        images: row.images,
+        description: row.description || sf.description,
+        variants: row.variants && row.variants.length > 0 ? row.variants : sf.variants,
+        sizes: row.sizes && row.sizes.length > 0 ? row.sizes : sf.sizes,
+        category: cat,
+        categoryName: sameCategory ? sf.categoryName : row.categoryName,
+        subcategory: sameCategory ? sf.subcategory : row.subcategory,
+        subcategoryName: sameCategory ? sf.subcategoryName : row.subcategoryName,
+        inStock: row.inStock,
+        status: row.status,
+        stock_quantity: row.stock_quantity,
+        low_stock_threshold: row.low_stock_threshold,
+      } as Product;
+    });
+    window.dispatchEvent(new CustomEvent('os_catalog_updated'));
+}
+
+
 if (typeof window !== 'undefined') {
+  // Paint from the last known catalog immediately, then refresh from the network.
+  try {
+    const cachedRows = localStorage.getItem(CATALOG_ROWS_KEY);
+    const savedState = localStorage.getItem(CATALOG_STATE_KEY);
+    if (cachedRows && savedState) {
+      const saved = JSON.parse(savedState);
+      if (saved?.seeded) {
+        catalogState.seeded = true;
+        catalogState.slugs = new Set<string>(saved.slugs || []);
+        applySupabaseRows(restoreRows(JSON.parse(cachedRows)), false);
+      }
+    }
+  } catch {}
+
   fetchDeletedProductsTombstone()
     .then(() => fetchLiveSupabaseProducts())
     .catch(() => {});

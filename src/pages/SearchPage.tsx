@@ -17,6 +17,9 @@ export const SearchPage: React.FC = () => {
 
   useEffect(() => {
     const handleUpdate = () => setAllProducts(getLiveProducts());
+    // Re-read on mount: the catalog fetch can resolve before this effect
+    // attaches, and the event would otherwise be missed.
+    handleUpdate();
     window.addEventListener('storage', handleUpdate);
     window.addEventListener('os_catalog_updated', handleUpdate);
     return () => {
