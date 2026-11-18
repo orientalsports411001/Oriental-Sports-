@@ -284,10 +284,8 @@ p {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85), 0 0 24px rgba(200, 16, 46, 0.7);
 }
 
-.btn-outline,
 .btn-outline-dark,
 .btn-secondary { --btn-bg: transparent; --btn-fg: var(--ink); --btn-bd: var(--ink); border-radius: 9999px; }
-.btn-outline:hover,
 .btn-outline-dark:hover,
 .btn-secondary:hover { --btn-bg: var(--ink); --btn-fg: var(--ivory); }
 
@@ -296,8 +294,14 @@ p {
 .btn-light:hover,
 .btn-white:hover { --btn-bg: #FFFFFF; --btn-bd: #FFFFFF; }
 
+/* `.btn-outline` belongs here, not with the ink-coloured variants: every place
+   it is used sits on the dark page, where ink-on-near-black measured 1.08:1
+   and read as an empty outline ("Buy now" looked like it had vanished). The
+   one instance that looked right only did so via an inline colour. */
+.btn-outline,
 .btn-outline-light,
 .btn-outline-white { --btn-bg: transparent; --btn-fg: var(--on-dark); --btn-bd: rgba(246, 243, 234, 0.55); border-radius: 9999px; }
+.btn-outline:hover,
 .btn-outline-light:hover,
 .btn-outline-white:hover { --btn-bd: var(--on-dark); --btn-bg: rgba(246, 243, 234, 0.08); }
 

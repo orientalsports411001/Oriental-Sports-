@@ -209,7 +209,7 @@ export const ProductDetailPage: React.FC = () => {
                 </fieldset>
               )}
 
-              {product.sizes && (!product.variants || product.variants.length === 0) && (
+              {product.sizes && product.sizes.length > 0 && (!product.variants || product.variants.length === 0) && (
                 <fieldset className="pdp-option">
                   <legend className="field-label">Size</legend>
                   <div className="pdp-choices">
