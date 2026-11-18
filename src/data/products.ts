@@ -1868,8 +1868,19 @@ export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
           const sf = p.metadata?.storefront as Product | undefined;
           if (!sf) return row;
           const sameCategory = sf.category === cat;
+          // Postgres jsonb does not keep object key order, so put the specs
+          // back in their original display order (Brand, Model, ...).
+          const refSpecs = PRODUCTS.find((b) => b.slug === slug)?.specs;
+          const specs: Record<string, string> =
+            refSpecs && sf.specs
+              ? Object.fromEntries([
+                  ...Object.keys(refSpecs).filter((k) => k in sf.specs).map((k) => [k, sf.specs[k]]),
+                  ...Object.keys(sf.specs).filter((k) => !(k in refSpecs)).map((k) => [k, sf.specs[k]]),
+                ])
+              : sf.specs;
           return {
             ...sf,
+            specs,
             slug,
             name: row.name,
             brand: row.brand,
