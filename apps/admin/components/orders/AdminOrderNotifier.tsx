@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
 
 interface LatestOrderInfo {
   id: string;
@@ -131,11 +132,25 @@ export function AdminOrderNotifier() {
     };
 
     checkLatestOrder();
-    timer = setInterval(checkLatestOrder, 7000);
+    // Slow safety-net poll only; new orders arrive instantly via the realtime push below.
+    timer = setInterval(checkLatestOrder, 30000);
+
+    let supabase: ReturnType<typeof createClient> | null = null;
+    let channel: ReturnType<ReturnType<typeof createClient>['channel']> | null = null;
+    try {
+      supabase = createClient();
+      channel = supabase
+        .channel('oriental_sports_sync')
+        .on('broadcast', { event: 'order_created' }, () => checkLatestOrder())
+        .subscribe();
+    } catch {
+      // Realtime unavailable: the fallback poll above still covers it.
+    }
 
     return () => {
       isCancelled = true;
       if (timer) clearInterval(timer);
+      if (supabase && channel) supabase.removeChannel(channel);
     };
   }, []);
 

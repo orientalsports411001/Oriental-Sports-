@@ -3,8 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
-/** Manual refresh + a 20s auto-refresh poll for the orders list (a Server Component page, so this re-fetches via router.refresh() rather than a client-side API call). */
+/** Manual refresh + realtime push (orders broadcast) plus a 60s fallback poll for the orders list (a Server Component page, so this re-fetches via router.refresh() rather than a client-side API call). */
 export function RefreshOrdersButton() {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -16,8 +17,21 @@ export function RefreshOrdersButton() {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => router.refresh(), 20000);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => router.refresh(), 60000);
+    let supabase: ReturnType<typeof createClient> | null = null;
+    let channel: ReturnType<ReturnType<typeof createClient>['channel']> | null = null;
+    try {
+      supabase = createClient();
+      channel = supabase
+        .channel('oriental_sports_sync_orders_list')
+        .on('broadcast', { event: 'order_created' }, () => router.refresh())
+        .on('broadcast', { event: 'order_updated' }, () => router.refresh())
+        .subscribe();
+    } catch {}
+    return () => {
+      clearInterval(interval);
+      if (supabase && channel) supabase.removeChannel(channel);
+    };
   }, [router]);
 
   return (

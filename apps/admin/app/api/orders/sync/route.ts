@@ -3,6 +3,7 @@ import { saveAdminOrder, getCachedOrders, getCachedOrdersAsync, AdminOrder } fro
 import { sendOrderStatusEmail, sendAdminNewOrderNotification } from '@/lib/email';
 import { verifyRazorpayPayment } from '@/lib/razorpay-verify';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 
 export const dynamic = 'force-dynamic';
 
@@ -249,6 +250,14 @@ export async function POST(req: Request) {
         }).catch(() => {});
       }
     } catch {}
+
+    // Push to every open admin tab right away instead of waiting for the next poll.
+    if (saved.isNew || saved.statusChanged) {
+      await broadcastRealtimeEvent(saved.isNew ? 'order_created' : 'order_updated', {
+        order_number: saved.order_number,
+        status: saved.status,
+      });
+    }
 
     return NextResponse.json({ success: true, order: saved }, { headers: corsHeaders });
   } catch (err: any) {

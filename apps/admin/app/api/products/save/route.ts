@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { saveProduct, unmarkProductsDeleted } from '@/lib/catalog-store';
+import { saveProduct, unmarkProductsDeleted, getStorefrontMetadata } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 import { revalidateAdminNav } from '@/lib/nav-counts';
@@ -115,6 +115,10 @@ export async function POST(req: Request) {
       },
       updated_at: new Date().toISOString(),
     };
+
+    // Keep a seeded built-in product's full original record through the edit.
+    const preservedStorefront = await getStorefrontMetadata([productId, originalSlug, saved.slug]);
+    if (preservedStorefront) (supaPayload.metadata as any).storefront = preservedStorefront;
 
     // Sync to Supabase (SDK -> REST fallback so uploads/edits ALWAYS reach Supabase)
     let supabaseSynced = false;

@@ -51,3 +51,6 @@ public/uploads/*
 apps/admin/public/uploads/*
 !apps/admin/public/uploads/.gitkeep
 
+
+# local Supabase backups
+backups/

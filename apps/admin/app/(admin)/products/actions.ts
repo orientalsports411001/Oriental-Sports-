@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { checkAdmin } from '@/lib/require-admin';
-import { saveProduct, removeProduct, getCachedProducts, unmarkProductsDeleted } from '@/lib/catalog-store';
+import { saveProduct, removeProduct, getCachedProducts, unmarkProductsDeleted, getStorefrontMetadata } from '@/lib/catalog-store';
 import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 import { revalidateAdminNav } from '@/lib/nav-counts';
 
@@ -352,6 +352,10 @@ export async function updateProduct(productId: string, formData: FormData) {
     },
     updated_at: new Date().toISOString(),
   };
+
+  // Keep a seeded built-in product's full original record through the edit.
+  const preservedStorefront = await getStorefrontMetadata([productId, originalSlug, fields.slug]);
+  if (preservedStorefront) (updatePayload.metadata as any).storefront = preservedStorefront;
 
   let targetEditId = productId;
 
@@ -765,20 +769,37 @@ export async function deleteProduct(productId: string) {
 
   // 2. Either Archive or Delete in Supabase
   if (shouldArchive) {
-    const updateBody = JSON.stringify({ status: 'archived', updated_at: new Date().toISOString() });
-    try {
-      const admin = createServiceRoleClient();
-      if (uuidId) await admin.from('products').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('id', uuidId);
-      if (slug) await admin.from('products').update({ status: 'archived', updated_at: new Date().toISOString() }).eq('slug', slug);
-    } catch {}
-
-    // REST fallback for archive
-    const patchHeaders = { apikey: supaKey, Authorization: `Bearer ${supaKey}`, 'Content-Type': 'application/json' };
-    if (uuidId) {
-      await fetch(`${supaUrl}/rest/v1/products?id=eq.${uuidId}`, { method: 'PATCH', headers: patchHeaders, body: updateBody }).catch(() => {});
-    }
-    if (slug) {
-      await fetch(`${supaUrl}/rest/v1/products?slug=eq.${encodeURIComponent(slug)}`, { method: 'PATCH', headers: patchHeaders, body: updateBody }).catch(() => {});
+    // The live products table has no `status` column: status lives in
+    // metadata (that is where the storefront and admin both read it).
+    const patchHeaders = {
+      apikey: supaKey,
+      Authorization: `Bearer ${supaKey}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    };
+    const filters = [
+      uuidId ? `id=eq.${uuidId}` : null,
+      slug ? `slug=eq.${encodeURIComponent(slug)}` : null,
+    ].filter(Boolean) as string[];
+    for (const filter of filters) {
+      try {
+        const cur = await fetch(`${supaUrl}/rest/v1/products?${filter}&select=id,metadata`, {
+          headers: { apikey: supaKey, Authorization: `Bearer ${supaKey}` },
+          cache: 'no-store',
+        });
+        const rows = cur.ok ? await cur.json() : [];
+        for (const row of Array.isArray(rows) ? rows : []) {
+          await fetch(`${supaUrl}/rest/v1/products?id=eq.${row.id}`, {
+            method: 'PATCH',
+            headers: patchHeaders,
+            body: JSON.stringify({
+              in_stock: false,
+              metadata: { ...(row.metadata || {}), status: 'archived' },
+              updated_at: new Date().toISOString(),
+            }),
+          });
+        }
+      } catch {}
     }
   } else {
     // Delete in Supabase: try admin client first
@@ -807,6 +828,30 @@ export async function deleteProduct(productId: string) {
       );
     }
     await Promise.all(deletePromises);
+  }
+
+  // 2b. Never report success unless the row is actually gone / archived.
+  // (A delete the database silently ignores is what made products "come back".)
+  try {
+    const checks = [
+      uuidId ? `id=eq.${uuidId}` : null,
+      slug ? `slug=eq.${encodeURIComponent(slug)}` : null,
+    ].filter(Boolean) as string[];
+    for (const filter of checks) {
+      const res = await fetch(`${supaUrl}/rest/v1/products?${filter}&select=id,metadata`, {
+        headers: { apikey: supaKey, Authorization: `Bearer ${supaKey}` },
+        cache: 'no-store',
+      });
+      if (!res.ok) continue;
+      const rows = await res.json();
+      const stillThere = Array.isArray(rows) && rows.length > 0;
+      if (stillThere && !shouldArchive) {
+        console.error('[deleteProduct] Row still present after delete:', filter);
+        redirect('/products?error=Delete+failed:+the+database+did+not+remove+this+product.+Check+SUPABASE_SERVICE_ROLE_KEY+in+Vercel.');
+      }
+    }
+  } catch (err: any) {
+    if (err?.digest?.startsWith?.('NEXT_REDIRECT')) throw err;
   }
 
   // 3. Mark in catalog-store and durable Cloudinary tombstones

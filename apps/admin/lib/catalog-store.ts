@@ -360,12 +360,34 @@ export function filterDeletedProducts<T extends { id?: string; slug?: string }>(
  * storefront (`orientalsports.in`) with zero shadow-blob or /tmp drift.
  */
 async function getCachedProductsAsyncImpl(): Promise<AdminProduct[]> {
+  // Once the built-in catalog is seeded into Supabase (rows carry
+  // metadata.storefront), Supabase alone decides what exists: the static
+  // 131 must not be merged back in, or a deleted product would reappear.
+  const rows = await getLiveSupabaseProducts();
+  if (rows.some((r: any) => r?.metadata?.storefront)) return [];
   const deletedKeys = await getDeletedProductKeysAsync();
   return filterDeletedProducts(INITIAL_PRODUCTS, deletedKeys);
 }
 export const getCachedProductsAsync = cache(getCachedProductsAsyncImpl);
 
 /** Full rows including `images`: only for pages that actually render product photos. */
+/**
+ * A seeded built-in product keeps its full original record in
+ * `metadata.storefront`. Edit/save paths rebuild `metadata` from form
+ * fields, so they must carry this over or the edit would erase the product's
+ * specs/features/sub-category.
+ */
+export async function getStorefrontMetadata(keys: (string | null | undefined)[]): Promise<unknown | undefined> {
+  const wanted = keys.filter((k): k is string => Boolean(k && String(k).trim()));
+  if (wanted.length === 0) return undefined;
+  const rows = await getLiveSupabaseProducts();
+  for (const key of wanted) {
+    const row = rows.find((r: any) => r?.id === key || r?.slug === key);
+    if (row?.metadata?.storefront) return row.metadata.storefront;
+  }
+  return undefined;
+}
+
 export const getLiveSupabaseProducts = cache(async (): Promise<any[]> => {
   try {
     const admin = createServiceRoleClient();

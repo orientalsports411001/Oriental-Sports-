@@ -1684,7 +1684,30 @@ export const PRODUCTS: Product[] = [
 let supabaseLiveItems: Product[] = [];
 let cloudDeletedSlugs = new Set<string>();
 
+/**
+ * Once the built-in catalog has been seeded into Supabase (every seeded row
+ * carries `metadata.storefront`), Supabase is the single source of truth:
+ * a built-in product with no matching row is deleted, and the old tombstone
+ * list / localStorage product caches are ignored. The slug set is persisted
+ * so returning visitors get correct first paint before the network fetch.
+ */
+const CATALOG_STATE_KEY = 'os_live_catalog';
+const catalogState = { seeded: false, slugs: new Set<string>() };
+if (typeof window !== 'undefined') {
+  try {
+    const raw = localStorage.getItem(CATALOG_STATE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (saved?.seeded && Array.isArray(saved.slugs) && saved.slugs.length > 0) {
+        catalogState.seeded = true;
+        catalogState.slugs = new Set<string>(saved.slugs);
+      }
+    }
+  } catch {}
+}
+
 export async function fetchDeletedProductsTombstone(): Promise<Set<string>> {
+  if (catalogState.seeded) return cloudDeletedSlugs;
   try {
     const res = await fetch('https://res.cloudinary.com/kvdrimse/raw/upload/os_deleted_products', {
       cache: 'no-store',
@@ -1748,7 +1771,23 @@ export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data)) {
+        // An empty answer is never trusted as "everything was deleted".
+        const seeded = data.length > 0 && data.some((p: any) => p?.metadata?.storefront);
+        if (seeded) {
+          catalogState.seeded = true;
+          catalogState.slugs = new Set<string>(data.map((p: any) => String(p.slug || '')).filter(Boolean));
+          cloudDeletedSlugs.clear();
+          try {
+            localStorage.setItem(
+              CATALOG_STATE_KEY,
+              JSON.stringify({ seeded: true, slugs: Array.from(catalogState.slugs) })
+            );
+            localStorage.removeItem('os_deleted_products');
+            localStorage.removeItem('os_custom_products');
+          } catch {}
+        }
         const activeData = data.filter((p: any) => {
+          if (seeded) return true;
           const id = String(p.id || '').toLowerCase().trim();
           const slug = String(p.slug || '').toLowerCase().trim();
           const name = String(p.name || '').toLowerCase().trim();
@@ -1797,7 +1836,7 @@ export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
           const subcategoryName = p.subcategoryName || defaultSub.name;
           const productType = (p.productType || (cat === 'cricket' ? 'bat' : cat === 'badminton' || cat === 'tennis' ? 'racket' : cat === 'football' ? 'ball' : 'gear')) as any;
 
-          return {
+          const row: Product = {
             id: p.id || `prod-${slug}`,
             slug,
             name: p.name || 'Product',
@@ -1822,6 +1861,33 @@ export async function fetchLiveSupabaseProducts(): Promise<Product[]> {
             variants: p.variants,
             sizes: p.sizes,
           };
+
+          // Seeded built-in product: start from its full original record
+          // (id, specs, features, sub-category, badges...) and overlay only
+          // the fields the admin can edit, so nothing is lost or reshuffled.
+          const sf = p.metadata?.storefront as Product | undefined;
+          if (!sf) return row;
+          const sameCategory = sf.category === cat;
+          return {
+            ...sf,
+            slug,
+            name: row.name,
+            brand: row.brand,
+            price: row.price,
+            originalPrice: row.originalPrice,
+            images: row.images,
+            description: row.description || sf.description,
+            variants: row.variants && row.variants.length > 0 ? row.variants : sf.variants,
+            sizes: row.sizes && row.sizes.length > 0 ? row.sizes : sf.sizes,
+            category: cat,
+            categoryName: sameCategory ? sf.categoryName : row.categoryName,
+            subcategory: sameCategory ? sf.subcategory : row.subcategory,
+            subcategoryName: sameCategory ? sf.subcategoryName : row.subcategoryName,
+            inStock: row.inStock,
+            status: row.status,
+            stock_quantity: row.stock_quantity,
+            low_stock_threshold: row.low_stock_threshold,
+          } as Product;
         });
         window.dispatchEvent(new CustomEvent('os_catalog_updated'));
       }
@@ -1890,6 +1956,27 @@ if (typeof window !== 'undefined') {
 export function getAllLiveProducts(): Product[] {
   if (typeof window === 'undefined') {
     return PRODUCTS.filter((p) => !p.status || p.status === 'published');
+  }
+  if (catalogState.seeded) {
+    // Single source of truth: Supabase rows. New products first (newest
+    // first), then the built-in catalog in its original order, each swapped
+    // for its live row; a built-in with no row has been deleted, and a row
+    // that is draft/archived is hidden.
+    const rowsBySlug = new Map<string, Product>();
+    for (const row of supabaseLiveItems) rowsBySlug.set(row.slug, row);
+    const baseSlugs = new Set(PRODUCTS.map((b) => b.slug));
+    const out: Product[] = [];
+    for (const row of supabaseLiveItems) {
+      if (!baseSlugs.has(row.slug) && (!row.status || row.status === 'published')) out.push(row);
+    }
+    for (const base of PRODUCTS) {
+      if (!catalogState.slugs.has(base.slug)) continue;
+      const row = rowsBySlug.get(base.slug);
+      const live = row ?? base;
+      if (live.status && live.status !== 'published') continue;
+      out.push(live);
+    }
+    return out;
   }
   try {
     const deletedRaw = localStorage.getItem('os_deleted_products');
