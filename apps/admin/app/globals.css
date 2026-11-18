@@ -576,6 +576,48 @@ input:focus, select:focus, textarea:focus {
   background: #1C1C1C;
 }
 
+/* Picking a browser-saved value turns the field white: the UA paints its own
+   background for autofilled controls and `background` cannot override it.
+   Covering it with a large inset shadow is the only way to keep the dark
+   field. `:autofill` and `:-webkit-autofill` stay in separate rules because a
+   pseudo-class a browser does not know invalidates the whole selector list. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+select:-webkit-autofill,
+textarea:-webkit-autofill {
+  -webkit-text-fill-color: #FFFFFF;
+  caret-color: #FFFFFF;
+  -webkit-box-shadow: 0 0 0 1000px var(--surface-input) inset;
+  box-shadow: 0 0 0 1000px var(--surface-input) inset;
+  /* Chrome re-applies its background shortly after; an effectively infinite
+     background transition stops it flashing back. */
+  transition: background-color 600000s 0s, border-color 0.15s ease;
+}
+
+input:-webkit-autofill:focus,
+select:-webkit-autofill:focus,
+textarea:-webkit-autofill:focus {
+  border-color: var(--blood-crimson);
+  -webkit-box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.25), 0 0 0 1000px #1C1C1C inset;
+  box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.25), 0 0 0 1000px #1C1C1C inset;
+}
+
+input:autofill,
+select:autofill,
+textarea:autofill {
+  -webkit-text-fill-color: #FFFFFF;
+  caret-color: #FFFFFF;
+  box-shadow: 0 0 0 1000px var(--surface-input) inset;
+  transition: background-color 600000s 0s, border-color 0.15s ease;
+}
+
+input:autofill:focus,
+select:autofill:focus,
+textarea:autofill:focus {
+  border-color: var(--blood-crimson);
+  box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.25), 0 0 0 1000px #1C1C1C inset;
+}
+
 label {
   display: block;
   font-size: 11px;
