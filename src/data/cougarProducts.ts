@@ -308,7 +308,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-ankle-weight-05kg',
     slug: 'ankle-weight-05kg',
-    name: 'ANKLE WEIGHT 05KG',
+    name: 'Ankle Weight — 0.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'weights-strength',
@@ -339,7 +339,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-ankle-weight-1kg',
     slug: 'ankle-weight-1kg',
-    name: 'ANKLE WEIGHT 1KG',
+    name: 'Ankle Weight — 1 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'weights-strength',
@@ -370,7 +370,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-ankle-weight-1-5kg',
     slug: 'ankle-weight-1-5kg',
-    name: 'ANKLE WEIGHT 1.5KG',
+    name: 'Ankle Weight — 1.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'weights-strength',
@@ -401,7 +401,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-ankle-weight-2kg',
     slug: 'ankle-weight-2kg',
-    name: 'ANKLE WEIGHT 2KG',
+    name: 'Ankle Weight — 2 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'weights-strength',
@@ -432,7 +432,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-bag-5kg',
     slug: 'weight-bag-5kg',
-    name: 'WEIGHT BAG 5KG',
+    name: 'Weight Bag — 5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'weights-strength',
@@ -463,7 +463,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-bag-10kg',
     slug: 'weight-bag-10kg',
-    name: 'WEIGHT BAG 10KG',
+    name: 'Weight Bag — 10 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'weights-strength',
@@ -494,7 +494,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-bag-15kg',
     slug: 'weight-bag-15kg',
-    name: 'WEIGHT BAG 15KG',
+    name: 'Weight Bag — 15 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'weights-strength',
@@ -525,7 +525,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-bag-20kg',
     slug: 'weight-bag-20kg',
-    name: 'WEIGHT BAG 20KG',
+    name: 'Weight Bag — 20 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'weights-strength',
@@ -556,7 +556,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-bag-25kg',
     slug: 'weight-bag-25kg',
-    name: 'WEIGHT BAG 25KG',
+    name: 'Weight Bag — 25 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'weights-strength',
@@ -587,7 +587,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-2-5kg',
     slug: 'hex-dumbbells-2-5kg',
-    name: 'HEX DUMBBELLS 2.5KG',
+    name: 'Hex Dumbbells — 2.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -618,7 +618,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-5kg',
     slug: 'hex-dumbbells-5kg',
-    name: 'HEX DUMBBELLS 5KG',
+    name: 'Hex Dumbbells — 5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -649,7 +649,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-7-5-kg',
     slug: 'hex-dumbbells-7-5-kg',
-    name: 'HEX DUMBBELLS 7.5 KG',
+    name: 'Hex Dumbbells — 7.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -680,7 +680,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-10kg',
     slug: 'hex-dumbbells-10kg',
-    name: 'HEX DUMBBELLS 10KG',
+    name: 'Hex Dumbbells — 10 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -711,7 +711,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-12-5kg',
     slug: 'hex-dumbbells-12-5kg',
-    name: 'HEX DUMBBELLS 12.5KG',
+    name: 'Hex Dumbbells — 12.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -742,7 +742,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-15kg',
     slug: 'hex-dumbbells-15kg',
-    name: 'HEX DUMBBELLS 15KG',
+    name: 'Hex Dumbbells — 15 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -773,7 +773,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-17-5kg',
     slug: 'hex-dumbbells-17-5kg',
-    name: 'HEX DUMBBELLS 17.5KG',
+    name: 'Hex Dumbbells — 17.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -804,7 +804,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-20kg',
     slug: 'hex-dumbbells-20kg',
-    name: 'HEX DUMBBELLS 20KG',
+    name: 'Hex Dumbbells — 20 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -835,7 +835,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-22-5kg',
     slug: 'hex-dumbbells-22-5kg',
-    name: 'HEX DUMBBELLS 22.5KG',
+    name: 'Hex Dumbbells — 22.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -866,7 +866,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-hex-dumbbells-25kg',
     slug: 'hex-dumbbells-25kg',
-    name: 'HEX DUMBBELLS 25KG',
+    name: 'Hex Dumbbells — 25 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -897,7 +897,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-vinyl-dumbbells-0-5kg',
     slug: 'vinyl-dumbbells-0-5kg',
-    name: 'VINYL DUMBBELLS 0.5KG',
+    name: 'Vinyl Dumbbells — 0.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -928,7 +928,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-vinyl-dumbbells-1kg',
     slug: 'vinyl-dumbbells-1kg',
-    name: 'VINYL DUMBBELLS 1KG',
+    name: 'Vinyl Dumbbells — 1 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -959,7 +959,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-vinyl-dumbbells-2kg',
     slug: 'vinyl-dumbbells-2kg',
-    name: 'VINYL DUMBBELLS 2KG',
+    name: 'Vinyl Dumbbells — 2 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -990,7 +990,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-vinyl-dumbbells-3kg',
     slug: 'vinyl-dumbbells-3kg',
-    name: 'VINYL DUMBBELLS 3KG',
+    name: 'Vinyl Dumbbells — 3 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -1021,7 +1021,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-vinyl-dumbbells-4kg',
     slug: 'vinyl-dumbbells-4kg',
-    name: 'VINYL DUMBBELLS 4KG',
+    name: 'Vinyl Dumbbells — 4 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -1052,7 +1052,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-vinyl-dumbbells-5kg',
     slug: 'vinyl-dumbbells-5kg',
-    name: 'VINYL DUMBBELLS 5KG',
+    name: 'Vinyl Dumbbells — 5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'dumbbells',
@@ -1083,7 +1083,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-2-5kg',
     slug: 'weight-lifting-plate-51mm-2-5kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-2.5KG',
+    name: 'Weight Lifting Plate 51mm — 2.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1114,7 +1114,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-5kg',
     slug: 'weight-lifting-plate-51mm-5kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-5KG',
+    name: 'Weight Lifting Plate 51mm — 5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1145,7 +1145,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-7-5kg',
     slug: 'weight-lifting-plate-51mm-7-5kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-7.5KG',
+    name: 'Weight Lifting Plate 51mm — 7.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1176,7 +1176,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-10kg',
     slug: 'weight-lifting-plate-51mm-10kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-10KG',
+    name: 'Weight Lifting Plate 51mm — 10 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1207,7 +1207,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-12-5kg',
     slug: 'weight-lifting-plate-51mm-12-5kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-12.5KG',
+    name: 'Weight Lifting Plate 51mm — 12.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1238,7 +1238,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-15kg',
     slug: 'weight-lifting-plate-51mm-15kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-15KG',
+    name: 'Weight Lifting Plate 51mm — 15 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1269,7 +1269,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-17-5kg',
     slug: 'weight-lifting-plate-51mm-17-5kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-17.5KG',
+    name: 'Weight Lifting Plate 51mm — 17.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1300,7 +1300,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-20kg',
     slug: 'weight-lifting-plate-51mm-20kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-20KG',
+    name: 'Weight Lifting Plate 51mm — 20 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1331,7 +1331,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-22-5-kg',
     slug: 'weight-lifting-plate-51mm-22-5-kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-22.5 KG',
+    name: 'Weight Lifting Plate 51mm — 22.5 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1362,7 +1362,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-plate-51mm-25kg',
     slug: 'weight-lifting-plate-51mm-25kg',
-    name: 'WEIGHT LIFTING PLATE 51MM-25KG',
+    name: 'Weight Lifting Plate 51mm — 25 kg',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',

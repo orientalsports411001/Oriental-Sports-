@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { PRODUCTS, getLiveProducts } from '../data/products';
 import type { Product } from '../types';
+import { looseIncludes } from '../utils/search';
 import { COURT_SERVICES } from '../data/courts';
 import { ProductCard } from '../components/products/ProductCard';
 import { PageHeader } from '../components/ui/PageHeader';
@@ -30,7 +31,7 @@ export const SearchPage: React.FC = () => {
 
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const matches = (...fields: string[]) =>
-    terms.length === 0 || terms.every((t) => fields.some((f) => f && f.toLowerCase().includes(t)));
+    terms.length === 0 || terms.every((t) => fields.some((f) => looseIncludes(f, t)));
 
   const matchedProducts = allProducts.filter((p) => {
     const variantNames = p.variants ? p.variants.map((v) => v.name).join(' ') : '';

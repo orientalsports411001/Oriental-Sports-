@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import { getLiveProducts } from '../../data/products';
 import { CATEGORIES } from '../../data/categories';
 import { COURT_SERVICES } from '../../data/courts';
+import { looseIncludes } from '../../utils/search';
 import { Img } from '../ui/Img';
 
 interface SearchModalProps {
@@ -40,7 +41,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   if (!isOpen) return null;
 
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  const hit = (...fields: string[]) => terms.length > 0 && terms.every((t) => fields.some((f) => f.toLowerCase().includes(t)));
+  const hit = (...fields: string[]) =>
+    terms.length > 0 && terms.every((t) => fields.some((f) => looseIncludes(f, t)));
 
   const products = getLiveProducts().filter((p) => hit(p.name, p.category, p.categoryName, p.brand)).slice(0, 5);
   const sports = CATEGORIES.filter((c) => hit(c.name, c.id)).slice(0, 4);

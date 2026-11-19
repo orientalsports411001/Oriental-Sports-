@@ -4,6 +4,7 @@ import { Search, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { PRODUCTS, getLiveProducts } from '../data/products';
 import { CATEGORIES } from '../data/categories';
 import { STORE_INFO } from '../data/storeInfo';
+import { looseIncludes } from '../utils/search';
 import { ProductCard } from '../components/products/ProductCard';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Product, SportCategory, ProductType } from '../types';
@@ -223,13 +224,13 @@ export const ShopPage: React.FC = () => {
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
         const matches =
-          p.name.toLowerCase().includes(q) ||
-          p.brand.toLowerCase().includes(q) ||
-          p.categoryName.toLowerCase().includes(q) ||
-          (p.subcategoryName && p.subcategoryName.toLowerCase().includes(q)) ||
-          p.description.toLowerCase().includes(q) ||
-          (p.specs && Object.values(p.specs).some((v) => v.toLowerCase().includes(q))) ||
-          (p.variants && p.variants.some((v) => v.name.toLowerCase().includes(q)));
+          looseIncludes(p.name, q) ||
+          looseIncludes(p.brand, q) ||
+          looseIncludes(p.categoryName, q) ||
+          looseIncludes(p.subcategoryName, q) ||
+          looseIncludes(p.description, q) ||
+          (p.specs && Object.values(p.specs).some((v) => looseIncludes(v, q))) ||
+          (p.variants && p.variants.some((v) => looseIncludes(v.name, q)));
         if (!matches) return false;
       }
 
