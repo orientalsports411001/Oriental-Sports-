@@ -63,7 +63,12 @@ export const getRazorpayKey = (): string => {
   return import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_orientalsports';
 };
 
+/**
+ * True only when a usable Razorpay key is configured. The built-in
+ * placeholder does not count, and neither does a blank or malformed value:
+ * checkout must never treat an unconfigured gateway as available.
+ */
 export const isLiveRazorpayKey = (): boolean => {
   const key = getRazorpayKey();
-  return Boolean(key) && !key.includes('test_oriental');
+  return /^rzp_(live|test)_/.test(key) && !key.includes('test_orientalsports');
 };

@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ShieldCheck,
-  Lock,
   Truck,
   Store,
-  CreditCard,
-  QrCode,
-  Building2,
   CheckCircle2,
   ArrowLeft,
   ChevronRight,
@@ -66,8 +62,19 @@ export const CheckoutPage: React.FC = () => {
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showRazorpaySimModal, setShowRazorpaySimModal] = useState(false);
-  const [simPaymentMethod, setSimPaymentMethod] = useState<'upi' | 'card' | 'netbanking'>('upi');
+  // Online payment is offered only when a real Razorpay key is configured.
+  // Previously, with no key, checkout opened a stand-in payment window that
+  // fabricated a payment id and placed the order as if it had been paid.
+  const onlinePaymentAvailable = isLiveRazorpayKey();
+  const [paymentMode, setPaymentMode] = useState<'online' | 'offline'>(
+    onlinePaymentAvailable ? 'online' : 'offline'
+  );
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  // What the customer pays with when not paying online, and what is stored
+  // on the order as its payment method.
+  const offlinePaymentLabel =
+    deliveryMethod === 'camp_pickup' ? 'Pay at Store' : 'Cash on Delivery';
 
   // 1. Restore draft on initial load so cart and address are never lost
   useEffect(() => {
@@ -185,7 +192,7 @@ export const CheckoutPage: React.FC = () => {
     setPromoMessage({ text: res.message, success: res.success });
   };
 
-  const handleCreateAndFinalizeOrder = async (paymentId: string, paymentMethodName: string) => {
+  const handleCreateAndFinalizeOrder = async (paymentMethodLabel: string, paymentId?: string) => {
     const orderNum = `OS-2026-${Date.now().toString().slice(-6)}`;
 
     const orderUuid =
@@ -220,7 +227,7 @@ export const CheckoutPage: React.FC = () => {
       // an additional 18% on top — Math.round(subtotal * 0.18) overstated
       // this by computing tax as if it were added on top instead of inside.
       tax: Math.round((subtotal - discount) - (subtotal - discount) / 1.18),
-      paymentMethod: `Razorpay (${paymentMethodName} - ID: ${paymentId})`,
+      paymentMethod: paymentMethodLabel,
       razorpayPaymentId: paymentId,
       shippingAddress: {
         id: `addr_${Date.now()}`,
@@ -264,7 +271,7 @@ export const CheckoutPage: React.FC = () => {
     navigate('/order-success', { state: { order: newOrder } });
   };
 
-  const handleProceedToRazorpay = async () => {
+  const handlePlaceOrder = async () => {
     // 1. If not authenticated, prompt sign in/sign up immediately and preserve draft
     if (!isAuthenticated) {
       try {
@@ -286,7 +293,17 @@ export const CheckoutPage: React.FC = () => {
       return;
     }
 
+    setPaymentError(null);
     setIsProcessing(true);
+
+    if (paymentMode === 'offline') {
+      try {
+        await handleCreateAndFinalizeOrder(offlinePaymentLabel);
+      } finally {
+        setIsProcessing(false);
+      }
+      return;
+    }
 
     try {
       const scriptLoaded = await loadRazorpayScript();
@@ -309,7 +326,10 @@ export const CheckoutPage: React.FC = () => {
             color: '#111827',
           },
           handler: (response) => {
-            handleCreateAndFinalizeOrder(response.razorpay_payment_id, 'Live Gateway');
+            handleCreateAndFinalizeOrder(
+              `Razorpay (ID: ${response.razorpay_payment_id})`,
+              response.razorpay_payment_id
+            );
           },
           modal: {
             ondismiss: () => {
@@ -321,11 +341,17 @@ export const CheckoutPage: React.FC = () => {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else {
-        setShowRazorpaySimModal(true);
+        setPaymentMode('offline');
+        setPaymentError(
+          `Online payment is unavailable right now. You can place the order with ${offlinePaymentLabel}, or call the store on ${STORE_INFO.displayPhone}.`
+        );
       }
     } catch (err) {
-      console.warn('Razorpay initialization fallback:', err);
-      setShowRazorpaySimModal(true);
+      console.warn('Razorpay could not be started:', err);
+      setPaymentMode('offline');
+      setPaymentError(
+        `Online payment could not be started. You can place the order with ${offlinePaymentLabel}, or call the store on ${STORE_INFO.displayPhone}.`
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -763,33 +789,95 @@ export const CheckoutPage: React.FC = () => {
                   <span className="checkout-step-number">3</span>
                   <span>Payment Method</span>
                 </h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.05em', color: '#FFFFFF', background: '#18181B', border: '1px solid #27272A', padding: '3px 8px', borderRadius: '4px' }}>
-                    RAZORPAY SECURE
-                  </span>
+                {paymentMode === 'online' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.05em', color: '#FFFFFF', background: '#18181B', border: '1px solid #27272A', padding: '3px 8px', borderRadius: '4px' }}>
+                      RAZORPAY SECURE
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="delivery-options-grid" role="radiogroup" aria-label="Payment method">
+                {onlinePaymentAvailable && (
+                  <div
+                    className={`delivery-option-card ${paymentMode === 'online' ? 'is-selected' : ''}`}
+                    onClick={() => { setPaymentMode('online'); setPaymentError(null); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPaymentMode('online'); setPaymentError(null); } }}
+                    role="radio"
+                    aria-checked={paymentMode === 'online'}
+                    tabIndex={0}
+                  >
+                    <div className="delivery-radio">
+                      <div className="delivery-radio-inner" />
+                    </div>
+                    <div className="delivery-option-content">
+                      <div className="delivery-option-title">
+                        <ShieldCheck size={17} />
+                        <span>Pay Online</span>
+                      </div>
+                      <div className="delivery-option-desc">
+                        UPI, cards and net banking through Razorpay.
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div
+                  className={`delivery-option-card ${paymentMode === 'offline' ? 'is-selected' : ''}`}
+                  onClick={() => { setPaymentMode('offline'); setPaymentError(null); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPaymentMode('offline'); setPaymentError(null); } }}
+                  role="radio"
+                  aria-checked={paymentMode === 'offline'}
+                  tabIndex={0}
+                >
+                  <div className="delivery-radio">
+                    <div className="delivery-radio-inner" />
+                  </div>
+                  <div className="delivery-option-content">
+                    <div className="delivery-option-title">
+                      {deliveryMethod === 'camp_pickup' ? <Store size={17} /> : <Truck size={17} />}
+                      <span>{offlinePaymentLabel}</span>
+                    </div>
+                    <div className="delivery-option-desc">
+                      {deliveryMethod === 'camp_pickup'
+                        ? 'Pay by cash, UPI or card at the Camp store counter when you collect your order.'
+                        : 'Pay by cash or UPI when the order reaches your doorstep.'}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="payment-gateways-strip">
-                <span className="gateway-chip">UPI (GPay / PhonePe / Paytm)</span>
-                <span className="gateway-chip">Cards (Visa, Mastercard, RuPay)</span>
-                <span className="gateway-chip">Net Banking (50+ Banks)</span>
-                <span className="gateway-chip">Instant Refund Protected</span>
-              </div>
+              {paymentMode === 'online' && (
+                <div className="payment-gateways-strip">
+                  <span className="gateway-chip">UPI (GPay / PhonePe / Paytm)</span>
+                  <span className="gateway-chip">Cards (Visa, Mastercard, RuPay)</span>
+                  <span className="gateway-chip">Net Banking (50+ Banks)</span>
+                  <span className="gateway-chip">Instant Refund Protected</span>
+                </div>
+              )}
+
+              {paymentError && (
+                <p className="form-error-text" role="alert" style={{ marginBottom: 12 }}>
+                  {paymentError}
+                </p>
+              )}
 
               <button
                 type="button"
                 className="pay-cta-btn"
-                onClick={handleProceedToRazorpay}
+                onClick={handlePlaceOrder}
                 disabled={isProcessing}
               >
                 <ShieldCheck size={20} color="#FFFFFF" />
                 <span>
                   {isProcessing
-                    ? 'Connecting to Gateway...'
+                    ? 'Placing your order...'
                     : !isAuthenticated
-                    ? `Sign In to Pay ₹${grandTotal.toLocaleString('en-IN')} with Razorpay`
-                    : `Pay ₹${grandTotal.toLocaleString('en-IN')} with Razorpay`}
+                    ? `Sign In to Place Order · ₹${grandTotal.toLocaleString('en-IN')}`
+                    : paymentMode === 'online'
+                    ? `Pay ₹${grandTotal.toLocaleString('en-IN')} with Razorpay`
+                    : `Place Order · Pay ₹${grandTotal.toLocaleString('en-IN')} ${deliveryMethod === 'camp_pickup' ? 'at the store' : 'on delivery'}`}
                 </span>
                 <ChevronRight size={18} />
               </button>
@@ -926,131 +1014,6 @@ export const CheckoutPage: React.FC = () => {
       {/* =====================================================================
           INTERACTIVE RAZORPAY GATEWAY MODAL (TEST SIMULATOR & PREVIEW)
          ===================================================================== */}
-      {showRazorpaySimModal && (
-        <div className="rzp-modal-backdrop" onClick={() => setShowRazorpaySimModal(false)}>
-          <div className="rzp-modal" onClick={(e) => e.stopPropagation()}>
-            {/* Header */}
-            <div className="rzp-modal-header">
-              <div>
-                <p className="rzp-modal-sub">Razorpay Payment Gateway</p>
-                <h3 className="rzp-modal-title">Oriental Sports Pune</h3>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.6875rem', color: '#94a3b8' }}>To Pay</span>
-                <p className="rzp-modal-amount">₹{grandTotal.toLocaleString('en-IN')}</p>
-              </div>
-            </div>
-
-            {/* Payment Tabs */}
-            <div className="rzp-tabs">
-              <button
-                type="button"
-                className={`rzp-tab ${simPaymentMethod === 'upi' ? 'is-active' : ''}`}
-                onClick={() => setSimPaymentMethod('upi')}
-              >
-                UPI / QR
-              </button>
-              <button
-                type="button"
-                className={`rzp-tab ${simPaymentMethod === 'card' ? 'is-active' : ''}`}
-                onClick={() => setSimPaymentMethod('card')}
-              >
-                Card
-              </button>
-              <button
-                type="button"
-                className={`rzp-tab ${simPaymentMethod === 'netbanking' ? 'is-active' : ''}`}
-                onClick={() => setSimPaymentMethod('netbanking')}
-              >
-                Netbanking
-              </button>
-            </div>
-
-            <div className="rzp-body">
-              {simPaymentMethod === 'upi' && (
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ width: '130px', height: '130px', margin: '0 auto 12px', border: '1px solid #27272A', borderRadius: '8px', padding: '10px', display: 'grid', placeItems: 'center', background: '#FFFFFF' }}>
-                    <QrCode size={110} color="#050505" />
-                  </div>
-                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: '0 0 4px', color: '#FFFFFF' }}>
-                    Scan QR with Google Pay, PhonePe, Paytm, or BHIM
-                  </p>
-                  <p style={{ fontSize: '0.75rem', color: '#A1A1AA', margin: 0 }}>
-                    VPA: <strong style={{ color: '#FFFFFF' }}>orientalsports.pune@okhdfcbank</strong>
-                  </p>
-                </div>
-              )}
-
-              {simPaymentMethod === 'card' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <input className="form-input" placeholder="Card Number (4532 •••• •••• 8821)" defaultValue="4532 9801 2341 8821" />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                    <input className="form-input" placeholder="MM/YY" defaultValue="11/28" />
-                    <input className="form-input" placeholder="CVV" defaultValue="782" type="password" />
-                  </div>
-                  <input className="form-input" placeholder="Cardholder Name" defaultValue={`${form.firstName} ${form.lastName}`.trim()} />
-                </div>
-              )}
-
-              {simPaymentMethod === 'netbanking' && (
-                <div>
-                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, margin: '0 0 10px', color: '#FFFFFF' }}>Select Bank</p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                    {['HDFC Bank', 'ICICI Bank', 'State Bank of India', 'Axis Bank', 'Kotak Bank'].map((b) => (
-                      <button
-                        key={b}
-                        type="button"
-                        style={{
-                          padding: '8px 12px',
-                          border: '1px solid #27272A',
-                          borderRadius: '6px',
-                          background: '#18181B',
-                          color: '#FFFFFF',
-                          fontSize: '0.8125rem',
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {b}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <button
-                  type="button"
-                  className="pay-cta-btn"
-                  style={{ background: '#C8102E' }}
-                  onClick={() => {
-                    setShowRazorpaySimModal(false);
-                    const mockPaymentId = `pay_sim_${Date.now().toString().slice(-8)}`;
-                    handleCreateAndFinalizeOrder(mockPaymentId, simPaymentMethod.toUpperCase());
-                  }}
-                >
-                  Confirm Payment of ₹{grandTotal.toLocaleString('en-IN')}
-                </button>
-                <button
-                  type="button"
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#A1A1AA',
-                    fontSize: '0.8125rem',
-                    cursor: 'pointer',
-                    padding: '6px',
-                    textAlign: 'center',
-                  }}
-                  onClick={() => setShowRazorpaySimModal(false)}
-                >
-                  Cancel and change details
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
