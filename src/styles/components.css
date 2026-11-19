@@ -246,9 +246,16 @@
   font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.35;
-  white-space: nowrap;
+  /* Two lines, not one. A single clipped line hid the weight on every
+     variant — "WEIGHT LIFTING PLATE 51MM-2.5KG" read as "WEIGHT LIFTING
+     PLATE" — so a row of plates looked identical at different prices.
+     The fixed height keeps cards aligned whether a title wraps or not. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  min-height: calc(2 * 1.35em);
 }
 
 .ecom-card-title a {

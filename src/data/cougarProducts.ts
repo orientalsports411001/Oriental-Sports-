@@ -323,7 +323,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/ankle-weight-05kg.jpeg'],
-    description: 'Ergonomic Cougar adjustable ankle/wrist weights with reinforced neoprene padding and secure Velcro closure.',
+    description: 'Ergonomic Cougar adjustable ankle/wrist weights with reinforced neoprene padding and secure Velcro closure. Weight: 0.5 kg.',
     features: [
       'Soft moisture-wicking neoprene interior prevents chafing',
       'Heavy-duty metal D-ring buckle and reinforced hook-and-loop strap',
@@ -332,6 +332,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Ankle Weights',
+      'Weight': '0.5 kg',
       'MRP': '₹210',
     },
   },
@@ -353,7 +354,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/ankle-weight-1kg.jpeg'],
-    description: 'Ergonomic Cougar adjustable ankle/wrist weights with reinforced neoprene padding and secure Velcro closure.',
+    description: 'Ergonomic Cougar adjustable ankle/wrist weights with reinforced neoprene padding and secure Velcro closure. Weight: 1 kg.',
     features: [
       'Soft moisture-wicking neoprene interior prevents chafing',
       'Heavy-duty metal D-ring buckle and reinforced hook-and-loop strap',
@@ -362,6 +363,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Ankle Weights',
+      'Weight': '1 kg',
       'MRP': '₹390',
     },
   },
@@ -383,7 +385,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/ankle-weight-1-5kg.jpeg'],
-    description: 'Ergonomic Cougar adjustable ankle/wrist weights with reinforced neoprene padding and secure Velcro closure.',
+    description: 'Ergonomic Cougar adjustable ankle/wrist weights with reinforced neoprene padding and secure Velcro closure. Weight: 1.5 kg.',
     features: [
       'Soft moisture-wicking neoprene interior prevents chafing',
       'Heavy-duty metal D-ring buckle and reinforced hook-and-loop strap',
@@ -392,6 +394,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Ankle Weights',
+      'Weight': '1.5 kg',
       'MRP': '₹450',
     },
   },
@@ -413,7 +416,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/ankle-weight-2kg.jpeg'],
-    description: 'Ergonomic Cougar adjustable ankle/wrist weights with reinforced neoprene padding and secure Velcro closure.',
+    description: 'Ergonomic Cougar adjustable ankle/wrist weights with reinforced neoprene padding and secure Velcro closure. Weight: 2 kg.',
     features: [
       'Soft moisture-wicking neoprene interior prevents chafing',
       'Heavy-duty metal D-ring buckle and reinforced hook-and-loop strap',
@@ -422,6 +425,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Ankle Weights',
+      'Weight': '2 kg',
       'MRP': '₹535',
     },
   },
@@ -443,7 +447,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-bag-5kg.jpeg'],
-    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability.',
+    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability. Weight: 5 kg.',
     features: [
       '1000D military-grade waterproof fabric with reinforced double stitching',
       '6 heavy-duty ergonomic rubber-coated handles for varied grip angles',
@@ -452,6 +456,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Power Weight Bag',
+      'Weight': '5 kg',
       'MRP': '₹1,395',
     },
   },
@@ -473,7 +478,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-bag-10kg.jpeg'],
-    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability.',
+    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability. Weight: 10 kg.',
     features: [
       '1000D military-grade waterproof fabric with reinforced double stitching',
       '6 heavy-duty ergonomic rubber-coated handles for varied grip angles',
@@ -482,6 +487,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Power Weight Bag',
+      'Weight': '10 kg',
       'MRP': '₹1,535',
     },
   },
@@ -503,7 +509,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-bag-15kg.jpeg'],
-    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability.',
+    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability. Weight: 15 kg.',
     features: [
       '1000D military-grade waterproof fabric with reinforced double stitching',
       '6 heavy-duty ergonomic rubber-coated handles for varied grip angles',
@@ -512,6 +518,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Power Weight Bag',
+      'Weight': '15 kg',
       'MRP': '₹1,890',
     },
   },
@@ -533,7 +540,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-bag-20kg.jpeg'],
-    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability.',
+    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability. Weight: 20 kg.',
     features: [
       '1000D military-grade waterproof fabric with reinforced double stitching',
       '6 heavy-duty ergonomic rubber-coated handles for varied grip angles',
@@ -542,6 +549,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Power Weight Bag',
+      'Weight': '20 kg',
       'MRP': '₹2,105',
     },
   },
@@ -563,7 +571,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-bag-25kg.jpeg'],
-    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability.',
+    description: 'Heavy-duty Cougar power sandbag with multi-grip handles for functional strength, cleans, carries and core stability. Weight: 25 kg.',
     features: [
       '1000D military-grade waterproof fabric with reinforced double stitching',
       '6 heavy-duty ergonomic rubber-coated handles for varied grip angles',
@@ -572,6 +580,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Power Weight Bag',
+      'Weight': '25 kg',
       'MRP': '₹2,340',
     },
   },
@@ -593,7 +602,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-2-5kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 2.5 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -602,6 +611,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '2.5 kg',
       'MRP': '₹388',
     },
   },
@@ -623,7 +633,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-5kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 5 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -632,6 +642,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '5 kg',
       'MRP': '₹775',
     },
   },
@@ -653,7 +664,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-7-5-kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 7.5 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -662,6 +673,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '7.5 kg',
       'MRP': '₹1,163',
     },
   },
@@ -683,7 +695,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-10kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 10 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -692,6 +704,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '10 kg',
       'MRP': '₹1,550',
     },
   },
@@ -713,7 +726,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-12-5kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 12.5 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -722,6 +735,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '12.5 kg',
       'MRP': '₹1,938',
     },
   },
@@ -743,7 +757,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-15kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 15 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -752,6 +766,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '15 kg',
       'MRP': '₹2,325',
     },
   },
@@ -773,7 +788,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-17-5kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 17.5 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -782,6 +797,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '17.5 kg',
       'MRP': '₹2,713',
     },
   },
@@ -803,7 +819,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-20kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 20 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -812,6 +828,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '20 kg',
       'MRP': '₹3,100',
     },
   },
@@ -833,7 +850,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-22-5kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 22.5 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -842,6 +859,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '22.5 kg',
       'MRP': '₹3,488',
     },
   },
@@ -863,7 +881,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/hex-dumbbells-25kg.jpeg'],
-    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip.',
+    description: 'Commercial-grade Cougar rubber hex dumbbell featuring cast iron core, protective virgin rubber coating and ergonomic knurled chrome grip. Weight: 25 kg.',
     features: [
       'Anti-roll hexagonal head design prevents rolling on gym floors',
       'Heavy-duty virgin rubber encased heads protect floors and reduce noise',
@@ -872,6 +890,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Rubber Hex Dumbbell',
+      'Weight': '25 kg',
       'MRP': '₹3,875',
     },
   },
@@ -893,7 +912,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/vinyl-dumbbells-0-5kg.jpeg'],
-    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down.',
+    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down. Weight: 0.5 kg.',
     features: [
       'Cast iron interior core for exact weight accuracy',
       'Smooth non-slip vinyl coating comfortable for bare hands',
@@ -902,6 +921,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Vinyl Dumbbell',
+      'Weight': '0.5 kg',
       'MRP': '₹300',
     },
   },
@@ -923,7 +943,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/vinyl-dumbbells-1kg.jpeg'],
-    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down.',
+    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down. Weight: 1 kg.',
     features: [
       'Cast iron interior core for exact weight accuracy',
       'Smooth non-slip vinyl coating comfortable for bare hands',
@@ -932,6 +952,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Vinyl Dumbbell',
+      'Weight': '1 kg',
       'MRP': '₹590',
     },
   },
@@ -953,7 +974,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/vinyl-dumbbells-2kg.jpeg'],
-    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down.',
+    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down. Weight: 2 kg.',
     features: [
       'Cast iron interior core for exact weight accuracy',
       'Smooth non-slip vinyl coating comfortable for bare hands',
@@ -962,6 +983,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Vinyl Dumbbell',
+      'Weight': '2 kg',
       'MRP': '₹1,180',
     },
   },
@@ -983,7 +1005,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/vinyl-dumbbells-3kg.jpeg'],
-    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down.',
+    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down. Weight: 3 kg.',
     features: [
       'Cast iron interior core for exact weight accuracy',
       'Smooth non-slip vinyl coating comfortable for bare hands',
@@ -992,6 +1014,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Vinyl Dumbbell',
+      'Weight': '3 kg',
       'MRP': '₹1,770',
     },
   },
@@ -1013,7 +1036,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/vinyl-dumbbells-4kg.jpeg'],
-    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down.',
+    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down. Weight: 4 kg.',
     features: [
       'Cast iron interior core for exact weight accuracy',
       'Smooth non-slip vinyl coating comfortable for bare hands',
@@ -1022,6 +1045,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Vinyl Dumbbell',
+      'Weight': '4 kg',
       'MRP': '₹2,360',
     },
   },
@@ -1043,7 +1067,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/vinyl-dumbbells-5kg.jpeg'],
-    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down.',
+    description: 'Cast iron Cougar vinyl-coated dumbbell offering a comfortable non-slip grip, floor protection and easy hygiene wipe-down. Weight: 5 kg.',
     features: [
       'Cast iron interior core for exact weight accuracy',
       'Smooth non-slip vinyl coating comfortable for bare hands',
@@ -1052,6 +1076,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Vinyl Dumbbell',
+      'Weight': '5 kg',
       'MRP': '₹2,950',
     },
   },
@@ -1073,7 +1098,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-2-5kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 2.5 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1082,6 +1107,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '2.5 kg',
       'MRP': '₹590',
     },
   },
@@ -1103,7 +1129,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-5kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 5 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1112,6 +1138,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '5 kg',
       'MRP': '₹1,180',
     },
   },
@@ -1133,7 +1160,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-7-5kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 7.5 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1142,6 +1169,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '7.5 kg',
       'MRP': '₹1,770',
     },
   },
@@ -1163,7 +1191,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-10kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 10 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1172,6 +1200,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '10 kg',
       'MRP': '₹2,360',
     },
   },
@@ -1193,7 +1222,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-12-5kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 12.5 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1202,6 +1231,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '12.5 kg',
       'MRP': '₹2,950',
     },
   },
@@ -1223,7 +1253,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-15kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 15 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1232,6 +1262,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '15 kg',
       'MRP': '₹3,540',
     },
   },
@@ -1253,7 +1284,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-17-5kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 17.5 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1262,6 +1293,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '17.5 kg',
       'MRP': '₹4,130',
     },
   },
@@ -1283,7 +1315,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-20kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 20 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1292,6 +1324,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '20 kg',
       'MRP': '₹4,720',
     },
   },
@@ -1313,7 +1346,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-22-5-kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 22.5 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1322,6 +1355,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '22.5 kg',
       'MRP': '₹5,310',
     },
   },
@@ -1343,7 +1377,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     reviewsCount: 14,
     inStock: true,
     images: ['/images/products/cougar/weight-lifting-plate-51mm-25kg.jpeg'],
-    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing.',
+    description: 'Cougar 51mm Olympic weight plate featuring triple ergonomic grip handles, durable rubber encasing and stainless steel central bushing. Weight: 25 kg.',
     features: [
       'Standard 51mm (2 inch) stainless steel center ring fits all Olympic barbells',
       'Tri-grip hand holds allow versatile standalone dumbbell and plate exercises',
@@ -1352,6 +1386,7 @@ export const COUGAR_PRODUCTS: Product[] = [
     specs: {
       'Brand': 'Cougar',
       'Item': 'Olympic Weight Plate (51mm)',
+      'Weight': '25 kg',
       'MRP': '₹5,900',
     },
   },
