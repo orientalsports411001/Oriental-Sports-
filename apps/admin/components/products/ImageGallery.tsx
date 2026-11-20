@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import { deleteCloudinaryAssetAction } from '@/app/(admin)/products/cloudinary-actions';
 import { getOptimizedImageUrl } from '@/lib/cloudinary-url';
 
@@ -481,7 +482,7 @@ export function ImageGallery({
 
                   <div
                     style={{
-                      padding: '8px 10px',
+                      padding: '6px 6px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
@@ -489,15 +490,15 @@ export function ImageGallery({
                       background: 'var(--paper)',
                     }}
                   >
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 2 }}>
                       <button
                         type="button"
                         onClick={() => moveImage(i, -1)}
                         disabled={i === 0}
                         aria-label="Move left"
                         style={{
-                          width: 28,
-                          height: 28,
+                          width: 44,
+                          height: 44,
                           padding: 0,
                           borderRadius: '50%',
                           border: '1px solid rgba(17,17,17,0.1)',
@@ -507,11 +508,9 @@ export function ImageGallery({
                           placeItems: 'center',
                           cursor: i === 0 ? 'not-allowed' : 'pointer',
                           opacity: i === 0 ? 0.4 : 1,
-                          fontSize: 14,
-                          fontWeight: 700,
                         }}
                       >
-                        ‹
+                        <ChevronLeft size={18} />
                       </button>
                       <button
                         type="button"
@@ -519,8 +518,8 @@ export function ImageGallery({
                         disabled={i === images.length - 1}
                         aria-label="Move right"
                         style={{
-                          width: 28,
-                          height: 28,
+                          width: 44,
+                          height: 44,
                           padding: 0,
                           borderRadius: '50%',
                           border: '1px solid rgba(17,17,17,0.1)',
@@ -530,11 +529,9 @@ export function ImageGallery({
                           placeItems: 'center',
                           cursor: i === images.length - 1 ? 'not-allowed' : 'pointer',
                           opacity: i === images.length - 1 ? 0.4 : 1,
-                          fontSize: 14,
-                          fontWeight: 700,
                         }}
                       >
-                        ›
+                        <ChevronRight size={18} />
                       </button>
                     </div>
 
@@ -543,8 +540,8 @@ export function ImageGallery({
                       onClick={() => handleDelete(i)}
                       aria-label="Delete image"
                       style={{
-                        width: 28,
-                        height: 28,
+                        width: 44,
+                        height: 44,
                         padding: 0,
                         borderRadius: '50%',
                         border: '1px solid rgba(192,57,43,0.2)',
@@ -553,28 +550,17 @@ export function ImageGallery({
                         display: 'grid',
                         placeItems: 'center',
                         cursor: 'pointer',
-                        fontSize: 15,
-                        fontWeight: 700,
                       }}
                     >
-                      ×
+                      <Trash2 size={17} />
                     </button>
                   </div>
 
-                  <div
-                    title={img.url}
-                    style={{
-                      padding: '4px 10px',
-                      fontSize: 10,
-                      color: 'var(--subtle)',
-                      background: 'var(--stone)',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {img.url}
-                  </div>
+                  {/* A staff member has no use for the raw Cloudinary URL this
+                      used to show here — it read as debug clutter, not
+                      information, and made the card look unfinished. The
+                      position badge on the photo above already says what
+                      this caption used to duplicate, so it's dropped. */}
                 </motion.div>
               ))}
             </AnimatePresence>
