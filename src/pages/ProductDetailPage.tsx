@@ -9,6 +9,7 @@ import { ProductCard } from '../components/products/ProductCard';
 import { Img } from '../components/ui/Img';
 import { STORE_INFO } from '../data/storeInfo';
 import { isCloudinaryUrl, getOptimizedImageUrl, generateSrcSet } from '../lib/cloudinary';
+import { Seo } from '../components/seo/Seo';
 
 /** Studio shots have a -sm.webp twin; Cloudinary shots get auto-scaled srcset. */
 const galleryImage = (src: string, alt: string) => {
@@ -76,6 +77,50 @@ export const ProductDetailPage: React.FC = () => {
   // Unique images only — some products repeat the same shot.
   const images = [...new Set(product.images)];
 
+  const absoluteImages = images.map((img) =>
+    img.startsWith('http') ? img : `https://www.orientalsports.in${img}`
+  );
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: absoluteImages,
+    description: product.description || product.seoDescription || '',
+    sku: product.sku || product.id,
+    brand: { '@type': 'Brand', name: product.brand || 'Oriental Sports' },
+    ...(product.reviewsCount > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: product.rating, reviewCount: product.reviewsCount } }
+      : {}),
+    offers: {
+      '@type': 'Offer',
+      url: `https://www.orientalsports.in/product/${product.slug}`,
+      priceCurrency: product.currency || 'INR',
+      price: product.price,
+      availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: { '@type': 'Organization', name: 'Oriental Sports' },
+    },
+  };
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Shop', item: 'https://www.orientalsports.in/shop' },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: product.categoryName,
+        item: `https://www.orientalsports.in/shop/${product.category}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: product.name,
+        item: `https://www.orientalsports.in/product/${product.slug}`,
+      },
+    ],
+  };
+
   const allLive = getLiveProducts();
   const isDifferent = (p: Product) =>
     p.id !== product.id &&
@@ -117,6 +162,17 @@ export const ProductDetailPage: React.FC = () => {
 
   return (
     <div className="pdp">
+      <Seo
+        title={product.seoTitle || `${product.name} | ${product.brand || 'Oriental Sports'} | Oriental Sports Pune`}
+        description={
+          product.seoDescription ||
+          product.description?.slice(0, 157) ||
+          `${product.name} by ${product.brand}, available at Oriental Sports, Camp, Pune. ₹${product.price.toLocaleString('en-IN')}.`
+        }
+        canonicalPath={`/product/${product.slug}`}
+        image={absoluteImages[0]}
+        jsonLd={[productJsonLd, breadcrumbJsonLd]}
+      />
       <div className="container">
         <nav aria-label="Breadcrumb" className="crumbs pdp-crumbs">
           <ol>

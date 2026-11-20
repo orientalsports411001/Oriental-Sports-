@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /checkout
+Disallow: /cart
+Disallow: /wishlist
+Disallow: /auth/callback
+Disallow: /order-success
+
+Sitemap: https://www.orientalsports.in/sitemap.xml

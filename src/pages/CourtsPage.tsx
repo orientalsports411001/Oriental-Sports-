@@ -9,6 +9,7 @@ import { ProjectGallery } from '../components/home/ProjectGallery';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Img } from '../components/ui/Img';
 import { ImageReveal, Reveal } from '../components/motion/Reveal';
+import { Seo } from '../components/seo/Seo';
 
 const COURT_ART: Record<string, MediaImage> = {
   Pickleball: IMAGES.pickleballNet,
@@ -21,6 +22,11 @@ const COURT_ART: Record<string, MediaImage> = {
 
 export const CourtsPage: React.FC = () => (
   <div className="courts-page">
+    <Seo
+      title="Turnkey Court Construction Pune | Padel, Pickleball, Tennis | Oriental Sports"
+      description="Complete sports infrastructure partner in Pune: court construction, multi-sport turfs, gym fit-outs, and professional maintenance for padel, pickleball, tennis, badminton and squash."
+      canonicalPath="/courts"
+    />
     <PageHeader
       crumbs={[{ label: 'Home', to: '/' }, { label: 'Installations' }]}
       eyebrow="Sports & Wellness Infrastructure · Pune & Maharashtra"

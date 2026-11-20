@@ -8,6 +8,7 @@ import { ProductCard } from '../components/products/ProductCard';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Reveal } from '../components/motion/Reveal';
 import { Product, SportCategory } from '../types';
+import { Seo } from '../components/seo/Seo';
 
 // Same art direction as the homepage sport rail.
 const ART: Partial<Record<SportCategory, MediaImage>> = {
@@ -79,6 +80,13 @@ export const CategoryPage: React.FC = () => {
 
   return (
     <div className="category-page">
+      <Seo
+        title={`${info.name} Equipment in Pune | Oriental Sports`}
+        description={
+          `${info.description} ${products.length} ${info.name.toLowerCase()} products in stock at our Camp, Pune store.`.slice(0, 160)
+        }
+        canonicalPath={`/shop/${info.id}`}
+      />
       <PageHeader
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Shop', to: '/shop' }, { label: info.name }]}
         title={[info.name]}

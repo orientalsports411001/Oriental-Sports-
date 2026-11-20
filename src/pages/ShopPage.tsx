@@ -7,6 +7,7 @@ import { STORE_INFO } from '../data/storeInfo';
 import { looseIncludes } from '../utils/search';
 import { ProductCard } from '../components/products/ProductCard';
 import { PageHeader } from '../components/ui/PageHeader';
+import { Seo } from '../components/seo/Seo';
 import { Product, SportCategory, ProductType } from '../types';
 
 type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'rating';
@@ -430,6 +431,11 @@ export const ShopPage: React.FC = () => {
 
   return (
     <div className="shop-page">
+      <Seo
+        title="Shop Sports Equipment Online | Oriental Sports Pune"
+        description={`Verified bats, racquets, footballs, shuttlecocks and court gear across ${CATEGORIES.length} disciplines. Fulfilled directly from our MG Road, Camp, Pune store.`}
+        canonicalPath="/shop"
+      />
       <PageHeader
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Products & Equipment' }]}
         title={['Sports equipment', 'catalog']}

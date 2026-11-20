@@ -1,4 +1,5 @@
 import React from 'react';
+import { Seo } from '../components/seo/Seo';
 import { Hero } from '../components/home/Hero';
 import { MarqueeTicker } from '../components/ui/MarqueeTicker';
 import { SportIndex } from '../components/home/SportIndex';
@@ -19,6 +20,11 @@ import { StoreChapter } from '../components/home/StoreChapter';
  */
 export const HomePage: React.FC = () => (
   <>
+    <Seo
+      title="Oriental Sports | Pune's Sports House & Court Builders"
+      description="Oriental Sports Pune — Shop 247 MG Road, Camp, Pune. Premier sports house and turnkey court builders for padel courts, pickleball, tennis, badminton, and football turf across Maharashtra."
+      canonicalPath="/"
+    />
     <Hero />
     <MarqueeTicker />
     <SportIndex />

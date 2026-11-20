@@ -5,6 +5,7 @@ import { CATEGORIES } from '../data/categories';
 import { IMAGES } from '../data/media';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Img } from '../components/ui/Img';
+import { Seo } from '../components/seo/Seo';
 import { ImageReveal, Reveal, Stagger, StaggerItem } from '../components/motion/Reveal';
 
 const PILLARS = [
@@ -30,6 +31,11 @@ export const AboutPage: React.FC = () => {
 
   return (
     <div className="about-page">
+      <Seo
+        title="About Oriental Sports | Pune's Sports House, Camp"
+        description={BRAND_STORY.subheadline.slice(0, 160)}
+        canonicalPath="/about"
+      />
       <PageHeader
         crumbs={[{ label: 'Home', to: '/' }, { label: 'About' }]}
         title={['Rooted in Camp.', 'Built for the game.']}
