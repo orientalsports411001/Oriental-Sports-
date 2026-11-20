@@ -54,3 +54,6 @@ apps/admin/public/uploads/*
 
 # local Supabase backups
 backups/
+
+# product photos dropped for scripts/import-product-images.mjs
+scripts/incoming-images/
