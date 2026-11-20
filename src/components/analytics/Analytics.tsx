@@ -30,7 +30,17 @@ export const Analytics: React.FC = () => {
     }
 
     // 2. Microsoft Clarity
-    if (clarityId && typeof window !== 'undefined' && !document.getElementById('clarity-script')) {
+    // Clarity is actually installed as a static script in index.html
+    // (project zgps3u5cc0, pasted into <head> per Clarity's own "Install
+    // manually" instructions), not via this env-var path. The id check
+    // alone wouldn't catch that script — it has no id — so match on its
+    // src too, or setting VITE_CLARITY_PROJECT_ID later would load Clarity
+    // a second time alongside it.
+    const clarityAlreadyInstalled =
+      typeof window !== 'undefined' &&
+      (document.getElementById('clarity-script') ||
+        document.querySelector('script[src*="clarity.ms/tag"]'));
+    if (clarityId && typeof window !== 'undefined' && !clarityAlreadyInstalled) {
       (function (c: any, l: any, a: any, r: any, i: any) {
         c[a] =
           c[a] ||
