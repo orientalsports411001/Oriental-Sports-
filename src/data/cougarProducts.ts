@@ -8,7 +8,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-eco-hurdle-6',
     slug: 'eco-hurdle-6',
-    name: 'ECO HURDLE 6"',
+    name: 'Eco Hurdle — 6 in',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'agility-speed',
@@ -38,7 +38,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-eco-hurdle-9',
     slug: 'eco-hurdle-9',
-    name: 'ECO HURDLE 9"',
+    name: 'Eco Hurdle — 9 in',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'agility-speed',
@@ -68,7 +68,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-eco-hurdle-12',
     slug: 'eco-hurdle-12',
-    name: 'ECO HURDLE 12"',
+    name: 'Eco Hurdle — 12 in',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'agility-speed',
@@ -278,7 +278,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-saucer-cone',
     slug: 'saucer-cone',
-    name: 'SAUCER CONE',
+    name: 'Saucer Cone',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'agility-speed',
@@ -1393,7 +1393,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-olympic-rod-3ft',
     slug: 'weight-lifting-olympic-rod-3ft',
-    name: 'WEIGHT LIFTING OLYMPIC ROD 3FT',
+    name: 'Weight Lifting Olympic Rod — 3 ft',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1423,7 +1423,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-olympic-road-4ft',
     slug: 'weight-lifting-olympic-road-4ft',
-    name: 'WEIGHT LIFTING OLYMPIC ROAD 4FT',
+    name: 'Weight Lifting Olympic Rod — 4 ft',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1453,7 +1453,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-olympic-road-5ft',
     slug: 'weight-lifting-olympic-road-5ft',
-    name: 'WEIGHT LIFTING OLYMPIC ROAD 5FT',
+    name: 'Weight Lifting Olympic Rod — 5 ft',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1483,7 +1483,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-olympic-road-6ft',
     slug: 'weight-lifting-olympic-road-6ft',
-    name: 'WEIGHT LIFTING OLYMPIC ROAD 6FT',
+    name: 'Weight Lifting Olympic Rod — 6 ft',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1513,7 +1513,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-olympic-road-7ft',
     slug: 'weight-lifting-olympic-road-7ft',
-    name: 'WEIGHT LIFTING OLYMPIC ROAD 7FT',
+    name: 'Weight Lifting Olympic Rod — 7 ft',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',
@@ -1543,7 +1543,7 @@ export const COUGAR_PRODUCTS: Product[] = [
   {
     id: 'prod-cgr-weight-lifting-olympic-ez-bar-4ft',
     slug: 'weight-lifting-olympic-ez-bar-4ft',
-    name: 'WEIGHT LIFTING OLYMPIC EZ BAR 4FT',
+    name: 'Weight Lifting Olympic EZ Bar — 4 ft',
     category: 'fitness',
     categoryName: 'Fitness',
     subcategory: 'plates-bars',

@@ -296,7 +296,7 @@ export const EXERCISE_BIKES: Product[] = [
   {
     id: 'prod-bike-air-bike-205h',
     slug: 'air-bike-205h',
-    name: 'AIR BIKE 205H',
+    name: 'Air Bike 205H',
     category: 'gym-equipment',
     categoryName: 'Gym Equipment',
     subcategory: 'exercise-bikes',
@@ -332,7 +332,7 @@ export const EXERCISE_BIKES: Product[] = [
   {
     id: 'prod-bike-air-bike-fw-204',
     slug: 'air-bike-fw-204',
-    name: 'AIR BIKE FW 204',
+    name: 'Air Bike FW 204',
     category: 'gym-equipment',
     categoryName: 'Gym Equipment',
     subcategory: 'exercise-bikes',
