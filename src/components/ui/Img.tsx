@@ -8,16 +8,28 @@ interface ImgProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src'
   priority?: boolean;
   /** Override the image's own focal point. */
   position?: string;
+  /**
+   * How the image fills its box. Defaults to 'cover' (crops to fill, the
+   * existing behaviour everywhere). Set from a product's own `imageFit` —
+   * admin picks this per product so a tall/narrow photo (a racket, a rod)
+   * can show 'contain' (whole photo, letterboxed) instead of being cropped.
+   * 'fill' stretches to the box and will distort a photo whose proportions
+   * don't match it; it exists because it was asked for, not because it's
+   * usually the right choice.
+   */
+  objectFit?: 'cover' | 'contain' | 'fill';
 }
 
 /**
  * Responsive image with focal point, lazy loading, Cloudinary auto-scaling, and a local fallback.
- * Always fills its parent (object-fit: cover) — size the wrapper, not the img.
+ * Fills its parent — size the wrapper, not the img. object-fit defaults to
+ * 'cover' and can be overridden per image via the `objectFit` prop.
  */
 export const Img: React.FC<ImgProps> = ({
   image,
   priority = false,
   position,
+  objectFit = 'cover',
   sizes = '100vw',
   alt,
   style,
@@ -48,7 +60,7 @@ export const Img: React.FC<ImgProps> = ({
       style={{
         width: '100%',
         height: '100%',
-        objectFit: 'cover',
+        objectFit,
         objectPosition: position ?? media.position ?? 'center',
         ...style,
       }}

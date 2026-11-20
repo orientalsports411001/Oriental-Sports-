@@ -68,6 +68,10 @@ export interface Product {
   badge?: 'NEW' | 'BESTSELLER' | 'MATCH GRADE' | 'ORIENTAL EXCLUSIVE' | 'LIMITED';
   images: string[];
   gallery?: string[];
+  /** How this product's photos fill their frame on cards and the product
+   *  page. Admin-chosen per product (Media tab); defaults to 'cover' when
+   *  unset, matching every product's existing display. */
+  imageFit?: 'cover' | 'contain' | 'fill';
   description: string;
   features: string[];
   specs: Record<string, string>;

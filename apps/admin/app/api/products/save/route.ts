@@ -69,6 +69,9 @@ export async function POST(req: Request) {
     const stockQuantity = stockQuantityRaw ? Number(stockQuantityRaw) : 10;
     const lowStockThreshold = Number(getLatestNonEmpty(formData, 'low_stock_threshold')) || 5;
     const status = (getLatestNonEmpty(formData, 'status') || 'published') as 'draft' | 'published' | 'archived';
+    const imageFitRaw = getLatestNonEmpty(formData, 'image_fit');
+    const imageFit: 'cover' | 'contain' | 'fill' =
+      imageFitRaw === 'contain' || imageFitRaw === 'fill' ? imageFitRaw : 'cover';
     const images = parseImages(formData);
     const seoTitle = getLatestNonEmpty(formData, 'seo_title') || `${name} | Oriental Sports Pune`;
     const seoDescription =
@@ -90,6 +93,7 @@ export async function POST(req: Request) {
       status,
       stock_quantity: stockQuantity,
       low_stock_threshold: lowStockThreshold,
+      image_fit: imageFit,
       seo_title: seoTitle,
       seo_description: seoDescription,
     });
@@ -110,6 +114,7 @@ export async function POST(req: Request) {
         status: saved.status,
         stock_quantity: saved.stock_quantity,
         low_stock_threshold: saved.low_stock_threshold,
+        image_fit: saved.image_fit,
         seo_title: saved.seo_title,
         seo_description: saved.seo_description,
       },

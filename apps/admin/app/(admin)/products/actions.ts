@@ -140,6 +140,9 @@ function buildProductPayload(formData: FormData) {
   const stockQuantity = Number(getLatestNonEmpty(formData, 'stock_quantity') || 0);
   const lowStockThreshold = Number(getLatestNonEmpty(formData, 'low_stock_threshold') || 5);
   const requestedStatus = getLatestNonEmpty(formData, 'status') || 'published';
+  const imageFitRaw = getLatestNonEmpty(formData, 'image_fit');
+  const imageFit: 'cover' | 'contain' | 'fill' =
+    imageFitRaw === 'contain' || imageFitRaw === 'fill' ? imageFitRaw : 'cover';
 
   const seoTitle = getLatestNonEmpty(formData, 'seo_title');
   const seoDescription = getLatestNonEmpty(formData, 'seo_description');
@@ -163,6 +166,7 @@ function buildProductPayload(formData: FormData) {
     stockQuantity,
     lowStockThreshold,
     requestedStatus,
+    imageFit,
     seoTitle,
     seoDescription,
     seoKeywords,
@@ -211,6 +215,7 @@ export async function createProduct(formData: FormData) {
           status,
           stock_quantity: fields.stockQuantity,
           low_stock_threshold: fields.lowStockThreshold,
+      image_fit: fields.imageFit,
           seo_title: fields.seoTitle || null,
           seo_description: fields.seoDescription || null,
           seo_keywords: fields.seoKeywords,
@@ -255,6 +260,7 @@ export async function createProduct(formData: FormData) {
             status,
             stock_quantity: fields.stockQuantity,
             low_stock_threshold: fields.lowStockThreshold,
+      image_fit: fields.imageFit,
             seo_title: fields.seoTitle || null,
             seo_description: fields.seoDescription || null,
             seo_keywords: fields.seoKeywords,
@@ -290,6 +296,7 @@ export async function createProduct(formData: FormData) {
       status,
       stock_quantity: fields.stockQuantity,
       low_stock_threshold: fields.lowStockThreshold,
+      image_fit: fields.imageFit,
       seo_title: fields.seoTitle,
       seo_description: fields.seoDescription,
     });
@@ -342,6 +349,7 @@ export async function updateProduct(productId: string, formData: FormData) {
       status,
       stock_quantity: fields.stockQuantity,
       low_stock_threshold: fields.lowStockThreshold,
+      image_fit: fields.imageFit,
       seo_title: fields.seoTitle || null,
       seo_description: fields.seoDescription || null,
       seo_keywords: fields.seoKeywords,

@@ -137,6 +137,7 @@ export const ProductDetailPage: React.FC = () => {
                 image={galleryImage(images[activeImageIndex] ?? images[0], product.name)}
                 priority
                 sizes="(min-width: 1024px) 55vw, 100vw"
+                objectFit={product.imageFit}
               />
               {product.badge && <span className="badge badge-dark pdp-badge">{product.badge}</span>}
             </div>
@@ -152,7 +153,7 @@ export const ProductDetailPage: React.FC = () => {
                     aria-label={`Show image ${idx + 1} of ${images.length}`}
                     aria-pressed={idx === activeImageIndex}
                   >
-                    <Img image={galleryImage(img, '')} sizes="88px" />
+                    <Img image={galleryImage(img, '')} sizes="88px" objectFit={product.imageFit} />
                   </button>
                 ))}
               </div>

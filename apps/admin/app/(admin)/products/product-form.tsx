@@ -46,6 +46,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     data?.compare_at_price ? String(data.compare_at_price) : ''
   );
   const [images, setImages] = useState<string[]>(data?.images || []);
+  const [imageFit, setImageFit] = useState<'cover' | 'contain' | 'fill'>(data?.image_fit || 'cover');
   const [status, setStatus] = useState<string>(data?.status || 'published');
   const [stockQuantity, setStockQuantity] = useState<number>(data?.stock_quantity ?? 10);
   const [lowStockThreshold, setLowStockThreshold] = useState<number>(data?.low_stock_threshold ?? 5);
@@ -188,6 +189,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     const finalImages = images.slice(0, 5);
     formData.set('images', finalImages.join('\n'));
     formData.set('images_json', JSON.stringify(finalImages));
+    formData.set('image_fit', imageFit);
     formData.set('sizes', sizes || '');
     formData.set('available_sizes', sizes || '');
     formData.set('variants_json', variantsJson || '[]');
@@ -672,6 +674,47 @@ export function ProductForm({ initialData, product: productProp, categories, act
                   images={images.slice(0, 5).map((img) => ({ url: img }))}
                   onChange={(newImgs) => setImages(newImgs.slice(0, 5).map((g) => g.url))}
                 />
+
+                <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--ink)', marginBottom: 4 }}>
+                    How Photos Fill Their Frame
+                  </label>
+                  <p style={{ margin: '0 0 14px', fontSize: 12.5, color: 'var(--subtle)' }}>
+                    Applies to every photo of this product, on the storefront and the product page.
+                    Most products should stay on <strong>Fill Frame</strong>. Switch to <strong>Show Whole Photo</strong>
+                    only if the item is tall and narrow (a racket, a rod) and Fill Frame is cropping into it.
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {(
+                      [
+                        { v: 'cover', label: 'Fill Frame', hint: 'Object Cover — crops to fill, the default' },
+                        { v: 'contain', label: 'Show Whole Photo', hint: 'Object Contain — no cropping, may letterbox' },
+                        { v: 'fill', label: 'Stretch to Fit', hint: 'Object Fill — no cropping or gaps, can distort' },
+                      ] as const
+                    ).map((opt) => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => setImageFit(opt.v)}
+                        aria-pressed={imageFit === opt.v}
+                        style={{
+                          flex: '1 1 160px',
+                          minHeight: 44,
+                          padding: '10px 14px',
+                          borderRadius: 12,
+                          border: imageFit === opt.v ? '1.5px solid var(--ink)' : '1px solid rgba(17,17,17,0.12)',
+                          background: imageFit === opt.v ? 'var(--ink)' : 'var(--stone)',
+                          color: imageFit === opt.v ? 'var(--ivory)' : 'var(--ink)',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                        }}
+                      >
+                        <div style={{ fontSize: 13, fontWeight: 700 }}>{opt.label}</div>
+                        <div style={{ fontSize: 11, opacity: 0.75, marginTop: 2 }}>{opt.hint}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -894,6 +937,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
       <input type="hidden" name="status" value={status} />
       <input type="hidden" name="images" value={images.join('\n')} />
       <input type="hidden" name="images_json" value={JSON.stringify(images)} />
+      <input type="hidden" name="image_fit" value={imageFit} />
       <input type="hidden" name="sizes" value={sizes} />
       <input type="hidden" name="available_sizes" value={sizes} />
       <input type="hidden" name="variants_json" value={variantsJson} />

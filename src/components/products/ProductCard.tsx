@@ -110,7 +110,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Media & Interactive Quick Actions */}
       <div className="ecom-card-media-wrap">
         <Link to={`/product/${product.slug}`} className="ecom-card-media" tabIndex={-1} aria-hidden="true">
-          <Img image={imageFor(product.images[0], product.name)} alt={product.name} sizes={sizes} />
+          <Img image={imageFor(product.images[0], product.name)} alt={product.name} sizes={sizes} objectFit={product.imageFit} />
         </Link>
 
         {/* Top Badges */}

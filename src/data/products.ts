@@ -1877,6 +1877,7 @@ function applySupabaseRows(data: any[], persist: boolean): void {
         stock_quantity,
         low_stock_threshold,
         images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
+        imageFit: p.metadata?.image_fit === 'contain' || p.metadata?.image_fit === 'fill' ? p.metadata.image_fit : 'cover',
         description: p.description || '',
         features: Array.isArray(p.features) ? p.features : [p.description || ''],
         specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },
@@ -1920,6 +1921,7 @@ function applySupabaseRows(data: any[], persist: boolean): void {
         status: row.status,
         stock_quantity: row.stock_quantity,
         low_stock_threshold: row.low_stock_threshold,
+        imageFit: row.imageFit,
       } as Product;
     });
     window.dispatchEvent(new CustomEvent('os_catalog_updated'));
@@ -2174,6 +2176,7 @@ export function getAllLiveProducts(): Product[] {
         stock_quantity: stockQty,
         low_stock_threshold: Number(p.low_stock_threshold ?? 5),
         images: Array.isArray(p.images) && p.images.length > 0 ? p.images : ['/images/products/oriental-sports/sg-scorer-classic.webp'],
+        imageFit: p.imageFit === 'contain' || p.imageFit === 'fill' ? p.imageFit : 'cover',
         description: p.description || '',
         features: Array.isArray(p.features) ? p.features : [p.description || ''],
         specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },

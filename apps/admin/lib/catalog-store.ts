@@ -9,6 +9,10 @@ export interface AdminProduct {
   price: number;
   compare_at_price?: number | null;
   images: string[];
+  /** How this product's photos fill their frame on the storefront. Defaults
+   *  to 'cover' (crops to fill) when unset — every existing product's
+   *  current display is unchanged. */
+  image_fit?: 'cover' | 'contain' | 'fill';
   status: 'draft' | 'published' | 'archived';
   stock_quantity: number;
   low_stock_threshold: number;
@@ -473,6 +477,7 @@ function toStorefrontFormat(p: AdminProduct) {
     inStock: p.status === 'published' && (p.stock_quantity ?? 10) > 0,
     images: safeImages,
     gallery: safeImages,
+    imageFit: p.image_fit || 'cover',
     description: p.description || `${p.name} available at Oriental Sports Pune.`,
     features: p.description ? [p.description] : ['Match quality performance gear', 'Inspected by Oriental Sports Camp'],
     specs: {
