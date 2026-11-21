@@ -229,7 +229,10 @@ export default async function EditProductPage({
       </div>
 
       {/* Discontinue / Danger Zone */}
-      <div className="studio-surface" style={{ borderColor: 'rgba(179, 38, 30, 0.25)', background: '#FFFDFD' }}>
+      <div
+        className="studio-surface"
+        style={{ marginTop: 24, borderColor: 'rgba(200, 16, 46, 0.3)', background: 'rgba(200, 16, 46, 0.06)' }}
+      >
         <h2 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 6px', color: 'var(--error)' }}>
           Discontinue / Delete Product
         </h2>
