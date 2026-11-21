@@ -34,11 +34,14 @@ export async function GET() {
  * without the file ever passing through this server. CLOUDINARY_API_SECRET
  * is only ever read here, server-side.
  */
-export async function POST() {
+export async function POST(request: Request) {
   await requireAdmin();
 
   try {
-    const signed = buildUploadSignature();
+    const { searchParams } = new URL(request.url);
+    const kindRaw = searchParams.get('kind');
+    const kind = kindRaw === 'video' || kindRaw === 'pdf' ? kindRaw : 'image';
+    const signed = buildUploadSignature(kind);
     return NextResponse.json(signed);
   } catch (err: unknown) {
     const errMsg = err instanceof Error ? err.message : '';

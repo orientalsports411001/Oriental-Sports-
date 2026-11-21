@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Plus, FileDown, MessageCircle } from 'lucide-react';
 import { PRODUCTS, getLiveProducts, getLiveProductBySlug } from '../data/products';
 import type { Product } from '../types';
 import { useCart } from '../context/CartContext';
@@ -142,6 +142,11 @@ export const ProductDetailPage: React.FC = () => {
       : null;
 
   const isAvailableInStock = activeVariantObj !== undefined ? activeVariantObj.inStock : (product?.inStock ?? false);
+  // Gym & Strength (treadmills, bikes, commercial machines): a client
+  // decision, not a stock/price rule — these are quote/visit items, not an
+  // online-checkout purchase, so online checkout is replaced with a spec
+  // sheet download and a direct enquiry.
+  const isGymEquipment = product?.category === 'gym-equipment';
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -214,6 +219,16 @@ export const ProductDetailPage: React.FC = () => {
                 ))}
               </div>
             )}
+
+            {product.videoUrl && (
+              <video
+                src={product.videoUrl}
+                controls
+                playsInline
+                className="pdp-video"
+                style={{ width: '100%', borderRadius: 16, marginTop: 16, background: '#000' }}
+              />
+            )}
           </div>
 
           <div className="pdp-info">
@@ -285,31 +300,58 @@ export const ProductDetailPage: React.FC = () => {
                 </fieldset>
               )}
 
-              <div className="pdp-buy">
-                <div className="qty" role="group" aria-label="Quantity">
-                  <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity">
-                    <Minus size={16} />
+              {isGymEquipment ? (
+                <>
+                  {product.specSheetUrl && (
+                    <a
+                      href={product.specSheetUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-primary btn-block"
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                    >
+                      <FileDown size={18} /> Download PDF
+                    </a>
+                  )}
+                  <a
+                    href={getWhatsAppProductInquiry()}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`btn ${product.specSheetUrl ? 'btn-outline' : 'btn-primary'} btn-block`}
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: product.specSheetUrl ? 10 : 0 }}
+                  >
+                    <MessageCircle size={18} /> Enquire on WhatsApp
+                  </a>
+                </>
+              ) : (
+                <>
+                  <div className="pdp-buy">
+                    <div className="qty" role="group" aria-label="Quantity">
+                      <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity">
+                        <Minus size={16} />
+                      </button>
+                      <output aria-live="polite">{quantity}</output>
+                      <button type="button" onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity">
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddToCart}
+                      disabled={!isAvailableInStock}
+                      className={`btn btn-primary pdp-add ${addedAnimation ? 'is-added' : ''}`}
+                    >
+                      {addedAnimation ? 'Added to bag' : isAvailableInStock ? 'Add to bag' : 'Out of stock'}
+                    </button>
+                  </div>
+                  <button type="button" onClick={handleBuyNow} disabled={!isAvailableInStock} className="btn btn-outline btn-block">
+                    Buy now
                   </button>
-                  <output aria-live="polite">{quantity}</output>
-                  <button type="button" onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity">
-                    <Plus size={16} />
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  disabled={!isAvailableInStock}
-                  className={`btn btn-primary pdp-add ${addedAnimation ? 'is-added' : ''}`}
-                >
-                  {addedAnimation ? 'Added to bag' : isAvailableInStock ? 'Add to bag' : 'Out of stock'}
-                </button>
-              </div>
-              <button type="button" onClick={handleBuyNow} disabled={!isAvailableInStock} className="btn btn-outline btn-block">
-                Buy now
-              </button>
-              <a href={getWhatsAppProductInquiry()} target="_blank" rel="noreferrer" className="link-arrow pdp-whatsapp">
-                Ask the store on WhatsApp <span className="btn-arrow" aria-hidden="true">→</span>
-              </a>
+                  <a href={getWhatsAppProductInquiry()} target="_blank" rel="noreferrer" className="link-arrow pdp-whatsapp">
+                    Ask the store on WhatsApp <span className="btn-arrow" aria-hidden="true">→</span>
+                  </a>
+                </>
+              )}
 
               <dl className="pdp-promises">
                 <div>
@@ -366,12 +408,14 @@ export const ProductDetailPage: React.FC = () => {
         )}
       </div>
 
-      <StickyBuyBar
-        product={{ ...product, price: currentPrice }}
-        onAddToCart={handleAddToCart}
-        onBuyNow={handleBuyNow}
-        inStock={isAvailableInStock}
-      />
+      {!isGymEquipment && (
+        <StickyBuyBar
+          product={{ ...product, price: currentPrice }}
+          onAddToCart={handleAddToCart}
+          onBuyNow={handleBuyNow}
+          inStock={isAvailableInStock}
+        />
+      )}
     </div>
   );
 };

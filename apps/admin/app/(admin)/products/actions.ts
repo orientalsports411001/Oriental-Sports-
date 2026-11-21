@@ -143,6 +143,10 @@ function buildProductPayload(formData: FormData) {
   const imageFitRaw = getLatestNonEmpty(formData, 'image_fit');
   const imageFit: 'cover' | 'contain' | 'fill' =
     imageFitRaw === 'contain' || imageFitRaw === 'fill' ? imageFitRaw : 'cover';
+  const videoUrl = getLatestNonEmpty(formData, 'video_url') || null;
+  const videoPublicId = getLatestNonEmpty(formData, 'video_public_id') || null;
+  const specSheetUrl = getLatestNonEmpty(formData, 'spec_sheet_url') || null;
+  const specSheetPublicId = getLatestNonEmpty(formData, 'spec_sheet_public_id') || null;
 
   const seoTitle = getLatestNonEmpty(formData, 'seo_title');
   const seoDescription = getLatestNonEmpty(formData, 'seo_description');
@@ -167,6 +171,10 @@ function buildProductPayload(formData: FormData) {
     lowStockThreshold,
     requestedStatus,
     imageFit,
+    videoUrl,
+    videoPublicId,
+    specSheetUrl,
+    specSheetPublicId,
     seoTitle,
     seoDescription,
     seoKeywords,
@@ -216,6 +224,10 @@ export async function createProduct(formData: FormData) {
           stock_quantity: fields.stockQuantity,
           low_stock_threshold: fields.lowStockThreshold,
       image_fit: fields.imageFit,
+      video_url: fields.videoUrl,
+      video_public_id: fields.videoPublicId,
+      spec_sheet_url: fields.specSheetUrl,
+      spec_sheet_public_id: fields.specSheetPublicId,
           seo_title: fields.seoTitle || null,
           seo_description: fields.seoDescription || null,
           seo_keywords: fields.seoKeywords,
@@ -261,6 +273,10 @@ export async function createProduct(formData: FormData) {
             stock_quantity: fields.stockQuantity,
             low_stock_threshold: fields.lowStockThreshold,
       image_fit: fields.imageFit,
+      video_url: fields.videoUrl,
+      video_public_id: fields.videoPublicId,
+      spec_sheet_url: fields.specSheetUrl,
+      spec_sheet_public_id: fields.specSheetPublicId,
             seo_title: fields.seoTitle || null,
             seo_description: fields.seoDescription || null,
             seo_keywords: fields.seoKeywords,
@@ -297,6 +313,10 @@ export async function createProduct(formData: FormData) {
       stock_quantity: fields.stockQuantity,
       low_stock_threshold: fields.lowStockThreshold,
       image_fit: fields.imageFit,
+      video_url: fields.videoUrl,
+      video_public_id: fields.videoPublicId,
+      spec_sheet_url: fields.specSheetUrl,
+      spec_sheet_public_id: fields.specSheetPublicId,
       seo_title: fields.seoTitle,
       seo_description: fields.seoDescription,
     });
@@ -350,6 +370,10 @@ export async function updateProduct(productId: string, formData: FormData) {
       stock_quantity: fields.stockQuantity,
       low_stock_threshold: fields.lowStockThreshold,
       image_fit: fields.imageFit,
+      video_url: fields.videoUrl,
+      video_public_id: fields.videoPublicId,
+      spec_sheet_url: fields.specSheetUrl,
+      spec_sheet_public_id: fields.specSheetPublicId,
       seo_title: fields.seoTitle || null,
       seo_description: fields.seoDescription || null,
       seo_keywords: fields.seoKeywords,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, Star, Check, Plus } from 'lucide-react';
+import { Heart, Star, Check, Plus, MessageCircle } from 'lucide-react';
 import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -101,6 +101,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const rating = product.rating;
   const reviewsCount = product.reviewsCount;
 
+  // Gym & Strength (treadmills, bikes, commercial machines) are a quote/visit
+  // item, not an online-checkout purchase — client decision, see PDP for the
+  // same check.
+  const isGymEquipment = product.category === 'gym-equipment';
+  const whatsAppHref = `https://wa.me/919890990022?text=${encodeURIComponent(
+    `Hello Oriental Sports Pune, I am inquiring about the ${product.name} (Price: ₹${basePrice}) from your website. Is this available at your MG Road Camp store for pickup today?`
+  )}`;
+
   return (
     <article
       className={`ecom-card ${className}`}
@@ -184,17 +192,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </div>
 
-          {/* Clean E-Commerce Add Button */}
-          <button
-            type="button"
-            className={`ecom-card-add-btn ${justAdded ? 'is-added' : ''}`}
-            onClick={handleAdd}
-            disabled={!product.inStock}
-            aria-label={justAdded ? 'Added to cart' : 'Add to cart'}
-          >
-            {justAdded ? <Check size={13} strokeWidth={2.5} /> : <Plus size={13} strokeWidth={2.5} />}
-            <span>{justAdded ? 'Added' : 'Add'}</span>
-          </button>
+          {isGymEquipment ? (
+            <a
+              href={whatsAppHref}
+              target="_blank"
+              rel="noreferrer"
+              className="ecom-card-add-btn"
+              onClick={(e) => e.stopPropagation()}
+              aria-label="Enquire on WhatsApp"
+            >
+              <MessageCircle size={13} strokeWidth={2.5} />
+              <span>Enquire</span>
+            </a>
+          ) : (
+            /* Clean E-Commerce Add Button */
+            <button
+              type="button"
+              className={`ecom-card-add-btn ${justAdded ? 'is-added' : ''}`}
+              onClick={handleAdd}
+              disabled={!product.inStock}
+              aria-label={justAdded ? 'Added to cart' : 'Add to cart'}
+            >
+              {justAdded ? <Check size={13} strokeWidth={2.5} /> : <Plus size={13} strokeWidth={2.5} />}
+              <span>{justAdded ? 'Added' : 'Add'}</span>
+            </button>
+          )}
         </div>
       </div>
     </article>

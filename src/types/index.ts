@@ -72,6 +72,11 @@ export interface Product {
    *  page. Admin-chosen per product (Media tab); defaults to 'cover' when
    *  unset, matching every product's existing display. */
   imageFit?: 'cover' | 'contain' | 'fill';
+  /** Optional single product video (admin Media tab). */
+  videoUrl?: string;
+  /** Optional spec-sheet PDF. Gym & Strength products show a Download PDF
+   *  button instead of Add to Cart/Buy Now when this is set. */
+  specSheetUrl?: string;
   description: string;
   features: string[];
   specs: Record<string, string>;

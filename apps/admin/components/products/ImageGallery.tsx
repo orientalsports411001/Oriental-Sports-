@@ -271,6 +271,15 @@ export function ImageGallery({
           multiple
           disabled={isMaxReached}
           style={{ display: 'none' }}
+          // The input sits inside the clickable dropzone, which calls
+          // input.click() on its own onClick. A programmatic .click() on an
+          // element dispatches a real, bubbling click event, so without this
+          // it re-triggers the dropzone's own onClick a second time in the
+          // same gesture — confirmed in testing (fires twice per click).
+          // Some mobile browsers (iOS Safari in particular) silently refuse
+          // a second file-dialog trigger within one user gesture, which
+          // would present exactly as "the upload isn't popping out".
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => {
             handleFiles(e.target.files);
             e.target.value = '';

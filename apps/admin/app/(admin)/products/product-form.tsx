@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageGallery } from '@/components/products/ImageGallery';
+import { SingleFileUpload, UploadedFile } from '@/components/products/SingleFileUpload';
 import { SeoEditor } from '@/components/seo/SeoEditor';
 
 
@@ -47,6 +48,12 @@ export function ProductForm({ initialData, product: productProp, categories, act
   );
   const [images, setImages] = useState<string[]>(data?.images || []);
   const [imageFit, setImageFit] = useState<'cover' | 'contain' | 'fill'>(data?.image_fit || 'cover');
+  const [video, setVideo] = useState<UploadedFile | null>(
+    data?.video_url ? { url: data.video_url, publicId: data.video_public_id } : null
+  );
+  const [specSheet, setSpecSheet] = useState<UploadedFile | null>(
+    data?.spec_sheet_url ? { url: data.spec_sheet_url, publicId: data.spec_sheet_public_id } : null
+  );
   const [status, setStatus] = useState<string>(data?.status || 'published');
   const [stockQuantity, setStockQuantity] = useState<number>(data?.stock_quantity ?? 10);
   const [lowStockThreshold, setLowStockThreshold] = useState<number>(data?.low_stock_threshold ?? 5);
@@ -190,6 +197,10 @@ export function ProductForm({ initialData, product: productProp, categories, act
     formData.set('images', finalImages.join('\n'));
     formData.set('images_json', JSON.stringify(finalImages));
     formData.set('image_fit', imageFit);
+    formData.set('video_url', video?.url || '');
+    formData.set('video_public_id', video?.publicId || '');
+    formData.set('spec_sheet_url', specSheet?.url || '');
+    formData.set('spec_sheet_public_id', specSheet?.publicId || '');
     formData.set('sizes', sizes || '');
     formData.set('available_sizes', sizes || '');
     formData.set('variants_json', variantsJson || '[]');
@@ -715,6 +726,32 @@ export function ProductForm({ initialData, product: productProp, categories, act
                     ))}
                   </div>
                 </div>
+
+                <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                  <SingleFileUpload
+                    kind="video"
+                    value={video}
+                    onChange={setVideo}
+                    label="Product Video (optional)"
+                    hint="A short clip shown on the product page, under the photos — in use, assembly, or a close-up of texture/mechanism."
+                    accept="video/*"
+                    maxBytes={100 * 1024 * 1024}
+                    maxLabel="100MB"
+                  />
+                </div>
+
+                <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                  <SingleFileUpload
+                    kind="pdf"
+                    value={specSheet}
+                    onChange={setSpecSheet}
+                    label="Spec Sheet (PDF, optional)"
+                    hint="For Gym & Strength products, uploading this replaces Add to Cart / Buy Now on the storefront with a Download PDF button."
+                    accept="application/pdf"
+                    maxBytes={10 * 1024 * 1024}
+                    maxLabel="10MB"
+                  />
+                </div>
               </div>
             </motion.div>
           </div>
@@ -938,6 +975,10 @@ export function ProductForm({ initialData, product: productProp, categories, act
       <input type="hidden" name="images" value={images.join('\n')} />
       <input type="hidden" name="images_json" value={JSON.stringify(images)} />
       <input type="hidden" name="image_fit" value={imageFit} />
+      <input type="hidden" name="video_url" value={video?.url || ''} />
+      <input type="hidden" name="video_public_id" value={video?.publicId || ''} />
+      <input type="hidden" name="spec_sheet_url" value={specSheet?.url || ''} />
+      <input type="hidden" name="spec_sheet_public_id" value={specSheet?.publicId || ''} />
       <input type="hidden" name="sizes" value={sizes} />
       <input type="hidden" name="available_sizes" value={sizes} />
       <input type="hidden" name="variants_json" value={variantsJson} />

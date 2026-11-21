@@ -68,24 +68,47 @@ export function signCloudinaryParams(params: Record<string, string | number>, ap
 
 export const CLOUDINARY_UPLOAD_FOLDER = 'oriental-sports/products';
 export const CLOUDINARY_ALLOWED_FORMATS = 'jpg,jpeg,png,webp';
+export const CLOUDINARY_VIDEO_FOLDER = 'oriental-sports/product-videos';
+export const CLOUDINARY_VIDEO_ALLOWED_FORMATS = 'mp4,mov,webm,m4v';
+export const CLOUDINARY_PDF_FOLDER = 'oriental-sports/product-spec-sheets';
+export const CLOUDINARY_PDF_ALLOWED_FORMATS = 'pdf';
 
 /**
  * Builds the signed params for a direct-from-browser upload. The browser
  * POSTs the file plus these exact params (plus api_key) to
- * `https://api.cloudinary.com/v1_1/<cloud_name>/image/upload`.
+ * `https://api.cloudinary.com/v1_1/<cloud_name>/<resourceType>/upload`.
+ *
+ * `kind` picks which folder/allowed-formats pair to sign for — product
+ * photos (the original, default behaviour), product videos, or a product's
+ * PDF spec sheet. Each gets its own folder so the three asset types never
+ * mix in Cloudinary's media library.
  */
-export function buildUploadSignature() {
+export function buildUploadSignature(kind: 'image' | 'video' | 'pdf' = 'image') {
   const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
   const timestamp = Math.floor(Date.now() / 1000);
 
-  // Every one of these (except api_key) must be included verbatim in the
-  // signed-params object — anything sent to Cloudinary's upload endpoint
-  // that isn't `file`, `cloud_name`, `resource_type` or `api_key` must be
-  // part of the signature, or Cloudinary rejects the request.
+  const folder =
+    kind === 'video' ? CLOUDINARY_VIDEO_FOLDER : kind === 'pdf' ? CLOUDINARY_PDF_FOLDER : CLOUDINARY_UPLOAD_FOLDER;
+  const allowedFormats =
+    kind === 'video'
+      ? CLOUDINARY_VIDEO_ALLOWED_FORMATS
+      : kind === 'pdf'
+      ? CLOUDINARY_PDF_ALLOWED_FORMATS
+      : CLOUDINARY_ALLOWED_FORMATS;
+  // Cloudinary's resource-type endpoints: images go through the default
+  // `image` resource type; video is its own; a PDF is not an image to
+  // Cloudinary and must go through `raw` or it is rejected.
+  const resourceType = kind === 'video' ? 'video' : kind === 'pdf' ? 'raw' : 'image';
+
+  // Every one of these (except api_key and resource_type) must be included
+  // verbatim in the signed-params object — anything sent to Cloudinary's
+  // upload endpoint that isn't `file`, `cloud_name`, `resource_type` or
+  // `api_key` must be part of the signature, or Cloudinary rejects the
+  // request.
   const paramsToSign: Record<string, string | number> = {
     timestamp,
-    folder: CLOUDINARY_UPLOAD_FOLDER,
-    allowed_formats: CLOUDINARY_ALLOWED_FORMATS,
+    folder,
+    allowed_formats: allowedFormats,
   };
 
   const signature = signCloudinaryParams(paramsToSign, apiSecret);
@@ -94,8 +117,9 @@ export function buildUploadSignature() {
     cloudName,
     apiKey,
     timestamp,
-    folder: CLOUDINARY_UPLOAD_FOLDER,
-    allowedFormats: CLOUDINARY_ALLOWED_FORMATS,
+    folder,
+    allowedFormats,
+    resourceType,
     signature,
   };
 }
@@ -106,7 +130,10 @@ export function buildUploadSignature() {
  * Cloudinary delivery URL with a known public_id — never for the catalog's
  * existing local `/images/...` paths.
  */
-export async function destroyCloudinaryAsset(publicId: string): Promise<{ ok: boolean; error?: string }> {
+export async function destroyCloudinaryAsset(
+  publicId: string,
+  resourceType: 'image' | 'video' | 'raw' = 'image'
+): Promise<{ ok: boolean; error?: string }> {
   if (!isCloudinaryConfigured()) {
     return { ok: false, error: 'Cloudinary is not configured. Asset could not be removed from cloud.' };
   }
@@ -123,7 +150,7 @@ export async function destroyCloudinaryAsset(publicId: string): Promise<{ ok: bo
     signature,
   });
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`, {
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/destroy`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body,

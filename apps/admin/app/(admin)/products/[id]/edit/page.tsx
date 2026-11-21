@@ -42,6 +42,10 @@ export default async function EditProductPage({
         low_stock_threshold: Number(dbProduct.metadata?.low_stock_threshold ?? dbProduct.low_stock_threshold ?? 5),
         is_featured: Boolean(dbProduct.metadata?.is_featured ?? dbProduct.is_featured),
         image_fit: dbProduct.metadata?.image_fit ?? dbProduct.image_fit ?? 'cover',
+        video_url: dbProduct.metadata?.video_url ?? dbProduct.video_url ?? null,
+        video_public_id: dbProduct.metadata?.video_public_id ?? dbProduct.video_public_id ?? null,
+        spec_sheet_url: dbProduct.metadata?.spec_sheet_url ?? dbProduct.spec_sheet_url ?? null,
+        spec_sheet_public_id: dbProduct.metadata?.spec_sheet_public_id ?? dbProduct.spec_sheet_public_id ?? null,
         seo_title: dbProduct.metadata?.seo_title ?? dbProduct.seo_title,
         seo_description: dbProduct.metadata?.seo_description ?? dbProduct.seo_description,
       };
@@ -80,6 +84,10 @@ export default async function EditProductPage({
             low_stock_threshold: Number(dbProduct.metadata?.low_stock_threshold ?? dbProduct.low_stock_threshold ?? 5),
             is_featured: Boolean(dbProduct.metadata?.is_featured ?? dbProduct.is_featured),
             image_fit: dbProduct.metadata?.image_fit ?? dbProduct.image_fit ?? 'cover',
+            video_url: dbProduct.metadata?.video_url ?? dbProduct.video_url ?? null,
+            video_public_id: dbProduct.metadata?.video_public_id ?? dbProduct.video_public_id ?? null,
+            spec_sheet_url: dbProduct.metadata?.spec_sheet_url ?? dbProduct.spec_sheet_url ?? null,
+            spec_sheet_public_id: dbProduct.metadata?.spec_sheet_public_id ?? dbProduct.spec_sheet_public_id ?? null,
             seo_title: dbProduct.metadata?.seo_title ?? dbProduct.seo_title,
             seo_description: dbProduct.metadata?.seo_description ?? dbProduct.seo_description,
           };

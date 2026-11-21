@@ -16,7 +16,8 @@ import { destroyCloudinaryAsset } from '@/lib/cloudinary';
  * asset to delete.
  */
 export async function deleteCloudinaryAssetAction(
-  publicId: string
+  publicId: string,
+  resourceType: 'image' | 'video' | 'raw' = 'image'
 ): Promise<{ ok: boolean; error?: string }> {
   await requireAdmin();
 
@@ -25,7 +26,7 @@ export async function deleteCloudinaryAssetAction(
   }
 
   try {
-    return await destroyCloudinaryAsset(publicId);
+    return await destroyCloudinaryAsset(publicId, resourceType);
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'Could not delete Cloudinary asset.' };
   }

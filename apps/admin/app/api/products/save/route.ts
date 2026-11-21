@@ -72,6 +72,10 @@ export async function POST(req: Request) {
     const imageFitRaw = getLatestNonEmpty(formData, 'image_fit');
     const imageFit: 'cover' | 'contain' | 'fill' =
       imageFitRaw === 'contain' || imageFitRaw === 'fill' ? imageFitRaw : 'cover';
+    const videoUrl = getLatestNonEmpty(formData, 'video_url') || null;
+    const videoPublicId = getLatestNonEmpty(formData, 'video_public_id') || null;
+    const specSheetUrl = getLatestNonEmpty(formData, 'spec_sheet_url') || null;
+    const specSheetPublicId = getLatestNonEmpty(formData, 'spec_sheet_public_id') || null;
     const images = parseImages(formData);
     const seoTitle = getLatestNonEmpty(formData, 'seo_title') || `${name} | Oriental Sports Pune`;
     const seoDescription =
@@ -94,6 +98,10 @@ export async function POST(req: Request) {
       stock_quantity: stockQuantity,
       low_stock_threshold: lowStockThreshold,
       image_fit: imageFit,
+      video_url: videoUrl,
+      video_public_id: videoPublicId,
+      spec_sheet_url: specSheetUrl,
+      spec_sheet_public_id: specSheetPublicId,
       seo_title: seoTitle,
       seo_description: seoDescription,
     });
@@ -115,6 +123,10 @@ export async function POST(req: Request) {
         stock_quantity: saved.stock_quantity,
         low_stock_threshold: saved.low_stock_threshold,
         image_fit: saved.image_fit,
+        video_url: saved.video_url,
+        video_public_id: saved.video_public_id,
+        spec_sheet_url: saved.spec_sheet_url,
+        spec_sheet_public_id: saved.spec_sheet_public_id,
         seo_title: saved.seo_title,
         seo_description: saved.seo_description,
       },

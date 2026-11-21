@@ -13,6 +13,10 @@ export interface AdminProduct {
    *  to 'cover' (crops to fill) when unset — every existing product's
    *  current display is unchanged. */
   image_fit?: 'cover' | 'contain' | 'fill';
+  video_url?: string | null;
+  video_public_id?: string | null;
+  spec_sheet_url?: string | null;
+  spec_sheet_public_id?: string | null;
   status: 'draft' | 'published' | 'archived';
   stock_quantity: number;
   low_stock_threshold: number;
