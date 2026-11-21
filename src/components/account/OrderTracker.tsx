@@ -428,7 +428,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order, defaultExpand
               <span>CAMP STORE PICKUP</span>
             </div>
             <div style={{ fontSize: '0.8125rem', color: '#E5E7EB', flex: 1, minWidth: '220px' }}>
-              Oriental Sports: <strong>Shop 247, MG Road, New Modikhana, Camp, Pune - 411001</strong> (Mon–Sun 10:00 AM – 9:00 PM)
+              Oriental Sports: <strong>Shop 247 R, MG Road, New Modikhana, Camp, Pune - 411001</strong> (Mon–Sun 10:00 AM – 9:00 PM)
             </div>
           </div>
         )}

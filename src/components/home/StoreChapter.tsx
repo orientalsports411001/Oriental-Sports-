@@ -23,7 +23,7 @@ export const StoreChapter: React.FC = () => {
             id="store-title"
             className="display d-1 store-address"
             lines={[
-              'Shop 247,',
+              'Shop 247 R,',
               <span className="store-underline">MG Road,</span>,
               'Camp, Pune.',
             ]}

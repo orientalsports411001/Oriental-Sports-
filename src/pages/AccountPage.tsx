@@ -1162,7 +1162,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({ tab }) => {
                   </div>
                   <h3 className="account-hub-title">Oriental Sports Camp Store</h3>
                   <p className="account-hub-desc">
-                    Shop 247, MG Road, New Modikhana, Camp, Pune - 411001.<br />
+                    Shop 247 R, MG Road, New Modikhana, Camp, Pune - 411001.<br />
                     Walk-in racket stringing tension checks & court consultant available 7 days a week.
                   </p>
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>

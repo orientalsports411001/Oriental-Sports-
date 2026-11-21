@@ -261,7 +261,7 @@ export function printOrderInvoice(order: Order) {
         <h1 class="brand-title">ORIENTAL SPORTS</h1>
         <div class="brand-sub">Camp Pune Flagship Sports House</div>
         <div class="store-address">
-          Shop 247, MG Road, Camp, Pune - 411001, Maharashtra<br>
+          Shop 247 R, MG Road, Camp, Pune - 411001, Maharashtra<br>
           GSTIN: 27AABCO2470Q1ZX · Email: hello.orientalsports@gmail.com<br>
           Customer Desk / WhatsApp: +91 98909 90022
         </div>
@@ -289,7 +289,7 @@ export function printOrderInvoice(order: Order) {
       <div class="dossier-col">
         <h4>Fulfillment & Delivery Details</h4>
         <p>
-          <strong>Method:</strong> ${isPickup ? 'Camp Store Counter Pickup (Shop 247, MG Road)' : 'Doorstep Courier Delivery'}<br>
+          <strong>Method:</strong> ${isPickup ? 'Camp Store Counter Pickup (Shop 247 R, MG Road)' : 'Doorstep Courier Delivery'}<br>
           <strong>Status:</strong> ${order.status.toUpperCase()}<br>
           ${order.carrier ? `<strong>Carrier:</strong> ${order.carrier}<br>` : ''}
           ${order.trackingNumber ? `<strong>AWB / Tracking:</strong> ${order.trackingNumber}` : ''}

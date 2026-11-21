@@ -22,7 +22,7 @@ export const HomePage: React.FC = () => (
   <>
     <Seo
       title="Oriental Sports | Pune's Sports House & Court Builders"
-      description="Oriental Sports Pune — Shop 247 MG Road, Camp, Pune. Premier sports house and turnkey court builders for padel courts, pickleball, tennis, badminton, and football turf across Maharashtra."
+      description="Oriental Sports Pune — Shop 247 R MG Road, Camp, Pune. Premier sports house and turnkey court builders for padel courts, pickleball, tennis, badminton, and football turf across Maharashtra."
       canonicalPath="/"
     />
     <Hero />

@@ -79,7 +79,7 @@ export const PrivacyPage: React.FC = () => (
 export const TermsPage: React.FC = () => (
   <PolicyLayout title="Terms & conditions">
     <p>
-      By using this website or placing orders with Oriental Sports (Shop 247, MG Road, Camp, Pune 411001), you agree to these operational terms.
+      By using this website or placing orders with Oriental Sports (Shop 247 R, MG Road, Camp, Pune 411001), you agree to these operational terms.
     </p>
     <p>
       - Product prices are quoted in Indian Rupees (INR) and are inclusive of standard GST where applicable.<br />

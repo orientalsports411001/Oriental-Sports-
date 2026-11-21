@@ -18,7 +18,7 @@ export const VisitPage: React.FC = () => {
     <div className="visit-page">
       <PageHeader
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Visit' }]}
-        title={['Shop 247,', 'MG Road, Camp.']}
+        title={['Shop 247 R,', 'MG Road, Camp.']}
         lead="Walk in to pick up gear, drop off racquets for stringing, or talk to us about a court."
       />
 
@@ -70,8 +70,8 @@ export const VisitPage: React.FC = () => {
 
         <Reveal className="visit-map" delay={0.1}>
           <iframe
-            title="Map showing Oriental Sports, Shop 247, MG Road, Camp, Pune"
-            src="https://maps.google.com/maps?q=Shop+247,+MG+Road,+Camp,+Pune+411001&t=&z=16&ie=UTF8&iwloc=&output=embed"
+            title="Map showing Oriental Sports, Shop 247 R, MG Road, Camp, Pune"
+            src="https://maps.google.com/maps?q=Shop+247+R,+MG+Road,+Camp,+Pune+411001&t=&z=16&ie=UTF8&iwloc=&output=embed"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />

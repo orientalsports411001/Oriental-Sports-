@@ -151,7 +151,7 @@ export function generateOrderTimeline(
         activeRank,
         'processing',
         'Workshop Inspection & Stringing Prep',
-        'Frame tension check & master stringer inspection at Shop 247, MG Road.',
+        'Frame tension check & master stringer inspection at Shop 247 R, MG Road.',
         dateFor(2, activeRank)
       ),
       step(
@@ -159,7 +159,7 @@ export function generateOrderTimeline(
         activeRank,
         'ready_for_pickup',
         'Ready for Camp Store Collection',
-        'Package is staged at Oriental Sports Camp flagship counter (Shop 247, MG Road, Camp). Bring order ID for verification.',
+        'Package is staged at Oriental Sports Camp flagship counter (Shop 247 R, MG Road, Camp). Bring order ID for verification.',
         dateFor(3, activeRank, 'Ready at Counter')
       ),
       step(4, activeRank, 'delivered', 'Collected / Handed Over', 'Handed over to customer at Oriental Sports Camp Store counter.', dateFor(4, activeRank)),

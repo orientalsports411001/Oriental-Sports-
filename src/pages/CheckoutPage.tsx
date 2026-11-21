@@ -234,7 +234,7 @@ export const CheckoutPage: React.FC = () => {
         name: `${form.firstName} ${form.lastName}`.trim(),
         phone: form.phone.startsWith('+91') ? form.phone : `+91 ${form.phone}`,
         email: form.email,
-        street: deliveryMethod === 'camp_pickup' ? 'Shop 247, MG Road (Camp Store Pickup)' : form.street,
+        street: deliveryMethod === 'camp_pickup' ? 'Shop 247 R, MG Road (Camp Store Pickup)' : form.street,
         locality: form.locality || 'Camp',
         city: form.city || 'Pune',
         state: form.state || 'Maharashtra',
@@ -600,7 +600,7 @@ export const CheckoutPage: React.FC = () => {
                       <span>Store Pickup (Camp)</span>
                     </div>
                     <div className="delivery-option-desc">
-                      Shop 247, MG Road, Camp, Pune. Ready in 2 hours.
+                      Shop 247 R, MG Road, Camp, Pune. Ready in 2 hours.
                     </div>
                     <span className="delivery-option-badge">
                       FREE · INSTANT COLLECTION

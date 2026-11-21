@@ -101,7 +101,7 @@ export function getStageConfig(stage: string): StageConfig {
         badge: 'WORKSHOP PREPARATION',
         headline: 'Workshop Inspection & Testing',
         message:
-          'Equipment inspection, tension testing & packing in progress at Shop 247, MG Road. String tensions, bat knock balance, or racquet weight calibrations are being verified.',
+          'Equipment inspection, tension testing & packing in progress at Shop 247 R, MG Road. String tensions, bat knock balance, or racquet weight calibrations are being verified.',
         stepIndex: 2,
         accentColor: '#D97706',
       };
@@ -138,7 +138,7 @@ export function getStageConfig(stage: string): StageConfig {
         badge: 'READY FOR COUNTER PICKUP',
         headline: 'Ready For Collection at Camp Counter',
         message:
-          'Ready for instant collection at Camp Store counter. Please present your Order Number at Shop 247, MG Road, Camp, Pune.',
+          'Ready for instant collection at Camp Store counter. Please present your Order Number at Shop 247 R, MG Road, Camp, Pune.',
         stepIndex: 3,
         accentColor: '#059669',
       };
@@ -311,7 +311,7 @@ export function generateOrderEmailHtml(params: SendOrderEmailParams): string {
                   ORIENTAL<span style="color: #C8102E;">.</span>SPORTS
                 </div>
                 <div style="font-size: 11px; letter-spacing: 0.12em; color: #888888; text-transform: uppercase; margin-top: 4px;">
-                  Shop 247 MG Road · Camp, Pune · Equipment & Courts
+                  Shop 247 R MG Road · Camp, Pune · Equipment & Courts
                 </div>
               </td>
               <td align="right" style="vertical-align: middle;">
@@ -508,7 +508,7 @@ export function generateOrderEmailHtml(params: SendOrderEmailParams): string {
                   Camp Pune Workshop & Help Desk
                 </div>
                 <div style="font-size: 12px; color: #AAAAAA; margin-top: 4px; line-height: 1.4;">
-                  Shop 247, MG Road, Camp, Pune 411001<br>
+                  Shop 247 R, MG Road, Camp, Pune 411001<br>
                   Hours: Mon–Sat 10:30 AM – 8:30 PM · Sun 11:00 AM – 6:00 PM
                 </div>
               </td>
@@ -553,7 +553,7 @@ export function generateOrderEmailText(params: SendOrderEmailParams): string {
   const carrier = params.carrier || order.carrier;
 
   let text = `ORIENTAL SPORTS PUNE\n`;
-  text += `Shop 247, MG Road, Camp, Pune - 411001\n`;
+  text += `Shop 247 R, MG Road, Camp, Pune - 411001\n`;
   text += `==============================================\n\n`;
   text += `ORDER ${orderNumber} — ${stageConfig.badge}\n\n`;
   text += `Hello ${customerName},\n\n`;
@@ -578,7 +578,7 @@ export function generateOrderEmailText(params: SendOrderEmailParams): string {
   text += `TOTAL: ₹${order.total_amount || 0}\n`;
   text += `PAYMENT: ${order.payment_method || 'Verified Online / UPI'}\n\n`;
   text += `----------------------------------------------\n`;
-  text += `Camp Flagship Desk: Shop 247 MG Road, Camp, Pune\n`;
+  text += `Camp Flagship Desk: Shop 247 R MG Road, Camp, Pune\n`;
   text += `WhatsApp / Phone: +91 98909 90022\n`;
   text += `Email: oriental_sports@outlook.com\n`;
 
@@ -1014,7 +1014,7 @@ export function generateAdminAlertEmailHtml(order: OrderEmailData): string {
       <tr>
         <td style="padding: 18px 28px; background-color: #0E0E0E; text-align: center; color: #666666; font-size: 11px;">
           ORIENTAL SPORTS PUNE · OPERATIONS DESK<br>
-          Shop 247, MG Road, Camp, Pune 411001 · Phone: +91 98909 90022
+          Shop 247 R, MG Road, Camp, Pune 411001 · Phone: +91 98909 90022
         </td>
       </tr>
     </table>

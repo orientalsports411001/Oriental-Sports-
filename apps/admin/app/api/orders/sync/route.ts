@@ -184,7 +184,7 @@ export async function POST(req: Request) {
       shipping_address: body.shipping_address || {
         fullName: body.customer_name || 'Customer',
         phone: body.customer_phone || '',
-        addressLine1: 'Shop 247, MG Road (Camp Store Pickup)',
+        addressLine1: 'Shop 247 R, MG Road (Camp Store Pickup)',
         city: 'Pune',
         state: 'Maharashtra',
         pincode: '411001',

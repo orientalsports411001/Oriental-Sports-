@@ -1099,7 +1099,7 @@ export class AuthService {
             street:
               addr.street ||
               addr.addressLine1 ||
-              (isPickup ? 'Shop 247, MG Road (Camp Store Pickup)' : 'Delivery Address'),
+              (isPickup ? 'Shop 247 R, MG Road (Camp Store Pickup)' : 'Delivery Address'),
             locality: addr.locality || addr.city || (isPickup ? 'Camp' : 'Pune'),
             city: addr.city || 'Pune',
             state: addr.state || 'Maharashtra',
