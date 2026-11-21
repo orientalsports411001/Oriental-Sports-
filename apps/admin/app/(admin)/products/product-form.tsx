@@ -283,7 +283,7 @@ export function ProductForm({ initialData, product: productProp, categories, act
     <form
       onSubmit={handleSubmit}
       action={action}
-      style={{ position: 'relative', paddingBottom: 100 }}
+      style={{ position: 'relative' }}
     >
       {(error || saveError) && <p className="error" style={{ marginBottom: 20 }}>{saveError || error}</p>}
 
