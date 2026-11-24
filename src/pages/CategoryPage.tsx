@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CATEGORIES } from '../data/categories';
+import { useDisciplines } from '../data/liveCategories';
 import { PRODUCTS, getLiveProducts } from '../data/products';
 import { IMAGES, MediaImage } from '../data/media';
 import { STORE_INFO } from '../data/storeInfo';
@@ -29,6 +30,7 @@ const ART: Partial<Record<SportCategory, MediaImage>> = {
 export const CategoryPage: React.FC = () => {
   const { category } = useParams<{ category: string }>();
   const [allProducts, setAllProducts] = useState<Product[]>(() => getLiveProducts());
+  const disciplines = useDisciplines();
 
   useEffect(() => {
     const handleUpdate = () => setAllProducts(getLiveProducts());
@@ -45,7 +47,22 @@ export const CategoryPage: React.FC = () => {
 
   // /products/commercial-treadmills etc. resolve to the parent category with that subcategory selected.
   const subAlias = allProducts.find((p) => p.subcategory === category);
-  const info = CATEGORIES.find((c) => c.id === (subAlias ? subAlias.category : category));
+  const resolvedId = subAlias ? subAlias.category : category;
+  const liveDiscipline = disciplines.find((d) => d.id === resolvedId);
+  // A discipline the admin added has no built-in copy or photo, so give it a plain page.
+  const info =
+    CATEGORIES.find((c) => c.id === resolvedId) ??
+    (liveDiscipline
+      ? {
+          id: liveDiscipline.id as SportCategory,
+          name: liveDiscipline.name,
+          tagline: '',
+          description: `${liveDiscipline.name} gear from the Camp store.`,
+          image: '',
+          itemCount: 0,
+          featuredEquipments: [] as string[],
+        }
+      : undefined);
   const [selectedSub, setSelectedSub] = useState<string>(subAlias ? category! : 'all');
   useEffect(() => {
     setSelectedSub(subAlias ? category! : 'all');
@@ -91,9 +108,10 @@ export const CategoryPage: React.FC = () => {
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Shop', to: '/shop' }, { label: info.name }]}
         title={[info.name]}
         lead={info.description}
-        image={ART[info.id] ?? { src: info.image, alt: '' }}
+        image={ART[info.id] ?? (info.image ? { src: info.image, alt: '' } : IMAGES.kitBag)}
       />
 
+      {info.featuredEquipments.length > 0 && (
       <section className="container section-tight category-stock" aria-labelledby="stock-title">
         <Reveal className="category-stock-head">
           <h2 id="stock-title" className="label muted">At the Camp store</h2>
@@ -104,6 +122,7 @@ export const CategoryPage: React.FC = () => {
           </ul>
         </Reveal>
       </section>
+      )}
 
       <section className="container category-products" aria-labelledby="online-title">
         <div className="section-bar">

@@ -80,6 +80,10 @@ export interface Product {
   description: string;
   features: string[];
   specs: Record<string, string>;
+  /** Specifications as entered in the admin, in order. Preferred over `specs` when present. */
+  specRows?: { label: string; value: string }[];
+  /** Ticked in the admin: show "Enquire on WhatsApp" instead of Add to bag. */
+  enquireWhatsapp?: boolean;
   variants?: ProductVariant[];
   sizes?: string[];
   inStock: boolean;

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { PRODUCTS, getLiveProducts } from '../data/products';
-import { CATEGORIES } from '../data/categories';
+import { useDisciplines, disciplineFilters } from '../data/liveCategories';
 import { STORE_INFO } from '../data/storeInfo';
 import { looseIncludes } from '../utils/search';
 import { ProductCard } from '../components/products/ProductCard';
@@ -73,6 +73,7 @@ export const ShopPage: React.FC = () => {
 
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const [allProducts, setAllProducts] = useState<Product[]>(() => getLiveProducts());
+  const disciplines = useDisciplines();
 
   useEffect(() => {
     const handleUpdate = () => setAllProducts(getLiveProducts());
@@ -250,7 +251,8 @@ export const ShopPage: React.FC = () => {
     return list;
   }, [allProducts, selectedCategory, selectedSubcategory, selectedBrand, selectedBatSize, priceRange, searchQuery, sortBy]);
 
-  const categoriesWithStock = CATEGORIES.filter((c) => categoryCounts.has(c.id));
+  // Sport disciplines come from the admin panel, so a new discipline becomes a filter as soon as it has products.
+  const categoriesWithStock = useMemo(() => disciplineFilters(disciplines, allProducts), [disciplines, allProducts]);
 
   const FilterContent = (
     <>
@@ -265,7 +267,7 @@ export const ShopPage: React.FC = () => {
       )}
 
       {/* Sport / Category */}
-      <FilterSection title="Sport Category">
+      <FilterSection title="Sport Discipline">
         <div className="filter-radio-group">
           <label className={`filter-radio ${selectedCategory === 'all' ? 'is-checked' : ''}`}>
             <input
@@ -433,13 +435,13 @@ export const ShopPage: React.FC = () => {
     <div className="shop-page">
       <Seo
         title="Shop Sports Equipment Online | Oriental Sports Pune"
-        description={`Verified bats, racquets, footballs, shuttlecocks and court gear across ${CATEGORIES.length} disciplines. Fulfilled directly from our MG Road, Camp, Pune store.`}
+        description={`Verified bats, racquets, footballs, shuttlecocks and court gear across ${disciplines.length} disciplines. Fulfilled directly from our MG Road, Camp, Pune store.`}
         canonicalPath="/shop"
       />
       <PageHeader
         crumbs={[{ label: 'Home', to: '/' }, { label: 'Products & Equipment' }]}
         title={['Sports equipment', 'catalog']}
-        lead={`Verified bats, racquets, footballs, shuttlecocks, and court gear across ${CATEGORIES.length} disciplines. Fulfilled directly from our MG Road, Camp store.`}
+        lead={`Verified bats, racquets, footballs, shuttlecocks, and court gear across ${disciplines.length} disciplines. Fulfilled directly from our MG Road, Camp store.`}
         aside={
           <a href={STORE_INFO.whatsappUrl} target="_blank" rel="noreferrer" className="link-arrow">
             Ask on WhatsApp <span className="btn-arrow" aria-hidden="true">→</span>
@@ -535,7 +537,7 @@ export const ShopPage: React.FC = () => {
             <div className="shop-active-pills">
               {selectedCategory !== 'all' && (
                 <button type="button" className="active-pill" onClick={() => update({ category: null, subcategory: null })}>
-                  {CATEGORIES.find((c) => c.id === selectedCategory)?.name}
+                  {disciplines.find((c) => c.id === selectedCategory)?.name}
                   <X size={11} />
                 </button>
               )}
@@ -609,9 +611,9 @@ export const ShopPage: React.FC = () => {
               {selectedCategory !== 'all' && (
                 <p className="results-count">
                   {products.length} {products.length === 1 ? 'product' : 'products'} in{' '}
-                  {CATEGORIES.find((c) => c.id === selectedCategory)?.name} ·{' '}
+                  {disciplines.find((c) => c.id === selectedCategory)?.name} ·{' '}
                   <Link to={`/shop/${selectedCategory}`}>
-                    About {CATEGORIES.find((c) => c.id === selectedCategory)?.name.toLowerCase()} at the Camp store
+                    About {disciplines.find((c) => c.id === selectedCategory)?.name.toLowerCase()} at the Camp store
                   </Link>
                 </p>
               )}

@@ -14,7 +14,7 @@ export default async function CategoriesPage() {
     const admin = createServiceRoleClient();
     const { data: dbCategories } = await admin
       .from('categories')
-      .select('id, slug, name, sort_order')
+      .select('id, slug, name, sort_order, metadata')
       .order('sort_order', { ascending: true });
 
     if (dbCategories && dbCategories.length > 0) {
@@ -113,6 +113,9 @@ export default async function CategoriesPage() {
                 <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--subtle)' }}>
                   Sort Priority
                 </th>
+                <th style={{ padding: '14px 20px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--subtle)' }}>
+                  Buy button
+                </th>
                 <th style={{ textAlign: 'right', padding: '14px 20px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--subtle)' }}>
                   Actions
                 </th>
@@ -136,6 +139,9 @@ export default async function CategoriesPage() {
                   </td>
                   <td style={{ padding: '16px 20px', color: 'var(--muted)', fontWeight: 700, fontSize: 13 }}>
                     {c.sort_order ?? 0}
+                  </td>
+                  <td style={{ padding: '16px 20px', fontSize: 13, fontWeight: 600, color: 'var(--muted)' }}>
+                    {(c.metadata?.enquire_whatsapp ?? c.slug === 'gym-equipment') ? 'Enquire on WhatsApp' : 'Add to bag'}
                   </td>
                   <td style={{ textAlign: 'right', padding: '16px 20px' }}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 14 }}>

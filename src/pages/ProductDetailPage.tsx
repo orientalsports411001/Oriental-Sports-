@@ -10,6 +10,7 @@ import { Img } from '../components/ui/Img';
 import { STORE_INFO } from '../data/storeInfo';
 import { isCloudinaryUrl, getOptimizedImageUrl, generateSrcSet } from '../lib/cloudinary';
 import { Seo } from '../components/seo/Seo';
+import { shouldEnquireOnWhatsApp, useDisciplines } from '../data/liveCategories';
 
 /** Studio shots have a -sm.webp twin; Cloudinary shots get auto-scaled srcset. */
 const galleryImage = (src: string, alt: string) => {
@@ -35,6 +36,7 @@ export const ProductDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  useDisciplines(); // re-render when the admin changes which disciplines are enquiry-only
 
   const [product, setProduct] = useState<Product | undefined>(() => getLiveProductBySlug(slug));
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -142,11 +144,11 @@ export const ProductDetailPage: React.FC = () => {
       : null;
 
   const isAvailableInStock = activeVariantObj !== undefined ? activeVariantObj.inStock : (product?.inStock ?? false);
-  // Gym & Strength (treadmills, bikes, commercial machines): a client
-  // decision, not a stock/price rule — these are quote/visit items, not an
-  // online-checkout purchase, so online checkout is replaced with a spec
-  // sheet download and a direct enquiry.
-  const isGymEquipment = product?.category === 'gym-equipment';
+  // Enquiry-only: ticked on the product, or its discipline is set to
+  // "Enquire on WhatsApp" in the admin. Online checkout is replaced with a
+  // spec-sheet download (when there is one) and a direct enquiry.
+  const enquireOnly = shouldEnquireOnWhatsApp(product);
+  const specRows = product.specRows ?? Object.entries(product.specs ?? {}).map(([label, value]) => ({ label, value }));
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -252,8 +254,6 @@ export const ProductDetailPage: React.FC = () => {
                 {product.availabilityNote ?? (isAvailableInStock ? 'In stock at the Camp store' : 'Currently out of stock')}
               </p>
 
-              <p className="pdp-description">{product.description}</p>
-
               {product.variants && product.variants.length > 0 && (
                 <fieldset className="pdp-option">
                   <legend className="field-label">Select Size / Option</legend>
@@ -300,7 +300,7 @@ export const ProductDetailPage: React.FC = () => {
                 </fieldset>
               )}
 
-              {isGymEquipment ? (
+              {enquireOnly ? (
                 <>
                   {product.specSheetUrl && (
                     <a
@@ -367,25 +367,35 @@ export const ProductDetailPage: React.FC = () => {
                   <dd>Collect from {STORE_INFO.addressLine1}, {STORE_INFO.locality}.</dd>
                 </div>
               </dl>
-
-              {product.specs && Object.keys(product.specs).length > 0 && (
-                <details className="pdp-specs" open>
-                  <summary>Specifications</summary>
-                  <table>
-                    <tbody>
-                      {Object.entries(product.specs).map(([k, v]) => (
-                        <tr key={k}>
-                          <th scope="row">{k}</th>
-                          <td>{v}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </details>
-              )}
             </div>
           </div>
         </div>
+
+        {(product.description.trim() || specRows.length > 0) && (
+          <section className="pdp-details" aria-label="Product details">
+            {product.description.trim() && (
+              <div className="pdp-details-block">
+                <h2 className="pdp-details-title">Product description</h2>
+                <p className="pdp-description">{product.description}</p>
+              </div>
+            )}
+            {specRows.length > 0 && (
+              <div className="pdp-details-block pdp-specs">
+                <h2 className="pdp-details-title">Specifications</h2>
+                <table>
+                  <tbody>
+                    {specRows.map((r, i) => (
+                      <tr key={`${r.label}-${i}`}>
+                        <th scope="row">{r.label}</th>
+                        <td>{r.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        )}
 
         {related.length > 0 && (
           <section className="pdp-related" aria-labelledby="related-title">
@@ -408,7 +418,7 @@ export const ProductDetailPage: React.FC = () => {
         )}
       </div>
 
-      {!isGymEquipment && (
+      {!enquireOnly && (
         <StickyBuyBar
           product={{ ...product, price: currentPrice }}
           onAddToCart={handleAddToCart}

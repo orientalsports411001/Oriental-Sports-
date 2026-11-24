@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { saveProduct, unmarkProductsDeleted, getStorefrontMetadata } from '@/lib/catalog-store';
+import { saveProduct, unmarkProductsDeleted, getStorefrontMetadata, getRowMetadata } from '@/lib/catalog-store';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { broadcastRealtimeEvent } from '@/lib/supabase/broadcast';
 import { revalidateAdminNav } from '@/lib/nav-counts';
@@ -47,6 +47,24 @@ function parseImages(formData: FormData): string[] {
   return ['/images/products/cricket_bat_willow.webp'];
 }
 
+type SpecRow = { label: string; value: string };
+
+/** Specification rows from the form: trimmed, blanks dropped, sane limits. `undefined` means the form did not send any. */
+function parseSpecRows(formData: FormData): SpecRow[] | undefined {
+  const raw = formData.get('specs_json');
+  if (typeof raw !== 'string' || !raw.trim()) return undefined;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return undefined;
+    return parsed
+      .map((r: any) => ({ label: String(r?.label ?? '').trim().slice(0, 80), value: String(r?.value ?? '').trim().slice(0, 400) }))
+      .filter((r: SpecRow) => r.label && r.value)
+      .slice(0, 60);
+  } catch {
+    return undefined;
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
@@ -77,6 +95,9 @@ export async function POST(req: Request) {
     const specSheetUrl = getLatestNonEmpty(formData, 'spec_sheet_url') || null;
     const specSheetPublicId = getLatestNonEmpty(formData, 'spec_sheet_public_id') || null;
     const images = parseImages(formData);
+    // "Enquire on WhatsApp" instead of Add to bag, ticked per product.
+    const enquireWhatsapp = getLatestNonEmpty(formData, 'enquire_whatsapp') === '1';
+    const specRows = parseSpecRows(formData);
     const seoTitle = getLatestNonEmpty(formData, 'seo_title') || `${name} | Oriental Sports Pune`;
     const seoDescription =
       getLatestNonEmpty(formData, 'seo_description') ||
@@ -129,13 +150,22 @@ export async function POST(req: Request) {
         spec_sheet_public_id: saved.spec_sheet_public_id,
         seo_title: saved.seo_title,
         seo_description: saved.seo_description,
-      },
+        enquire_whatsapp: enquireWhatsapp,
+      } as Record<string, any>,
       updated_at: new Date().toISOString(),
     };
 
     // Keep a seeded built-in product's full original record through the edit.
     const preservedStorefront = await getStorefrontMetadata([productId, originalSlug, saved.slug]);
     if (preservedStorefront) (supaPayload.metadata as any).storefront = preservedStorefront;
+
+    // Specifications: use what the form sent; if it sent none (untouched), keep what is stored.
+    if (specRows !== undefined) {
+      supaPayload.metadata.spec_rows = specRows;
+    } else {
+      const existing = await getRowMetadata([productId, originalSlug, saved.slug]);
+      if (Array.isArray(existing?.spec_rows)) supaPayload.metadata.spec_rows = existing!.spec_rows;
+    }
 
     // Sync to Supabase (SDK -> REST fallback so uploads/edits ALWAYS reach Supabase)
     let supabaseSynced = false;

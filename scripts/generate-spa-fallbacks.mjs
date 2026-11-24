@@ -24,6 +24,7 @@ const routes = [
   'shop',
   'courts',
   'about',
+  'partners',
   'visit',
   'contact',
   'cart',

@@ -396,6 +396,18 @@ export async function getStorefrontMetadata(keys: (string | null | undefined)[])
   return undefined;
 }
 
+/** The stored `metadata` of an existing row (by id or slug), so a save can carry forward keys the form did not send. */
+export async function getRowMetadata(keys: (string | null | undefined)[]): Promise<Record<string, any> | undefined> {
+  const wanted = keys.filter((k): k is string => Boolean(k && String(k).trim()));
+  if (wanted.length === 0) return undefined;
+  const rows = await getLiveSupabaseProducts();
+  for (const k of wanted) {
+    const row = rows.find((r: any) => r?.id === k || r?.slug === k);
+    if (row) return row.metadata ?? {};
+  }
+  return undefined;
+}
+
 export const getLiveSupabaseProducts = cache(async (): Promise<any[]> => {
   try {
     const admin = createServiceRoleClient();

@@ -19,6 +19,7 @@ const PRIMARY = [
   { to: '/shop', label: 'Shop', note: `Gear across ${CATEGORIES.length} sports` },
   { to: '/installations', label: 'Installations', note: 'Turnkey courts, turfs & gym fit-outs' },
   { to: '/about', label: 'About', note: 'The sports house in Camp' },
+  { to: '/partners', label: 'Partners', note: 'Brands we partner with' },
   { to: '/visit', label: 'Visit', note: `${STORE_INFO.addressLine1}, ${STORE_INFO.locality}` },
 ];
 

@@ -5,6 +5,7 @@ import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { Img } from '../ui/Img';
+import { shouldEnquireOnWhatsApp, useDisciplines } from '../../data/liveCategories';
 import { isCloudinaryUrl, getOptimizedImageUrl, generateSrcSet } from '../../lib/cloudinary';
 
 interface ProductCardProps {
@@ -43,6 +44,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const navigate = useNavigate();
+  useDisciplines(); // re-render when the admin changes which disciplines are enquiry-only
   const [justAdded, setJustAdded] = useState(false);
   const saved = isInWishlist(product.id);
 
@@ -101,10 +103,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const rating = product.rating;
   const reviewsCount = product.reviewsCount;
 
-  // Gym & Strength (treadmills, bikes, commercial machines) are a quote/visit
-  // item, not an online-checkout purchase — client decision, see PDP for the
-  // same check.
-  const isGymEquipment = product.category === 'gym-equipment';
+  // Enquiry-only products (ticked on the product, or in a discipline the admin
+  // marked "Enquire on WhatsApp") have no online checkout.
+  const enquireOnly = shouldEnquireOnWhatsApp(product);
   const whatsAppHref = `https://wa.me/919890990022?text=${encodeURIComponent(
     `Hello Oriental Sports Pune, I am inquiring about the ${product.name} (Price: ₹${basePrice}) from your website. Is this available at your MG Road Camp store for pickup today?`
   )}`;
@@ -192,7 +193,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </div>
 
-          {isGymEquipment ? (
+          {enquireOnly ? (
             <a
               href={whatsAppHref}
               target="_blank"
