@@ -951,13 +951,28 @@
 .pdp-stock .status-dot { background: var(--text-muted); }
 .pdp-stock.is-in .status-dot { background: var(--success); box-shadow: 0 0 0 3px rgba(46, 107, 60, 0.18); }
 
-.pdp-description {
-  margin-top: 20px;
-  padding-top: 20px;
+/* Description first, then specifications — two separate blocks under the buy section. */
+.pdp-details {
+  margin-top: clamp(40px, 6vw, 80px);
+  padding-top: clamp(28px, 4vw, 48px);
   border-top: 1px solid var(--border-color);
+  display: grid;
+  gap: clamp(32px, 5vw, 56px);
+  max-width: 860px;
+}
+.pdp-details-title {
+  margin: 0 0 16px;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.pdp-description {
+  margin: 0;
   color: var(--text-secondary);
-  line-height: 1.65;
-  max-width: 35.3em;
+  line-height: 1.7;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
 }
 
 .pdp-option {
@@ -1019,7 +1034,7 @@
 .pdp-promises dd { color: var(--muted); }
 .pdp-promises dd a { display: inline; min-height: 0; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 
-.pdp-specs { margin-top: 28px; }
+.pdp-specs table { margin-top: 0; }
 .pdp-specs summary {
   cursor: pointer;
   min-height: 44px;

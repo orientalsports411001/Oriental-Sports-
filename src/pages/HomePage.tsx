@@ -5,16 +5,18 @@ import { MarqueeTicker } from '../components/ui/MarqueeTicker';
 import { SportIndex } from '../components/home/SportIndex';
 import { OrbitalGallery } from '../components/home/OrbitalGallery';
 import { GearEdit } from '../components/home/GearEdit';
+import { PartnerBrands } from '../components/home/PartnerBrands';
 import { CourtsChapter } from '../components/home/CourtsChapter';
 import { StoreChapter } from '../components/home/StoreChapter';
 
 /**
- * Homepage — GEAR + COURTS, told in seven chapters.
+ * Homepage — GEAR + COURTS, told in eight chapters.
  *  Hero      photographic slides: Gear / Courts / Camp store (blood-red athletic identity)
  *  Ticker    live sports house announcements marquee
  *  Sport     [CLIENT-APPROVED PROTECTED] expanding sport rail (ivory)
  *  Gallery   [CLIENT-APPROVED PROTECTED] 3D sports photos orbit (ivory)
  *  Gear      sticky intro + spotlight product cards (charcoal)
+ *  Partners  partner-brand logo plates linking to each brand's site (obsidian)
  *  Courts    turnkey courts infrastructure & specifications (obsidian)
  *  Store     the Camp store address as a shop sign & verified hours (obsidian)
  */
@@ -30,6 +32,7 @@ export const HomePage: React.FC = () => (
     <SportIndex />
     <OrbitalGallery />
     <GearEdit />
+    <PartnerBrands />
     <CourtsChapter />
     <StoreChapter />
   </>

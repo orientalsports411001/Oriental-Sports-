@@ -931,3 +931,107 @@
   border-color: var(--blood-crimson);
   color: var(--blood-highlight);
 }
+
+/* ==========================================================================
+   PARTNER BRANDS — flat ivory plates (same cream as the studio product
+   shots) carrying each brand's own logo, linking out to its website.
+   Logos are dark artwork, so they are shown as supplied, not recoloured.
+   ========================================================================== */
+.partner-brands {
+  background: var(--obsidian);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-color);
+  padding-block: clamp(56px, 7vw, 104px);
+}
+
+.partner-grid {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+}
+
+.partner-title { color: #FFFFFF; }
+.partner-lead {
+  margin-top: 16px;
+  max-width: 36ch;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.partner-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+.partner-item { display: flex; min-width: 0; }
+/* One partner: keep the plate card-sized instead of stretching across the row. */
+.partner-item:only-child { width: 100%; max-width: 520px; }
+
+.partner-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  background: var(--ivory);
+  color: var(--ink);
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.partner-card:hover { background: var(--paper); }
+
+.partner-logo {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 132px;
+  padding: clamp(28px, 4vw, 48px) clamp(24px, 4vw, 56px);
+}
+.partner-logo img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(100%, 340px);
+  max-height: 72px;
+}
+
+.partner-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 20px;
+  border-top: 1px solid rgba(17, 17, 17, 0.12);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.partner-arrow {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.partner-card:hover .partner-arrow { transform: translate(3px, -3px); }
+
+@media (min-width: 1024px) {
+  .partner-grid {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(48px, 5vw, 96px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partner-card,
+  .partner-arrow { transition: none; }
+  .partner-card:hover .partner-arrow { transform: none; }
+}
+
+.partners-section { padding-block: clamp(32px, 5vw, 64px) var(--section-y); }

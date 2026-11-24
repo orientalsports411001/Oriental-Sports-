@@ -11,12 +11,23 @@ interface Category {
   id?: string;
   name: string;
   slug: string;
+  /** The discipline is set to "Enquire on WhatsApp" for every product in it. */
+  enquire_whatsapp?: boolean;
 }
+
+interface SpecRow {
+  label: string;
+  value: string;
+}
+
+const SPEC_SUGGESTIONS = ["Material", "Weight", "Dimensions", "Colour", "Size", "Warranty"];
 
 interface ProductFormProps {
   initialData?: any;
   product?: any;
   categories: Category[];
+  /** Brand tags: defaults, saved brands and brands already used by products. */
+  brands?: string[];
   action: (formData: FormData) => Promise<void>;
   error?: string | null;
 }
@@ -31,7 +42,7 @@ const ATHLETIC_BRANDS = [
   'Oriental Infrastructure',
 ];
 
-export function ProductForm({ initialData, product: productProp, categories, action, error }: ProductFormProps) {
+export function ProductForm({ initialData, product: productProp, categories, brands, action, error }: ProductFormProps) {
   const data = initialData || productProp;
   const [activeTab, setActiveTab] = useState<'details' | 'pricing' | 'media' | 'seo'>('details');
   const [showPreviewOnMobile, setShowPreviewOnMobile] = useState(false);
@@ -79,6 +90,67 @@ export function ProductForm({ initialData, product: productProp, categories, act
       ? JSON.stringify(data.variants, null, 2)
       : '[]'
   );
+
+  // Brand tags: saved brands, plus a way to add a new one and save it for next time
+  const [brandList, setBrandList] = useState<string[]>(() => {
+    const base = brands && brands.length > 0 ? brands : ATHLETIC_BRANDS;
+    const current = String(data?.brand || '').trim();
+    return current && !base.some((b) => b.toLowerCase() === current.toLowerCase()) ? [...base, current] : base;
+  });
+  const [addingBrand, setAddingBrand] = useState(false);
+  const [newBrand, setNewBrand] = useState('');
+  const [brandBusy, setBrandBusy] = useState(false);
+  const [brandNote, setBrandNote] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const saveNewBrand = async () => {
+    const name = newBrand.replace(/\s+/g, ' ').trim();
+    if (name.length < 2) {
+      setBrandNote({ ok: false, text: 'Type at least 2 characters.' });
+      return;
+    }
+    setBrandBusy(true);
+    setBrandNote(null);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/api/brands`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      });
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success) {
+        setBrandList(Array.isArray(json.brands) && json.brands.length > 0 ? json.brands : [...brandList, json.brand]);
+        setBrand(json.brand);
+        setNewBrand('');
+        setAddingBrand(false);
+        setBrandNote({ ok: true, text: json.added ? `"${json.brand}" saved and selected.` : `"${json.brand}" already exists, so it was selected.` });
+      } else {
+        setBrandNote({ ok: false, text: json?.error || 'Could not save the brand. Please try again.' });
+      }
+    } catch {
+      setBrandNote({ ok: false, text: 'Could not reach the server. Check your connection and try again.' });
+    }
+    setBrandBusy(false);
+  };
+
+  // Specifications: separate from the description, shown as a table under it on the product page.
+  const [specRows, setSpecRows] = useState<SpecRow[]>(() => {
+    const saved = data?.metadata?.spec_rows;
+    if (Array.isArray(saved)) return saved.map((r: any) => ({ label: String(r?.label ?? ''), value: String(r?.value ?? '') }));
+    const builtIn = data?.metadata?.storefront?.specs;
+    if (builtIn && typeof builtIn === 'object') return Object.entries(builtIn).map(([label, value]) => ({ label, value: String(value) }));
+    return [];
+  });
+  // Only sent when edited, so an untouched built-in product keeps its original specification order.
+  const [specsDirty, setSpecsDirty] = useState(false);
+  const changeSpecs = (next: SpecRow[]) => {
+    setSpecRows(next);
+    setSpecsDirty(true);
+  };
+
+  // "Enquire on WhatsApp" instead of Add to bag, for this product only
+  const [enquireWhatsapp, setEnquireWhatsapp] = useState<boolean>(data?.metadata?.enquire_whatsapp === true);
+  const selectedDiscipline = categories.find((c) => c.slug === categorySlug);
+  const disciplineEnquires = Boolean(selectedDiscipline?.enquire_whatsapp);
 
   const handleNameChange = (val: string) => {
     setName(val);
@@ -207,6 +279,8 @@ export function ProductForm({ initialData, product: productProp, categories, act
     formData.set('seo_title', seoTitle || `${trimmedName} | Oriental Sports Pune`);
     formData.set('seo_description', seoDescription || trimmedDesc || '');
     formData.set('seo_canonical_url', seoCanonical || '');
+    formData.set('enquire_whatsapp', enquireWhatsapp ? '1' : '0');
+    if (specsDirty) formData.set('specs_json', JSON.stringify(specRows));
 
     // 1. Clean up deprecated localStorage probe storage
     if (typeof window !== 'undefined') {
@@ -470,36 +544,208 @@ export function ProductForm({ initialData, product: productProp, categories, act
                       Quick Brand Tag
                     </span>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                      {ATHLETIC_BRANDS.map((b) => (
+                      {brandList.map((b) => (
                         <button
                           key={b}
                           type="button"
                           onClick={() => setBrand(b)}
-                          className={`cult-pill-chip ${brand === b ? 'is-active' : ''}`}
+                          className={`cult-pill-chip ${brand.toLowerCase() === b.toLowerCase() ? 'is-active' : ''}`}
+                          style={{ minHeight: 44 }}
                         >
                           {b}
                         </button>
                       ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAddingBrand((v) => !v);
+                          setBrandNote(null);
+                        }}
+                        className="cult-pill-chip"
+                        aria-expanded={addingBrand}
+                        style={{ borderStyle: 'dashed', minHeight: 44 }}
+                      >
+                        + New brand
+                      </button>
                     </div>
+
+                    {addingBrand && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12, alignItems: 'center' }}>
+                        <input
+                          type="text"
+                          value={newBrand}
+                          onChange={(e) => setNewBrand(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              saveNewBrand();
+                            }
+                          }}
+                          maxLength={40}
+                          placeholder="New brand name, e.g. Stiga"
+                          aria-label="New brand name"
+                          className="cult-input"
+                          style={{ flex: '1 1 220px', minHeight: 44 }}
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={saveNewBrand}
+                          disabled={brandBusy}
+                          className="cult-pill-chip is-active"
+                          style={{ minHeight: 44, minWidth: 44 }}
+                        >
+                          {brandBusy ? 'Saving…' : 'Save brand'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAddingBrand(false);
+                            setNewBrand('');
+                            setBrandNote(null);
+                          }}
+                          className="cult-pill-chip"
+                          style={{ minHeight: 44, minWidth: 44 }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                    {brandNote && (
+                      <p role="status" style={{ margin: '8px 0 0', fontSize: 13, fontWeight: 600, color: brandNote.ok ? '#4ADE80' : '#F87171' }}>
+                        {brandNote.text}
+                      </p>
+                    )}
                   </div>
 
                   {/* Editorial Description */}
                   <div>
                     <label htmlFor="description" style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>
-                      Editorial Specifications & Athlete Notes
+                      Product Description
                     </label>
                     <textarea
                       id="description"
                       name="description"
-                      rows={4}
+                      rows={6}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Material grade, wood profile, balance pickup, tournament certifications..."
+                      placeholder="What the product is, who it is for and how it plays. Put sizes, weights and materials in Specifications below."
                       className="cult-input"
                       style={{ lineHeight: 1.6, resize: 'vertical' }}
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Specifications — separate from the description */}
+              <div className="studio-surface">
+                <div style={{ marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 4px', color: 'var(--ink)' }}>
+                    Specifications
+                  </h2>
+                  <p style={{ margin: 0, fontSize: 13, color: 'var(--subtle)' }}>
+                    Shown as a table under the description on the product page. One row per detail, for example Material: Kashmir willow.
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {specRows.length === 0 && (
+                    <p style={{ margin: 0, fontSize: 13, color: 'var(--subtle)' }}>
+                      No specifications yet. Add a row, or start from a suggestion below.
+                    </p>
+                  )}
+                  {specRows.map((row, i) => (
+                    <div key={i} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        value={row.label}
+                        onChange={(e) => changeSpecs(specRows.map((r, idx) => (idx === i ? { ...r, label: e.target.value } : r)))}
+                        placeholder="Label (Material)"
+                        aria-label={`Specification ${i + 1} label`}
+                        maxLength={80}
+                        className="cult-input"
+                        style={{ flex: '1 1 160px', minHeight: 44 }}
+                      />
+                      <input
+                        type="text"
+                        value={row.value}
+                        onChange={(e) => changeSpecs(specRows.map((r, idx) => (idx === i ? { ...r, value: e.target.value } : r)))}
+                        placeholder="Value (Kashmir willow)"
+                        aria-label={`Specification ${i + 1} value`}
+                        maxLength={400}
+                        className="cult-input"
+                        style={{ flex: '2 1 240px', minHeight: 44 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => changeSpecs(specRows.filter((_, idx) => idx !== i))}
+                        aria-label={`Remove specification ${i + 1}`}
+                        className="cult-pill-chip"
+                        style={{ minHeight: 44, minWidth: 44 }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
+                  <button
+                    type="button"
+                    onClick={() => changeSpecs([...specRows, { label: '', value: '' }])}
+                    disabled={specRows.length >= 60}
+                    className="cult-pill-chip is-active"
+                    style={{ minHeight: 44 }}
+                  >
+                    + Add specification
+                  </button>
+                  {SPEC_SUGGESTIONS.filter((s) => !specRows.some((r) => r.label.toLowerCase() === s.toLowerCase())).map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => changeSpecs([...specRows, { label: s, value: '' }])}
+                      className="cult-pill-chip"
+                      style={{ minHeight: 44 }}
+                    >
+                      + {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Buy button: Add to bag, or Enquire on WhatsApp */}
+              <div className="studio-surface">
+                <div style={{ marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, margin: '0 0 4px', color: 'var(--ink)' }}>
+                    Buy Button
+                  </h2>
+                  <p style={{ margin: 0, fontSize: 13, color: 'var(--subtle)' }}>
+                    Choose how customers act on this product on the website.
+                  </p>
+                </div>
+
+                <label
+                  htmlFor="enquire_whatsapp"
+                  style={{ display: 'flex', alignItems: 'flex-start', gap: 12, minHeight: 44, cursor: 'pointer', textTransform: 'none', letterSpacing: 'normal', fontWeight: 400 }}
+                >
+                  <input
+                    id="enquire_whatsapp"
+                    type="checkbox"
+                    checked={enquireWhatsapp || disciplineEnquires}
+                    disabled={disciplineEnquires}
+                    onChange={(e) => setEnquireWhatsapp(e.target.checked)}
+                    style={{ width: 20, height: 20, marginTop: 2, flexShrink: 0 }}
+                  />
+                  <span style={{ fontSize: 14, color: 'var(--ink)' }}>
+                    <strong>Enquire on WhatsApp instead of Add to bag</strong>
+                    <br />
+                    <span style={{ fontSize: 13, color: 'var(--subtle)' }}>
+                      {disciplineEnquires
+                        ? `Already on for every product in ${selectedDiscipline?.name}. Change it under Disciplines & Categories.`
+                        : 'Customers see an Enquire on WhatsApp button for this product, with the product name filled into the message.'}
+                    </span>
+                  </span>
+                </label>
               </div>
 
               {/* Sizing & Variants Surface */}

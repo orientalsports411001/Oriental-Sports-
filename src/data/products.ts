@@ -1858,6 +1858,14 @@ function applySupabaseRows(data: any[], persist: boolean): void {
       const subcategoryName = p.subcategoryName || defaultSub.name;
       const productType = (p.productType || (cat === 'cricket' ? 'bat' : cat === 'badminton' || cat === 'tennis' ? 'racket' : cat === 'football' ? 'ball' : 'gear')) as any;
 
+      // Specifications entered in the admin: ordered label/value rows.
+      const specRows: { label: string; value: string }[] | undefined = Array.isArray(p.metadata?.spec_rows)
+        ? p.metadata.spec_rows
+            .map((r: any) => ({ label: String(r?.label ?? '').trim(), value: String(r?.value ?? '').trim() }))
+            .filter((r: { label: string; value: string }) => r.label && r.value)
+        : undefined;
+      const enquireWhatsapp = p.metadata?.enquire_whatsapp === true;
+
       const row: Product = {
         id: p.id || `prod-${slug}`,
         slug,
@@ -1882,7 +1890,9 @@ function applySupabaseRows(data: any[], persist: boolean): void {
         specSheetUrl: p.metadata?.spec_sheet_url || undefined,
         description: p.description || '',
         features: Array.isArray(p.features) ? p.features : [p.description || ''],
-        specs: p.specs || { 'Brand': p.brand || 'Oriental Sports' },
+        specs: specRows ? Object.fromEntries(specRows.map((r) => [r.label, r.value])) : (p.specs || { 'Brand': p.brand || 'Oriental Sports' }),
+        specRows,
+        enquireWhatsapp,
         variants: p.variants,
         sizes: p.sizes,
       };
@@ -1905,7 +1915,9 @@ function applySupabaseRows(data: any[], persist: boolean): void {
           : sf.specs;
       return {
         ...sf,
-        specs,
+        specs: row.specRows ? row.specs : specs,
+        specRows: row.specRows,
+        enquireWhatsapp: row.enquireWhatsapp,
         slug,
         name: row.name,
         brand: row.brand,

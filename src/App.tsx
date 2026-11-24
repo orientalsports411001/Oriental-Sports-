@@ -26,6 +26,7 @@ const CourtsPage = page(() => import('./pages/CourtsPage'), 'CourtsPage');
 const CourtProjectsPage = page(() => import('./pages/CourtProjectsPage'), 'CourtProjectsPage');
 const CourtProjectDetailPage = page(() => import('./pages/CourtProjectDetailPage'), 'CourtProjectDetailPage');
 const AboutPage = page(() => import('./pages/AboutPage'), 'AboutPage');
+const PartnersPage = page(() => import('./pages/PartnersPage'), 'PartnersPage');
 const VisitPage = page(() => import('./pages/VisitPage'), 'VisitPage');
 const ContactPage = page(() => import('./pages/ContactPage'), 'ContactPage');
 const SearchPage = page(() => import('./pages/SearchPage'), 'SearchPage');
@@ -138,6 +139,7 @@ const AppContent: React.FC = () => {
 
             {/* Brand & Store */}
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/partners" element={<PartnersPage />} />
             <Route path="/visit" element={<VisitPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/search" element={<SearchPage />} />

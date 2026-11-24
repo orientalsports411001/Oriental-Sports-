@@ -19,7 +19,9 @@ export async function createCategory(formData: FormData) {
   const admin = createServiceRoleClient();
   const payload = buildPayload(formData);
 
-  const { error } = await admin.from('categories').insert(payload);
+  const { error } = await admin
+    .from('categories')
+    .insert({ ...payload, metadata: { enquire_whatsapp: formData.get('enquire_whatsapp') === 'on' } });
   if (error) {
     redirect(`/categories/new?error=${encodeURIComponent(error.message)}`);
   }
@@ -31,9 +33,13 @@ export async function updateCategory(categoryId: string, formData: FormData) {
   const admin = createServiceRoleClient();
   const payload = buildPayload(formData);
 
+  // Keep the discipline's other metadata (tagline etc.) and only change the enquiry setting.
+  const { data: current } = await admin.from('categories').select('metadata').eq('id', categoryId).maybeSingle();
+  const metadata = { ...(current?.metadata ?? {}), enquire_whatsapp: formData.get('enquire_whatsapp') === 'on' };
+
   const { error } = await admin
     .from('categories')
-    .update({ ...payload, updated_at: new Date().toISOString() })
+    .update({ ...payload, metadata, updated_at: new Date().toISOString() })
     .eq('id', categoryId);
 
   if (error) {

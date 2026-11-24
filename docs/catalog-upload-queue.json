@@ -1,0 +1,4273 @@
+{
+ "batch": "master-tracker-2026-11-24",
+ "generatedAt": "2026-11-23T18:42:21.090Z",
+ "count": 158,
+ "rows": [
+  {
+   "sr": 70,
+   "slug": "extreme-hand-grip",
+   "name": "Extreme Hand Grip",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Hand grip strengthener for building forearm, wrist and finger strength. Compact enough to use anywhere.",
+   "price": 345,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Extreme Hand Grip | Oriental Sports Pune",
+    "seo_description": "Hand grip strengthener for building forearm, wrist and finger strength. Compact enough to use anywhere.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 70,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 8)",
+     "original_supplier_name": "EXTREME HAND GRIP (COUGAR)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 71,
+   "slug": "deluxe-hand-grip",
+   "name": "Deluxe Hand Grip",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Deluxe hand gripper with comfortable handles for grip and forearm strength training.",
+   "price": 385,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Deluxe Hand Grip | Oriental Sports Pune",
+    "seo_description": "Deluxe hand gripper with comfortable handles for grip and forearm strength training.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 71,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 18)",
+     "original_supplier_name": "DELUXE HAND GRIP",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 72,
+   "slug": "velocity-jump-rope",
+   "name": "Velocity Jump Rope",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Speed jump rope with smooth-spinning handles for cardio, double-unders and conditioning workouts.",
+   "price": 340,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Velocity Jump Rope | Oriental Sports Pune",
+    "seo_description": "Speed jump rope with smooth-spinning handles for cardio, double-unders and conditioning workouts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 72,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 29)",
+     "original_supplier_name": "VELOCITY JUMP ROPE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 73,
+   "slug": "beaded-jump-rope",
+   "name": "Beaded Jump Rope",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Segmented beaded skipping rope that is durable on outdoor surfaces and gives good rhythm feedback for beginners and freestyle skipping.",
+   "price": 250,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Beaded Jump Rope | Oriental Sports Pune",
+    "seo_description": "Segmented beaded skipping rope that is durable on outdoor surfaces and gives good rhythm feedback for beginners and freestyle skipping.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 73,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 40)",
+     "original_supplier_name": "BEADED JUMP ROPE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 74,
+   "slug": "speed-jump-rope",
+   "name": "Speed Jump Rope",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Adjustable speed rope with a fast cable and bearings for high-intensity skipping and CrossFit training.",
+   "price": 590,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Speed Jump Rope | Oriental Sports Pune",
+    "seo_description": "Adjustable speed rope with a fast cable and bearings for high-intensity skipping and CrossFit training.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 74,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 51)",
+     "original_supplier_name": "SPEED JUMP ROPE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 75,
+   "slug": "sprint-rope",
+   "name": "Sprint Rope",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Basic skipping rope for warm-ups, cardio and agility training.",
+   "price": 179,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Sprint Rope | Oriental Sports Pune",
+    "seo_description": "Basic skipping rope for warm-ups, cardio and agility training.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 75,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 63)",
+     "original_supplier_name": "SRPINT ROPE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 76,
+   "slug": "beast-weightlifting-belt",
+   "name": "Beast Weightlifting Belt",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Weightlifting belt that supports the lower back and core during squats, deadlifts and heavy lifts.",
+   "price": 905,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Beast Weightlifting Belt | Oriental Sports Pune",
+    "seo_description": "Weightlifting belt that supports the lower back and core during squats, deadlifts and heavy lifts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 76,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 87)",
+     "original_supplier_name": "BEAST WEIGHT LIFITING BELT",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 77,
+   "slug": "maxima-weightlifting-belt",
+   "name": "Maxima Weightlifting Belt",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Padded weightlifting belt with a secure buckle for lumbar support during heavy training.",
+   "price": 1290,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Maxima Weightlifting Belt | Oriental Sports Pune",
+    "seo_description": "Padded weightlifting belt with a secure buckle for lumbar support during heavy training.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 77,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 99)",
+     "original_supplier_name": "MAXIMA WEIGHT LIFTING BELT",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 78,
+   "slug": "monster-gym-gloves",
+   "name": "Monster Gym Gloves",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Padded gym gloves that improve grip and protect palms during weight training.",
+   "price": 990,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Monster Gym Gloves | Oriental Sports Pune",
+    "seo_description": "Padded gym gloves that improve grip and protect palms during weight training.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 78,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 111)",
+     "original_supplier_name": "MONSTER GYM GLOVES",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 79,
+   "slug": "titan-gym-gloves",
+   "name": "Titan Gym Gloves",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Gym gloves with palm padding and wrist support for lifting and cross-training.",
+   "price": 1180,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Titan Gym Gloves | Oriental Sports Pune",
+    "seo_description": "Gym gloves with palm padding and wrist support for lifting and cross-training.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 79,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 123)",
+     "original_supplier_name": "TITAN GYM GLOVES",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 80,
+   "slug": "tynor-weightlifting-strap",
+   "name": "Tynor Weightlifting Strap",
+   "category_slug": "fitness",
+   "brand": "Tynor",
+   "description": "Tynor weightlifting straps that support grip during heavy pulls, rows and deadlifts.",
+   "price": 0,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Tynor Weightlifting Strap | Oriental Sports Pune",
+    "seo_description": "Tynor weightlifting straps that support grip during heavy pulls, rows and deadlifts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 80,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 351)",
+     "original_supplier_name": "WEIGHT LIFITING STRAP-TYNOR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 85,
+   "slug": "vector-x-boxing-hand-wrap-red",
+   "name": "Vector X Boxing Hand Wrap (Red)",
+   "category_slug": "fitness",
+   "brand": "Vector X",
+   "description": "Vector X boxing hand wraps (pair) that protect knuckles and wrists under gloves.",
+   "price": 225,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Vector X Boxing Hand Wrap (Red) | Oriental Sports Pune",
+    "seo_description": "Vector X boxing hand wraps (pair) that protect knuckles and wrists under gloves.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 85,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 435)",
+     "original_supplier_name": "VECTOR-X BOXING HAND WRAP-RED",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 86,
+   "slug": "vector-x-jf-1112-adjustable-hand-grip",
+   "name": "Vector X JF-1112 Adjustable Hand Grip",
+   "category_slug": "fitness",
+   "brand": "Vector X",
+   "description": "Vector X adjustable hand grip strengthener with variable resistance for progressive grip training.",
+   "price": 320,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Vector X JF-1112 Adjustable Hand Grip | Oriental Sports Pune",
+    "seo_description": "Vector X adjustable hand grip strengthener with variable resistance for progressive grip training.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 86,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 447)",
+     "original_supplier_name": "ADJUSTABLE HAND GRIP-JF-1112 VECTOR-X",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 98,
+   "slug": "expinder-ring-light",
+   "name": "Expinder Ring - Light",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Ring-style resistance expander for arm, chest and shoulder exercises. Available in light, medium and heavy.",
+   "price": 970,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Expinder Ring - Light | Oriental Sports Pune",
+    "seo_description": "Ring-style resistance expander for arm, chest and shoulder exercises. Available in light, medium and heavy.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 98,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 207)",
+     "original_supplier_name": "EXPINDER RING-LIGHT",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 99,
+   "slug": "expinder-ring-medium",
+   "name": "Expinder Ring - Medium",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Ring-style resistance expander for arm, chest and shoulder exercises. Available in light, medium and heavy.",
+   "price": 1360,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Expinder Ring - Medium | Oriental Sports Pune",
+    "seo_description": "Ring-style resistance expander for arm, chest and shoulder exercises. Available in light, medium and heavy.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 99,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 219)",
+     "original_supplier_name": "EXPINDER RING-MEDIUM",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 100,
+   "slug": "expinder-ring-heavy",
+   "name": "Expinder Ring - Heavy",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Ring-style resistance expander for arm, chest and shoulder exercises. Available in light, medium and heavy.",
+   "price": 1985,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Expinder Ring - Heavy | Oriental Sports Pune",
+    "seo_description": "Ring-style resistance expander for arm, chest and shoulder exercises. Available in light, medium and heavy.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 100,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 231)",
+     "original_supplier_name": "EXPINDER RING-HEAVY",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 101,
+   "slug": "ab-wheel",
+   "name": "Ab Wheel",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Ab wheel roller for core strengthening and stability.",
+   "price": 710,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Ab Wheel | Oriental Sports Pune",
+    "seo_description": "Ab wheel roller for core strengthening and stability.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 101,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 243)",
+     "original_supplier_name": "AB WHEEL",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 102,
+   "slug": "ab-wheel-roller",
+   "name": "Ab Wheel Roller",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Heavy-duty ab wheel roller with a wide wheel for stable, advanced core workouts.",
+   "price": 2575,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Ab Wheel Roller | Oriental Sports Pune",
+    "seo_description": "Heavy-duty ab wheel roller with a wide wheel for stable, advanced core workouts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 102,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 255)",
+     "original_supplier_name": "AB WHEEL ROLLER",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 103,
+   "slug": "push-up-bar",
+   "name": "Push Up Bar",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Push-up bars that increase range of motion and reduce wrist strain during push-ups.",
+   "price": 760,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Push Up Bar | Oriental Sports Pune",
+    "seo_description": "Push-up bars that increase range of motion and reduce wrist strain during push-ups.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 103,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 267)",
+     "original_supplier_name": "PUSH UP BAR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 104,
+   "slug": "ab-strap",
+   "name": "Ab Strap",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Hanging ab straps for leg raises and core work from a pull-up bar.",
+   "price": 1985,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Ab Strap | Oriental Sports Pune",
+    "seo_description": "Hanging ab straps for leg raises and core work from a pull-up bar.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 104,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 279)",
+     "original_supplier_name": "AB STRAP",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 105,
+   "slug": "wall-mounted-multi-exerciser-bar",
+   "name": "Wall Mounted Multi Exerciser Bar",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Wall-mounted multi-exercise bar for pull-ups, chin-ups and hanging leg raises at home.",
+   "price": 2600,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Wall Mounted Multi Exerciser Bar | Oriental Sports Pune",
+    "seo_description": "Wall-mounted multi-exercise bar for pull-ups, chin-ups and hanging leg raises at home.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 105,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 291)",
+     "original_supplier_name": "WALL MOUNTED MULTI EXERCISER BAR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 106,
+   "slug": "door-pull-up-bar",
+   "name": "Door Pull Up Bar",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Doorway pull-up bar for chin-ups, pull-ups and hanging core work. No drilling required.",
+   "price": 1110,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Door Pull Up Bar | Oriental Sports Pune",
+    "seo_description": "Doorway pull-up bar for chin-ups, pull-ups and hanging core work. No drilling required.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 106,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 303)",
+     "original_supplier_name": "DOOR PULL UP BAR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 108,
+   "slug": "tricep-rope",
+   "name": "Tricep Rope",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Tricep rope attachment for cable pushdowns, face pulls and curls.",
+   "price": 1420,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Tricep Rope | Oriental Sports Pune",
+    "seo_description": "Tricep rope attachment for cable pushdowns, face pulls and curls.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 108,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 411)",
+     "original_supplier_name": "TRICEP ROPE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 109,
+   "slug": "aerobic-stepper-small",
+   "name": "Aerobic Stepper - Small",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Aerobic step platform for step workouts, step-ups and HIIT. Available in small and medium.",
+   "price": 2195,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Aerobic Stepper - Small | Oriental Sports Pune",
+    "seo_description": "Aerobic step platform for step workouts, step-ups and HIIT. Available in small and medium.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 109,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 495)",
+     "original_supplier_name": "AEROBIC STEPPER-SMALL",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 110,
+   "slug": "aerobic-stepper-medium",
+   "name": "Aerobic Stepper - Medium",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Aerobic step platform for step workouts, step-ups and HIIT. Available in small and medium.",
+   "price": 3505,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Aerobic Stepper - Medium | Oriental Sports Pune",
+    "seo_description": "Aerobic step platform for step workouts, step-ups and HIIT. Available in small and medium.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 110,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 507)",
+     "original_supplier_name": "AEROBIC STEPPER-MEDIUM",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 111,
+   "slug": "bosu-ball",
+   "name": "Bosu Ball",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Bosu balance trainer for balance, core stability and functional workouts.",
+   "price": 11330,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Bosu Ball | Oriental Sports Pune",
+    "seo_description": "Bosu balance trainer for balance, core stability and functional workouts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 111,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 519)",
+     "original_supplier_name": "BOSU BALL",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 112,
+   "slug": "yoga-wheel",
+   "name": "Yoga Wheel",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Yoga wheel for backbends, stretching and improving flexibility and balance. Its padded surface supports your spine.",
+   "price": 1820,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Yoga Wheel | Oriental Sports Pune",
+    "seo_description": "Yoga wheel for backbends, stretching and improving flexibility and balance. Its padded surface supports your spine.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 112,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 135)",
+     "original_supplier_name": "YOGA WHEEL",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 113,
+   "slug": "yoga-block",
+   "name": "Yoga Block",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Lightweight foam yoga block that supports poses, improves alignment and helps with flexibility.",
+   "price": 475,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Yoga Block | Oriental Sports Pune",
+    "seo_description": "Lightweight foam yoga block that supports poses, improves alignment and helps with flexibility.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 113,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 147)",
+     "original_supplier_name": "YOGA BLOCK",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 114,
+   "slug": "foam-roller-deluxe",
+   "name": "Foam Roller Deluxe",
+   "category_slug": "fitness",
+   "brand": "Cougar",
+   "description": "Textured foam roller for self-myofascial release, muscle recovery and mobility work.",
+   "price": 1370,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Foam Roller Deluxe | Oriental Sports Pune",
+    "seo_description": "Textured foam roller for self-myofascial release, muscle recovery and mobility work.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 114,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 159)",
+     "original_supplier_name": "FOAM ROLLER DELUXE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 138,
+   "slug": "tynor-calf-support-l",
+   "name": "Tynor Calf Support (L)",
+   "category_slug": "accessories",
+   "brand": "Tynor",
+   "description": "Tynor calf support for compression, warmth and support to the calf muscles. Size L.",
+   "price": 451,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Tynor Calf Support (L) | Oriental Sports Pune",
+    "seo_description": "Tynor calf support for compression, warmth and support to the calf muscles. Size L.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 138,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 411)",
+     "original_supplier_name": "CALF SUPPORT TYNOR-L",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 158,
+   "slug": "dsc-cricket-bat",
+   "name": "DSC Cricket Bat",
+   "category_slug": "cricket",
+   "brand": "DSC",
+   "description": "DSC cricket bat for practice and club cricket.",
+   "price": 2999,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "DSC Cricket Bat | Oriental Sports Pune",
+    "seo_description": "DSC cricket bat for practice and club cricket.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 158,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 75)",
+     "original_supplier_name": "Cricket Bat DSC",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 159,
+   "slug": "ss-cricket-bat",
+   "name": "SS Cricket Bat",
+   "category_slug": "cricket",
+   "brand": "SS",
+   "description": "SS cricket bat for practice and club cricket.",
+   "price": 4800,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "SS Cricket Bat | Oriental Sports Pune",
+    "seo_description": "SS cricket bat for practice and club cricket.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 159,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 87)",
+     "original_supplier_name": "Cricket Bat SS",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 160,
+   "slug": "cosco-light-cricket-tennis-ball",
+   "name": "Cosco Light Cricket Tennis Ball",
+   "category_slug": "cricket",
+   "brand": "Cosco",
+   "description": "Cosco light cricket tennis ball, the classic choice for gully and tennis-ball cricket.",
+   "price": 105,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Light Cricket Tennis Ball | Oriental Sports Pune",
+    "seo_description": "Cosco light cricket tennis ball, the classic choice for gully and tennis-ball cricket.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 160,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 135)",
+     "original_supplier_name": "CRICKET TENNIS BALL -COSCO (LIGHT)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 161,
+   "slug": "cosco-heavy-cricket-tennis-ball",
+   "name": "Cosco Heavy Cricket Tennis Ball",
+   "category_slug": "cricket",
+   "brand": "Cosco",
+   "description": "Cosco heavy cricket tennis ball, a heavier tennis ball for harder hitting and practice.",
+   "price": 110,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Heavy Cricket Tennis Ball | Oriental Sports Pune",
+    "seo_description": "Cosco heavy cricket tennis ball, a heavier tennis ball for harder hitting and practice.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 161,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 147)",
+     "original_supplier_name": "CRICKET TENNIS BALL -COSCO (HEAVY)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 171,
+   "slug": "nivia-classic-shin-guard",
+   "name": "Nivia Classic Shin Guard",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Nivia Classic shin guard with a hard protective shell and soft backing to protect shins from kicks and tackles.",
+   "price": 265,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Classic Shin Guard | Oriental Sports Pune",
+    "seo_description": "Nivia Classic shin guard with a hard protective shell and soft backing to protect shins from kicks and tackles.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 171,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 135)",
+     "original_supplier_name": "SHIN GUARD- NIVIA (CLASSIC)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 172,
+   "slug": "nivia-airstrike-shin-guard",
+   "name": "Nivia Airstrike Shin Guard",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Nivia Airstrike lightweight shin guard, slim and comfortable protection for training and matches.",
+   "price": 120,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Airstrike Shin Guard | Oriental Sports Pune",
+    "seo_description": "Nivia Airstrike lightweight shin guard, slim and comfortable protection for training and matches.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 172,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 147)",
+     "original_supplier_name": "SHIN GUARD-NIVIA (AIRSTRIKE)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 173,
+   "slug": "nivia-blaze-goalkeeper-gloves",
+   "name": "Nivia Blaze Goalkeeper Gloves",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Nivia Blaze goalkeeper gloves with a latex palm for grip and a padded backhand for punching and protection.",
+   "price": 869,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Blaze Goalkeeper Gloves | Oriental Sports Pune",
+    "seo_description": "Nivia Blaze goalkeeper gloves with a latex palm for grip and a padded backhand for punching and protection.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 173,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 159)",
+     "original_supplier_name": "FOOTBALL GOAL KEEPER GLOVES-NIVIA (BLAZE)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 174,
+   "slug": "nivia-ditmar-spider-goalkeeper-gloves",
+   "name": "Nivia Ditmar Spider Goalkeeper Gloves",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Nivia Ditmar Spider goalkeeper gloves with a grippy latex palm and wrist strap for a secure fit during saves.",
+   "price": 1189,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Ditmar Spider Goalkeeper Gloves | Oriental Sports Pune",
+    "seo_description": "Nivia Ditmar Spider goalkeeper gloves with a grippy latex palm and wrist strap for a secure fit during saves.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 174,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 171)",
+     "original_supplier_name": "FOOTBALL GOAL KEEPER GLOVES-DITMAR SPIDER",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 175,
+   "slug": "mini-steel-goal-post",
+   "name": "Mini Steel Goal Post",
+   "category_slug": "football",
+   "brand": "Cougar",
+   "description": "Mini steel football goal for small-sided games, kids' training and backyard play.",
+   "price": 2200,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Mini Steel Goal Post | Oriental Sports Pune",
+    "seo_description": "Mini steel football goal for small-sided games, kids' training and backyard play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 175,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 171)",
+     "original_supplier_name": "MINI STEEL GOAL POST",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 176,
+   "slug": "super-shot-goal",
+   "name": "Super Shot Goal",
+   "category_slug": "football",
+   "brand": "Cougar",
+   "description": "Portable training goal for shooting practice and small-sided games.",
+   "price": 5600,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Super Shot Goal | Oriental Sports Pune",
+    "seo_description": "Portable training goal for shooting practice and small-sided games.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 176,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 183)",
+     "original_supplier_name": "SUPER SHOT GOAL",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 177,
+   "slug": "portable-plastic-goal-post-with-net-12-x6",
+   "name": "Portable Plastic Goal Post With Net 12'X6'",
+   "category_slug": "football",
+   "brand": "Cougar",
+   "description": "Portable plastic football goal with net. Lightweight, quick to assemble and easy to move between pitches. Available in several sizes.",
+   "price": 10755,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Portable Plastic Goal Post With Net 12'X6' | Oriental Sports Pune",
+    "seo_description": "Portable plastic football goal with net. Lightweight, quick to assemble and easy to move between pitches. Available in several sizes.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 177,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 195)",
+     "original_supplier_name": "PORTABLE PLASTIC GOAL POST WITH NET 12'X6'",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 178,
+   "slug": "portable-plastic-goal-post-with-net-8-x6",
+   "name": "Portable Plastic Goal Post With Net 8'X6'",
+   "category_slug": "football",
+   "brand": "Cougar",
+   "description": "Portable plastic football goal with net. Lightweight, quick to assemble and easy to move between pitches. Available in several sizes.",
+   "price": 7620,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Portable Plastic Goal Post With Net 8'X6' | Oriental Sports Pune",
+    "seo_description": "Portable plastic football goal with net. Lightweight, quick to assemble and easy to move between pitches. Available in several sizes.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 178,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 207)",
+     "original_supplier_name": "PORTABLE PLASTIC GOAL POST WITH NET 8'X6'",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 179,
+   "slug": "portable-plastic-goal-post-with-net-8-x4",
+   "name": "Portable Plastic Goal Post With Net 8'X4'",
+   "category_slug": "football",
+   "brand": "Cougar",
+   "description": "Portable plastic football goal with net. Lightweight, quick to assemble and easy to move between pitches. Available in several sizes.",
+   "price": 7170,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Portable Plastic Goal Post With Net 8'X4' | Oriental Sports Pune",
+    "seo_description": "Portable plastic football goal with net. Lightweight, quick to assemble and easy to move between pitches. Available in several sizes.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 179,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 219)",
+     "original_supplier_name": "PORTABLE PLASTIC GOAL POST WITH NET 8'X4'",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 180,
+   "slug": "portable-plastic-goal-post-with-net-6-x4",
+   "name": "Portable Plastic Goal Post With Net 6'X4'",
+   "category_slug": "football",
+   "brand": "Cougar",
+   "description": "Portable plastic football goal with net. Lightweight, quick to assemble and easy to move between pitches. Available in several sizes.",
+   "price": 5825,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Portable Plastic Goal Post With Net 6'X4' | Oriental Sports Pune",
+    "seo_description": "Portable plastic football goal with net. Lightweight, quick to assemble and easy to move between pitches. Available in several sizes.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 180,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 231)",
+     "original_supplier_name": "PORTABLE PLASTIC GOAL POST WITH NET 6'X4'",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 181,
+   "slug": "match-plastic-goal-post",
+   "name": "Match Plastic Goal Post",
+   "category_slug": "football",
+   "brand": "Cougar",
+   "description": "Full-size plastic match goal post. A sturdy, weather-resistant goal for schools, academies and turfs.",
+   "price": 12100,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Match Plastic Goal Post | Oriental Sports Pune",
+    "seo_description": "Full-size plastic match goal post. A sturdy, weather-resistant goal for schools, academies and turfs.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 181,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 243)",
+     "original_supplier_name": "MATCH PLASTIC GOAL POST",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 182,
+   "slug": "fold-a-goal-4-3-x-3-6",
+   "name": "Fold-A-Goal 4.3' x 3.6'",
+   "category_slug": "football",
+   "brand": "Cougar",
+   "description": "Pop-up folding football goal that sets up in seconds and folds flat for storage. Great for training drills and kids' games.",
+   "price": 3320,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Fold-A-Goal 4.3' x 3.6' | Oriental Sports Pune",
+    "seo_description": "Pop-up folding football goal that sets up in seconds and folds flat for storage. Great for training drills and kids' games.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 182,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 255)",
+     "original_supplier_name": "FOLD A GOAL 4.3'X3.6'",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 183,
+   "slug": "fold-a-goal-4-x-3",
+   "name": "Fold-A-Goal 4' x 3'",
+   "category_slug": "football",
+   "brand": "Cougar",
+   "description": "Pop-up folding football goal that sets up in seconds and folds flat for storage. Great for training drills and kids' games.",
+   "price": 3050,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Fold-A-Goal 4' x 3' | Oriental Sports Pune",
+    "seo_description": "Pop-up folding football goal that sets up in seconds and folds flat for storage. Great for training drills and kids' games.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 183,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 267)",
+     "original_supplier_name": "FOLD A GOAL 4'X3'",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 184,
+   "slug": "kobo-gkg-39-goalkeeper-gloves",
+   "name": "Kobo GKG-39 Goalkeeper Gloves",
+   "category_slug": "football",
+   "brand": "Kobo",
+   "description": "Kobo GKG-39 goalkeeper gloves with a grippy palm and wrist closure.",
+   "price": 560,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Kobo GKG-39 Goalkeeper Gloves | Oriental Sports Pune",
+    "seo_description": "Kobo GKG-39 goalkeeper gloves with a grippy palm and wrist closure.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 184,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 363)",
+     "original_supplier_name": "GOAL KEEPER GLOVES-KOBO GKG-39",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 187,
+   "slug": "cosco-striker-futsal-ball",
+   "name": "Cosco Striker Futsal Ball",
+   "category_slug": "football",
+   "brand": "Cosco",
+   "description": "Cosco Striker futsal ball with low bounce for control on indoor and hard courts.",
+   "price": 1240,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Striker Futsal Ball | Oriental Sports Pune",
+    "seo_description": "Cosco Striker futsal ball with low bounce for control on indoor and hard courts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 187,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 123)",
+     "original_supplier_name": "FUTSAL BALL-COSCO (STRIKER)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 188,
+   "slug": "nivia-pro-touch-basketball-size-7",
+   "name": "Nivia Pro Touch Basketball - Size 7",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Pro Touch basketball with a 14-panel laminated composite leather cover and butyl bladder for air retention. Approved by the Basketball Federation of India. Best on wooden floors and indoor synthetic courts.",
+   "price": 2999,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Pro Touch Basketball - Size 7 | Oriental Sports Pune",
+    "seo_description": "Nivia Pro Touch basketball with a 14-panel laminated composite leather cover and butyl bladder for air retention. Approved by the Basketball Federation of India",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 188,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 279)",
+     "original_supplier_name": "BASKETBALL -NIVIA-PRO TOUCH NO.7",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 189,
+   "slug": "nivia-pro-touch-basketball-size-6",
+   "name": "Nivia Pro Touch Basketball - Size 6",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Pro Touch basketball with a 14-panel laminated composite leather cover and butyl bladder for air retention. Approved by the Basketball Federation of India. Best on wooden floors and indoor synthetic courts.",
+   "price": 2899,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Pro Touch Basketball - Size 6 | Oriental Sports Pune",
+    "seo_description": "Nivia Pro Touch basketball with a 14-panel laminated composite leather cover and butyl bladder for air retention. Approved by the Basketball Federation of India",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 189,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 291)",
+     "original_supplier_name": "BASKETBALL -NIVIA-PRO TOUCH NO.6",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 190,
+   "slug": "nivia-top-grip-basketball-size-7",
+   "name": "Nivia Top Grip Basketball - Size 7",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Top Grip basketball in cushioned rubber with a butyl bladder for air retention. Durable on all surfaces and BFI approved.",
+   "price": 1169,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Top Grip Basketball - Size 7 | Oriental Sports Pune",
+    "seo_description": "Nivia Top Grip basketball in cushioned rubber with a butyl bladder for air retention. Durable on all surfaces and BFI approved.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 190,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 303)",
+     "original_supplier_name": "BASKETBALL -NIVIA-TOP GRIP NO.7",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 191,
+   "slug": "nivia-top-grip-basketball-size-6",
+   "name": "Nivia Top Grip Basketball - Size 6",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Top Grip basketball in cushioned rubber with a butyl bladder for air retention. Durable on all surfaces and BFI approved.",
+   "price": 1079,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Top Grip Basketball - Size 6 | Oriental Sports Pune",
+    "seo_description": "Nivia Top Grip basketball in cushioned rubber with a butyl bladder for air retention. Durable on all surfaces and BFI approved.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 191,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 315)",
+     "original_supplier_name": "BASKETBALL -NIVIA-TOP GRIP NO.6",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 192,
+   "slug": "nivia-top-grip-basketball-size-5",
+   "name": "Nivia Top Grip Basketball - Size 5",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Top Grip basketball in cushioned rubber with a butyl bladder for air retention. Durable on all surfaces and BFI approved.",
+   "price": 989,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Top Grip Basketball - Size 5 | Oriental Sports Pune",
+    "seo_description": "Nivia Top Grip basketball in cushioned rubber with a butyl bladder for air retention. Durable on all surfaces and BFI approved.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 192,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 327)",
+     "original_supplier_name": "BASKETBALL -NIVIA-TOP GRIP NO.5",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 193,
+   "slug": "nivia-engraver-basketball-size-7",
+   "name": "Nivia Engraver Basketball - Size 7",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Engraver basketball with a durable rubber cover and wide channels for grip and ball control. Built for outdoor courts and also good indoors.",
+   "price": 1109,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Engraver Basketball - Size 7 | Oriental Sports Pune",
+    "seo_description": "Nivia Engraver basketball with a durable rubber cover and wide channels for grip and ball control. Built for outdoor courts and also good indoors.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 193,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 339)",
+     "original_supplier_name": "BASKETBALL-NIVIA-ENGRAVER NO.7",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 194,
+   "slug": "nivia-engraver-basketball-size-6",
+   "name": "Nivia Engraver Basketball - Size 6",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Engraver basketball with a durable rubber cover and wide channels for grip and ball control. Built for outdoor courts and also good indoors.",
+   "price": 1079,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Engraver Basketball - Size 6 | Oriental Sports Pune",
+    "seo_description": "Nivia Engraver basketball with a durable rubber cover and wide channels for grip and ball control. Built for outdoor courts and also good indoors.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 194,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 351)",
+     "original_supplier_name": "BASKETBALL-NIVIA-ENGRAVER NO.6",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 195,
+   "slug": "nivia-engraver-basketball-size-5",
+   "name": "Nivia Engraver Basketball - Size 5",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Engraver basketball with a durable rubber cover and wide channels for grip and ball control. Built for outdoor courts and also good indoors.",
+   "price": 989,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Engraver Basketball - Size 5 | Oriental Sports Pune",
+    "seo_description": "Nivia Engraver basketball with a durable rubber cover and wide channels for grip and ball control. Built for outdoor courts and also good indoors.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 195,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 363)",
+     "original_supplier_name": "BASKETBALL-NIVIA-ENGRAVER NO.5",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 196,
+   "slug": "pro-slam-adjustable-basketball-hoop",
+   "name": "Pro Slam Adjustable Basketball Hoop",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Height-adjustable basketball hoop system with backboard, rim and net for homes, schools and clubs.",
+   "price": 47600,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Pro Slam Adjustable Basketball Hoop | Oriental Sports Pune",
+    "seo_description": "Height-adjustable basketball hoop system with backboard, rim and net for homes, schools and clubs.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 196,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 471)",
+     "original_supplier_name": "PRO SLAM ADJUSTABLE BASKETBALL HOOP",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 197,
+   "slug": "cosco-hi-grip-basketball-size-7",
+   "name": "Cosco Hi-Grip Basketball - Size 7",
+   "category_slug": "recreation",
+   "brand": "Cosco",
+   "description": "Cosco Hi-Grip basketball in durable rubber with consistent grip and control on indoor courts as well as concrete and asphalt outdoors.",
+   "price": 1400,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Hi-Grip Basketball - Size 7 | Oriental Sports Pune",
+    "seo_description": "Cosco Hi-Grip basketball in durable rubber with consistent grip and control on indoor courts as well as concrete and asphalt outdoors.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 197,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 51)",
+     "original_supplier_name": "BASKETBALL-COSCO (HI-GRIP) NO.7",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 198,
+   "slug": "cosco-hi-grip-basketball-size-6",
+   "name": "Cosco Hi-Grip Basketball - Size 6",
+   "category_slug": "recreation",
+   "brand": "Cosco",
+   "description": "Cosco Hi-Grip basketball in durable rubber with consistent grip and control on indoor courts as well as concrete and asphalt outdoors.",
+   "price": 1370,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Hi-Grip Basketball - Size 6 | Oriental Sports Pune",
+    "seo_description": "Cosco Hi-Grip basketball in durable rubber with consistent grip and control on indoor courts as well as concrete and asphalt outdoors.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 198,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 63)",
+     "original_supplier_name": "BASKETBALL-COSCO (HI-GRIP) NO.6",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 199,
+   "slug": "cosco-hi-grip-basketball-size-5",
+   "name": "Cosco Hi-Grip Basketball - Size 5",
+   "category_slug": "recreation",
+   "brand": "Cosco",
+   "description": "Cosco Hi-Grip basketball in durable rubber with consistent grip and control on indoor courts as well as concrete and asphalt outdoors.",
+   "price": 1340,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Hi-Grip Basketball - Size 5 | Oriental Sports Pune",
+    "seo_description": "Cosco Hi-Grip basketball in durable rubber with consistent grip and control on indoor courts as well as concrete and asphalt outdoors.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 199,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 75)",
+     "original_supplier_name": "BASKETBALL-COSCO (HI-GRIP) NO.5",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 200,
+   "slug": "cosco-premier-basketball-size-7",
+   "name": "Cosco Premier Basketball - Size 7",
+   "category_slug": "recreation",
+   "brand": "Cosco",
+   "description": "Cosco Premier basketball, an affordable rubber ball for schools, practice and casual play.",
+   "price": 820,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Premier Basketball - Size 7 | Oriental Sports Pune",
+    "seo_description": "Cosco Premier basketball, an affordable rubber ball for schools, practice and casual play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 200,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 87)",
+     "original_supplier_name": "BASKETBALL-COSCO (PREMIER) NO.7",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 201,
+   "slug": "cosco-premier-basketball-size-6",
+   "name": "Cosco Premier Basketball - Size 6",
+   "category_slug": "recreation",
+   "brand": "Cosco",
+   "description": "Cosco Premier basketball, an affordable rubber ball for schools, practice and casual play.",
+   "price": 800,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Premier Basketball - Size 6 | Oriental Sports Pune",
+    "seo_description": "Cosco Premier basketball, an affordable rubber ball for schools, practice and casual play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 201,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 99)",
+     "original_supplier_name": "BASKETBALL-COSCO (PREMIER) NO.6",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 202,
+   "slug": "cosco-premier-basketball-size-5",
+   "name": "Cosco Premier Basketball - Size 5",
+   "category_slug": "recreation",
+   "brand": "Cosco",
+   "description": "Cosco Premier basketball, an affordable rubber ball for schools, practice and casual play.",
+   "price": 780,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Premier Basketball - Size 5 | Oriental Sports Pune",
+    "seo_description": "Cosco Premier basketball, an affordable rubber ball for schools, practice and casual play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 202,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 111)",
+     "original_supplier_name": "BASKETBALL-COSCO (PREMIER) NO.5",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 203,
+   "slug": "nivia-spot-volley-volleyball",
+   "name": "Nivia Spot Volley Volleyball",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Spot Volley volleyball with a soft-touch cover for comfortable passing and setting. For training and matches.",
+   "price": 1729,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Spot Volley Volleyball | Oriental Sports Pune",
+    "seo_description": "Nivia Spot Volley volleyball with a soft-touch cover for comfortable passing and setting. For training and matches.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 203,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 399)",
+     "original_supplier_name": "VOLLEYBALL- NIVIA-SPOTVOLLEY",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 204,
+   "slug": "nivia-g2020-volleyball",
+   "name": "Nivia G2020 Volleyball",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia G2020 volleyball, a durable official-size ball for practice and competitive play.",
+   "price": 1309,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia G2020 Volleyball | Oriental Sports Pune",
+    "seo_description": "Nivia G2020 volleyball, a durable official-size ball for practice and competitive play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 204,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 411)",
+     "original_supplier_name": "VOLLEYBALL- NIVIA-G2020",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 205,
+   "slug": "nivia-spikstar-volleyball",
+   "name": "Nivia Spikstar Volleyball",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Spikstar volleyball, a sturdy official-size ball for recreational and training use.",
+   "price": 1029,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Spikstar Volleyball | Oriental Sports Pune",
+    "seo_description": "Nivia Spikstar volleyball, a sturdy official-size ball for recreational and training use.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 205,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 423)",
+     "original_supplier_name": "VOLLEYBALL-NIVIA-SPIKSTAR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 206,
+   "slug": "nivia-classic-volleyball",
+   "name": "Nivia Classic Volleyball",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Classic volleyball, an affordable, durable ball for schools, clubs and casual games.",
+   "price": 889,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Classic Volleyball | Oriental Sports Pune",
+    "seo_description": "Nivia Classic volleyball, an affordable, durable ball for schools, clubs and casual games.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 206,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 435)",
+     "original_supplier_name": "VOLLEYBALL-NIVIA-CLASSIC",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 207,
+   "slug": "cosco-super-volley-volleyball",
+   "name": "Cosco Super Volley Volleyball",
+   "category_slug": "recreation",
+   "brand": "Cosco",
+   "description": "Cosco Super Volley volleyball, a durable official-size ball for training and match play.",
+   "price": 1980,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Super Volley Volleyball | Oriental Sports Pune",
+    "seo_description": "Cosco Super Volley volleyball, a durable official-size ball for training and match play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 207,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 8)",
+     "original_supplier_name": "VOLLEYBALL -COSCO (SUPERVOLLEY)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 208,
+   "slug": "cosco-smash-volley-volleyball",
+   "name": "Cosco Smash Volley Volleyball",
+   "category_slug": "recreation",
+   "brand": "Cosco",
+   "description": "Cosco Smash Volley volleyball, an all-round ball for recreational and training use.",
+   "price": 1480,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Smash Volley Volleyball | Oriental Sports Pune",
+    "seo_description": "Cosco Smash Volley volleyball, an all-round ball for recreational and training use.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 208,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 18)",
+     "original_supplier_name": "VOLLEYBALL-COSCO (SMASHVOLLEY)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 226,
+   "slug": "movable-badminton-pole-100-kg-base",
+   "name": "Movable Badminton Pole (100 kg Base)",
+   "category_slug": "badminton",
+   "brand": "Cougar",
+   "description": "Movable badminton net post set with a weighted 100 kg base for stability. Easy to position on indoor or outdoor courts.",
+   "price": 34845,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Movable Badminton Pole (100 kg Base) | Oriental Sports Pune",
+    "seo_description": "Movable badminton net post set with a weighted 100 kg base for stability. Easy to position on indoor or outdoor courts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 226,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 483)",
+     "original_supplier_name": "BADMINTON POLE MOVABLE 100KG BASE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Set"
+    }
+   }
+  },
+  {
+   "sr": 227,
+   "slug": "smart-badminton-set",
+   "name": "Smart Badminton Set",
+   "category_slug": "badminton",
+   "brand": "Cougar",
+   "description": "Complete badminton set for casual and backyard play.",
+   "price": 4130,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Smart Badminton Set | Oriental Sports Pune",
+    "seo_description": "Complete badminton set for casual and backyard play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 227,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 495)",
+     "original_supplier_name": "SMART BADMINTON SET",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Set"
+    }
+   }
+  },
+  {
+   "sr": 232,
+   "slug": "bolt-1-star-table-tennis-balls-set-of-6",
+   "name": "Bolt 1-Star Table Tennis Balls (Set of 6)",
+   "category_slug": "table-tennis",
+   "brand": "Cougar",
+   "description": "1-star table tennis balls (set of 6) for practice and recreational play.",
+   "price": 870,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Bolt 1-Star Table Tennis Balls (Set of 6) | Oriental Sports Pune",
+    "seo_description": "1-star table tennis balls (set of 6) for practice and recreational play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 232,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 435)",
+     "original_supplier_name": "TABLE TENNIS BALLS -BOLT -1STAR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "Set of 6"
+    }
+   }
+  },
+  {
+   "sr": 233,
+   "slug": "bolt-2-star-table-tennis-balls-set-of-6",
+   "name": "Bolt 2-Star Table Tennis Balls (Set of 6)",
+   "category_slug": "table-tennis",
+   "brand": "Cougar",
+   "description": "2-star table tennis balls (set of 6) with improved roundness and bounce for regular training.",
+   "price": 970,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Bolt 2-Star Table Tennis Balls (Set of 6) | Oriental Sports Pune",
+    "seo_description": "2-star table tennis balls (set of 6) with improved roundness and bounce for regular training.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 233,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 447)",
+     "original_supplier_name": "TABLE TENNIS BALLS -BOLT -2STAR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "Set of 6"
+    }
+   }
+  },
+  {
+   "sr": 234,
+   "slug": "bolt-3-star-table-tennis-balls-set-of-6",
+   "name": "Bolt 3-Star Table Tennis Balls (Set of 6)",
+   "category_slug": "table-tennis",
+   "brand": "Cougar",
+   "description": "3-star table tennis balls (set of 6) with consistent bounce and durability for competitive play.",
+   "price": 1050,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Bolt 3-Star Table Tennis Balls (Set of 6) | Oriental Sports Pune",
+    "seo_description": "3-star table tennis balls (set of 6) with consistent bounce and durability for competitive play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 234,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 459)",
+     "original_supplier_name": "TABLE TENNIS BALLS-BOLT -3STAR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "Set of 6"
+    }
+   }
+  },
+  {
+   "sr": 235,
+   "slug": "mikado-table-tennis-bat",
+   "name": "Mikado Table Tennis Bat",
+   "category_slug": "table-tennis",
+   "brand": "Mikado",
+   "description": "Mikado table tennis bat for beginners and recreational play.",
+   "price": 499,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Mikado Table Tennis Bat | Oriental Sports Pune",
+    "seo_description": "Mikado table tennis bat for beginners and recreational play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 235,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 51)",
+     "original_supplier_name": "TT Bat Mikado",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 236,
+   "slug": "raptor-table-tennis-net",
+   "name": "Raptor Table Tennis Net",
+   "category_slug": "table-tennis",
+   "brand": "Raptor",
+   "description": "Raptor table tennis net, a replacement net for standard tables.",
+   "price": 199,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Table Tennis Net | Oriental Sports Pune",
+    "seo_description": "Raptor table tennis net, a replacement net for standard tables.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 236,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 29)",
+     "original_supplier_name": "TABLE TENNIS NET- RAPTOR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 237,
+   "slug": "stiga-club-roller-table-tennis-table",
+   "name": "Stiga Club Roller Table Tennis Table",
+   "category_slug": "table-tennis",
+   "brand": "Stiga",
+   "description": "Stiga Club Roller table tennis table with a 15 mm top, rollaway design and folding for storage. Suitable for indoor play.",
+   "price": 49000,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Stiga Club Roller Table Tennis Table | Oriental Sports Pune",
+    "seo_description": "Stiga Club Roller table tennis table with a 15 mm top, rollaway design and folding for storage. Suitable for indoor play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 237,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 171)",
+     "original_supplier_name": "TABLE TENNIS TABLE -STIGA (CLUB ROLLER)",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 238,
+   "slug": "stiga-trinity-table-tennis-bat",
+   "name": "Stiga Trinity Table Tennis Bat",
+   "category_slug": "table-tennis",
+   "brand": "Stiga",
+   "description": "Stiga Trinity, a 3-star offensive table tennis bat with a 5-ply blade, ITTF-approved rubbers and an ergonomic concave handle. Combines speed, spin and control.",
+   "price": 4000,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Stiga Trinity Table Tennis Bat | Oriental Sports Pune",
+    "seo_description": "Stiga Trinity, a 3-star offensive table tennis bat with a 5-ply blade, ITTF-approved rubbers and an ergonomic concave handle. Combines speed, spin and control.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 238,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 183)",
+     "original_supplier_name": "TABLE TENNIS BAT-STIGA (TRINITY)",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 239,
+   "slug": "stiga-artist-table-tennis-bat",
+   "name": "Stiga Artist Table Tennis Bat",
+   "category_slug": "table-tennis",
+   "brand": "Stiga",
+   "description": "Stiga Artist table tennis bat for all-round play with good control. Suits developing players.",
+   "price": 1380,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Stiga Artist Table Tennis Bat | Oriental Sports Pune",
+    "seo_description": "Stiga Artist table tennis bat for all-round play with good control. Suits developing players.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 239,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 195)",
+     "original_supplier_name": "TABLE TENNIS BAT-STIGA (ARTIST)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 240,
+   "slug": "stiga-break-table-tennis-bat",
+   "name": "Stiga Break Table Tennis Bat",
+   "category_slug": "table-tennis",
+   "brand": "Stiga",
+   "description": "Stiga Break table tennis bat for beginners and recreational players.",
+   "price": 1260,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Stiga Break Table Tennis Bat | Oriental Sports Pune",
+    "seo_description": "Stiga Break table tennis bat for beginners and recreational players.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 240,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 207)",
+     "original_supplier_name": "TABLE TENNIS BAT-STIGA (BREAK)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 241,
+   "slug": "cosco-blaze-table-tennis-bat",
+   "name": "Cosco Blaze Table Tennis Bat",
+   "category_slug": "table-tennis",
+   "brand": "Cosco",
+   "description": "Cosco Blaze table tennis bat for beginner and recreational play.",
+   "price": 1050,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Blaze Table Tennis Bat | Oriental Sports Pune",
+    "seo_description": "Cosco Blaze table tennis bat for beginner and recreational play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 241,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 219)",
+     "original_supplier_name": "TABLE TENNIS BAT-COSCO (BLAZE)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 242,
+   "slug": "stiga-training-table-tennis-balls-set-of-12",
+   "name": "Stiga Training Table Tennis Balls (Set of 12)",
+   "category_slug": "table-tennis",
+   "brand": "Stiga",
+   "description": "Stiga training table tennis balls (set of 12) for practice and multiball drills.",
+   "price": 960,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Stiga Training Table Tennis Balls (Set of 12) | Oriental Sports Pune",
+    "seo_description": "Stiga training table tennis balls (set of 12) for practice and multiball drills.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 242,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 231)",
+     "original_supplier_name": "TABLE TENNIS BALL-STIGA CUP (TRAINING)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "Set of 12"
+    }
+   }
+  },
+  {
+   "sr": 243,
+   "slug": "stiga-cup-table-tennis-balls-set-of-12",
+   "name": "Stiga Cup Table Tennis Balls (Set of 12)",
+   "category_slug": "table-tennis",
+   "brand": "Stiga",
+   "description": "Stiga Cup table tennis balls (set of 12) for recreational and club practice.",
+   "price": 720,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Stiga Cup Table Tennis Balls (Set of 12) | Oriental Sports Pune",
+    "seo_description": "Stiga Cup table tennis balls (set of 12) for recreational and club practice.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 243,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 243)",
+     "original_supplier_name": "TABLE TENNIS BALL-STIGA CUP (CUP)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "Set of 12"
+    }
+   }
+  },
+  {
+   "sr": 249,
+   "slug": "movable-tennis-pole",
+   "name": "Movable Tennis Pole",
+   "category_slug": "tennis",
+   "brand": "Cougar",
+   "description": "Movable tennis net post set with a stable base, for multi-purpose and temporary courts.",
+   "price": 42365,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Movable Tennis Pole | Oriental Sports Pune",
+    "seo_description": "Movable tennis net post set with a stable base, for multi-purpose and temporary courts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 249,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 507)",
+     "original_supplier_name": "TENNIS POLE (MOVABLE)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Set"
+    }
+   }
+  },
+  {
+   "sr": 256,
+   "slug": "competition-pickleballs-set-of-6",
+   "name": "Competition Pickleballs (Set of 6)",
+   "category_slug": "pickleball",
+   "brand": "Cougar",
+   "description": "Competition-grade pickleballs (set of 6) with consistent bounce and flight for match play.",
+   "price": 1280,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Competition Pickleballs (Set of 6) | Oriental Sports Pune",
+    "seo_description": "Competition-grade pickleballs (set of 6) with consistent bounce and flight for match play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 256,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 363)",
+     "original_supplier_name": "PICKLE BALL SET COMPETITION",
+     "description_source": "Standard copy - review",
+     "qty_pack": "Set of 6"
+    }
+   }
+  },
+  {
+   "sr": 257,
+   "slug": "pro-pickleballs-set-of-6",
+   "name": "Pro Pickleballs (Set of 6)",
+   "category_slug": "pickleball",
+   "brand": "Cougar",
+   "description": "Pro pickleballs (set of 6) for practice and recreational games.",
+   "price": 470,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Pro Pickleballs (Set of 6) | Oriental Sports Pune",
+    "seo_description": "Pro pickleballs (set of 6) for practice and recreational games.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 257,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 375)",
+     "original_supplier_name": "PICKLE BALL SET PRO",
+     "description_source": "Standard copy - review",
+     "qty_pack": "Set of 6"
+    }
+   }
+  },
+  {
+   "sr": 258,
+   "slug": "cosco-carbon-arc-1u-pickleball-paddle",
+   "name": "Cosco Carbon Arc 1U Pickleball Paddle",
+   "category_slug": "pickleball",
+   "brand": "Cosco",
+   "description": "Cosco Carbon Arc 1U pickleball paddle with a carbon face for spin and control.",
+   "price": 4370,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Carbon Arc 1U Pickleball Paddle | Oriental Sports Pune",
+    "seo_description": "Cosco Carbon Arc 1U pickleball paddle with a carbon face for spin and control.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 258,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 99)",
+     "original_supplier_name": "PICKLE BAT CARBON ARC 1 U (COSCO)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 259,
+   "slug": "cosco-carbon-edge-1-0-pickleball-paddle",
+   "name": "Cosco Carbon Edge 1.0 Pickleball Paddle",
+   "category_slug": "pickleball",
+   "brand": "Cosco",
+   "description": "Cosco Carbon Edge 1.0, a carbon-face pickleball paddle for intermediate and advanced players.",
+   "price": 8360,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Carbon Edge 1.0 Pickleball Paddle | Oriental Sports Pune",
+    "seo_description": "Cosco Carbon Edge 1.0, a carbon-face pickleball paddle for intermediate and advanced players.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 259,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 111)",
+     "original_supplier_name": "PICKLE BAT CARBON EDGE 1.0 (COSCO)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 260,
+   "slug": "cosco-pro-40-pickleball",
+   "name": "Cosco Pro-40 Pickleball",
+   "category_slug": "pickleball",
+   "brand": "Cosco",
+   "description": "Cosco Pro-40 pickleball, a 40-hole ball with consistent bounce for outdoor play.",
+   "price": 110,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Cosco Pro-40 Pickleball | Oriental Sports Pune",
+    "seo_description": "Cosco Pro-40 pickleball, a 40-hole ball with consistent bounce for outdoor play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 260,
+     "source_files": "COSCO & Stiga Sports Equipments.xlsx (row 159)",
+     "original_supplier_name": "PICKLE BALL-COSCO ( PRO-40)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 261,
+   "slug": "adidas-match-blue-3-4-padel-racket",
+   "name": "Adidas Match Blue 3.4 Padel Racket",
+   "category_slug": "tennis",
+   "brand": "Adidas",
+   "description": "Adidas Match Blue 3.4, a round-shaped padel racket balancing power, control and comfort. Built for players developing their technique.",
+   "price": 11999,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Adidas Match Blue 3.4 Padel Racket | Oriental Sports Pune",
+    "seo_description": "Adidas Match Blue 3.4, a round-shaped padel racket balancing power, control and comfort. Built for players developing their technique.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 261,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 483)",
+     "original_supplier_name": "ADIDAS MATCH BLUE 3.4 PADEL RACKET",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 262,
+   "slug": "adidas-metalbone-superlight-padel-racket",
+   "name": "Adidas Metalbone Superlight Padel Racket",
+   "category_slug": "tennis",
+   "brand": "Adidas",
+   "description": "Adidas Metalbone Superlight, a lightweight version from the Metalbone padel range for fast handling. Confirm the exact specs with the supplier before listing.",
+   "price": 18999,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Adidas Metalbone Superlight Padel Racket | Oriental Sports Pune",
+    "seo_description": "Adidas Metalbone Superlight, a lightweight version from the Metalbone padel range for fast handling. Confirm the exact specs with the supplier before listing.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 262,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 495)",
+     "original_supplier_name": "METALBONE SUPERLIGHT PADEL RACKET",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 263,
+   "slug": "speedo-biofuse-2-0-swimming-goggles",
+   "name": "Speedo Biofuse 2.0 Swimming Goggles",
+   "category_slug": "recreation",
+   "brand": "Speedo",
+   "description": "Speedo Biofuse 2.0 goggles with Biofuse technology for flexible comfort, super-soft seals, a push-button strap adjuster, anti-fog coating and UV protection.",
+   "price": 2499,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Speedo Biofuse 2.0 Swimming Goggles | Oriental Sports Pune",
+    "seo_description": "Speedo Biofuse 2.0 goggles with Biofuse technology for flexible comfort, super-soft seals, a push-button strap adjuster, anti-fog coating and UV protection.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 263,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 123)",
+     "original_supplier_name": "SWIMMING GOGGLE SPEEDO-BIOFUSE 2.0",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 265,
+   "slug": "speedo-hydropure-swimming-goggles-adult",
+   "name": "Speedo Hydropure Swimming Goggles (Adult)",
+   "category_slug": "recreation",
+   "brand": "Speedo",
+   "description": "Speedo Hydropure adult goggles with a wide-vision frame, soft seals and anti-fog lenses.",
+   "price": 1599,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Speedo Hydropure Swimming Goggles (Adult) | Oriental Sports Pune",
+    "seo_description": "Speedo Hydropure adult goggles with a wide-vision frame, soft seals and anti-fog lenses.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 265,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 147)",
+     "original_supplier_name": "SWIMMING GOGGLE SPEEDO-HYDROPURE AU",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 266,
+   "slug": "speedo-futura-classic-swimming-goggles-junior",
+   "name": "Speedo Futura Classic Swimming Goggles (Junior)",
+   "category_slug": "recreation",
+   "brand": "Speedo",
+   "description": "Speedo Futura Classic junior goggles, sized for children, with soft seals and anti-fog lenses.",
+   "price": 1099,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Speedo Futura Classic Swimming Goggles (Junior) | Oriental Sports Pune",
+    "seo_description": "Speedo Futura Classic junior goggles, sized for children, with soft seals and anti-fog lenses.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 266,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 159)",
+     "original_supplier_name": "SWIMMING GOGGLE SPEEDO-FUTURA CLASSIC JU",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 268,
+   "slug": "speedo-hydropulse-swimming-goggles-adult",
+   "name": "Speedo Hydropulse Swimming Goggles (Adult)",
+   "category_slug": "recreation",
+   "brand": "Speedo",
+   "description": "Speedo Hydropulse adult goggles with a comfortable fit, anti-fog lenses and an easy-adjust strap.",
+   "price": 1599,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Speedo Hydropulse Swimming Goggles (Adult) | Oriental Sports Pune",
+    "seo_description": "Speedo Hydropulse adult goggles with a comfortable fit, anti-fog lenses and an easy-adjust strap.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 268,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 183)",
+     "original_supplier_name": "SWIMMING GOGGLE SPEEDO-HYDROPULSE GOG AU",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 269,
+   "slug": "speedo-biofuse-rift-v2-swimming-goggles-adult",
+   "name": "Speedo Biofuse Rift V2 Swimming Goggles (Adult)",
+   "category_slug": "recreation",
+   "brand": "Speedo",
+   "description": "Speedo Biofuse Rift V2 goggles with wide panoramic vision and Biofuse comfort seals.",
+   "price": 2799,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Speedo Biofuse Rift V2 Swimming Goggles (Adult) | Oriental Sports Pune",
+    "seo_description": "Speedo Biofuse Rift V2 goggles with wide panoramic vision and Biofuse comfort seals.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 269,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 195)",
+     "original_supplier_name": "SWIMMING GOGGLE SPEEDO-BIOFUSE RIFT GOG V2 AU",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 270,
+   "slug": "speedo-jet-v2-swimming-goggles-adult",
+   "name": "Speedo Jet V2 Swimming Goggles (Adult)",
+   "category_slug": "recreation",
+   "brand": "Speedo",
+   "description": "Speedo Jet V2, an affordable everyday swim goggle with anti-fog lenses and an adjustable strap.",
+   "price": 849,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Speedo Jet V2 Swimming Goggles (Adult) | Oriental Sports Pune",
+    "seo_description": "Speedo Jet V2, an affordable everyday swim goggle with anti-fog lenses and an adjustable strap.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 270,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 207)",
+     "original_supplier_name": "SWIMMING GOGGLE SPEEDO-JET V2 GOG AU",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 271,
+   "slug": "vector-x-g-704-swimming-goggles",
+   "name": "Vector X G-704 Swimming Goggles",
+   "category_slug": "recreation",
+   "brand": "Vector X",
+   "description": "Vector X G-704 swimming goggles with anti-fog lenses and an adjustable strap, for recreational swimming.",
+   "price": 399,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Vector X G-704 Swimming Goggles | Oriental Sports Pune",
+    "seo_description": "Vector X G-704 swimming goggles with anti-fog lenses and an adjustable strap, for recreational swimming.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 271,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 219)",
+     "original_supplier_name": "SWIMMING GOGGLE VECTOR-X G-704",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 272,
+   "slug": "speedo-plain-moulded-silicone-swim-cap",
+   "name": "Speedo Plain Moulded Silicone Swim Cap",
+   "category_slug": "recreation",
+   "brand": "Speedo",
+   "description": "Speedo moulded silicone swim cap. Durable, wrinkle-free and comfortable, it reduces drag and protects hair.",
+   "price": 799,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Speedo Plain Moulded Silicone Swim Cap | Oriental Sports Pune",
+    "seo_description": "Speedo moulded silicone swim cap. Durable, wrinkle-free and comfortable, it reduces drag and protects hair.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 272,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 231)",
+     "original_supplier_name": "SWIM CAP SPEEDO-PLAIN MOULDED SILICONE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 273,
+   "slug": "speedo-long-hair-swim-cap-adult",
+   "name": "Speedo Long Hair Swim Cap (Adult)",
+   "category_slug": "recreation",
+   "brand": "Speedo",
+   "description": "Speedo long hair swim cap with extra room to fit long hair comfortably.",
+   "price": 999,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Speedo Long Hair Swim Cap (Adult) | Oriental Sports Pune",
+    "seo_description": "Speedo long hair swim cap with extra room to fit long hair comfortably.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 273,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 243); Apex Mikado Sports Equipments-PC.xlsx (row 255)",
+     "original_supplier_name": "SWIM CAP SPEEDO-LONG HAIR CAP AU",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 274,
+   "slug": "viva-swim-cap",
+   "name": "Viva Swim Cap",
+   "category_slug": "recreation",
+   "brand": "Viva",
+   "description": "Viva swim cap for recreational and training swims.",
+   "price": 199,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Viva Swim Cap | Oriental Sports Pune",
+    "seo_description": "Viva swim cap for recreational and training swims.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 274,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 267)",
+     "original_supplier_name": "SWIM CAP VIVA",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 275,
+   "slug": "vector-x-ear-protection-swim-cap",
+   "name": "Vector X Ear Protection Swim Cap",
+   "category_slug": "recreation",
+   "brand": "Vector X",
+   "description": "Vector X swim cap with ear pockets that help keep water out of the ears.",
+   "price": 349,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Vector X Ear Protection Swim Cap | Oriental Sports Pune",
+    "seo_description": "Vector X swim cap with ear pockets that help keep water out of the ears.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 275,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 279)",
+     "original_supplier_name": "VX EAR PROTECTION SWIM CAP",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 276,
+   "slug": "discus-practice-2-kg",
+   "name": "Discus Practice - 2 kg",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+   "price": 1420,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Discus Practice - 2 kg | Oriental Sports Pune",
+    "seo_description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 276,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 519)",
+     "original_supplier_name": "DISCUS PRACTICE-2KG",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 277,
+   "slug": "discus-practice-1-75-kg",
+   "name": "Discus Practice - 1.75 kg",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+   "price": 1405,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Discus Practice - 1.75 kg | Oriental Sports Pune",
+    "seo_description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 277,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 531)",
+     "original_supplier_name": "DISCUS PRACTICE-1.75KG",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 278,
+   "slug": "discus-practice-1-62-kg",
+   "name": "Discus Practice - 1.62 kg",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+   "price": 1360,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Discus Practice - 1.62 kg | Oriental Sports Pune",
+    "seo_description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 278,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 543)",
+     "original_supplier_name": "DISCUS PRACTICE-1.62KG",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 279,
+   "slug": "discus-practice-1-50-kg",
+   "name": "Discus Practice - 1.50 kg",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+   "price": 1300,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Discus Practice - 1.50 kg | Oriental Sports Pune",
+    "seo_description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 279,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 555)",
+     "original_supplier_name": "DISCUS PRACTICE-1.50KG",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 280,
+   "slug": "discus-practice-1-kg",
+   "name": "Discus Practice - 1 kg",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+   "price": 1180,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Discus Practice - 1 kg | Oriental Sports Pune",
+    "seo_description": "Practice discus for athletics throwing training. Available in standard weights from 1 kg to 2 kg for different age groups.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 280,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 567)",
+     "original_supplier_name": "DISCUS PRACTICE-1KG",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 281,
+   "slug": "athletics-throwing-hammer-6-kg",
+   "name": "Athletics Throwing Hammer 6 kg",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Athletics throwing hammer for hammer throw training. Available in 6 kg and 8 kg.",
+   "price": 5595,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Athletics Throwing Hammer 6 kg | Oriental Sports Pune",
+    "seo_description": "Athletics throwing hammer for hammer throw training. Available in 6 kg and 8 kg.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 281,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 327)",
+     "original_supplier_name": "HAMMER -6KG",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 282,
+   "slug": "athletics-throwing-hammer-8-kg",
+   "name": "Athletics Throwing Hammer 8 kg",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Athletics throwing hammer for hammer throw training. Available in 6 kg and 8 kg.",
+   "price": 6105,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Athletics Throwing Hammer 8 kg | Oriental Sports Pune",
+    "seo_description": "Athletics throwing hammer for hammer throw training. Available in 6 kg and 8 kg.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 282,
+     "source_files": "COUGAR EXE EQ-2.xlsx (row 339)",
+     "original_supplier_name": "HAMMER -8KG",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 283,
+   "slug": "wintex-skating-set",
+   "name": "Wintex Skating Set",
+   "category_slug": "recreation",
+   "brand": "Wintex",
+   "description": "Wintex skating protective set for safer skating practice.",
+   "price": 385,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Wintex Skating Set | Oriental Sports Pune",
+    "seo_description": "Wintex skating protective set for safer skating practice.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 283,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 315); Apex Mikado Sports Equipments-PC.xlsx (row 327)",
+     "original_supplier_name": "SKAITING SET-WINTEX",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Set"
+    }
+   }
+  },
+  {
+   "sr": 284,
+   "slug": "drive-inline-skates-68-mm-blue",
+   "name": "Drive Inline Skates 68 mm (Blue)",
+   "category_slug": "recreation",
+   "brand": "Oriental Sports",
+   "description": "Drive inline skates with 68 mm wheels for beginner and recreational skating.",
+   "price": 2499,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Drive Inline Skates 68 mm (Blue) | Oriental Sports Pune",
+    "seo_description": "Drive inline skates with 68 mm wheels for beginner and recreational skating.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 284,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 507)",
+     "original_supplier_name": "DRIVE INLINE SKATES 68MM BLUE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 285,
+   "slug": "jj-jonex-fibrol-roller-skates",
+   "name": "JJ Jonex Fibrol Roller Skates",
+   "category_slug": "recreation",
+   "brand": "JJ Jonex",
+   "description": "JJ Jonex Fibrol roller skates, adjustable quad skates for kids and beginners.",
+   "price": 1300,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "JJ Jonex Fibrol Roller Skates | Oriental Sports Pune",
+    "seo_description": "JJ Jonex Fibrol roller skates, adjustable quad skates for kids and beginners.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 285,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 519)",
+     "original_supplier_name": "JJ JONEX FIBROL ROLLER SKATES",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 286,
+   "slug": "nivia-chess-clock",
+   "name": "Nivia Chess Clock",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia chess clock for timed chess games and tournaments, with clear dual displays and simple controls.",
+   "price": 2799,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Chess Clock | Oriental Sports Pune",
+    "seo_description": "Nivia chess clock for timed chess games and tournaments, with clear dual displays and simple controls.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 286,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 627)",
+     "original_supplier_name": "CHESS CLOCK-NIVIA",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 287,
+   "slug": "wooden-magnetic-chess-set-12",
+   "name": "Wooden Magnetic Chess Set 12\"",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Wooden magnetic chess set. Pieces stay in place during travel and play. Available in 12\" and 14\" sizes.",
+   "price": 2690,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Wooden Magnetic Chess Set 12\" | Oriental Sports Pune",
+    "seo_description": "Wooden magnetic chess set. Pieces stay in place during travel and play. Available in 12\" and 14\" sizes.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 287,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 579)",
+     "original_supplier_name": "WOODEN MAGNETIC CHESS 12\"",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 288,
+   "slug": "wooden-magnetic-chess-set-14",
+   "name": "Wooden Magnetic Chess Set 14\"",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Wooden magnetic chess set. Pieces stay in place during travel and play. Available in 12\" and 14\" sizes.",
+   "price": 4035,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Wooden Magnetic Chess Set 14\" | Oriental Sports Pune",
+    "seo_description": "Wooden magnetic chess set. Pieces stay in place during travel and play. Available in 12\" and 14\" sizes.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 288,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 591)",
+     "original_supplier_name": "WOODEN MAGNETIC CHESS 14\"",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 289,
+   "slug": "mikado-chess-board",
+   "name": "Mikado Chess Board",
+   "category_slug": "recreation",
+   "brand": "Mikado",
+   "description": "Mikado chess board for home play, learning and practice.",
+   "price": 1000,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Mikado Chess Board | Oriental Sports Pune",
+    "seo_description": "Mikado chess board for home play, learning and practice.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 289,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 18)",
+     "original_supplier_name": "Chess Board (Mikado)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 290,
+   "slug": "mikado-wooden-chess-board-16",
+   "name": "Mikado Wooden Chess Board 16\"",
+   "category_slug": "recreation",
+   "brand": "Mikado",
+   "description": "Mikado 16\" wooden chess board, a classic board for home and club play.",
+   "price": 3320,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Mikado Wooden Chess Board 16\" | Oriental Sports Pune",
+    "seo_description": "Mikado 16\" wooden chess board, a classic board for home and club play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 290,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 29)",
+     "original_supplier_name": "Chess Board Wooden (Mikado-16\")",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 291,
+   "slug": "mikado-chess-board-basic",
+   "name": "Mikado Chess Board (Basic)",
+   "category_slug": "recreation",
+   "brand": "Mikado",
+   "description": "Basic Mikado chess board for beginners, schools and casual games.",
+   "price": 600,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Mikado Chess Board (Basic) | Oriental Sports Pune",
+    "seo_description": "Basic Mikado chess board for beginners, schools and casual games.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 291,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 40)",
+     "original_supplier_name": "Chess Board Mikado",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 292,
+   "slug": "bulldog-carrom-coins",
+   "name": "Bulldog Carrom Coins",
+   "category_slug": "recreation",
+   "brand": "Bulldog",
+   "description": "Bulldog carrom coins set for smooth, consistent play on the carrom board.",
+   "price": 350,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Bulldog Carrom Coins | Oriental Sports Pune",
+    "seo_description": "Bulldog carrom coins set for smooth, consistent play on the carrom board.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 292,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 459)",
+     "original_supplier_name": "CARROM COINS BULLDOG",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Set"
+    }
+   }
+  },
+  {
+   "sr": 293,
+   "slug": "home-shot-carrom-coins",
+   "name": "Home Shot Carrom Coins",
+   "category_slug": "recreation",
+   "brand": "Home Shot",
+   "description": "Home Shot carrom coins set for home and recreational carrom.",
+   "price": 300,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Home Shot Carrom Coins | Oriental Sports Pune",
+    "seo_description": "Home Shot carrom coins set for home and recreational carrom.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 293,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 471)",
+     "original_supplier_name": "CARROM COINS HOME SHOT",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Set"
+    }
+   }
+  },
+  {
+   "sr": 298,
+   "slug": "tennikoit-ring",
+   "name": "Tennikoit Ring",
+   "category_slug": "recreation",
+   "brand": "Cougar",
+   "description": "Rubber tennikoit (ring tennis) ring for the popular net game, in schools and recreational play.",
+   "price": 199,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Tennikoit Ring | Oriental Sports Pune",
+    "seo_description": "Rubber tennikoit (ring tennis) ring for the popular net game, in schools and recreational play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 298,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 603)",
+     "original_supplier_name": "TENNIKOIT RINGS",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 299,
+   "slug": "sterling-baseball-bat",
+   "name": "Sterling Baseball Bat",
+   "category_slug": "recreation",
+   "brand": "Sterling",
+   "description": "Sterling baseball bat for practice and recreational play.",
+   "price": 2199,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Sterling Baseball Bat | Oriental Sports Pune",
+    "seo_description": "Sterling baseball bat for practice and recreational play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 299,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 531)",
+     "original_supplier_name": "BASE BAT STERLING",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 300,
+   "slug": "raptor-cricket-net-100-x-10-ft",
+   "name": "Raptor Cricket Net (100 x 10 ft)",
+   "category_slug": "cricket",
+   "brand": "Raptor",
+   "description": "Raptor cricket practice net, a durable HDPE knotted net for practice cages and boundary netting.",
+   "price": 6500,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Cricket Net (100 x 10 ft) | Oriental Sports Pune",
+    "seo_description": "Raptor cricket practice net, a durable HDPE knotted net for practice cages and boundary netting.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 300,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 8)",
+     "original_supplier_name": "Cricket Net- Raptor (100x10)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 301,
+   "slug": "raptor-cricket-net-60-x-10-ft",
+   "name": "Raptor Cricket Net (60 x 10 ft)",
+   "category_slug": "cricket",
+   "brand": "Raptor",
+   "description": "Raptor cricket practice net, a durable HDPE knotted net for practice cages and boundary netting.",
+   "price": 3900,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Cricket Net (60 x 10 ft) | Oriental Sports Pune",
+    "seo_description": "Raptor cricket practice net, a durable HDPE knotted net for practice cages and boundary netting.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 301,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 18)",
+     "original_supplier_name": "Cricket Net- Raptor (60X10)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 302,
+   "slug": "raptor-hockey-net-1228",
+   "name": "Raptor Hockey Net 1228",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor hockey goal net, durable, weather-resistant netting for standard hockey goals. Model 1228.",
+   "price": 4988,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Hockey Net 1228 | Oriental Sports Pune",
+    "seo_description": "Raptor hockey goal net, durable, weather-resistant netting for standard hockey goals. Model 1228.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 302,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 40)",
+     "original_supplier_name": "HOCKEY NET- RAPTOR-1228",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 303,
+   "slug": "raptor-hockey-net-1224",
+   "name": "Raptor Hockey Net 1224",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor hockey goal net, durable, weather-resistant netting for standard hockey goals. Model 1224.",
+   "price": 3375,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Hockey Net 1224 | Oriental Sports Pune",
+    "seo_description": "Raptor hockey goal net, durable, weather-resistant netting for standard hockey goals. Model 1224.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 303,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 51)",
+     "original_supplier_name": "HOCKEY NET- RAPTOR-1224",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 304,
+   "slug": "raptor-handball-net-1250",
+   "name": "Raptor Handball Net 1250",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor handball goal net, tough netting for standard handball goals. Model 1250.",
+   "price": 2700,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Handball Net 1250 | Oriental Sports Pune",
+    "seo_description": "Raptor handball goal net, tough netting for standard handball goals. Model 1250.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 304,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 63)",
+     "original_supplier_name": "HANDBALL NET-RAPTOR 1250",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 305,
+   "slug": "raptor-handball-net-1124",
+   "name": "Raptor Handball Net 1124",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor handball goal net, tough netting for standard handball goals. Model 1124.",
+   "price": 2125,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Handball Net 1124 | Oriental Sports Pune",
+    "seo_description": "Raptor handball goal net, tough netting for standard handball goals. Model 1124.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 305,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 75)",
+     "original_supplier_name": "HANDBALL NET-RAPTOR 1124",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 306,
+   "slug": "raptor-handball-net-1132",
+   "name": "Raptor Handball Net 1132",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor handball goal net, tough netting for standard handball goals. Model 1132.",
+   "price": 1438,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Handball Net 1132 | Oriental Sports Pune",
+    "seo_description": "Raptor handball goal net, tough netting for standard handball goals. Model 1132.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 306,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 87)",
+     "original_supplier_name": "HANDBALL NET-RAPTOR-1132",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 310,
+   "slug": "raptor-badminton-net-with-wire-800",
+   "name": "Raptor Badminton Net with Wire 800",
+   "category_slug": "badminton",
+   "brand": "Raptor",
+   "description": "Raptor badminton net for indoor and outdoor courts. Model 800.",
+   "price": 1525,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Badminton Net with Wire 800 | Oriental Sports Pune",
+    "seo_description": "Raptor badminton net for indoor and outdoor courts. Model 800.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 310,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 135)",
+     "original_supplier_name": "BADMINTON NET WITH WIRE (800)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 311,
+   "slug": "raptor-badminton-net-with-rope-801",
+   "name": "Raptor Badminton Net with Rope 801",
+   "category_slug": "badminton",
+   "brand": "Raptor",
+   "description": "Raptor badminton net for indoor and outdoor courts. Model 801.",
+   "price": 975,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Badminton Net with Rope 801 | Oriental Sports Pune",
+    "seo_description": "Raptor badminton net for indoor and outdoor courts. Model 801.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 311,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 147)",
+     "original_supplier_name": "BADMINTON NET WITH ROPE-801",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 312,
+   "slug": "raptor-badminton-net-802",
+   "name": "Raptor Badminton Net 802",
+   "category_slug": "badminton",
+   "brand": "Raptor",
+   "description": "Raptor badminton net for indoor and outdoor courts. Model 802.",
+   "price": 700,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Badminton Net 802 | Oriental Sports Pune",
+    "seo_description": "Raptor badminton net for indoor and outdoor courts. Model 802.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 312,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 159)",
+     "original_supplier_name": "BADMINTON NET-RAPTOR-802",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 313,
+   "slug": "raptor-pop-up-net",
+   "name": "Raptor Pop-Up Net",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor pop-up net that sets up instantly for training drills and backyard games.",
+   "price": 2475,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Pop-Up Net | Oriental Sports Pune",
+    "seo_description": "Raptor pop-up net that sets up instantly for training drills and backyard games.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 313,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 171)",
+     "original_supplier_name": "POPUP NET- RAPTOR",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 314,
+   "slug": "raptor-throwball-net-321",
+   "name": "Raptor Throwball Net 321",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor throwball net for school and club throwball courts. Model 321.",
+   "price": 1890,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Throwball Net 321 | Oriental Sports Pune",
+    "seo_description": "Raptor throwball net for school and club throwball courts. Model 321.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 314,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 207)",
+     "original_supplier_name": "THROW BALL NET - RAPTOR -321",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 315,
+   "slug": "raptor-throwball-net-312",
+   "name": "Raptor Throwball Net 312",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor throwball net for school and club throwball courts. Model 312.",
+   "price": 1095,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Throwball Net 312 | Oriental Sports Pune",
+    "seo_description": "Raptor throwball net for school and club throwball courts. Model 312.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 315,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 219)",
+     "original_supplier_name": "THROW BALL NET - RAPTOR -312",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 316,
+   "slug": "raptor-volleyball-net-250",
+   "name": "Raptor Volleyball Net 250",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor volleyball net for indoor and outdoor courts. Model 250.",
+   "price": 3500,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Volleyball Net 250 | Oriental Sports Pune",
+    "seo_description": "Raptor volleyball net for indoor and outdoor courts. Model 250.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 316,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 231)",
+     "original_supplier_name": "VOLLEYBALL NET-RAPTOR-250",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 317,
+   "slug": "raptor-volleyball-net-221",
+   "name": "Raptor Volleyball Net 221",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor volleyball net for indoor and outdoor courts. Model 221.",
+   "price": 2175,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Volleyball Net 221 | Oriental Sports Pune",
+    "seo_description": "Raptor volleyball net for indoor and outdoor courts. Model 221.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 317,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 243)",
+     "original_supplier_name": "VOLLEYBALL NET-RAPTOR-221",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 318,
+   "slug": "raptor-volleyball-net-218",
+   "name": "Raptor Volleyball Net 218",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor volleyball net for indoor and outdoor courts. Model 218.",
+   "price": 1338,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Volleyball Net 218 | Oriental Sports Pune",
+    "seo_description": "Raptor volleyball net for indoor and outdoor courts. Model 218.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 318,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 255)",
+     "original_supplier_name": "VOLLEYBALL NET-RAPTOR-218",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 319,
+   "slug": "raptor-volleyball-net-212",
+   "name": "Raptor Volleyball Net 212",
+   "category_slug": "recreation",
+   "brand": "Raptor",
+   "description": "Raptor volleyball net for indoor and outdoor courts. Model 212.",
+   "price": 813,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Volleyball Net 212 | Oriental Sports Pune",
+    "seo_description": "Raptor volleyball net for indoor and outdoor courts. Model 212.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 319,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 267)",
+     "original_supplier_name": "VOLLEYBALL NET-RAPTOR-212",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 320,
+   "slug": "raptor-football-net-1200",
+   "name": "Raptor Football Net 1200",
+   "category_slug": "football",
+   "brand": "Raptor",
+   "description": "Raptor football goal net, durable netting for football goals. Model 1200.",
+   "price": 7125,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Football Net 1200 | Oriental Sports Pune",
+    "seo_description": "Raptor football goal net, durable netting for football goals. Model 1200.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 320,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 279)",
+     "original_supplier_name": "FOOTBALL NET-RAPTOR-1200",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 321,
+   "slug": "raptor-football-net-1032",
+   "name": "Raptor Football Net 1032",
+   "category_slug": "football",
+   "brand": "Raptor",
+   "description": "Raptor football goal net, durable netting for football goals. Model 1032.",
+   "price": 3350,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Football Net 1032 | Oriental Sports Pune",
+    "seo_description": "Raptor football goal net, durable netting for football goals. Model 1032.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 321,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 291)",
+     "original_supplier_name": "FOOTBALL NET-RAPTOR-1032",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 322,
+   "slug": "raptor-football-net-1038",
+   "name": "Raptor Football Net 1038",
+   "category_slug": "football",
+   "brand": "Raptor",
+   "description": "Raptor football goal net, durable netting for football goals. Model 1038.",
+   "price": 2488,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Football Net 1038 | Oriental Sports Pune",
+    "seo_description": "Raptor football goal net, durable netting for football goals. Model 1038.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 322,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 303)",
+     "original_supplier_name": "FOOTBALL NET-RAPTOR-1038",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 323,
+   "slug": "raptor-tennis-net-1024",
+   "name": "Raptor Tennis Net 1024",
+   "category_slug": "tennis",
+   "brand": "Raptor",
+   "description": "Raptor tennis net for standard tennis courts. Model 1024.",
+   "price": 5500,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Tennis Net 1024 | Oriental Sports Pune",
+    "seo_description": "Raptor tennis net for standard tennis courts. Model 1024.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 323,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 315)",
+     "original_supplier_name": "TENNIS NET-RAPTOR-1024",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 324,
+   "slug": "raptor-tennis-net-1022",
+   "name": "Raptor Tennis Net 1022",
+   "category_slug": "tennis",
+   "brand": "Raptor",
+   "description": "Raptor tennis net for standard tennis courts. Model 1022.",
+   "price": 4125,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Raptor Tennis Net 1022 | Oriental Sports Pune",
+    "seo_description": "Raptor tennis net for standard tennis courts. Model 1022.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 324,
+     "source_files": "Raptor-Sports-Eqp.xlsx (row 327)",
+     "original_supplier_name": "TENNIS NET-RAPTOR-1022",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 327,
+   "slug": "nivia-carbonite-8-0-football-shoes",
+   "name": "Nivia Carbonite 8.0 Football Shoes",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Nivia Carbonite 8.0 football boots with a lightweight synthetic upper and moulded studs for traction on grass and hard grounds.",
+   "price": 959,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Carbonite 8.0 Football Shoes | Oriental Sports Pune",
+    "seo_description": "Nivia Carbonite 8.0 football boots with a lightweight synthetic upper and moulded studs for traction on grass and hard grounds.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 327,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 183); NIVIA SPORTS EQP.xlsx (row 63)",
+     "original_supplier_name": "FOOTBALL SHOES-NIVIA 8.0 (CARBONATE)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 328,
+   "slug": "nivia-safari-2-0-football-shoes",
+   "name": "Nivia Safari 2.0 Football Shoes",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Nivia Safari 2.0 football boots with a cushioned fit and a studded outsole, for regular training and matches.",
+   "price": 1479,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Safari 2.0 Football Shoes | Oriental Sports Pune",
+    "seo_description": "Nivia Safari 2.0 football boots with a cushioned fit and a studded outsole, for regular training and matches.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 328,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 195); NIVIA SPORTS EQP.xlsx (row 75)",
+     "original_supplier_name": "FOOTBALL SHOES-NIVIA 2.0 (SAFARI)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 329,
+   "slug": "nivia-carbonite-8-0-kids-football-shoes",
+   "name": "Nivia Carbonite 8.0 Kids Football Shoes",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Kids' version of the Nivia Carbonite 8.0 football boot. Lightweight, comfortable and grippy for young players.",
+   "price": 939,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Carbonite 8.0 Kids Football Shoes | Oriental Sports Pune",
+    "seo_description": "Kids' version of the Nivia Carbonite 8.0 football boot. Lightweight, comfortable and grippy for young players.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 329,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 207); NIVIA SPORTS EQP.xlsx (row 87)",
+     "original_supplier_name": "FOOTBALL SHOES- KIDS 8.0 (CARBONATE)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 330,
+   "slug": "nivia-encounter-12-football-shoes",
+   "name": "Nivia Encounter 12 Football Shoes",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Nivia Encounter 12 football boots with a moulded stud sole for grip and a durable synthetic upper for training and match play.",
+   "price": 1249,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Encounter 12 Football Shoes | Oriental Sports Pune",
+    "seo_description": "Nivia Encounter 12 football boots with a moulded stud sole for grip and a durable synthetic upper for training and match play.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 330,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 111); NIVIA SPORTS EQP.xlsx (row 99)",
+     "original_supplier_name": "FOOTBALL SHOES-NIVIA-(ENCOUNTER-12)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 331,
+   "slug": "nivia-carbonite-8-0-futsal-shoes",
+   "name": "Nivia Carbonite 8.0 Futsal Shoes",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Nivia Carbonite 8.0 futsal shoes with a flat non-marking rubber sole for grip on indoor courts and turf.",
+   "price": 1199,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Carbonite 8.0 Futsal Shoes | Oriental Sports Pune",
+    "seo_description": "Nivia Carbonite 8.0 futsal shoes with a flat non-marking rubber sole for grip on indoor courts and turf.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 331,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 231); NIVIA SPORTS EQP.xlsx (row 243)",
+     "original_supplier_name": "FUTSAL SHOES -NIVIA 8.0 CARBONATE",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 332,
+   "slug": "nivia-encounter-12-futsal-shoes",
+   "name": "Nivia Encounter 12 Futsal Shoes",
+   "category_slug": "football",
+   "brand": "Nivia",
+   "description": "Nivia Encounter 12 futsal shoes with a flat grippy sole and supportive upper for quick turns on indoor courts.",
+   "price": 1299,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Encounter 12 Futsal Shoes | Oriental Sports Pune",
+    "seo_description": "Nivia Encounter 12 futsal shoes with a flat grippy sole and supportive upper for quick turns on indoor courts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 332,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 255); NIVIA SPORTS EQP.xlsx (row 267)",
+     "original_supplier_name": "FUTSAL SHOES -NIVIA ENCOUNTER-12",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 333,
+   "slug": "nivia-warrior-2-0-basketball-shoes",
+   "name": "Nivia Warrior 2.0 Basketball Shoes",
+   "category_slug": "recreation",
+   "brand": "Nivia",
+   "description": "Nivia Warrior 2.0 basketball shoes with ankle support, a cushioned midsole and a grippy rubber outsole for quick cuts and jumps.",
+   "price": 2299,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Warrior 2.0 Basketball Shoes | Oriental Sports Pune",
+    "seo_description": "Nivia Warrior 2.0 basketball shoes with ankle support, a cushioned midsole and a grippy rubber outsole for quick cuts and jumps.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 333,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 375); NIVIA SPORTS EQP.xlsx (row 387)",
+     "original_supplier_name": "BASKETBALL SHOES-NIVIA-WARRIOR 2.0",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 336,
+   "slug": "nivia-mid-court-3-0-badminton-shoes",
+   "name": "Nivia Mid Court 3.0 Badminton Shoes",
+   "category_slug": "badminton",
+   "brand": "Nivia",
+   "description": "Nivia Mid Court 3.0 badminton shoes that balance flexibility and support, with a grippy non-marking sole for indoor courts.",
+   "price": 1399,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Mid Court 3.0 Badminton Shoes | Oriental Sports Pune",
+    "seo_description": "Nivia Mid Court 3.0 badminton shoes that balance flexibility and support, with a grippy non-marking sole for indoor courts.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 336,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 519); NIVIA SPORTS EQP.xlsx (row 531); NIVIA SPORTS EQP.xlsx (row 543)",
+     "original_supplier_name": "BADMINTON SHOES-NIVIA MID COURT 3.0",
+     "description_source": "Web-researched",
+     "qty_pack": "1 Pair"
+    }
+   }
+  },
+  {
+   "sr": 340,
+   "slug": "nivia-ball-pump",
+   "name": "Nivia Ball Pump",
+   "category_slug": "accessories",
+   "brand": "Nivia",
+   "description": "Nivia hand pump for inflating footballs, basketballs and volleyballs. Comes with an inflation needle. Compact enough for any kit bag.",
+   "price": 299,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Ball Pump | Oriental Sports Pune",
+    "seo_description": "Nivia hand pump for inflating footballs, basketballs and volleyballs. Comes with an inflation needle. Compact enough for any kit bag.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 340,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 219)",
+     "original_supplier_name": "BALL PUMP",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 341,
+   "slug": "nivia-stopwatch",
+   "name": "Nivia Stopwatch",
+   "category_slug": "accessories",
+   "brand": "Nivia",
+   "description": "Nivia digital stopwatch for timing laps, drills and training sessions, with lap/split function and lanyard.",
+   "price": 620,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Nivia Stopwatch | Oriental Sports Pune",
+    "seo_description": "Nivia digital stopwatch for timing laps, drills and training sessions, with lap/split function and lanyard.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 341,
+     "source_files": "NIVIA SPORTS EQP.xlsx (row 615)",
+     "original_supplier_name": "STOP WATCH -NIVA",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 342,
+   "slug": "ball-carry-net",
+   "name": "Ball Carry Net",
+   "category_slug": "accessories",
+   "brand": "Cougar",
+   "description": "Mesh ball carry net with drawstring for transporting multiple footballs, volleyballs or basketballs.",
+   "price": 110,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Ball Carry Net | Oriental Sports Pune",
+    "seo_description": "Mesh ball carry net with drawstring for transporting multiple footballs, volleyballs or basketballs.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 342,
+     "source_files": "COUGAR EXE EQ-3.xlsx (row 279)",
+     "original_supplier_name": "BALL CARRY NET",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 343,
+   "slug": "fox-40-whistle",
+   "name": "Fox 40 Whistle",
+   "category_slug": "accessories",
+   "brand": "Fox 40",
+   "description": "Fox 40 pealess whistle with a loud, clear sound for referees, coaches and lifeguards. Works even when wet.",
+   "price": 185,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Fox 40 Whistle | Oriental Sports Pune",
+    "seo_description": "Fox 40 pealess whistle with a loud, clear sound for referees, coaches and lifeguards. Works even when wet.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 343,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 63)",
+     "original_supplier_name": "Whistle Fox 40 (Mikado)",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  },
+  {
+   "sr": 344,
+   "slug": "gripsta-sports-whistle",
+   "name": "Gripsta Sports Whistle",
+   "category_slug": "accessories",
+   "brand": "Gripsta",
+   "description": "Gripsta sports whistle for coaches, referees and PE teachers.",
+   "price": 149,
+   "compare_at_price": null,
+   "images": [],
+   "in_stock": false,
+   "metadata": {
+    "status": "draft",
+    "stock_quantity": 0,
+    "low_stock_threshold": 5,
+    "seo_title": "Gripsta Sports Whistle | Oriental Sports Pune",
+    "seo_description": "Gripsta sports whistle for coaches, referees and PE teachers.",
+    "import": {
+     "batch": "master-tracker-2026-11-24",
+     "tracker_sr": 344,
+     "source_files": "Apex Mikado Sports Equipments-PC.xlsx (row 423)",
+     "original_supplier_name": "SPORTS WHISTLE GRIPSTA",
+     "description_source": "Standard copy - review",
+     "qty_pack": "1 Nos"
+    }
+   }
+  }
+ ]
+}

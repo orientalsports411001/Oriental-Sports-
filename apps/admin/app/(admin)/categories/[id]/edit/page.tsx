@@ -26,7 +26,15 @@ export default async function EditCategoryPage({
       <h1>Edit category</h1>
       {searchParams.saved && <p className="success">Saved.</p>}
       <div className="card">
-        <CategoryForm category={category} action={boundUpdate} error={searchParams.error} />
+        <CategoryForm
+          category={{
+            ...category,
+            // Gym & Strength was enquiry-only before this setting existed, so it starts ticked.
+            enquire_whatsapp: category.metadata?.enquire_whatsapp ?? category.slug === 'gym-equipment',
+          }}
+          action={boundUpdate}
+          error={searchParams.error}
+        />
       </div>
     </div>
   );

@@ -2,11 +2,20 @@ import Link from 'next/link';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/require-admin';
 import { getCachedProducts, CATEGORIES } from '@/lib/catalog-store';
+import { getBrands, DEFAULT_BRANDS } from '@/lib/brands';
 import { ProductForm } from '../../product-form';
 import { updateProduct, adjustStock, deleteProduct } from '../../actions';
 import { DeleteProductButton } from '@/components/products/DeleteProductButton';
 
 export const dynamic = 'force-dynamic';
+
+/** Gym & Strength was enquiry-only before this setting existed, so it counts as ticked until the admin saves the discipline. */
+const withEnquireFlag = (list: any[]) =>
+  list.map((c) => ({
+    slug: c.slug,
+    name: c.name,
+    enquire_whatsapp: c.metadata?.enquire_whatsapp ?? c.slug === 'gym-equipment',
+  }));
 
 export default async function EditProductPage({
   params,
@@ -18,7 +27,7 @@ export default async function EditProductPage({
   await requireAdmin();
 
   let product: any = null;
-  let categories: any[] = CATEGORIES;
+  let categories: any[] = withEnquireFlag(CATEGORIES);
   let adjustments: any[] = [];
 
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id);
@@ -31,7 +40,7 @@ export default async function EditProductPage({
 
     const [{ data: dbProduct }, { data: dbCategories }] = await Promise.all([
       productQuery,
-      admin.from('categories').select('slug, name').order('name'),
+      admin.from('categories').select('slug, name, metadata').order('name'),
     ]);
 
     if (dbProduct) {
@@ -57,7 +66,7 @@ export default async function EditProductPage({
         .limit(10);
       if (dbAdjustments) adjustments = dbAdjustments;
     }
-    if (dbCategories && dbCategories.length > 0) categories = dbCategories;
+    if (dbCategories && dbCategories.length > 0) categories = withEnquireFlag(dbCategories);
   } catch (err) {
     // Supabase service role unavailable, try REST fallback with anon key
   }
@@ -125,6 +134,7 @@ export default async function EditProductPage({
     }
   }
 
+  const brands = await getBrands().catch(() => DEFAULT_BRANDS);
   const effectiveId = product.id || params.id;
   const boundUpdate = updateProduct.bind(null, effectiveId);
   const boundAdjustStock = adjustStock.bind(null, effectiveId);
@@ -156,7 +166,7 @@ export default async function EditProductPage({
       {searchParams.error && <p className="error" style={{ marginBottom: 20 }}>{searchParams.error}</p>}
 
       {/* Main Frameless Studio Product Form */}
-      <ProductForm product={product} categories={categories || []} action={boundUpdate} error={searchParams.error} />
+      <ProductForm product={product} categories={categories || []} brands={brands} action={boundUpdate} error={searchParams.error} />
 
       {/* Warehouse Stock Adjustment Surface */}
       <div className="studio-surface" style={{ marginTop: 24 }}>
