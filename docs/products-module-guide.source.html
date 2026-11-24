@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin Panel — Products Module</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm 18mm 14mm; }
+
+  :root {
+    --crimson: #C8102E;
+    --ink: #111111;
+    --body: #2B2B2B;
+    --muted: #5F5F5F;
+    --rule: #DCDCDC;
+    --tint: #F6F6F4;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 10.2pt;
+    line-height: 1.52;
+    color: var(--body);
+  }
+
+  h1, h2, h3 { color: var(--ink); margin: 0; }
+
+  /* ---- Cover ------------------------------------------------------------ */
+  .cover {
+    height: 252mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    page-break-after: always;
+  }
+  .cover-top { border-top: 4px solid var(--crimson); padding-top: 10mm; }
+  .brand {
+    font-size: 9pt; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--crimson);
+  }
+  .cover h1 {
+    font-size: 30pt; line-height: 1.12; font-weight: 800;
+    letter-spacing: -0.02em; margin: 14mm 0 0; max-width: 150mm;
+  }
+  .cover .sub {
+    font-size: 12pt; color: var(--muted); margin-top: 6mm; max-width: 140mm;
+  }
+  .cover-meta {
+    border-top: 1px solid var(--rule); padding-top: 5mm;
+    display: flex; gap: 14mm; font-size: 9.2pt; color: var(--muted);
+  }
+  .cover-meta strong { display: block; color: var(--ink); font-size: 9.6pt; }
+
+  .toc { margin-top: 16mm; }
+  .toc h2 { font-size: 10pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .toc ol { margin: 5mm 0 0; padding-left: 5mm; columns: 2; column-gap: 12mm; font-size: 10pt; }
+  .toc li { margin-bottom: 2.2mm; }
+
+  /* ---- Sections --------------------------------------------------------- */
+  /* Sections flow across pages; only the blocks that must not be split
+     (tables, steps, callouts) are kept whole, so pages fill properly. */
+  section { margin-bottom: 7mm; }
+  table, .note, ol.steps, .keep { page-break-inside: avoid; }
+  h2.section, h3 { page-break-after: avoid; }
+  h2.section {
+    font-size: 15pt; font-weight: 800; letter-spacing: -0.01em;
+    padding-bottom: 2.5mm; border-bottom: 2px solid var(--crimson);
+    margin-bottom: 4.5mm;
+    page-break-before: auto;
+  }
+  h2.section .num { color: var(--crimson); margin-right: 3mm; }
+  h3 { font-size: 11pt; font-weight: 700; margin: 5mm 0 2mm; }
+  p { margin: 0 0 3mm; }
+  .lead { color: var(--muted); margin-bottom: 4mm; }
+
+  ul, ol.steps { margin: 0 0 3mm; padding-left: 5.5mm; }
+  li { margin-bottom: 1.8mm; }
+  ol.steps > li { margin-bottom: 3mm; }
+  ol.steps > li > strong { color: var(--ink); }
+
+  code, .field {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 9pt; background: var(--tint);
+    border: 1px solid var(--rule); border-radius: 3px;
+    padding: 0.4mm 1.4mm; color: var(--ink);
+  }
+
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.4pt; }
+  th, td { text-align: left; padding: 2.4mm 3mm; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  thead th {
+    background: var(--tint); font-size: 8.4pt; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted); border-bottom: 1.5px solid var(--rule);
+  }
+  td.k { font-weight: 600; color: var(--ink); white-space: nowrap; }
+
+  .note {
+    border-left: 3px solid var(--crimson); background: var(--tint);
+    padding: 3mm 4mm; margin: 4mm 0; font-size: 9.6pt;
+  }
+  .note strong { color: var(--ink); }
+
+  .pill {
+    display: inline-block; font-size: 8.2pt; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 0.6mm 2mm; border-radius: 2mm; border: 1px solid var(--rule);
+    background: #fff; color: var(--ink);
+  }
+
+  .page-break { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<!-- =================== COVER =================== -->
+<div class="cover">
+  <div>
+    <div class="cover-top">
+      <div class="brand">Oriental Sports Pune</div>
+      <h1>Admin Panel<br>Products Module Explained</h1>
+      <p class="sub">A step-by-step guide for store staff: how to add a product, edit it, manage stock, and remove it from the website.</p>
+    </div>
+
+    <div class="toc">
+      <h2>What this guide covers</h2>
+      <ol>
+        <li>Before you start</li>
+        <li>Signing in</li>
+        <li>The Equipment Catalog screen</li>
+        <li>Adding a new product</li>
+        <li>Editing an existing product</li>
+        <li>Updating stock</li>
+        <li>Hiding a product without deleting it</li>
+        <li>Deleting a product</li>
+        <li>If something looks wrong</li>
+        <li>Quick reference</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="cover-meta">
+    <div><strong>Staff Guide</strong>Products Module</div>
+    <div><strong>Admin Panel</strong>admin.orientalsports.in</div>
+    <div><strong>Website</strong>orientalsports.in</div>
+  </div>
+</div>
+
+<!-- =================== 1 =================== -->
+<section>
+  <h2 class="section"><span class="num">1</span>Before you start</h2>
+  <p>The admin panel is where the online shop is managed. Anything you change here is what customers see on <strong>orientalsports.in</strong>.</p>
+
+  <h3>Two separate addresses</h3>
+  <table>
+    <tbody>
+      <tr><td class="k">admin.orientalsports.in</td><td>The admin panel. Staff only. This is where you add, edit and remove products.</td></tr>
+      <tr><td class="k">orientalsports.in</td><td>The public website. This is what customers see.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>How quickly changes appear</h3>
+  <p>When you save or delete a product, the public website is updated automatically. There is no separate "publish" or "sync" step to run.</p>
+  <ul>
+    <li>A customer opening the site after your change sees it <strong>straight away</strong>.</li>
+    <li>A customer who already had the page open sees it within <strong>about a minute</strong>, or as soon as they refresh.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Please note:</strong> there is no undo. A deleted product cannot be restored from the panel &mdash; it has to be added again by hand. Read section 8 before deleting anything.
+  </div>
+</section>
+
+<!-- =================== 2 =================== -->
+<section>
+  <h2 class="section"><span class="num">2</span>Signing in</h2>
+  <ol class="steps">
+    <li>Go to <strong>admin.orientalsports.in</strong>.</li>
+    <li>Click <span class="pill">Continue with Google</span>.</li>
+    <li>Choose the store's authorised Google account.</li>
+  </ol>
+  <p>Only the authorised store account can get in. Any other Google account is refused, even if the sign-in itself works. If you are refused, you are using the wrong account &mdash; ask the owner which one to use.</p>
+
+  <div class="note">
+    <strong>If sign-in fails</strong> with a message about a code or storage: open <code>admin.orientalsports.in</code> directly in Chrome or Edge rather than from a link inside WhatsApp, Instagram or Gmail, and complete the sign-in in one go without pressing Back or refreshing.
+  </div>
+</section>
+
+<!-- =================== 3 =================== -->
+<section>
+  <h2 class="section"><span class="num">3</span>The Equipment Catalog screen</h2>
+  <p class="lead">Open <strong>Products</strong> from the menu. This screen lists every product on the website.</p>
+
+  <h3>The four figures at the top</h3>
+  <table>
+    <thead><tr><th>Figure</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Total Catalog</td><td>Every product in the system, including hidden ones.</td></tr>
+      <tr><td class="k">Published &amp; Live</td><td>Products customers can currently buy.</td></tr>
+      <tr><td class="k">Low Stock</td><td>Products at or below their warning level. Click it to see only those.</td></tr>
+      <tr><td class="k">Inventory Value</td><td>Selling price multiplied by units held, added up.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Finding a product</h3>
+  <ul>
+    <li><strong>Sport buttons</strong> (All, Cricket, Badminton, Tennis and so on) narrow the list to one discipline.</li>
+    <li><strong>Search box</strong> &mdash; type part of the product name or brand.</li>
+    <li><strong>Low Stock</strong> shows only products running out.</li>
+    <li><strong>All Statuses</strong> filters by Published, Draft or Archived.</li>
+  </ul>
+
+  <h3>The product list</h3>
+  <table>
+    <thead><tr><th>Column</th><th>What it shows</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Product</td><td>Name, with brand and category underneath.</td></tr>
+      <tr><td class="k">Discipline</td><td>The sport it is filed under.</td></tr>
+      <tr><td class="k">Status</td><td>Published, Draft or Archived.</td></tr>
+      <tr><td class="k">Price</td><td>Selling price. A struck-through figure next to it is the original MRP.</td></tr>
+      <tr><td class="k">Stock</td><td>Units on hand. Turns yellow with a warning when low.</td></tr>
+      <tr><td class="k">Actions</td><td><strong>Edit</strong> opens the product. <strong>Delete</strong> removes it.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- =================== 4 =================== -->
+<section>
+  <h2 class="section"><span class="num">4</span>Adding a new product</h2>
+  <p class="lead">Click <span class="pill">+ New Product</span> at the top right of the Products screen. The form has four tabs. You can move between them freely &mdash; nothing is saved until you press Save Product.</p>
+
+  <p>As you type, a <strong>live preview</strong> on the right shows how the product card will look to customers.</p>
+
+  <h3>Tab 1 &mdash; Basic Info &amp; Specs</h3>
+  <table>
+    <thead><tr><th>Field</th><th>What to enter</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Product Title</td><td>The full name customers see, for example <em>SG Scorer Classic Cricket Bat</em>. Required.</td></tr>
+      <tr><td class="k">URL Handle (Slug)</td><td>Fills in by itself from the title. Leave it alone unless asked to change it.</td></tr>
+      <tr><td class="k">Sport Discipline</td><td>The category the product belongs to. <strong>This decides which section of the website it appears in</strong>, so choose carefully. Required.</td></tr>
+      <tr><td class="k">Equipment Brand</td><td>Manufacturer, for example SG, Yonex, Nivia.</td></tr>
+      <tr><td class="k">Specifications &amp; Notes</td><td>The description customers read: material, size, weight, what it suits. Required, and must be a proper sentence or more.</td></tr>
+      <tr><td class="k">Sizes &amp; Variants</td><td>Only if the product comes in sizes. Put <strong>one size per line</strong>. Leave empty if there are none &mdash; an empty box simply hides the size selector.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tab 2 &mdash; Pricing &amp; Stock</h3>
+  <table>
+    <thead><tr><th>Field</th><th>What to enter</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Selling Price (₹)</td><td>What the customer actually pays. Required, and must be more than zero.</td></tr>
+      <tr><td class="k">Original MRP</td><td>Optional. Enter it only if there is a discount. It appears struck through next to the price, and the saving is worked out automatically. Leave empty if there is no discount.</td></tr>
+      <tr><td class="k">Available Physical Units</td><td>How many you have. At zero the product shows as out of stock.</td></tr>
+      <tr><td class="k">Low-Stock Warning Trigger</td><td>The level at which the panel warns you. Five is a sensible default.</td></tr>
+      <tr><td class="k">Storefront Visibility</td><td>Published, Draft or Archived. See section 7.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tab 3 &mdash; Media</h3>
+  <ul>
+    <li>Drag photos in, or click to choose them from the computer.</li>
+    <li><strong>Up to 5 photos</strong> per product. At least one is required.</li>
+    <li>Each file must be an image and <strong>under 10 MB</strong>.</li>
+    <li>The <strong>first photo</strong> is the main one shown in listings, so put the best one first.</li>
+    <li>Wait for each upload to finish before saving.</li>
+  </ul>
+
+  <h3>Tab 4 &mdash; Search &amp; SEO</h3>
+  <p>This controls how the product appears in Google results. <strong>You can leave it empty.</strong> If you do, the title and description are filled in automatically from what you already typed. Only fill it in if you have been given specific wording.</p>
+
+  <h3>Saving</h3>
+  <ol class="steps">
+    <li>Press <span class="pill">Save Product</span> at the bottom.</li>
+    <li>Wait for <strong>"Product created successfully"</strong>.</li>
+    <li>Open the product on <strong>orientalsports.in</strong> in a new tab and check it looks right.</li>
+  </ol>
+
+  <div class="note">
+    <strong>If it refuses to save,</strong> a red message says exactly what is missing &mdash; usually no photo, no description, no price, or no sport chosen. Fix that one item and press Save again.
+  </div>
+</section>
+
+<!-- =================== 5 & 6 =================== -->
+<section>
+  <h2 class="section"><span class="num">5</span>Editing an existing product</h2>
+  <ol class="steps">
+    <li>Find the product using the search box or the sport buttons.</li>
+    <li>Click <strong>Edit</strong> on its row.</li>
+    <li>Change what you need. It is the same four tabs as when adding.</li>
+    <li>Press <span class="pill">Save Product</span> and wait for <strong>"Product saved successfully"</strong>.</li>
+  </ol>
+  <p>Everything can be changed later &mdash; price, photos, description, stock, category. Changing the Sport Discipline moves the product to a different section of the website.</p>
+</section>
+
+<section>
+  <h2 class="section"><span class="num">6</span>Updating stock</h2>
+  <p class="lead">There are two ways, depending on what you are doing.</p>
+  <ul>
+    <li><strong>Correcting the number</strong> &mdash; open Edit, go to <em>Pricing &amp; Stock</em>, and type the right figure in Available Physical Units.</li>
+    <li><strong>Recording a delivery or a loss</strong> &mdash; use <em>Warehouse Stock Audit &amp; Adjustment</em> lower down the edit page. Enter how many units to add or remove and a short reason. This keeps a dated record of who changed what, which the plain figure does not.</li>
+  </ul>
+  <p>Use the adjustment panel for stock that physically arrives or leaves. Use the plain figure only to fix a mistake.</p>
+</section>
+
+<!-- =================== 7 =================== -->
+<section>
+  <h2 class="section"><span class="num">7</span>Hiding a product without deleting it</h2>
+  <p class="lead">Most of the time you do <em>not</em> want to delete. Change the status instead &mdash; it can always be changed back.</p>
+  <table>
+    <thead><tr><th>Status</th><th>What happens</th><th>Use it when</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Published</td><td>Live on the website. Customers can buy it.</td><td>Normal selling.</td></tr>
+      <tr><td class="k">Draft</td><td>Hidden from customers. Still in the panel.</td><td>Still preparing it, or waiting on photos.</td></tr>
+      <tr><td class="k">Archived</td><td>Hidden from customers. Kept on record.</td><td>No longer sold, but you want the history.</td></tr>
+    </tbody>
+  </table>
+  <p>To change it: <strong>Edit</strong> &rarr; <em>Pricing &amp; Stock</em> &rarr; <strong>Storefront Visibility</strong> &rarr; Save.</p>
+</section>
+
+<!-- =================== 8 =================== -->
+<section>
+  <h2 class="section"><span class="num">8</span>Deleting a product</h2>
+  <p class="lead">Deleting removes the product from the website permanently. Use Draft or Archived instead whenever you might want it back.</p>
+
+  <ol class="steps">
+    <li>Find the product in the list.</li>
+    <li>Click <strong>Delete</strong> on its row.</li>
+    <li>A confirmation box appears. Read the product name and make sure it is the right one.</li>
+    <li>Click <strong>Delete</strong> to confirm, or press <code>Esc</code> to cancel.</li>
+  </ol>
+
+  <h3>Products that customers have already ordered</h3>
+  <p>If a product appears in a past order, it is <strong>archived instead of deleted</strong>, and you will see "Product archived to protect order history". This is deliberate. It disappears from the website just the same, but the old invoices and order records stay correct. Nothing has gone wrong.</p>
+
+  <div class="note">
+    <strong>If deleting fails,</strong> a red message appears and the product stays. Do not keep clicking &mdash; tell the person who looks after the website. A deletion is never reported as done unless it really was.
+  </div>
+</section>
+
+<!-- =================== 9 =================== -->
+<section>
+  <h2 class="section"><span class="num">9</span>If something looks wrong</h2>
+  <table>
+    <thead><tr><th>What you see</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="k">Saved, but not on the website</td>
+        <td>Check the status is <strong>Published</strong> and stock is above zero. Then refresh the website page with <code>Ctrl + Shift + R</code>.</td>
+      </tr>
+      <tr>
+        <td class="k">In the wrong section of the site</td>
+        <td>The Sport Discipline is wrong. Edit the product and change it.</td>
+      </tr>
+      <tr>
+        <td class="k">Shows "out of stock"</td>
+        <td>Units are at zero, or the status is Draft or Archived.</td>
+      </tr>
+      <tr>
+        <td class="k">Photo did not appear</td>
+        <td>It was over 10 MB, was not an image, or Save was pressed before the upload finished. Edit the product and add it again.</td>
+      </tr>
+      <tr>
+        <td class="k">Panel count and website count differ</td>
+        <td>The panel also counts Draft and Archived products, which customers cannot see. A difference here is normal.</td>
+      </tr>
+      <tr>
+        <td class="k">A red error message</td>
+        <td>Note down the exact wording and pass it on. The wording says what went wrong.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- =================== 10 =================== -->
+<section>
+  <h2 class="section"><span class="num">10</span>Quick reference</h2>
+  <table>
+    <thead><tr><th>Task</th><th>Where to go</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Add a product</td><td>Products &rarr; + New Product &rarr; fill four tabs &rarr; Save Product</td></tr>
+      <tr><td class="k">Change price</td><td>Products &rarr; Edit &rarr; Pricing &amp; Stock &rarr; Save</td></tr>
+      <tr><td class="k">Change photos</td><td>Products &rarr; Edit &rarr; Media &rarr; Save</td></tr>
+      <tr><td class="k">Record a delivery</td><td>Products &rarr; Edit &rarr; Warehouse Stock Audit &amp; Adjustment</td></tr>
+      <tr><td class="k">Hide temporarily</td><td>Products &rarr; Edit &rarr; Storefront Visibility &rarr; Draft</td></tr>
+      <tr><td class="k">Remove for good</td><td>Products &rarr; Delete &rarr; confirm</td></tr>
+      <tr><td class="k">Find a product</td><td>Search box, or the sport buttons</td></tr>
+      <tr><td class="k">See what is running out</td><td>Click the Low Stock figure</td></tr>
+    </tbody>
+  </table>
+
+  <div class="keep">
+  <h3>Rules worth remembering</h3>
+  <ul>
+    <li>Every product needs a <strong>title, description, price, sport and at least one photo</strong>.</li>
+    <li><strong>Five photos</strong> maximum, each under 10 MB. The first is the main one.</li>
+    <li>Sizes go <strong>one per line</strong>, or leave the box empty.</li>
+    <li>Fill in <strong>Original MRP only when there is a genuine discount</strong>.</li>
+    <li>Prefer <strong>Draft</strong> over Delete. Deleting cannot be undone.</li>
+    <li>Always <strong>check the live website</strong> after saving.</li>
+  </ul>
+  </div>
+</section>
+
+</body>
+</html>

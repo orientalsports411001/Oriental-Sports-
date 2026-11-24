@@ -170,6 +170,12 @@ export default async function OrderDetailPage({
               <span style={{ color: 'var(--muted)' }}>Payment Method</span>
               <strong style={{ textTransform: 'uppercase', color: 'var(--ink)' }}>{order.payment_method || 'Razorpay / UPI'}</strong>
             </div>
+            {order.cashfree_payment_id && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 6, borderBottom: '1px solid var(--line)' }}>
+                <span style={{ color: 'var(--muted)' }}>Cashfree Payment ID</span>
+                <code>{order.cashfree_payment_id}</code>
+              </div>
+            )}
             {order.razorpay_payment_id && (
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 6, borderBottom: '1px solid var(--line)' }}>
                 <span style={{ color: 'var(--muted)' }}>Razorpay Payment ID</span>

@@ -933,44 +933,90 @@
 }
 
 /* ==========================================================================
-   PARTNER BRANDS — flat ivory plates (same cream as the studio product
-   shots) carrying each brand's own logo, linking out to its website.
+   PARTNER BRANDS — a small strip of logo plates (the same cream as the studio
+   product shots) that scrolls sideways; each plate opens the brand's own site.
    Logos are dark artwork, so they are shown as supplied, not recoloured.
    ========================================================================== */
 .partner-brands {
   background: var(--obsidian);
   color: var(--text-primary);
   border-top: 1px solid var(--border-color);
-  padding-block: clamp(56px, 7vw, 104px);
+  padding-block: clamp(32px, 4vw, 56px);
 }
 
-.partner-grid {
-  display: grid;
-  gap: 28px;
+.partner-head {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
+  gap: 0 24px;
+  margin-bottom: 8px;
+}
+.partner-title { color: #FFFFFF; margin: 0; }
+.partner-controls { display: flex; align-items: center; }
+
+.partner-marquee {
+  --partner-fade: clamp(24px, 5vw, 64px);
+  overflow: hidden;
+  /* room for the keyboard focus ring, which would otherwise be clipped */
+  padding-block: 6px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--partner-fade), #000 calc(100% - var(--partner-fade)), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 var(--partner-fade), #000 calc(100% - var(--partner-fade)), transparent 100%);
+}
+.partner-track {
+  display: flex;
+  width: max-content;
+  animation: partnerScroll var(--partner-duration, 60s) linear infinite;
+  will-change: transform;
+}
+.partner-marquee:hover .partner-track,
+.partner-marquee:focus-within .partner-track,
+.partner-marquee.is-paused .partner-track { animation-play-state: paused; }
+
+@keyframes partnerScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
-.partner-title { color: #FFFFFF; }
-.partner-lead {
-  margin-top: 16px;
-  max-width: 36ch;
-  font-size: 1rem;
-  line-height: 1.55;
-  color: var(--text-secondary);
+.partner-group { display: flex; flex: none; list-style: none; margin: 0; padding: 0; }
+.partner-chip-item { flex: none; margin-right: 16px; }
+.partner-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 88px;
+  background: var(--ivory);
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 10px;
+  transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.partner-chip:hover { background: var(--paper); }
+.partner-chip img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 140px;
+  max-height: 44px;
+  user-select: none;
+}
+@media (min-width: 1024px) {
+  .partner-chip-item { margin-right: 20px; }
+  .partner-chip { width: 240px; height: 100px; }
+  .partner-chip img { max-width: 170px; max-height: 52px; }
 }
 
-.partner-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+/* Reduced motion: no scrolling. A still row of the first copy of each logo. */
+@media (prefers-reduced-motion: reduce) {
+  .partner-track { animation: none; display: block; width: auto; }
+  .partner-group { flex-wrap: wrap; }
+  .partner-chip-item { margin-bottom: 12px; }
+  .partner-group + .partner-group,
+  .partner-chip-item.is-copy { display: none; }
+  .partner-marquee { -webkit-mask-image: none; mask-image: none; }
 }
-.partner-item { display: flex; min-width: 0; }
-/* One partner: keep the plate card-sized instead of stretching across the row. */
-.partner-item:only-child { width: 100%; max-width: 520px; }
 
+/* Logo plate with a footer, used on the Partners page. */
 .partner-card {
   display: flex;
   flex-direction: column;
@@ -1021,17 +1067,36 @@
 }
 .partner-card:hover .partner-arrow { transform: translate(3px, -3px); }
 
-@media (min-width: 1024px) {
-  .partner-grid {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-    gap: clamp(48px, 5vw, 96px);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .partner-card,
+  .partner-chip,
   .partner-arrow { transition: none; }
   .partner-card:hover .partner-arrow { transform: none; }
 }
 
-.partners-section { padding-block: clamp(32px, 5vw, 64px) var(--section-y); }
+.partners-section { padding-block: clamp(32px, 5vw, 64px); }
+
+/* Partners page: one row per brand, plate beside the description on wide screens. */
+.partner-profiles { list-style: none; margin: 0; padding: 0; }
+.partner-profile {
+  display: grid;
+  gap: 24px;
+  padding-block: clamp(28px, 4vw, 48px);
+  border-top: 1px solid var(--border-color);
+  align-items: center;
+}
+.partner-profile:last-child { border-bottom: 1px solid var(--border-color); }
+.partner-profile .partner-card { max-width: 520px; }
+.partner-profile-name { color: #FFFFFF; margin: 0 0 12px; }
+.partner-profile-summary { margin: 0; max-width: 56ch; color: var(--text-secondary); line-height: 1.65; }
+.partner-profile-links { margin: 16px 0 0; }
+.partners-how { padding-bottom: var(--section-y); }
+.partners-how-list { margin: 24px 0 0; border-top: 1px solid var(--border-color); }
+.partners-how-list > div { display: grid; gap: 4px; padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+.partners-how-list dt { font-weight: 700; color: #FFFFFF; }
+.partners-how-list dd { margin: 0; color: var(--text-secondary); line-height: 1.6; overflow-wrap: anywhere; }
+.partners-how-list a { display: inline; min-height: 0; color: #FFFFFF; text-decoration: underline; text-underline-offset: 3px; }
+@media (min-width: 768px) {
+  .partner-profile { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 80px); }
+  .partners-how-list > div { grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 24px; }
+}
