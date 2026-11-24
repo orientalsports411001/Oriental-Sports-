@@ -16,7 +16,7 @@ import { StoreChapter } from '../components/home/StoreChapter';
  *  Sport     [CLIENT-APPROVED PROTECTED] expanding sport rail (ivory)
  *  Gallery   [CLIENT-APPROVED PROTECTED] 3D sports photos orbit (ivory)
  *  Gear      sticky intro + spotlight product cards (charcoal)
- *  Partners  partner-brand logo plates linking to each brand's site (obsidian)
+ *  Partners  small scrolling strip of partner-brand logos, each linking to the brand's site (obsidian)
  *  Courts    turnkey courts infrastructure & specifications (obsidian)
  *  Store     the Camp store address as a shop sign & verified hours (obsidian)
  */
