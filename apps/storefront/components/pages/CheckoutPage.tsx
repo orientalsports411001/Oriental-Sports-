@@ -210,6 +210,12 @@ export const CheckoutPage: React.FC = () => {
       };
 
       const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', (response: { error?: { description?: string } }) => {
+        setCheckoutError(
+          response?.error?.description || 'Payment failed. You have not been charged — please try again.'
+        );
+        setIsProcessing(false);
+      });
       rzp.open();
     } catch (err: any) {
       console.error('Razorpay checkout failed:', err);
